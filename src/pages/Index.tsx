@@ -3,11 +3,11 @@ import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
-import { ThemeSelector } from '@/components/ThemeSelector';
+import { Customization } from '@/components/Customization';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { toast } from 'sonner';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'theme-select';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'customization';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -16,7 +16,7 @@ const Index = () => {
     return saved || 'theme-neon';
   });
   
-  const { gameState, spendCoins, purchaseTheme } = useGameLogic();
+  const { gameState, spendCoins, purchaseTheme, purchaseItem } = useGameLogic();
 
   // Sauvegarder le thème dans localStorage
   useEffect(() => {
@@ -36,7 +36,8 @@ const Index = () => {
             bestScore={gameState.bestScore}
             coins={gameState.coins}
             theme={currentTheme}
-            onStartGame={() => setCurrentScreen('theme-select')}
+            onStartGame={() => setCurrentScreen('game')}
+            onOpenCustomization={() => setCurrentScreen('customization')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
           />
@@ -45,7 +46,10 @@ const Index = () => {
       case 'game':
         return (
           <div className="relative">
-            <CircleTap theme={currentTheme} />
+            <CircleTap 
+              theme={currentTheme} 
+              customization={gameState.currentCustomization}
+            />
             <button
               onClick={() => setCurrentScreen('menu')}
               className="absolute top-4 left-4 px-4 py-2 bg-button-bg border border-wheel-border rounded-lg text-text-primary hover:bg-button-hover transition-colors"
@@ -59,10 +63,9 @@ const Index = () => {
         return (
           <Shop
             coins={gameState.coins}
+            ownedItems={gameState.ownedItems}
             onBack={() => setCurrentScreen('menu')}
-            onPurchase={spendCoins}
-            currentTheme={currentTheme}
-            onThemeChange={handleThemeChange}
+            onPurchaseItem={purchaseItem}
           />
         );
       
@@ -80,13 +83,12 @@ const Index = () => {
           />
         );
 
-      case 'theme-select':
+      case 'customization':
         return (
-          <ThemeSelector
-            ownedThemes={gameState.ownedThemes}
-            currentTheme={currentTheme}
-            onThemeSelect={handleThemeChange}
-            onStartGame={() => setCurrentScreen('game')}
+          <Customization
+            ownedItems={gameState.ownedItems}
+            currentCustomization={gameState.currentCustomization}
+            onApplyCustomization={(customization) => gameState.setCustomization(customization)}
             onBack={() => setCurrentScreen('menu')}
           />
         );

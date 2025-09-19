@@ -1,4 +1,19 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import * as React from 'react';
+
+interface CustomizationItem {
+  id: string;
+  name: string;
+  type: 'background' | 'circle' | 'effect';
+  preview: string;
+  color?: string;
+}
+
+interface Customization {
+  background: string;
+  circle: string;
+  effect: string;
+}
 
 export interface GameState {
   gameStatus: 'idle' | 'running' | 'gameover';
@@ -6,6 +21,8 @@ export interface GameState {
   bestScore: number;
   coins: number;
   ownedThemes: string[];
+  ownedItems: CustomizationItem[];
+  currentCustomization: Customization;
   ballAngle: number; // Position angulaire de la bille (radians)
   ballSpeed: number; // Vitesse angulaire (radians/seconde)
   ballDirection: number; // Direction: 1 ou -1
@@ -14,6 +31,7 @@ export interface GameState {
   showResult: boolean;
   lastResult: 'success' | 'failure' | null;
   level: number;
+  setCustomization: (customization: Customization) => void;
 }
 
 // Configuration du jeu
@@ -26,6 +44,18 @@ const cfg = {
   debounceMs: 40             // anti double-tap
 };
 
+// Items par défaut disponibles
+const defaultItems: CustomizationItem[] = [
+  // Arrière-plans
+  { id: 'bg-default', name: 'Défaut', type: 'background', preview: 'linear-gradient(135deg, hsl(220, 30%, 4%), hsl(220, 25%, 8%))' },
+  
+  // Cercles
+  { id: 'circle-default', name: 'Défaut', type: 'circle', preview: '', color: '#4ee1a0' },
+  
+  // Effets
+  { id: 'effect-default', name: 'Défaut', type: 'effect', preview: '', color: '#4ee1a0' },
+];
+
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('luckyStopGame');
@@ -36,6 +66,12 @@ export const useGameLogic = () => {
       bestScore: 0,
       coins: 100, // Starting coins
       ownedThemes: [],
+      ownedItems: [...defaultItems],
+      currentCustomization: {
+        background: 'bg-default',
+        circle: 'circle-default',
+        effect: 'effect-default',
+      },
       ballAngle: 0,
       ballSpeed: cfg.baseSpeed,
       ballDirection: 1,
@@ -44,6 +80,7 @@ export const useGameLogic = () => {
       showResult: false,
       lastResult: null,
       level: 1,
+      setCustomization: () => {},
     };
     
     if (saved) {
@@ -54,6 +91,12 @@ export const useGameLogic = () => {
           bestScore: parsedState.bestScore || 0,
           coins: parsedState.coins || 100,
           ownedThemes: parsedState.ownedThemes || [],
+          ownedItems: parsedState.ownedItems || [...defaultItems],
+          currentCustomization: parsedState.currentCustomization || {
+            background: 'bg-default',
+            circle: 'circle-default',
+            effect: 'effect-default',
+          },
         };
       } catch (e) {
         return defaultState;
@@ -66,16 +109,28 @@ export const useGameLogic = () => {
   const lastTimeRef = useRef<number>();
   const lastTapTime = useRef<number>(0);
 
+  // Fonction pour modifier la personnalisation
+  const setCustomization = useCallback((customization: Customization) => {
+    setGameState(prev => ({ ...prev, currentCustomization: customization }));
+  }, []);
+
+  // Mise à jour du gameState avec setCustomization
+  React.useEffect(() => {
+    setGameState(prev => ({ ...prev, setCustomization }));
+  }, [setCustomization]);
+
   // Sauvegarde du progress
   const saveProgress = useCallback(() => {
     const dataToSave = {
       bestScore: gameState.bestScore,
       coins: gameState.coins,
       ownedThemes: gameState.ownedThemes,
+      ownedItems: gameState.ownedItems,
+      currentCustomization: gameState.currentCustomization,
       timestamp: Date.now(),
     };
     localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
-  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes]);
+  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization]);
 
   // Animation de la bille (60 FPS)
   const animateBall = useCallback(() => {
@@ -261,6 +316,25 @@ export const useGameLogic = () => {
     return false;
   }, [gameState.coins, gameState.ownedThemes]);
 
+  // Acheter un item de personnalisation
+  const purchaseItem = useCallback((item: CustomizationItem): boolean => {
+    if (gameState.ownedItems.find(owned => owned.id === item.id)) {
+      return false; // Déjà possédé
+    }
+    
+    const itemPrice = 30; // Prix pour les items de personnalisation
+    
+    if (gameState.coins >= itemPrice) {
+      setGameState(prev => ({
+        ...prev,
+        coins: prev.coins - itemPrice,
+        ownedItems: [...prev.ownedItems, item]
+      }));
+      return true;
+    }
+    return false;
+  }, [gameState.coins, gameState.ownedItems]);
+
   return {
     gameState,
     startGame,
@@ -268,6 +342,7 @@ export const useGameLogic = () => {
     resetGame,
     spendCoins,
     purchaseTheme,
+    purchaseItem,
     cfg, // Export config pour l'affichage
   };
 };

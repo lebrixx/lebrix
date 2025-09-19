@@ -6,9 +6,14 @@ import { Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 interface CircleTapProps {
   theme: string;
+  customization?: {
+    background: string;
+    circle: string;
+    effect: string;
+  };
 }
 
-export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
+export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) => {
   const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic();
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
 
@@ -54,8 +59,27 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
   const zoneStartDeg = (gameState.zoneStart * 180) / Math.PI;
   const zoneArcDeg = (cfg.zoneArc * 180) / Math.PI;
 
+  // Couleur du cercle basée sur la personnalisation
+  const getCircleColor = () => {
+    if (customization?.circle === 'circle-neon') return '#00ffff';
+    if (customization?.circle === 'circle-fire') return '#ff4444';
+    if (customization?.circle === 'circle-gold') return '#ffd700';
+    return '#4ee1a0'; // Défaut
+  };
+
+  // Style de l'arrière-plan basé sur la personnalisation
+  const getBackgroundStyle = () => {
+    if (customization?.background === 'bg-space') return { background: 'linear-gradient(135deg, #0a0a2e, #16213e)' };
+    if (customization?.background === 'bg-sunset') return { background: 'linear-gradient(135deg, #ff7e5f, #feb47b)' };
+    if (customization?.background === 'bg-forest') return { background: 'linear-gradient(135deg, #134e5e, #71b280)' };
+    return {};
+  };
+
   return (
-    <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${theme}`}>
+    <div 
+      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
+      style={getBackgroundStyle()}
+    >
       {/* Affichage du score */}
       <div className="text-center mb-8 animate-fade-in">
         <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">
@@ -96,12 +120,12 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
                 A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
                 ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
             fill="none"
-            stroke="#4ee1a0"
+            stroke={getCircleColor()}
             strokeWidth="20"
             className="drop-shadow-lg"
             style={{
-              filter: 'drop-shadow(0 0 20px #4ee1a0) drop-shadow(0 0 40px #4ee1a0)',
-              animation: 'pulse 1.5s ease-in-out infinite',
+              filter: `drop-shadow(0 0 20px ${getCircleColor()}) drop-shadow(0 0 40px ${getCircleColor()})`,
+              animation: customization?.effect === 'effect-glow' ? 'pulse 0.8s ease-in-out infinite' : 'pulse 1.5s ease-in-out infinite',
             }}
           />
 

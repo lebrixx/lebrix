@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Palette } from 'lucide-react';
 
 interface MainMenuProps {
   bestScore: number;
@@ -11,6 +11,7 @@ interface MainMenuProps {
   onStartGame: () => void;
   onOpenShop: () => void;
   onOpenChallenges: () => void;
+  onOpenCustomization: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -19,7 +20,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   theme,
   onStartGame, 
   onOpenShop, 
-  onOpenChallenges 
+  onOpenChallenges,
+  onOpenCustomization 
 }) => {
   return (
     <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${theme}`}>
@@ -57,6 +59,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         >
           <Play className="w-8 h-8 mr-3 group-hover:animate-pulse" />
           JOUER MAINTENANT
+        </Button>
+
+        <Button 
+          onClick={onOpenCustomization}
+          variant="outline"
+          size="lg"
+          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+        >
+          <Palette className="w-6 h-6 mr-3 group-hover:animate-pulse" />
+          PERSONNALISATION
         </Button>
 
         <Button 
