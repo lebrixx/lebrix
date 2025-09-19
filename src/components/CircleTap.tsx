@@ -65,17 +65,20 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
     return '#4ee1a0'; // Défaut
   };
 
-  // Style de l'arrière-plan basé sur la personnalisation
+  // Style de l'arrière-plan basé sur la palette sélectionnée
   const getBackgroundStyle = () => {
-    if (customization?.background === 'bg-space') return { background: 'linear-gradient(135deg, #0a0a2e, #16213e)' };
-    if (customization?.background === 'bg-sunset') return { background: 'linear-gradient(135deg, #ff7e5f, #feb47b)' };
-    if (customization?.background === 'bg-forest') return { background: 'linear-gradient(135deg, #134e5e, #71b280)' };
-    return {};
+    if (customization?.background === 'palette-sunset') return { background: 'linear-gradient(135deg, #ff6b35, #f7931e)' };
+    if (customization?.background === 'palette-ocean') return { background: 'linear-gradient(135deg, #0077be, #00a8cc)' };
+    if (customization?.background === 'palette-forest') return { background: 'linear-gradient(135deg, #2d5a27, #76c893)' };
+    if (customization?.background === 'palette-lava') return { background: 'linear-gradient(135deg, #ff4444, #cc2936)' };
+    if (customization?.background === 'palette-arctic') return { background: 'linear-gradient(135deg, #a8dadc, #f1faee)' };
+    // Néon par défaut (fond violet avec accents néon)
+    return { background: 'linear-gradient(135deg, hsl(270, 40%, 4%), hsl(270, 30%, 8%))' };
   };
 
   return (
     <div 
-      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme} animate-animated-gradient`}
+      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
       style={getBackgroundStyle()}
     >
       {/* HUD - Score en gros et best score */}

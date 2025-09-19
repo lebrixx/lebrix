@@ -73,7 +73,7 @@ export const Customization: React.FC<CustomizationProps> = ({
       <div className="space-y-8">
         {/* Arrière-plans */}
         <div>
-          <h2 className="text-2xl font-bold text-primary mb-4">🌅 Arrière-plans</h2>
+          <h2 className="text-2xl font-bold text-primary mb-4">🎨 Palettes de couleurs</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {backgrounds.map((item) => (
               <Card 

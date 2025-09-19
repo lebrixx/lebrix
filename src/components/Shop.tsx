@@ -7,12 +7,13 @@ import { ArrowLeft, Check, Coins, Lock, Palette, Circle, Sparkles } from 'lucide
 import { toast } from 'sonner';
 
 const availableItems = [
-  // Arrière-plans
-  { id: 'bg-space', name: 'Espace Étoilé', type: 'background' as const, preview: 'linear-gradient(135deg, #0a0a2e, #16213e)', price: 50, description: 'Galaxie infinie avec étoiles' },
-  { id: 'bg-sunset', name: 'Coucher de Soleil', type: 'background' as const, preview: 'linear-gradient(135deg, #ff7e5f, #feb47b)', price: 50, description: 'Horizon doré et rose' },
-  { id: 'bg-forest', name: 'Forêt Mystique', type: 'background' as const, preview: 'linear-gradient(135deg, #134e5e, #71b280)', price: 50, description: 'Forêt enchantée verte' },
-  { id: 'bg-ocean', name: 'Profondeurs Marines', type: 'background' as const, preview: 'linear-gradient(135deg, #0c4a6e, #0891b2)', price: 75, description: 'Abysses bleu profond' },
-  { id: 'bg-fire', name: 'Flammes Ardentes', type: 'background' as const, preview: 'linear-gradient(135deg, #dc2626, #fbbf24)', price: 75, description: 'Brasier rouge orange' },
+  // Palettes de couleurs
+  { id: 'palette-neon', name: 'Néon', type: 'background' as const, preview: 'linear-gradient(135deg, #00ffff, #ff00ff)', price: 50, description: 'Couleurs cyber électriques', color: '#00ffff' },
+  { id: 'palette-sunset', name: 'Coucher de soleil', type: 'background' as const, preview: 'linear-gradient(135deg, #ff6b35, #f7931e)', price: 50, description: 'Horizon doré et rose', color: '#ff6b35' },
+  { id: 'palette-ocean', name: 'Océan', type: 'background' as const, preview: 'linear-gradient(135deg, #0077be, #00a8cc)', price: 75, description: 'Abysses bleu profond', color: '#0077be' },
+  { id: 'palette-forest', name: 'Forêt', type: 'background' as const, preview: 'linear-gradient(135deg, #2d5a27, #76c893)', price: 75, description: 'Forêt enchantée verte', color: '#2d5a27' },
+  { id: 'palette-lava', name: 'Lave', type: 'background' as const, preview: 'linear-gradient(135deg, #ff4444, #cc2936)', price: 75, description: 'Brasier rouge orange', color: '#ff4444' },
+  { id: 'palette-arctic', name: 'Arctique', type: 'background' as const, preview: 'linear-gradient(135deg, #a8dadc, #f1faee)', price: 60, description: 'Glace cristalline', color: '#a8dadc' },
   
   // Cercles
   { id: 'circle-neon', name: 'Néon Cyan', type: 'circle' as const, preview: '', color: '#00ffff', price: 30, description: 'Éclat cyber électrique' },
@@ -178,7 +179,7 @@ export const Shop: React.FC<ShopProps> = ({
         <TabsList className="grid w-full grid-cols-3 bg-button-bg border border-wheel-border">
           <TabsTrigger value="backgrounds" className="flex items-center gap-2">
             <Palette className="w-4 h-4" />
-            Fonds
+            Palettes
           </TabsTrigger>
           <TabsTrigger value="circles" className="flex items-center gap-2">
             <Circle className="w-4 h-4" />

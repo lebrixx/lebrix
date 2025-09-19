@@ -6,9 +6,9 @@
 
 @layer base {
   :root {
-    /* Game Background & Base Colors */
-    --game-dark: 220 25% 8%;
-    --game-darker: 220 30% 4%;
+    /* Game Background & Base Colors - Fond violet fixe */
+    --game-dark: 270 30% 8%;
+    --game-darker: 270 40% 4%;
     --text-primary: 0 0% 100%;
     --text-secondary: 0 0% 70%;
     --text-muted: 0 0% 50%;

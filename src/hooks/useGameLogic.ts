@@ -52,8 +52,13 @@ const cfg = {
 
 // Items par défaut disponibles
 const defaultItems: CustomizationItem[] = [
-  // Arrière-plans
-  { id: 'bg-default', name: 'Défaut', type: 'background', preview: 'linear-gradient(135deg, hsl(220, 30%, 4%), hsl(220, 25%, 8%))' },
+  // Palettes de couleurs
+  { id: 'palette-neon', name: 'Néon', type: 'background', preview: 'linear-gradient(135deg, #00ffff, #ff00ff)', color: '#00ffff' },
+  { id: 'palette-sunset', name: 'Coucher de soleil', type: 'background', preview: 'linear-gradient(135deg, #ff6b35, #f7931e)', color: '#ff6b35' },
+  { id: 'palette-ocean', name: 'Océan', type: 'background', preview: 'linear-gradient(135deg, #0077be, #00a8cc)', color: '#0077be' },
+  { id: 'palette-forest', name: 'Forêt', type: 'background', preview: 'linear-gradient(135deg, #2d5a27, #76c893)', color: '#2d5a27' },
+  { id: 'palette-lava', name: 'Lave', type: 'background', preview: 'linear-gradient(135deg, #ff4444, #cc2936)', color: '#ff4444' },
+  { id: 'palette-arctic', name: 'Arctique', type: 'background', preview: 'linear-gradient(135deg, #a8dadc, #f1faee)', color: '#a8dadc' },
   
   // Cercles
   { id: 'circle-default', name: 'Défaut', type: 'circle', preview: '', color: '#4ee1a0' },
@@ -74,7 +79,7 @@ export const useGameLogic = () => {
       ownedThemes: [],
       ownedItems: [...defaultItems],
       currentCustomization: {
-        background: 'bg-default',
+        background: 'palette-neon',
         circle: 'circle-default',
         effect: 'effect-default',
       },
@@ -102,7 +107,7 @@ export const useGameLogic = () => {
           ownedThemes: parsedState.ownedThemes || [],
           ownedItems: parsedState.ownedItems || [...defaultItems],
           currentCustomization: parsedState.currentCustomization || {
-            background: 'bg-default',
+            background: 'palette-neon',
             circle: 'circle-default',
             effect: 'effect-default',
           },
