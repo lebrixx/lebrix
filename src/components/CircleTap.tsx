@@ -76,28 +76,32 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
           onClick={handleTap}
           style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
         >
-          {/* Cercle de base */}
+          {/* Cercle de base avec glow */}
           <circle
             cx={cfg.radius + 40}
             cy={cfg.radius + 40}
             r={cfg.radius}
             fill="none"
             stroke="hsl(var(--ring))"
-            strokeWidth="8"
-            className="opacity-80"
+            strokeWidth="12"
+            className="opacity-90"
+            style={{
+              filter: 'drop-shadow(0 0 5px hsl(var(--ring) / 0.5))',
+            }}
           />
 
-          {/* Zone verte (arc de succès) */}
+          {/* Zone verte (arc de succès) - Plus épaisse et visible */}
           <path
             d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
                 A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
                 ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
             fill="none"
             stroke="#4ee1a0"
-            strokeWidth="16"
-            className="drop-shadow-lg animate-pulse"
+            strokeWidth="20"
+            className="drop-shadow-lg"
             style={{
-              filter: 'drop-shadow(0 0 15px #4ee1a0) drop-shadow(0 0 30px #4ee1a0)',
+              filter: 'drop-shadow(0 0 20px #4ee1a0) drop-shadow(0 0 40px #4ee1a0)',
+              animation: 'pulse 1.5s ease-in-out infinite',
             }}
           />
 
@@ -144,17 +148,11 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
           )}
         </svg>
 
-        {/* Overlay des résultats */}
-        {gameState.showResult && (
+        {/* Overlay des résultats - Seulement Game Over */}
+        {gameState.showResult && gameState.lastResult === 'failure' && (
           <div className="absolute inset-0 flex items-center justify-center z-30">
-            <div className={`
-              px-6 py-3 rounded-full text-white font-bold text-xl animate-scale-in
-              ${gameState.lastResult === 'success' 
-                ? 'bg-gradient-success shadow-glow-success' 
-                : 'bg-gradient-danger shadow-glow-danger'
-              }
-            `}>
-              {gameState.lastResult === 'success' ? 'RÉUSSI!' : 'PARTIE TERMINÉE'}
+            <div className="px-6 py-3 rounded-full text-white font-bold text-xl animate-scale-in bg-gradient-danger shadow-glow-danger">
+              PARTIE TERMINÉE
             </div>
           </div>
         )}

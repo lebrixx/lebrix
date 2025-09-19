@@ -7,6 +7,7 @@ export interface GameState {
   coins: number;
   ballAngle: number; // Position angulaire de la bille (radians)
   ballSpeed: number; // Vitesse angulaire (radians/seconde)
+  ballDirection: number; // Direction: 1 ou -1
   zoneStart: number; // Angle de début de la zone verte (radians)
   zoneEnd: number; // Angle de fin de la zone verte (radians)
   showResult: boolean;
@@ -19,7 +20,7 @@ const cfg = {
   radius: 110,                // rayon de rotation de la bille
   ballSize: 10,               // diamètre visuel de la bille (px)
   baseSpeed: 1.8,            // radians/seconde au départ
-  speedGain: 1.03,           // +3% à chaque réussite
+  speedGain: 1.05,           // +5% à chaque réussite
   zoneArc: Math.PI / 5,      // taille de l'arc vert (constante, ~36°)
   debounceMs: 40             // anti double-tap
 };
@@ -35,6 +36,7 @@ export const useGameLogic = () => {
       coins: 100, // Starting coins
       ballAngle: 0,
       ballSpeed: cfg.baseSpeed,
+      ballDirection: 1,
       zoneStart: zoneStart,
       zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
@@ -85,7 +87,7 @@ export const useGameLogic = () => {
 
       setGameState(prev => ({
         ...prev,
-        ballAngle: (prev.ballAngle + prev.ballSpeed * deltaTime) % (2 * Math.PI),
+        ballAngle: (prev.ballAngle + prev.ballSpeed * prev.ballDirection * deltaTime) % (2 * Math.PI),
       }));
 
       if (gameState.gameStatus === 'running') {
@@ -120,6 +122,7 @@ export const useGameLogic = () => {
       currentScore: 0,
       ballAngle: 0,
       ballSpeed: cfg.baseSpeed,
+      ballDirection: 1,
       zoneStart: zoneStart,
       zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
@@ -170,18 +173,14 @@ export const useGameLogic = () => {
         ...prev,
         currentScore: newScore,
         ballSpeed: newSpeed,
+        ballDirection: prev.ballDirection * -1, // Changer de direction
         zoneStart: newZoneStart,
         zoneEnd: newZoneEnd,
         coins: prev.coins + newScore, // Gain de coins basé sur le score
         level: prev.level + 1,
         lastResult: 'success',
-        showResult: true,
+        showResult: false, // Plus de message "RÉUSSI"
       }));
-
-      // Masquer le résultat rapidement
-      setTimeout(() => {
-        setGameState(prev => ({ ...prev, showResult: false }));
-      }, 500);
 
     } else {
       // ÉCHEC - Fin de partie
@@ -210,6 +209,7 @@ export const useGameLogic = () => {
       currentScore: 0,
       ballAngle: 0,
       ballSpeed: cfg.baseSpeed,
+      ballDirection: 1,
       zoneStart: zoneStart,
       zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
