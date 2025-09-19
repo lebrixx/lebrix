@@ -5,6 +5,7 @@ export interface GameState {
   currentScore: number;
   bestScore: number;
   coins: number;
+  ownedThemes: string[];
   ballAngle: number; // Position angulaire de la bille (radians)
   ballSpeed: number; // Vitesse angulaire (radians/seconde)
   ballDirection: number; // Direction: 1 ou -1
@@ -34,6 +35,7 @@ export const useGameLogic = () => {
       currentScore: 0,
       bestScore: 0,
       coins: 100, // Starting coins
+      ownedThemes: [],
       ballAngle: 0,
       ballSpeed: cfg.baseSpeed,
       ballDirection: 1,
@@ -51,6 +53,7 @@ export const useGameLogic = () => {
           ...defaultState,
           bestScore: parsedState.bestScore || 0,
           coins: parsedState.coins || 100,
+          ownedThemes: parsedState.ownedThemes || [],
         };
       } catch (e) {
         return defaultState;
@@ -68,10 +71,11 @@ export const useGameLogic = () => {
     const dataToSave = {
       bestScore: gameState.bestScore,
       coins: gameState.coins,
+      ownedThemes: gameState.ownedThemes,
       timestamp: Date.now(),
     };
     localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
-  }, [gameState.bestScore, gameState.coins]);
+  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes]);
 
   // Animation de la bille (60 FPS)
   const animateBall = useCallback(() => {
@@ -238,12 +242,32 @@ export const useGameLogic = () => {
     saveProgress();
   }, [saveProgress]);
 
+  // Acheter un thème
+  const purchaseTheme = useCallback((themeId: string): boolean => {
+    if (gameState.ownedThemes.includes(themeId)) {
+      return false; // Déjà possédé
+    }
+    
+    const themePrice = 50; // Prix fixe pour tous les thèmes
+    
+    if (gameState.coins >= themePrice) {
+      setGameState(prev => ({
+        ...prev,
+        coins: prev.coins - themePrice,
+        ownedThemes: [...prev.ownedThemes, themeId]
+      }));
+      return true;
+    }
+    return false;
+  }, [gameState.coins, gameState.ownedThemes]);
+
   return {
     gameState,
     startGame,
     onTap,
     resetGame,
     spendCoins,
+    purchaseTheme,
     cfg, // Export config pour l'affichage
   };
 };

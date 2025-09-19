@@ -3,10 +3,11 @@ import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
+import { ThemeSelector } from '@/components/ThemeSelector';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { toast } from 'sonner';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'theme-select';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -15,7 +16,7 @@ const Index = () => {
     return saved || 'theme-neon';
   });
   
-  const { gameState, spendCoins } = useGameLogic();
+  const { gameState, spendCoins, purchaseTheme } = useGameLogic();
 
   // Sauvegarder le thème dans localStorage
   useEffect(() => {
@@ -35,7 +36,7 @@ const Index = () => {
             bestScore={gameState.bestScore}
             coins={gameState.coins}
             theme={currentTheme}
-            onStartGame={() => setCurrentScreen('game')}
+            onStartGame={() => setCurrentScreen('theme-select')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
           />
@@ -76,6 +77,17 @@ const Index = () => {
             }}
             currentScore={gameState.currentScore}
             bestScore={gameState.bestScore}
+          />
+        );
+
+      case 'theme-select':
+        return (
+          <ThemeSelector
+            ownedThemes={gameState.ownedThemes}
+            currentTheme={currentTheme}
+            onThemeSelect={handleThemeChange}
+            onStartGame={() => setCurrentScreen('game')}
+            onBack={() => setCurrentScreen('menu')}
           />
         );
       
