@@ -62,6 +62,10 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
     if (customization?.circle === 'circle-neon') return '#00ffff';
     if (customization?.circle === 'circle-fire') return '#ff4444';
     if (customization?.circle === 'circle-gold') return '#ffd700';
+    if (customization?.circle === 'circle-emerald') return '#059669';
+    if (customization?.circle === 'circle-plasma') return '#3b82f6';
+    if (customization?.circle === 'circle-shadow') return '#1f2937';
+    if (customization?.circle === 'circle-diamond') return '#e5e7eb';
     return '#4ee1a0'; // Défaut
   };
 
@@ -72,6 +76,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
     if (customization?.background === 'palette-forest') return { background: 'linear-gradient(135deg, #2d5a27, #76c893)' };
     if (customization?.background === 'palette-lava') return { background: 'linear-gradient(135deg, #ff4444, #cc2936)' };
     if (customization?.background === 'palette-arctic') return { background: 'linear-gradient(135deg, #a8dadc, #f1faee)' };
+    if (customization?.background === 'palette-cosmic') return { background: 'linear-gradient(135deg, #1a0533, #4c1d95)' };
+    if (customization?.background === 'palette-rainbow') return { background: 'linear-gradient(135deg, #ff0080, #00ff80)' };
     // Néon par défaut (fond violet avec accents néon)
     return { background: 'linear-gradient(135deg, hsl(270, 40%, 4%), hsl(270, 30%, 8%))' };
   };

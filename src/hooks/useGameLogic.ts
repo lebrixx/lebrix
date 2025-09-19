@@ -36,6 +36,10 @@ export interface GameState {
   successFlash: boolean;
   successParticles: boolean;
   comboCount: number; // Pour le pitch audio progressif
+  // Statistiques pour les défis
+  maxSpeedReached: number;
+  directionChanges: number;
+  totalGamesPlayed: number;
 }
 
 // Configuration du jeu
@@ -95,6 +99,9 @@ export const useGameLogic = () => {
       successFlash: false,
       successParticles: false,
       comboCount: 0,
+      maxSpeedReached: cfg.baseSpeed,
+      directionChanges: 0,
+      totalGamesPlayed: 0,
     };
     
     if (saved) {
@@ -111,6 +118,9 @@ export const useGameLogic = () => {
             circle: 'circle-default',
             effect: 'effect-default',
           },
+          maxSpeedReached: parsedState.maxSpeedReached || cfg.baseSpeed,
+          directionChanges: parsedState.directionChanges || 0,
+          totalGamesPlayed: parsedState.totalGamesPlayed || 0,
         };
       } catch (e) {
         return defaultState;
@@ -141,6 +151,9 @@ export const useGameLogic = () => {
       ownedThemes: gameState.ownedThemes,
       ownedItems: gameState.ownedItems,
       currentCustomization: gameState.currentCustomization,
+      maxSpeedReached: gameState.maxSpeedReached,
+      directionChanges: gameState.directionChanges,
+      totalGamesPlayed: gameState.totalGamesPlayed,
       timestamp: Date.now(),
     };
     localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
@@ -210,16 +223,25 @@ export const useGameLogic = () => {
       successFlash: false,
       successParticles: false,
       comboCount: 0,
+      maxSpeedReached: cfg.baseSpeed,
+      directionChanges: 0,
+      totalGamesPlayed: prev.totalGamesPlayed + 1,
     }));
   }, []);
 
   // Vérifier si l'angle est dans la zone verte (gère le wrap 0-2π)
-  const isInGreenZone = useCallback((angle: number, zoneStart: number, zoneEnd: number): boolean => {
-    if (zoneStart <= zoneEnd) {
-      return angle >= zoneStart && angle <= zoneEnd;
+  const isInGreenZone = useCallback((angle: number, zoneStart: number): boolean => {
+    // Normaliser tous les angles entre 0 et 2π
+    const normalizedAngle = ((angle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+    const normalizedZoneStart = ((zoneStart % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+    const normalizedZoneEnd = ((normalizedZoneStart + cfg.zoneArc) % (2 * Math.PI));
+    
+    if (normalizedZoneStart <= normalizedZoneEnd) {
+      // Zone normale (ne traverse pas 0)
+      return normalizedAngle >= normalizedZoneStart && normalizedAngle <= normalizedZoneEnd;
     } else {
       // La zone traverse 0 (ex: de 5.5 à 0.5)
-      return angle >= zoneStart || angle <= zoneEnd;
+      return normalizedAngle >= normalizedZoneStart || normalizedAngle <= normalizedZoneEnd;
     }
   }, []);
 
@@ -242,7 +264,7 @@ export const useGameLogic = () => {
     if (gameState.gameStatus !== 'running') return;
 
     // Vérifier si la bille est dans la zone verte
-    const success = isInGreenZone(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
+    const success = isInGreenZone(gameState.ballAngle, gameState.zoneStart);
 
     if (success) {
       // SUCCÈS - Continue immédiatement sans pause
@@ -258,7 +280,6 @@ export const useGameLogic = () => {
       const newDirection = shouldReverse ? gameState.ballDirection * -1 : gameState.ballDirection;
       
       const newZoneStart = Math.random() * 2 * Math.PI;
-      const newZoneEnd = newZoneStart + cfg.zoneArc;
 
       setGameState(prev => ({
         ...prev,
@@ -266,7 +287,7 @@ export const useGameLogic = () => {
         ballSpeed: newSpeed,
         ballDirection: newDirection,
         zoneStart: newZoneStart,
-        zoneEnd: newZoneEnd,
+        zoneEnd: newZoneStart + cfg.zoneArc,
         coins: prev.coins + newScore, // Gain de coins basé sur le score
         level: prev.level + 1,
         lastResult: 'success',
@@ -274,6 +295,8 @@ export const useGameLogic = () => {
         successFlash: true,
         successParticles: true,
         comboCount: newScore,
+        maxSpeedReached: Math.max(prev.maxSpeedReached, newSpeed),
+        directionChanges: shouldReverse ? prev.directionChanges + 1 : prev.directionChanges,
       }));
 
       // Effacer les effets visuels après 200ms
@@ -321,6 +344,8 @@ export const useGameLogic = () => {
       successFlash: false,
       successParticles: false,
       comboCount: 0,
+      maxSpeedReached: cfg.baseSpeed,
+      directionChanges: 0,
     }));
   }, []);
 

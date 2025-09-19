@@ -21,6 +21,9 @@ interface ChallengesProps {
   currentScore: number;
   bestScore: number;
   coins: number;
+  maxSpeedReached: number;
+  directionChanges: number;
+  totalGamesPlayed: number;
   onReward: (coins: number) => void;
 }
 
@@ -179,6 +182,9 @@ export const Challenges: React.FC<ChallengesProps> = ({
   currentScore,
   bestScore,
   coins,
+  maxSpeedReached,
+  directionChanges,
+  totalGamesPlayed,
   onReward,
 }) => {
   const [completedChallenges, setCompletedChallenges] = React.useState<string[]>(() => {
@@ -186,8 +192,6 @@ export const Challenges: React.FC<ChallengesProps> = ({
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Calculer la vitesse maximum atteinte (approximation basée sur le meilleur score)
-  const maxSpeedReached = 1.8 * Math.pow(1.05, bestScore);
 
   const checkAndCompleteChallenge = (challenge: Challenge) => {
     if (completedChallenges.includes(challenge.id)) return false;
@@ -202,8 +206,10 @@ export const Challenges: React.FC<ChallengesProps> = ({
         isCompleted = maxSpeedReached >= challenge.target;
         break;
       case 'precision':
-      case 'endurance':
         isCompleted = bestScore >= challenge.target;
+        break;
+      case 'endurance':
+        isCompleted = directionChanges >= challenge.target;
         break;
     }
 
@@ -222,7 +228,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     CHALLENGES.forEach(challenge => {
       checkAndCompleteChallenge(challenge);
     });
-  }, [bestScore]);
+  }, [bestScore, maxSpeedReached, directionChanges]);
 
   const getProgress = (challenge: Challenge) => {
     switch (challenge.type) {
@@ -231,8 +237,9 @@ export const Challenges: React.FC<ChallengesProps> = ({
       case 'speed':
         return Math.min((maxSpeedReached / challenge.target) * 100, 100);
       case 'precision':
-      case 'endurance':
         return Math.min((bestScore / challenge.target) * 100, 100);
+      case 'endurance':
+        return Math.min((directionChanges / challenge.target) * 100, 100);
       default:
         return 0;
     }
@@ -398,8 +405,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <div className="text-text-muted text-sm">Meilleur Score</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-accent">{maxSpeedReached.toFixed(1)}</div>
-            <div className="text-text-muted text-sm">Max Speed</div>
+            <div className="text-2xl font-bold text-accent">{directionChanges}</div>
+            <div className="text-text-muted text-sm">Directions</div>
           </div>
         </div>
       </div>

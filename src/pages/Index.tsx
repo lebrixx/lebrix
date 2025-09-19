@@ -80,6 +80,9 @@ const Index = () => {
             }}
             currentScore={gameState.currentScore}
             bestScore={gameState.bestScore}
+            maxSpeedReached={gameState.maxSpeedReached}
+            directionChanges={gameState.directionChanges}
+            totalGamesPlayed={gameState.totalGamesPlayed}
           />
         );
 
@@ -88,7 +91,11 @@ const Index = () => {
           <Customization
             ownedItems={gameState.ownedItems}
             currentCustomization={gameState.currentCustomization}
-            onApplyCustomization={(customization) => gameState.setCustomization(customization)}
+            onApplyCustomization={(customization) => {
+              gameState.setCustomization(customization);
+              setCurrentScreen('game'); // Retour automatique au jeu après application
+              toast.success('Personnalisation appliquée!');
+            }}
             onBack={() => setCurrentScreen('menu')}
           />
         );
