@@ -22,6 +22,8 @@ interface ShopProps {
   coins: number;
   onBack: () => void;
   onPurchase: (cost: number) => boolean;
+  currentTheme?: string;
+  onThemeChange?: (theme: string) => void;
 }
 
 const THEMES: Theme[] = [
@@ -78,15 +80,17 @@ const THEMES: Theme[] = [
 export const Shop: React.FC<ShopProps> = ({ 
   coins, 
   onBack, 
-  onPurchase 
+  onPurchase,
+  currentTheme = '',
+  onThemeChange = () => {}
 }) => {
-  const [currentTheme, setCurrentTheme] = useState('');
+  const [localTheme, setLocalTheme] = useState(currentTheme);
   const [ownedThemes, setOwnedThemes] = useState<string[]>(() => {
     const saved = localStorage.getItem('luckyStopOwnedThemes');
     return saved ? JSON.parse(saved) : ['theme-neon']; // Neon is free
   });
 
-  const [previewTheme, setPreviewTheme] = useState<string>(currentTheme);
+  const [previewTheme, setPreviewTheme] = useState<string>(localTheme);
 
   useEffect(() => {
     localStorage.setItem('luckyStopOwnedThemes', JSON.stringify(ownedThemes));
@@ -95,19 +99,21 @@ export const Shop: React.FC<ShopProps> = ({
   const handleBuyTheme = (theme: Theme) => {
     if (ownedThemes.includes(theme.id)) {
       // Already owned, just equip it
-      setCurrentTheme(theme.className);
+      setLocalTheme(theme.className);
       setPreviewTheme(theme.className);
-      toast.success(`${theme.name} theme equipped!`);
+      onThemeChange(theme.className);
+      toast.success(`Thème ${theme.name} équipé!`);
       return;
     }
 
     if (onPurchase(theme.price)) {
       setOwnedThemes(prev => [...prev, theme.id]);
-      setCurrentTheme(theme.className);
+      setLocalTheme(theme.className);
       setPreviewTheme(theme.className);
-      toast.success(`${theme.name} theme purchased and equipped!`);
+      onThemeChange(theme.className);
+      toast.success(`Thème ${theme.name} acheté et équipé!`);
     } else {
-      toast.error(`Not enough coins! You need ${theme.price} coins.`);
+      toast.error(`Pas assez de coins! Vous avez besoin de ${theme.price} coins.`);
     }
   };
 
@@ -129,7 +135,7 @@ export const Shop: React.FC<ShopProps> = ({
         </Button>
         
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary mb-2">THEME SHOP</h1>
+          <h1 className="text-3xl font-bold text-primary mb-2">BOUTIQUE DE THÈMES</h1>
           <div className="flex items-center text-secondary text-lg">
             <Coins className="w-5 h-5 mr-2" />
             {coins} Coins
@@ -143,7 +149,7 @@ export const Shop: React.FC<ShopProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {THEMES.map((theme) => {
           const isOwned = ownedThemes.includes(theme.id);
-          const isCurrent = currentTheme === theme.className;
+          const isCurrent = localTheme === theme.className;
           const canAfford = coins >= theme.price;
           
           return (
@@ -156,7 +162,7 @@ export const Shop: React.FC<ShopProps> = ({
               `}
               style={{ animationDelay: `${THEMES.indexOf(theme) * 100}ms` }}
               onMouseEnter={() => handlePreview(theme)}
-              onMouseLeave={() => setPreviewTheme(currentTheme)}
+              onMouseLeave={() => setPreviewTheme(localTheme)}
             >
               {/* Theme Preview */}
               <div className="relative mb-4">
@@ -226,19 +232,19 @@ export const Shop: React.FC<ShopProps> = ({
                   `}
                   disabled={!canAfford && !isOwned}
                 >
-                  {isCurrent ? (
+                {isCurrent ? (
                     <>
                       <Check className="w-4 h-4 mr-2" />
-                      EQUIPPED
+                      ÉQUIPÉ
                     </>
                   ) : isOwned ? (
-                    'EQUIP'
+                    'ÉQUIPER'
                   ) : canAfford ? (
-                    'BUY NOW'
+                    'ACHETER'
                   ) : (
                     <>
                       <Lock className="w-4 h-4 mr-2" />
-                      LOCKED
+                      VERROUILLÉ
                     </>
                   )}
                 </Button>
@@ -251,7 +257,7 @@ export const Shop: React.FC<ShopProps> = ({
       {/* Tips */}
       <div className="text-center mt-8 text-text-muted animate-fade-in">
         <p className="text-sm">
-          💡 Hover over themes to preview them • Earn coins by playing the game!
+          💡 Survolez les thèmes pour les prévisualiser • Gagnez des coins en jouant!
         </p>
       </div>
     </div>

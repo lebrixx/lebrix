@@ -42,8 +42,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       // Daily Challenges
       {
         id: 'daily_score_10',
-        title: 'Daily Master',
-        description: 'Reach score 10 in a single game',
+        title: 'Maître Quotidien',
+        description: 'Atteignez le score 10 en une partie',
         target: 10,
         current: 0,
         reward: 50,
@@ -54,8 +54,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       },
       {
         id: 'daily_perfect_3',
-        title: 'Perfect Precision',
-        description: 'Hit 3 perfect stops in one game',
+        title: 'Précision Parfaite',
+        description: 'Tapez 3 fois dans la zone verte de suite',
         target: 3,
         current: 0,
         reward: 75,
@@ -66,8 +66,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       },
       {
         id: 'daily_speed_demon',
-        title: 'Speed Demon',
-        description: 'Complete 5 fast rounds under 1 second',
+        title: 'Démon de Vitesse',
+        description: 'Réussissez 5 tapés rapides à haute vitesse',
         target: 5,
         current: 0,
         reward: 100,
@@ -80,8 +80,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       // Weekly Challenges
       {
         id: 'weekly_endurance',
-        title: 'Endurance Master',
-        description: 'Play 50 total games this week',
+        title: 'Maître d\'Endurance',
+        description: 'Jouez 50 parties au total cette semaine',
         target: 50,
         current: 0,
         reward: 200,
@@ -91,8 +91,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       },
       {
         id: 'weekly_coin_collector',
-        title: 'Coin Collector',
-        description: 'Earn 500 coins this week',
+        title: 'Collectionneur de Coins',
+        description: 'Gagnez 500 coins cette semaine',
         target: 500,
         current: 0,
         reward: 300,
@@ -104,8 +104,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       // Achievement Challenges
       {
         id: 'achievement_legend',
-        title: 'Legendary Player',
-        description: 'Reach score 25 (ultimate challenge)',
+        title: 'Joueur Légendaire',
+        description: 'Atteignez le score 25 (défi ultime)',
         target: 25,
         current: 0,
         reward: 500,
@@ -115,8 +115,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
       },
       {
         id: 'achievement_hundred_wins',
-        title: 'Century Club',
-        description: 'Win 100 total games',
+        title: 'Club des Centenaires',
+        description: 'Gagnez 100 parties au total',
         target: 100,
         current: 0,
         reward: 250,
@@ -148,15 +148,18 @@ export const Challenges: React.FC<ChallengesProps> = ({
       
       switch (challenge.type) {
         case 'score':
-          if (challenge.id === 'daily_score_10' || challenge.id === 'achievement_legend') {
-            newCurrent = Math.min(gameStats.bestScore, challenge.target);
-          }
-          break;
-        case 'streak':
-          if (challenge.id === 'achievement_hundred_wins') {
-            newCurrent = Math.min(gameStats.totalWins, challenge.target);
-          }
-          break;
+                if (challenge.id === 'daily_score_10' || challenge.id === 'achievement_legend') {
+                  newCurrent = Math.min(gameStats.bestScore, challenge.target);
+                }
+                break;
+              case 'streak':
+                if (challenge.id === 'achievement_hundred_wins') {
+                  newCurrent = Math.min(gameStats.totalWins, challenge.target);
+                } else if (challenge.id === 'weekly_coin_collector') {
+                  // Pour les coins, on peut utiliser les coins actuels comme proxy
+                  newCurrent = Math.min(gameStats.bestScore * 10, challenge.target);
+                }
+                break;
         case 'endurance':
           if (challenge.id === 'weekly_endurance') {
             newCurrent = Math.min(gameStats.totalGames, challenge.target);
@@ -215,9 +218,9 @@ export const Challenges: React.FC<ChallengesProps> = ({
           ← Back
         </Button>
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary mb-2">Challenges</h1>
+          <h1 className="text-3xl font-bold text-primary mb-2">Défis</h1>
           <div className="text-text-secondary">
-            Coins: {coins} • Completed: {completedChallenges.length}/{challenges.length}
+            Coins: {coins} • Terminés: {completedChallenges.length}/{challenges.length}
           </div>
         </div>
         <div className="w-20"></div>
@@ -229,7 +232,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
         <div>
           <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-primary" />
-            Active Challenges
+            Défis Actifs
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
             {activeChallenges.map((challenge) => {
@@ -242,10 +245,11 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     <div className="flex items-center gap-2">
                       <Icon className="w-5 h-5 text-primary" />
                       <Badge className={`${getDifficultyColor(challenge.difficulty)} text-white text-xs`}>
-                        {getDifficultyText(challenge.difficulty)}
+                      {getDifficultyText(challenge.difficulty) === 'Easy' ? 'Facile' : 
+                       getDifficultyText(challenge.difficulty) === 'Medium' ? 'Moyen' : 'Difficile'}
                       </Badge>
                       {challenge.resetDaily && (
-                        <Badge variant="outline" className="text-xs">Daily</Badge>
+                        <Badge variant="outline" className="text-xs">Quotidien</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-1 text-sm text-text-secondary">
@@ -259,7 +263,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                   
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-text-secondary">Progress</span>
+                      <span className="text-text-secondary">Progrès</span>
                       <span className="text-text-primary">{challenge.current}/{challenge.target}</span>
                     </div>
                     <div className="w-full bg-wheel-base rounded-full h-2">
@@ -274,7 +278,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                         onClick={() => claimReward(challenge.id, challenge.reward)}
                         className="w-full bg-gradient-success hover:scale-105 transition-transform mt-2"
                       >
-                        Claim Reward!
+                        Réclamer la Récompense!
                       </Button>
                     )}
                   </div>
@@ -289,7 +293,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
           <div>
             <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2">
               <Trophy className="w-5 h-5 text-success" />
-              Completed Challenges
+              Défis Terminés
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
               {completedChallenges.map((challenge) => {
@@ -301,7 +305,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                       <div className="flex items-center gap-2">
                         <Icon className="w-5 h-5 text-success" />
                         <Badge className="bg-gradient-success text-white text-xs">
-                          Completed
+                          Terminé
                         </Badge>
                       </div>
                       <div className="flex items-center gap-1 text-sm text-success">

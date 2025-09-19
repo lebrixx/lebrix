@@ -1,65 +1,44 @@
 import React, { useState, useEffect } from 'react';
+import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
+import { Shop } from '@/components/Shop';
+import { Challenges } from '@/components/Challenges';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Play, Trophy } from 'lucide-react';
 
-type GameScreen = 'menu' | 'game';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
   const [currentTheme, setCurrentTheme] = useState(() => {
-    const saved = localStorage.getItem('circletap-theme');
+    const saved = localStorage.getItem('luckyStopTheme');
     return saved || 'theme-neon';
   });
   
-  const { gameState } = useGameLogic();
+  const { gameState, spendCoins } = useGameLogic();
 
   // Sauvegarder le thème dans localStorage
   useEffect(() => {
-    localStorage.setItem('circletap-theme', currentTheme);
+    localStorage.setItem('luckyStopTheme', currentTheme);
   }, [currentTheme]);
+
+  const handleThemeChange = (theme: string) => {
+    setCurrentTheme(theme);
+    toast.success('Thème changé!');
+  };
 
   const renderScreen = () => {
     switch (currentScreen) {
       case 'menu':
         return (
-          <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${currentTheme}`}>
-            <div className="text-center mb-12 animate-fade-in">
-              <h1 className="text-6xl font-bold text-primary mb-4 drop-shadow-lg">
-                Circle Tap
-              </h1>
-              <p className="text-xl text-text-secondary mb-8">
-                Tapez quand la bille est dans la zone verte
-              </p>
-              
-              <div className="flex flex-col items-center gap-4 mb-8">
-                <div className="flex items-center gap-8">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-primary">{gameState.bestScore}</div>
-                    <div className="text-sm text-text-muted">Meilleur Score</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4 justify-center">
-                <Button 
-                  onClick={() => setCurrentScreen('game')}
-                  size="lg"
-                  className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 px-8 py-4 text-lg font-bold"
-                >
-                  <Play className="w-6 h-6 mr-2" />
-                  JOUER
-                </Button>
-              </div>
-            </div>
-
-            <div className="text-center text-text-muted text-sm">
-              <p>Appuyez sur ESPACE ou ENTRÉE pour jouer</p>
-              <p className="mt-2">Restez concentré sur la zone verte!</p>
-            </div>
-          </div>
+          <MainMenu
+            bestScore={gameState.bestScore}
+            coins={gameState.coins}
+            theme={currentTheme}
+            onStartGame={() => setCurrentScreen('game')}
+            onOpenShop={() => setCurrentScreen('shop')}
+            onOpenChallenges={() => setCurrentScreen('challenges')}
+          />
         );
       
       case 'game':
@@ -73,6 +52,39 @@ const Index = () => {
               ← Menu
             </button>
           </div>
+        );
+      
+      case 'shop':
+        return (
+          <Shop
+            coins={gameState.coins}
+            onBack={() => setCurrentScreen('menu')}
+            onPurchase={spendCoins}
+            currentTheme={currentTheme}
+            onThemeChange={handleThemeChange}
+          />
+        );
+      
+      case 'challenges':
+        const gameStats = {
+          totalGames: parseInt(localStorage.getItem('totalGames') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          bestScore: gameState.bestScore,
+          perfectRounds: parseInt(localStorage.getItem('perfectRounds') || '0'),
+          fastRounds: parseInt(localStorage.getItem('fastRounds') || '0'),
+        };
+
+        return (
+          <Challenges 
+            coins={gameState.coins}
+            onBack={() => setCurrentScreen('menu')}
+            onRewardClaim={(reward) => {
+              // Ajouter des coins depuis les défis
+              setCurrentScreen('menu'); // Force un re-render pour mettre à jour les coins
+              toast.success(`${reward} coins gagnés!`);
+            }}
+            gameStats={gameStats}
+          />
         );
       
       default:

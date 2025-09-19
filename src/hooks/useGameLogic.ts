@@ -4,12 +4,14 @@ export interface GameState {
   gameStatus: 'idle' | 'running' | 'gameover';
   currentScore: number;
   bestScore: number;
+  coins: number;
   ballAngle: number; // Position angulaire de la bille (radians)
   ballSpeed: number; // Vitesse angulaire (radians/seconde)
   zoneStart: number; // Angle de début de la zone verte (radians)
   zoneEnd: number; // Angle de fin de la zone verte (radians)
   showResult: boolean;
   lastResult: 'success' | 'failure' | null;
+  level: number;
 }
 
 // Configuration du jeu
@@ -24,18 +26,20 @@ const cfg = {
 
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>(() => {
-    const saved = localStorage.getItem('circletap-game');
+    const saved = localStorage.getItem('luckyStopGame');
     const zoneStart = Math.random() * 2 * Math.PI;
     const defaultState: GameState = {
       gameStatus: 'idle',
       currentScore: 0,
       bestScore: 0,
+      coins: 100, // Starting coins
       ballAngle: 0,
       ballSpeed: cfg.baseSpeed,
       zoneStart: zoneStart,
       zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
       lastResult: null,
+      level: 1,
     };
     
     if (saved) {
@@ -44,6 +48,7 @@ export const useGameLogic = () => {
         return {
           ...defaultState,
           bestScore: parsedState.bestScore || 0,
+          coins: parsedState.coins || 100,
         };
       } catch (e) {
         return defaultState;
@@ -56,14 +61,15 @@ export const useGameLogic = () => {
   const lastTimeRef = useRef<number>();
   const lastTapTime = useRef<number>(0);
 
-  // Sauvegarde du meilleur score
+  // Sauvegarde du progress
   const saveProgress = useCallback(() => {
     const dataToSave = {
       bestScore: gameState.bestScore,
+      coins: gameState.coins,
       timestamp: Date.now(),
     };
-    localStorage.setItem('circletap-game', JSON.stringify(dataToSave));
-  }, [gameState.bestScore]);
+    localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
+  }, [gameState.bestScore, gameState.coins]);
 
   // Animation de la bille (60 FPS)
   const animateBall = useCallback(() => {
@@ -118,6 +124,7 @@ export const useGameLogic = () => {
       zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
       lastResult: null,
+      level: 1,
     }));
   }, []);
 
@@ -165,6 +172,8 @@ export const useGameLogic = () => {
         ballSpeed: newSpeed,
         zoneStart: newZoneStart,
         zoneEnd: newZoneEnd,
+        coins: prev.coins + newScore, // Gain de coins basé sur le score
+        level: prev.level + 1,
         lastResult: 'success',
         showResult: true,
       }));
@@ -180,6 +189,7 @@ export const useGameLogic = () => {
         ...prev,
         gameStatus: 'gameover',
         bestScore: Math.max(gameState.currentScore, prev.bestScore),
+        coins: prev.coins + Math.floor(gameState.currentScore / 2), // Bonus coins pour essayer
         showResult: true,
         lastResult: 'failure',
       }));
@@ -204,8 +214,18 @@ export const useGameLogic = () => {
       zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
       lastResult: null,
+      level: 1,
     }));
   }, []);
+
+  // Dépenser des coins
+  const spendCoins = useCallback((amount: number): boolean => {
+    if (gameState.coins >= amount) {
+      setGameState(prev => ({ ...prev, coins: prev.coins - amount }));
+      return true;
+    }
+    return false;
+  }, [gameState.coins]);
 
   // Sauvegarde automatique
   useEffect(() => {
@@ -217,6 +237,7 @@ export const useGameLogic = () => {
     startGame,
     onTap,
     resetGame,
+    spendCoins,
     cfg, // Export config pour l'affichage
   };
 };

@@ -62,7 +62,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
           {gameState.currentScore}
         </div>
         <div className="text-text-secondary text-lg">
-          Meilleur: {gameState.bestScore}
+          Meilleur: {gameState.bestScore} • Coins: {gameState.coins} • Niveau: {gameState.level}
         </div>
       </div>
 
@@ -70,16 +70,16 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
       <div className="relative mb-8">
         {/* Cercle principal (anneau) */}
         <svg
-          width={cfg.radius * 2 + 40}
-          height={cfg.radius * 2 + 40}
+          width={cfg.radius * 2 + 80}
+          height={cfg.radius * 2 + 80}
           className="drop-shadow-2xl"
           onClick={handleTap}
           style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
         >
           {/* Cercle de base */}
           <circle
-            cx={cfg.radius + 20}
-            cy={cfg.radius + 20}
+            cx={cfg.radius + 40}
+            cy={cfg.radius + 40}
             r={cfg.radius}
             fill="none"
             stroke="hsl(var(--ring))"
@@ -89,39 +89,58 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
 
           {/* Zone verte (arc de succès) */}
           <path
-            d={`M ${cfg.radius + 20 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 20 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
+            d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
                 A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
-                ${cfg.radius + 20 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 20 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
+                ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
             fill="none"
             stroke="#4ee1a0"
-            strokeWidth="12"
+            strokeWidth="16"
             className="drop-shadow-lg animate-pulse"
             style={{
-              filter: 'drop-shadow(0 0 10px #4ee1a0) drop-shadow(0 0 20px #4ee1a0)',
+              filter: 'drop-shadow(0 0 15px #4ee1a0) drop-shadow(0 0 30px #4ee1a0)',
             }}
           />
 
-          {/* Bille */}
-          <circle
-            cx={cfg.radius + 20 + ballX}
-            cy={cfg.radius + 20 + ballY}
-            r={cfg.ballSize / 2}
-            fill="hsl(var(--primary))"
-            className="drop-shadow-lg"
-            style={{
-              filter: 'drop-shadow(0 0 8px hsl(var(--primary)))',
-            }}
-          />
-
-          {/* Trail de la bille (optionnel) */}
-          {gameState.gameStatus === 'running' && (
-            <circle
-              cx={cfg.radius + 20 + ballX}
-              cy={cfg.radius + 20 + ballY}
-              r={cfg.ballSize}
-              fill="hsl(var(--primary))"
-              className="opacity-20 animate-ping"
+          {/* Bille - Barre rouge qui dépasse */}
+          <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
+            {/* Barre rouge principale qui dépasse */}
+            <rect
+              x={cfg.radius - 15}
+              y={-3}
+              width={30}
+              height={6}
+              fill="#FF4444"
+              className="drop-shadow-lg"
+              style={{
+                filter: 'drop-shadow(0 0 10px #FF4444) drop-shadow(0 0 20px #FF4444)',
+              }}
             />
+            
+            {/* Centre de la bille pour l'animation */}
+            <circle
+              cx={cfg.radius}
+              cy={0}
+              r={8}
+              fill="#FF4444"
+              className="animate-pulse"
+              style={{
+                filter: 'drop-shadow(0 0 8px #FF4444)',
+              }}
+            />
+          </g>
+
+          {/* Trail de la bille quand elle bouge */}
+          {gameState.gameStatus === 'running' && (
+            <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
+              <rect
+                x={cfg.radius - 15}
+                y={-3}
+                width={30}
+                height={6}
+                fill="#FF4444"
+                className="opacity-30 animate-ping"
+              />
+            </g>
           )}
         </svg>
 
@@ -185,7 +204,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme }) => {
       <div className="text-center mt-8 text-text-muted animate-fade-in">
         <p className="text-sm">
           {gameState.gameStatus === 'running' 
-            ? 'Tapez quand la bille est dans la zone verte!'
+            ? 'Tapez quand la barre rouge est dans la zone verte!'
             : gameState.gameStatus === 'idle'
             ? 'Cliquez COMMENCER ou appuyez sur ESPACE/ENTRÉE'
             : 'Tapez pour rejouer'

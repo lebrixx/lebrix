@@ -29,7 +29,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           LUCKY STOP
         </h1>
         <p className="text-text-secondary text-xl">
-          Stop the wheel at the perfect moment!
+          Tapez dans la zone verte au bon moment!
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
           <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
           <div className="text-2xl font-bold text-primary">{bestScore}</div>
-          <div className="text-sm text-text-muted">Best Score</div>
+          <div className="text-sm text-text-muted">Meilleur Score</div>
         </Card>
         
         <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
@@ -56,7 +56,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6 text-xl font-bold group"
         >
           <Play className="w-8 h-8 mr-3 group-hover:animate-pulse" />
-          PLAY NOW
+          JOUER MAINTENANT
         </Button>
 
         <Button 
@@ -66,7 +66,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
         >
           <ShoppingBag className="w-6 h-6 mr-3 group-hover:animate-bounce" />
-          SHOP
+          BOUTIQUE
           <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark">
             {coins}
           </Badge>
@@ -79,13 +79,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
         >
           <Star className="w-6 h-6 mr-3 group-hover:animate-spin" />
-          DAILY CHALLENGES
+          DÉFIS QUOTIDIENS
         </Button>
       </div>
 
       {/* Theme Preview */}
       <div className="mt-8 text-center animate-fade-in">
-        <div className="text-sm text-text-muted mb-2">Current Theme</div>
+        <div className="text-sm text-text-muted mb-2">Thème Actuel</div>
         <Badge 
           variant="outline" 
           className="border-primary text-primary text-sm px-4 py-2 animate-pulse-glow"
