@@ -72,16 +72,16 @@ export const GameWheel: React.FC<GameWheelProps> = ({ theme }) => {
 
       {/* Wheel Container */}
       <div className="relative mb-8">
-        {/* Dynamic Cursor/Pointer - changes position on each success */}
+        {/* Target Arrow - shows where to click */}
         <div 
-          className="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 z-20"
+          className="absolute w-8 h-8 transform -translate-x-1/2 -translate-y-1/2 z-20"
           style={{
             top: '50%',
             left: '50%',
-            transform: `translate(-50%, -50%) rotate(${gameState.cursorPosition}deg) translateY(-150px)`,
+            transform: `translate(-50%, -50%) rotate(${gameState.cursorPosition}deg) translateY(-160px)`,
           }}
         >
-          <div className="w-0 h-0 border-l-6 border-r-6 border-b-12 border-l-transparent border-r-transparent border-b-primary drop-shadow-lg animate-pulse-glow scale-150"></div>
+          <div className="w-0 h-0 border-l-8 border-r-8 border-b-16 border-l-transparent border-r-transparent border-b-white drop-shadow-2xl animate-pulse scale-125 shadow-glow-primary"></div>
         </div>
 
         {/* Wheel */}
