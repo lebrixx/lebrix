@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 
 interface SoundHook {
   playClick: () => void;
-  playSuccess: () => void;
+  playSuccess: (comboCount?: number) => void;
   playFailure: () => void;
   toggleMute: () => void;
   isMuted: boolean;
@@ -49,21 +49,25 @@ export const useSound = (): SoundHook => {
   }, [isMuted, getAudioContext]);
 
   const playClick = useCallback(() => {
-    createTone(800, 0.1, 'square');
+    // Clic court et net
+    createTone(600, 0.05, 'square');
   }, [createTone]);
 
-  const playSuccess = useCallback(() => {
-    // Success chord
-    setTimeout(() => createTone(523, 0.2), 0); // C
-    setTimeout(() => createTone(659, 0.2), 50); // E
-    setTimeout(() => createTone(784, 0.3), 100); // G
+  const playSuccess = useCallback((comboCount: number = 1) => {
+    // Ding clair avec pitch qui augmente avec le combo
+    const basePitch = 800;
+    const pitchIncrease = Math.min(comboCount * 50, 400); // Max +400Hz
+    const frequency = basePitch + pitchIncrease;
+    
+    createTone(frequency, 0.15, 'sine');
+    // Petit écho harmonique
+    setTimeout(() => createTone(frequency * 1.5, 0.1, 'sine'), 50);
   }, [createTone]);
 
   const playFailure = useCallback(() => {
-    // Failure descending tone
-    createTone(400, 0.15);
-    setTimeout(() => createTone(350, 0.15), 100);
-    setTimeout(() => createTone(300, 0.2), 200);
+    // Buzz cartoon style - son plus satisfaisant d'échec
+    createTone(150, 0.3, 'sawtooth');
+    setTimeout(() => createTone(120, 0.2, 'sawtooth'), 150);
   }, [createTone]);
 
   const toggleMute = useCallback(() => {

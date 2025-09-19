@@ -144,6 +144,26 @@ export default {
           "0%": { transform: "scale(0.8)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
+        "circle-flash": {
+          "0%": { filter: "brightness(1)", transform: "scale(1)" },
+          "50%": { filter: "brightness(2) saturate(1.5)", transform: "scale(1.02)" },
+          "100%": { filter: "brightness(1)", transform: "scale(1)" },
+        },
+        "particle-burst": {
+          "0%": { transform: "scale(0) rotate(0deg)", opacity: "1" },
+          "100%": { transform: "scale(1.5) rotate(360deg)", opacity: "0" },
+        },
+        "trail-fade": {
+          "0%": { opacity: "0.8", transform: "scale(1)" },
+          "100%": { opacity: "0", transform: "scale(0.3)" },
+        },
+        "animated-gradient": {
+          "0%": { background: "linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)))" },
+          "25%": { background: "linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--success)))" },
+          "50%": { background: "linear-gradient(225deg, hsl(var(--success)), hsl(var(--primary)))" },
+          "75%": { background: "linear-gradient(315deg, hsl(var(--primary)), hsl(var(--secondary)))" },
+          "100%": { background: "linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -156,6 +176,10 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
+        "circle-flash": "circle-flash 0.15s ease-out",
+        "particle-burst": "particle-burst 0.4s ease-out",
+        "trail-fade": "trail-fade 0.3s ease-out",
+        "animated-gradient": "animated-gradient var(--bg-animation-duration) ease-in-out infinite",
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

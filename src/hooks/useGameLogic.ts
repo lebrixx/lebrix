@@ -32,6 +32,10 @@ export interface GameState {
   lastResult: 'success' | 'failure' | null;
   level: number;
   setCustomization: (customization: Customization) => void;
+  // Effets visuels
+  successFlash: boolean;
+  successParticles: boolean;
+  comboCount: number; // Pour le pitch audio progressif
 }
 
 // Configuration du jeu
@@ -39,9 +43,11 @@ const cfg = {
   radius: 110,                // rayon de rotation de la bille
   ballSize: 10,               // diamètre visuel de la bille (px)
   baseSpeed: 1.8,            // radians/seconde au départ
-  speedGain: 1.05,           // +5% à chaque réussite
+  speedGain: 1.03,           // +3% à chaque réussite (comme demandé)
   zoneArc: Math.PI / 5,      // taille de l'arc vert (constante, ~36°)
-  debounceMs: 40             // anti double-tap
+  debounceMs: 40,            // anti double-tap
+  directionReverseChance: 0.2, // 20% de chance d'inverser la direction
+  speedVariation: 0.05       // ±5% de variation de vitesse aléatoire
 };
 
 // Items par défaut disponibles
@@ -81,6 +87,9 @@ export const useGameLogic = () => {
       lastResult: null,
       level: 1,
       setCustomization: () => {},
+      successFlash: false,
+      successParticles: false,
+      comboCount: 0,
     };
     
     if (saved) {
@@ -193,6 +202,9 @@ export const useGameLogic = () => {
       showResult: false,
       lastResult: null,
       level: 1,
+      successFlash: false,
+      successParticles: false,
+      comboCount: 0,
     }));
   }, []);
 
@@ -230,7 +242,16 @@ export const useGameLogic = () => {
     if (success) {
       // SUCCÈS - Continue immédiatement sans pause
       const newScore = gameState.currentScore + 1;
-      const newSpeed = gameState.ballSpeed * cfg.speedGain; // +3%
+      const baseSpeed = gameState.ballSpeed * cfg.speedGain; // +3%
+      
+      // Variation aléatoire de vitesse (±5%)
+      const speedVariation = (Math.random() - 0.5) * 2 * cfg.speedVariation;
+      const newSpeed = baseSpeed * (1 + speedVariation);
+      
+      // Chance aléatoire d'inverser la direction (20%)
+      const shouldReverse = Math.random() < cfg.directionReverseChance;
+      const newDirection = shouldReverse ? gameState.ballDirection * -1 : gameState.ballDirection;
+      
       const newZoneStart = Math.random() * 2 * Math.PI;
       const newZoneEnd = newZoneStart + cfg.zoneArc;
 
@@ -238,14 +259,26 @@ export const useGameLogic = () => {
         ...prev,
         currentScore: newScore,
         ballSpeed: newSpeed,
-        ballDirection: prev.ballDirection * -1, // Changer de direction
+        ballDirection: newDirection,
         zoneStart: newZoneStart,
         zoneEnd: newZoneEnd,
         coins: prev.coins + newScore, // Gain de coins basé sur le score
         level: prev.level + 1,
         lastResult: 'success',
-        showResult: false, // Plus de message "RÉUSSI"
+        showResult: false,
+        successFlash: true,
+        successParticles: true,
+        comboCount: newScore,
       }));
+
+      // Effacer les effets visuels après 200ms
+      setTimeout(() => {
+        setGameState(prev => ({
+          ...prev,
+          successFlash: false,
+          successParticles: false,
+        }));
+      }, 200);
 
     } else {
       // ÉCHEC - Fin de partie
@@ -280,6 +313,9 @@ export const useGameLogic = () => {
       showResult: false,
       lastResult: null,
       level: 1,
+      successFlash: false,
+      successParticles: false,
+      comboCount: 0,
     }));
   }, []);
 

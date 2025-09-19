@@ -56,7 +56,10 @@
     --spin-speed: 2s;
     
     /* Zone Pulsation */
-    --pulse-zone-duration: 1.2s;
+    --pulse-zone-duration: 1s;
+    
+    /* Fond animé */
+    --bg-animation-duration: 8s;
 
     /* Legacy shadcn tokens for compatibility */
     --background: var(--game-dark);

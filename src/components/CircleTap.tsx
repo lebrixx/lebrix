@@ -30,16 +30,14 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [onTap]);
 
-  // Sons basés sur le résultat
+  // Sons basés sur le résultat avec combo
   useEffect(() => {
-    if (gameState.showResult) {
-      if (gameState.lastResult === 'success') {
-        playSuccess();
-      } else if (gameState.lastResult === 'failure') {
-        playFailure();
-      }
+    if (gameState.lastResult === 'success') {
+      playSuccess(gameState.comboCount);
+    } else if (gameState.showResult && gameState.lastResult === 'failure') {
+      playFailure();
     }
-  }, [gameState.showResult, gameState.lastResult, playSuccess, playFailure]);
+  }, [gameState.lastResult, gameState.showResult, gameState.comboCount, playSuccess, playFailure]);
 
   const handleTap = () => {
     playClick();
@@ -77,16 +75,19 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
 
   return (
     <div 
-      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
+      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme} animate-animated-gradient`}
       style={getBackgroundStyle()}
     >
-      {/* Affichage du score */}
+      {/* HUD - Score en gros et best score */}
       <div className="text-center mb-8 animate-fade-in">
-        <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">
+        <div className="text-8xl font-bold text-primary mb-2 drop-shadow-lg animate-pulse-glow">
           {gameState.currentScore}
         </div>
-        <div className="text-text-secondary text-lg">
-          Meilleur: {gameState.bestScore} • Coins: {gameState.coins} • Niveau: {gameState.level}
+        <div className="text-text-secondary text-xl font-semibold">
+          Meilleur: {gameState.bestScore}
+        </div>
+        <div className="text-text-muted text-sm mt-2">
+          Coins: {gameState.coins} • Niveau: {gameState.level}
         </div>
       </div>
 
@@ -96,7 +97,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
         <svg
           width={cfg.radius * 2 + 80}
           height={cfg.radius * 2 + 80}
-          className="drop-shadow-2xl"
+          className={`drop-shadow-2xl ${gameState.successFlash ? 'animate-circle-flash' : ''}`}
           onClick={handleTap}
           style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
         >
@@ -114,7 +115,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
             }}
           />
 
-          {/* Zone verte (arc de succès) - Plus épaisse et visible */}
+          {/* Zone verte (arc de succès) avec glow visible et pulsation subtile */}
           <path
             d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
                 A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
@@ -122,10 +123,9 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
             fill="none"
             stroke={getCircleColor()}
             strokeWidth="20"
-            className="drop-shadow-lg"
+            className="drop-shadow-lg animate-pulse-zone"
             style={{
-              filter: `drop-shadow(0 0 20px ${getCircleColor()}) drop-shadow(0 0 40px ${getCircleColor()})`,
-              animation: customization?.effect === 'effect-glow' ? 'pulse 0.8s ease-in-out infinite' : 'pulse 1.5s ease-in-out infinite',
+              filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
             }}
           />
 
@@ -157,17 +157,48 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
             />
           </g>
 
-          {/* Trail de la bille quand elle bouge */}
+          {/* Trail dynamique de la bille */}
           {gameState.gameStatus === 'running' && (
-            <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
-              <rect
-                x={cfg.radius - 15}
-                y={-3}
-                width={30}
-                height={6}
-                fill="#FF4444"
-                className="opacity-30 animate-ping"
-              />
+            <>
+              {/* Trail principal */}
+              <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
+                <rect
+                  x={cfg.radius - 20}
+                  y={-2}
+                  width={25}
+                  height={4}
+                  fill="#FF4444"
+                  className="opacity-40 animate-trail-fade"
+                />
+              </g>
+              {/* Trail secondaire (retardé) */}
+              <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 100})`}>
+                <rect
+                  x={cfg.radius - 15}
+                  y={-1}
+                  width={15}
+                  height={2}
+                  fill="#FF4444"
+                  className="opacity-20 animate-trail-fade"
+                />
+              </g>
+            </>
+          )}
+
+          {/* Effet de particules au succès */}
+          {gameState.successParticles && (
+            <g transform={`translate(${cfg.radius + 40 + ballX}, ${cfg.radius + 40 + ballY})`}>
+              {[...Array(6)].map((_, i) => (
+                <circle
+                  key={i}
+                  cx={Math.cos(i * Math.PI / 3) * 15}
+                  cy={Math.sin(i * Math.PI / 3) * 15}
+                  r={3}
+                  fill={getCircleColor()}
+                  className="animate-particle-burst"
+                  style={{ animationDelay: `${i * 20}ms` }}
+                />
+              ))}
             </g>
           )}
         </svg>
