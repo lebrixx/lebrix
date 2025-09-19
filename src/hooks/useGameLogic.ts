@@ -85,10 +85,16 @@ export const useGameLogic = () => {
       const deltaTime = (currentTime - lastTimeRef.current) / 1000; // en secondes
       lastTimeRef.current = currentTime;
 
-      setGameState(prev => ({
-        ...prev,
-        ballAngle: (prev.ballAngle + prev.ballSpeed * prev.ballDirection * deltaTime) % (2 * Math.PI),
-      }));
+      setGameState(prev => {
+        let newAngle = prev.ballAngle + prev.ballSpeed * prev.ballDirection * deltaTime;
+        // Normaliser l'angle entre 0 et 2π (gérer les angles négatifs)
+        newAngle = ((newAngle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+        
+        return {
+          ...prev,
+          ballAngle: newAngle,
+        };
+      });
 
       if (gameState.gameStatus === 'running') {
         animationFrameRef.current = requestAnimationFrame(animate);

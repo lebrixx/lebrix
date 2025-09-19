@@ -66,24 +66,16 @@ const Index = () => {
         );
       
       case 'challenges':
-        const gameStats = {
-          totalGames: parseInt(localStorage.getItem('totalGames') || '0'),
-          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-          bestScore: gameState.bestScore,
-          perfectRounds: parseInt(localStorage.getItem('perfectRounds') || '0'),
-          fastRounds: parseInt(localStorage.getItem('fastRounds') || '0'),
-        };
-
         return (
           <Challenges 
             coins={gameState.coins}
             onBack={() => setCurrentScreen('menu')}
-            onRewardClaim={(reward) => {
+            onReward={(reward) => {
               // Ajouter des coins depuis les défis
-              setCurrentScreen('menu'); // Force un re-render pour mettre à jour les coins
               toast.success(`${reward} coins gagnés!`);
             }}
-            gameStats={gameStats}
+            currentScore={gameState.currentScore}
+            bestScore={gameState.bestScore}
           />
         );
       
