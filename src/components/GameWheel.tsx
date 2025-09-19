@@ -72,16 +72,31 @@ export const GameWheel: React.FC<GameWheelProps> = ({ theme }) => {
 
       {/* Wheel Container */}
       <div className="relative mb-8">
-        {/* Target Arrow - shows where to click */}
-        <div 
-          className="absolute w-8 h-8 transform -translate-x-1/2 -translate-y-1/2 z-20"
-          style={{
-            top: '50%',
-            left: '50%',
-            transform: `translate(-50%, -50%) rotate(${gameState.cursorPosition}deg) translateY(-160px)`,
-          }}
-        >
-          <div className="w-0 h-0 border-l-8 border-r-8 border-b-16 border-l-transparent border-r-transparent border-b-white drop-shadow-2xl animate-pulse scale-125 shadow-glow-primary"></div>
+        {/* Indicateur externe de visée (à l'extérieur du cercle) */
+        }
+        <div className="absolute inset-0 pointer-events-none z-30">
+          {/* Flèche de cible */}
+          <div 
+            className="absolute w-8 h-8 transform -translate-x-1/2 -translate-y-1/2"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${gameState.cursorPosition}deg) translateY(-190px)`,
+            }}
+            aria-label="Indicateur de visée"
+          >
+            <div className="w-0 h-0 border-l-8 border-r-8 border-b-16 border-l-transparent border-r-transparent border-b-white drop-shadow-2xl animate-pulse scale-125 shadow-glow-primary"></div>
+          </div>
+
+          {/* Point lumineux pour mieux voir l'endroit exact */}
+          <div
+            className="absolute w-3 h-3 rounded-full bg-primary shadow-glow-primary transform -translate-x-1/2 -translate-y-1/2"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -50%) rotate(${gameState.cursorPosition}deg) translateY(-210px)`,
+            }}
+          />
         </div>
 
         {/* Wheel */}
