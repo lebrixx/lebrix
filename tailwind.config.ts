@@ -112,6 +112,16 @@ export default {
           "0%, 100%": { boxShadow: "var(--glow-primary)" },
           "50%": { boxShadow: "var(--glow-primary), var(--glow-primary)" },
         },
+        "pulse-zone": {
+          "0%, 100%": { 
+            transform: "scale(1)",
+            opacity: "0.8" 
+          },
+          "50%": { 
+            transform: "scale(1.05)",
+            opacity: "1" 
+          }
+        },
         "success-flash": {
           "0%": { boxShadow: "var(--glow-success)" },
           "50%": { boxShadow: "var(--glow-success), 0 0 60px hsl(var(--success) / 0.9)" },
@@ -140,6 +150,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "spin-wheel": "spin-wheel var(--spin-speed) linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "pulse-zone": "pulse-zone var(--pulse-zone-duration) ease-in-out infinite",
         "success-flash": "success-flash 0.6s ease-out",
         "danger-shake": "danger-shake 0.6s ease-out",
         "float": "float 3s ease-in-out infinite",

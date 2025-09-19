@@ -20,10 +20,8 @@ interface Theme {
 
 interface ShopProps {
   coins: number;
-  currentTheme: string;
   onBack: () => void;
-  onThemeChange: (theme: string) => void;
-  onSpendCoins: (amount: number) => boolean;
+  onPurchase: (cost: number) => boolean;
 }
 
 const THEMES: Theme[] = [
@@ -79,11 +77,10 @@ const THEMES: Theme[] = [
 
 export const Shop: React.FC<ShopProps> = ({ 
   coins, 
-  currentTheme, 
   onBack, 
-  onThemeChange, 
-  onSpendCoins 
+  onPurchase 
 }) => {
+  const [currentTheme, setCurrentTheme] = useState('');
   const [ownedThemes, setOwnedThemes] = useState<string[]>(() => {
     const saved = localStorage.getItem('luckyStopOwnedThemes');
     return saved ? JSON.parse(saved) : ['theme-neon']; // Neon is free
@@ -98,15 +95,15 @@ export const Shop: React.FC<ShopProps> = ({
   const handleBuyTheme = (theme: Theme) => {
     if (ownedThemes.includes(theme.id)) {
       // Already owned, just equip it
-      onThemeChange(theme.className);
+      setCurrentTheme(theme.className);
       setPreviewTheme(theme.className);
       toast.success(`${theme.name} theme equipped!`);
       return;
     }
 
-    if (onSpendCoins(theme.price)) {
+    if (onPurchase(theme.price)) {
       setOwnedThemes(prev => [...prev, theme.id]);
-      onThemeChange(theme.className);
+      setCurrentTheme(theme.className);
       setPreviewTheme(theme.className);
       toast.success(`${theme.name} theme purchased and equipped!`);
     } else {

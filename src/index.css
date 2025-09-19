@@ -54,6 +54,9 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --spin-speed: 2s;
+    
+    /* Zone Pulsation */
+    --pulse-zone-duration: 1.2s;
 
     /* Legacy shadcn tokens for compatibility */
     --background: var(--game-dark);
@@ -124,6 +127,53 @@
     --success-glow: 10 100% 65%;
     --game-dark: 0 30% 8%;
     --game-darker: 0 40% 4%;
+  }
+
+  .theme-arctic {
+    --primary: 195 100% 85%;
+    --primary-glow: 210 100% 90%;
+    --secondary: 210 100% 70%;
+    --secondary-glow: 220 100% 80%;
+    --success: 180 100% 80%;
+    --success-glow: 190 100% 85%;
+  }
+
+  .theme-forest {
+    --primary: 120 60% 40%;
+    --primary-glow: 120 70% 50%;
+    --secondary: 85 80% 50%;
+    --secondary-glow: 90 90% 60%;
+    --success: 100 80% 45%;
+    --success-glow: 110 85% 55%;
+  }
+
+  .theme-galaxy {
+    --primary: 260 100% 25%;
+    --primary-glow: 270 100% 35%;
+    --secondary: 290 100% 50%;
+    --secondary-glow: 300 100% 60%;
+    --success: 280 100% 40%;
+    --success-glow: 285 100% 50%;
+    --game-dark: 260 50% 5%;
+    --game-darker: 270 60% 2%;
+  }
+
+  .theme-cyberpunk {
+    --primary: 320 100% 70%;
+    --primary-glow: 330 100% 80%;
+    --secondary: 180 100% 70%;
+    --secondary-glow: 190 100% 80%;
+    --success: 300 100% 75%;
+    --success-glow: 310 100% 85%;
+  }
+
+  .theme-golden {
+    --primary: 45 100% 50%;
+    --primary-glow: 50 100% 60%;
+    --secondary: 30 100% 40%;
+    --secondary-glow: 35 100% 50%;
+    --success: 60 100% 55%;
+    --success-glow: 65 100% 65%;
   }
 }
 

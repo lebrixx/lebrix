@@ -110,9 +110,9 @@ export const GameWheel: React.FC<GameWheelProps> = ({ theme }) => {
             ></div>
           ))}
 
-          {/* Green Zone (Success Zone) */}
+          {/* Green Zone (Success Zone) - Enhanced Visibility */}
           <div
-            className="absolute inset-0 rounded-full"
+            className="absolute inset-0 rounded-full animate-pulse-zone"
             style={{
               background: `conic-gradient(from ${360 - gameState.greenZoneSize / 2}deg, 
                 transparent 0deg, 
@@ -120,7 +120,13 @@ export const GameWheel: React.FC<GameWheelProps> = ({ theme }) => {
                 hsl(var(--success-glow)) ${gameState.greenZoneSize / 2 + 1}deg,
                 hsl(var(--success)) ${gameState.greenZoneSize}deg,
                 transparent ${gameState.greenZoneSize}deg)`,
-              filter: 'drop-shadow(0 0 10px hsl(var(--success) / 0.8))',
+              filter: 'drop-shadow(0 0 20px hsl(var(--success) / 1)) drop-shadow(0 0 40px hsl(var(--success) / 0.6))',
+              border: '3px solid hsl(var(--success-glow))',
+              boxShadow: `
+                inset 0 0 20px hsl(var(--success) / 0.3),
+                0 0 30px hsl(var(--success) / 0.8),
+                0 0 60px hsl(var(--success) / 0.4)
+              `,
             }}
           ></div>
 

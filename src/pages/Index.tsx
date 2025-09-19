@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MainMenu } from '@/components/MainMenu';
 import { GameWheel } from '@/components/GameWheel';
 import { Shop } from '@/components/Shop';
+import { Challenges } from '@/components/Challenges';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { toast } from 'sonner';
 
@@ -33,10 +34,10 @@ const Index = () => {
           <MainMenu
             bestScore={gameState.bestScore}
             coins={gameState.coins}
-            currentTheme={currentTheme}
-            onPlay={() => setCurrentScreen('game')}
-            onShop={() => setCurrentScreen('shop')}
-            onChallenges={() => setCurrentScreen('challenges')}
+            theme={currentTheme}
+            onStartGame={() => setCurrentScreen('game')}
+            onOpenShop={() => setCurrentScreen('shop')}
+            onOpenChallenges={() => setCurrentScreen('challenges')}
           />
         );
       
@@ -57,27 +58,30 @@ const Index = () => {
         return (
           <Shop
             coins={gameState.coins}
-            currentTheme={currentTheme}
             onBack={() => setCurrentScreen('menu')}
-            onThemeChange={handleThemeChange}
-            onSpendCoins={spendCoins}
+            onPurchase={spendCoins}
           />
         );
       
       case 'challenges':
+        const gameStats = {
+          totalGames: parseInt(localStorage.getItem('totalGames') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          bestScore: gameState.bestScore,
+          perfectRounds: parseInt(localStorage.getItem('perfectRounds') || '0'),
+          fastRounds: parseInt(localStorage.getItem('fastRounds') || '0'),
+        };
+
         return (
-          <div className={`min-h-screen bg-gradient-game flex items-center justify-center ${currentTheme}`}>
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-primary mb-4">Daily Challenges</h1>
-              <p className="text-text-secondary mb-8">Coming Soon!</p>
-              <button
-                onClick={() => setCurrentScreen('menu')}
-                className="px-6 py-3 bg-gradient-primary rounded-lg text-game-dark font-bold hover:scale-105 transition-transform"
-              >
-                Back to Menu
-              </button>
-            </div>
-          </div>
+          <Challenges 
+            coins={gameState.coins}
+            onBack={() => setCurrentScreen('menu')}
+            onRewardClaim={(reward) => {
+              // Add coins from challenge rewards
+              gameState.coins += reward;
+            }}
+            gameStats={gameStats}
+          />
         );
       
       default:

@@ -141,53 +141,59 @@ export const useGameLogic = () => {
     
     const isSuccess = stopPosition >= greenZoneStart || stopPosition <= greenZoneEnd;
 
-    setTimeout(() => {
-      if (isSuccess) {
-        // Success - continue to next level
-        const newScore = gameState.currentScore + 1;
-        const newSpeed = Math.max(gameState.wheelSpeed * SPEED_INCREASE, MIN_SPEED);
-        const newZoneSize = Math.max(gameState.greenZoneSize * ZONE_DECREASE, MIN_GREEN_ZONE);
-        const coinsEarned = gameState.level; // More coins for higher levels
+    // Immediate processing - no setTimeout delays
+    if (isSuccess) {
+      // Success - continue to next level immediately
+      const newScore = gameState.currentScore + 1;
+      const newSpeed = Math.max(gameState.wheelSpeed * SPEED_INCREASE, MIN_SPEED);
+      const newZoneSize = Math.max(gameState.greenZoneSize * ZONE_DECREASE, MIN_GREEN_ZONE);
+      const coinsEarned = gameState.level;
+      
+      // Randomize rotation direction occasionally for variety
+      const shouldReverse = Math.random() < 0.15;
 
-        setGameState(prev => ({
-          ...prev,
-          currentScore: newScore,
-          wheelSpeed: newSpeed,
-          greenZoneSize: newZoneSize,
-          coins: prev.coins + coinsEarned,
-          isSpinning: true,
-          showResult: true,
-          lastResult: 'success',
-          level: prev.level + 1,
-        }));
+      setGameState(prev => ({
+        ...prev,
+        currentScore: newScore,
+        wheelSpeed: newSpeed,
+        greenZoneSize: newZoneSize,
+        coins: prev.coins + coinsEarned,
+        isSpinning: true, // Continue immediately
+        showResult: true,
+        lastResult: 'success',
+        level: prev.level + 1,
+        wheelRotation: shouldReverse ? 360 - prev.wheelRotation : prev.wheelRotation,
+      }));
 
-        // Hide result after animation
+      // Non-blocking result hide
+      requestAnimationFrame(() => {
         setTimeout(() => {
           setGameState(prev => ({ ...prev, showResult: false }));
-          startTimeRef.current = undefined;
+        }, 800);
+      });
+
+    } else {
+      // Failure - end game
+      const finalScore = gameState.currentScore;
+      const newBestScore = Math.max(finalScore, gameState.bestScore);
+      const bonusCoins = Math.floor(finalScore / 2);
+
+      setGameState(prev => ({
+        ...prev,
+        isPlaying: false,
+        bestScore: newBestScore,
+        coins: prev.coins + bonusCoins,
+        showResult: true,
+        lastResult: 'failure',
+      }));
+
+      // Non-blocking result hide
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, showResult: false }));
         }, 1500);
-
-      } else {
-        // Failure - end game
-        const finalScore = gameState.currentScore;
-        const newBestScore = Math.max(finalScore, gameState.bestScore);
-        const bonusCoins = Math.floor(finalScore / 2); // Bonus coins based on score
-
-        setGameState(prev => ({
-          ...prev,
-          isPlaying: false,
-          bestScore: newBestScore,
-          coins: prev.coins + bonusCoins,
-          showResult: true,
-          lastResult: 'failure',
-        }));
-
-        // Hide result after animation
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showResult: false }));
-        }, 2000);
-      }
-    }, 500); // Small delay for dramatic effect
+      });
+    }
   }, [gameState.isSpinning, gameState.wheelRotation, gameState.greenZoneSize, gameState.currentScore, gameState.bestScore, gameState.wheelSpeed, gameState.level]);
 
   const resetGame = useCallback(() => {

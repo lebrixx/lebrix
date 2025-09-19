@@ -7,22 +7,22 @@ import { Play, ShoppingBag, Trophy, Star, Coins } from 'lucide-react';
 interface MainMenuProps {
   bestScore: number;
   coins: number;
-  currentTheme: string;
-  onPlay: () => void;
-  onShop: () => void;
-  onChallenges: () => void;
+  theme: string;
+  onStartGame: () => void;
+  onOpenShop: () => void;
+  onOpenChallenges: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
   bestScore, 
   coins, 
-  currentTheme,
-  onPlay, 
-  onShop, 
-  onChallenges 
+  theme,
+  onStartGame, 
+  onOpenShop, 
+  onOpenChallenges 
 }) => {
   return (
-    <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${currentTheme}`}>
+    <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${theme}`}>
       {/* Logo/Title */}
       <div className="text-center mb-12 animate-fade-in">
         <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
@@ -51,7 +51,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       {/* Main Menu Buttons */}
       <div className="flex flex-col gap-4 w-full max-w-sm animate-fade-in">
         <Button 
-          onClick={onPlay}
+          onClick={onStartGame}
           size="lg"
           className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6 text-xl font-bold group"
         >
@@ -60,7 +60,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </Button>
 
         <Button 
-          onClick={onShop}
+          onClick={onOpenShop}
           variant="outline"
           size="lg"
           className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
@@ -73,7 +73,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </Button>
 
         <Button 
-          onClick={onChallenges}
+          onClick={onOpenChallenges}
           variant="outline"
           size="lg"
           className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
@@ -90,7 +90,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           variant="outline" 
           className="border-primary text-primary text-sm px-4 py-2 animate-pulse-glow"
         >
-          {currentTheme.replace('theme-', '').toUpperCase()}
+          {theme.replace('theme-', '').toUpperCase() || 'NEON'}
         </Badge>
       </div>
 
