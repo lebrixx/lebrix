@@ -1,50 +1,41 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 export interface GameState {
-  isPlaying: boolean;
-  isSpinning: boolean;
+  gameStatus: 'idle' | 'running' | 'gameover';
   currentScore: number;
   bestScore: number;
-  coins: number;
-  wheelSpeed: number;
-  greenZoneSize: number;
-  wheelRotation: number;
+  ballAngle: number; // Position angulaire de la bille (radians)
+  ballSpeed: number; // Vitesse angulaire (radians/seconde)
+  zoneStart: number; // Angle de début de la zone verte (radians)
+  zoneEnd: number; // Angle de fin de la zone verte (radians)
   showResult: boolean;
   lastResult: 'success' | 'failure' | null;
-  level: number;
-  cursorPosition: number; // Position of the fixed cursor (0-360 degrees)
 }
 
-export interface GameStats {
-  totalGames: number;
-  totalWins: number;
-  totalCoins: number;
-  averageScore: number;
-}
-
-const INITIAL_SPEED = 2; // seconds per rotation
-const MIN_SPEED = 0.3;
-const INITIAL_GREEN_ZONE = 60; // degrees
-const MIN_GREEN_ZONE = 15;
-const SPEED_INCREASE = 0.9;
-const ZONE_DECREASE = 0.92;
+// Configuration du jeu
+const cfg = {
+  radius: 110,                // rayon de rotation de la bille
+  ballSize: 10,               // diamètre visuel de la bille (px)
+  baseSpeed: 1.8,            // radians/seconde au départ
+  speedGain: 1.03,           // +3% à chaque réussite
+  zoneArc: Math.PI / 5,      // taille de l'arc vert (constante, ~36°)
+  debounceMs: 40             // anti double-tap
+};
 
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>(() => {
-    const saved = localStorage.getItem('luckyStopGame');
+    const saved = localStorage.getItem('circletap-game');
+    const zoneStart = Math.random() * 2 * Math.PI;
     const defaultState: GameState = {
-      isPlaying: false,
-      isSpinning: false,
+      gameStatus: 'idle',
       currentScore: 0,
       bestScore: 0,
-      coins: 100, // Starting coins
-      wheelSpeed: INITIAL_SPEED,
-      greenZoneSize: INITIAL_GREEN_ZONE,
-      wheelRotation: 0,
+      ballAngle: 0,
+      ballSpeed: cfg.baseSpeed,
+      zoneStart: zoneStart,
+      zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
       lastResult: null,
-      level: 1,
-      cursorPosition: 0, // Start at top
     };
     
     if (saved) {
@@ -53,7 +44,6 @@ export const useGameLogic = () => {
         return {
           ...defaultState,
           bestScore: parsedState.bestScore || 0,
-          coins: parsedState.coins || 100,
         };
       } catch (e) {
         return defaultState;
@@ -63,48 +53,47 @@ export const useGameLogic = () => {
   });
 
   const animationFrameRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  const lastTimeRef = useRef<number>();
+  const lastTapTime = useRef<number>(0);
 
-  // Save progress to localStorage
+  // Sauvegarde du meilleur score
   const saveProgress = useCallback(() => {
     const dataToSave = {
       bestScore: gameState.bestScore,
-      coins: gameState.coins,
       timestamp: Date.now(),
     };
-    localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
-  }, [gameState.bestScore, gameState.coins]);
+    localStorage.setItem('circletap-game', JSON.stringify(dataToSave));
+  }, [gameState.bestScore]);
 
-  // Animate wheel rotation
-  const animateWheel = useCallback(() => {
-    if (!gameState.isSpinning) return;
+  // Animation de la bille (60 FPS)
+  const animateBall = useCallback(() => {
+    if (gameState.gameStatus !== 'running') return;
 
     const animate = (currentTime: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = currentTime;
+      if (!lastTimeRef.current) {
+        lastTimeRef.current = currentTime;
       }
 
-      const elapsed = currentTime - startTimeRef.current;
-      const rotationSpeed = 360 / (gameState.wheelSpeed * 1000); // degrees per millisecond
-      const newRotation = (elapsed * rotationSpeed) % 360;
+      const deltaTime = (currentTime - lastTimeRef.current) / 1000; // en secondes
+      lastTimeRef.current = currentTime;
 
       setGameState(prev => ({
         ...prev,
-        wheelRotation: newRotation,
+        ballAngle: (prev.ballAngle + prev.ballSpeed * deltaTime) % (2 * Math.PI),
       }));
 
-      if (gameState.isSpinning) {
+      if (gameState.gameStatus === 'running') {
         animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
 
     animationFrameRef.current = requestAnimationFrame(animate);
-  }, [gameState.isSpinning, gameState.wheelSpeed]);
+  }, [gameState.gameStatus]);
 
   useEffect(() => {
-    if (gameState.isSpinning) {
-      startTimeRef.current = undefined;
-      animateWheel();
+    if (gameState.gameStatus === 'running') {
+      lastTimeRef.current = undefined;
+      animateBall();
     } else if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
     }
@@ -114,107 +103,111 @@ export const useGameLogic = () => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [gameState.isSpinning, animateWheel]);
+  }, [gameState.gameStatus, animateBall]);
 
+  // Démarrer le jeu
   const startGame = useCallback(() => {
+    const zoneStart = Math.random() * 2 * Math.PI;
     setGameState(prev => ({
       ...prev,
-      isPlaying: true,
-      isSpinning: true,
+      gameStatus: 'running',
       currentScore: 0,
-      wheelSpeed: INITIAL_SPEED,
-      greenZoneSize: INITIAL_GREEN_ZONE,
+      ballAngle: 0,
+      ballSpeed: cfg.baseSpeed,
+      zoneStart: zoneStart,
+      zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
       lastResult: null,
-      level: 1,
-      cursorPosition: 0,
     }));
   }, []);
 
-  const stopWheel = useCallback(() => {
-    if (!gameState.isSpinning) return;
+  // Vérifier si l'angle est dans la zone verte (gère le wrap 0-2π)
+  const isInGreenZone = useCallback((angle: number, zoneStart: number, zoneEnd: number): boolean => {
+    if (zoneStart <= zoneEnd) {
+      return angle >= zoneStart && angle <= zoneEnd;
+    } else {
+      // La zone traverse 0 (ex: de 5.5 à 0.5)
+      return angle >= zoneStart || angle <= zoneEnd;
+    }
+  }, []);
 
-    // Check if cursor is in green zone
-    const normalizedRotation = gameState.wheelRotation % 360;
-    const greenZoneStart = (360 - gameState.greenZoneSize / 2) % 360;
-    const greenZoneEnd = (gameState.greenZoneSize / 2) % 360;
-    
-    // Calculate actual green zone position on wheel relative to cursor
-    const actualGreenStart = (greenZoneStart - normalizedRotation + 360) % 360;
-    const actualGreenEnd = (greenZoneEnd - normalizedRotation + 360) % 360;
-    
-    // Check if cursor position intersects with green zone
-    const isSuccess = actualGreenStart > actualGreenEnd 
-      ? (gameState.cursorPosition >= actualGreenStart || gameState.cursorPosition <= actualGreenEnd)
-      : (gameState.cursorPosition >= actualGreenStart && gameState.cursorPosition <= actualGreenEnd);
+  // Tap/Click du joueur
+  const onTap = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapTime.current < cfg.debounceMs) return; // Anti double-tap
+    lastTapTime.current = now;
 
-    if (isSuccess) {
-      // SUCCESS - IMMEDIATE CONTINUATION, NO DELAYS
+    if (gameState.gameStatus === 'idle') {
+      startGame();
+      return;
+    }
+
+    if (gameState.gameStatus === 'gameover') {
+      startGame();
+      return;
+    }
+
+    if (gameState.gameStatus !== 'running') return;
+
+    // Vérifier si la bille est dans la zone verte
+    const success = isInGreenZone(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
+
+    if (success) {
+      // SUCCÈS - Continue immédiatement sans pause
       const newScore = gameState.currentScore + 1;
-      const newSpeed = Math.max(gameState.wheelSpeed * SPEED_INCREASE, MIN_SPEED);
-      const newZoneSize = Math.max(gameState.greenZoneSize * ZONE_DECREASE, MIN_GREEN_ZONE);
-      
-      // 30% chance to reverse direction
-      const shouldReverse = Math.random() < 0.3;
-      
-      // Change cursor position randomly to make it more addictive
-      const newCursorPosition = Math.floor(Math.random() * 8) * 45; // 8 positions around the circle
+      const newSpeed = gameState.ballSpeed * cfg.speedGain; // +3%
+      const newZoneStart = Math.random() * 2 * Math.PI;
+      const newZoneEnd = newZoneStart + cfg.zoneArc;
 
       setGameState(prev => ({
         ...prev,
         currentScore: newScore,
-        wheelSpeed: newSpeed,
-        greenZoneSize: newZoneSize,
-        coins: prev.coins + newScore,
-        level: prev.level + 1,
-        cursorPosition: newCursorPosition,
-        wheelRotation: shouldReverse ? 360 - prev.wheelRotation : prev.wheelRotation,
-        // NO showResult, NO delays - keep it fluid
+        ballSpeed: newSpeed,
+        zoneStart: newZoneStart,
+        zoneEnd: newZoneEnd,
+        lastResult: 'success',
+        showResult: true,
       }));
 
+      // Masquer le résultat rapidement
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, showResult: false }));
+      }, 500);
+
     } else {
-      // FAILURE - stop game
+      // ÉCHEC - Fin de partie
       setGameState(prev => ({
         ...prev,
-        isPlaying: false,
-        isSpinning: false,
+        gameStatus: 'gameover',
         bestScore: Math.max(gameState.currentScore, prev.bestScore),
-        coins: prev.coins + Math.floor(gameState.currentScore / 2),
         showResult: true,
         lastResult: 'failure',
       }));
 
-      // Hide failure message
+      // Masquer le message de game over après 2 secondes
       setTimeout(() => {
         setGameState(prev => ({ ...prev, showResult: false }));
-      }, 1500);
+      }, 2000);
     }
-  }, [gameState.isSpinning, gameState.wheelRotation, gameState.greenZoneSize, gameState.currentScore, gameState.bestScore, gameState.wheelSpeed, gameState.level, gameState.cursorPosition]);
+  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, isInGreenZone]);
 
+  // Réinitialiser le jeu
   const resetGame = useCallback(() => {
+    const zoneStart = Math.random() * 2 * Math.PI;
     setGameState(prev => ({
       ...prev,
-      isPlaying: false,
-      isSpinning: false,
+      gameStatus: 'idle',
       currentScore: 0,
-      wheelSpeed: INITIAL_SPEED,
-      greenZoneSize: INITIAL_GREEN_ZONE,
-      wheelRotation: 0,
+      ballAngle: 0,
+      ballSpeed: cfg.baseSpeed,
+      zoneStart: zoneStart,
+      zoneEnd: zoneStart + cfg.zoneArc,
       showResult: false,
       lastResult: null,
-      level: 1,
     }));
   }, []);
 
-  const spendCoins = useCallback((amount: number): boolean => {
-    if (gameState.coins >= amount) {
-      setGameState(prev => ({ ...prev, coins: prev.coins - amount }));
-      return true;
-    }
-    return false;
-  }, [gameState.coins]);
-
-  // Auto-save progress
+  // Sauvegarde automatique
   useEffect(() => {
     saveProgress();
   }, [saveProgress]);
@@ -222,8 +215,8 @@ export const useGameLogic = () => {
   return {
     gameState,
     startGame,
-    stopWheel,
+    onTap,
     resetGame,
-    spendCoins,
+    cfg, // Export config pour l'affichage
   };
 };
