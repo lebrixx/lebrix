@@ -73,8 +73,8 @@ export const GameWheel: React.FC<GameWheelProps> = ({ theme }) => {
       {/* Wheel Container */}
       <div className="relative mb-8">
         {/* Fixed Cursor/Pointer at top */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 z-20">
-          <div className="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-primary drop-shadow-lg animate-pulse-glow"></div>
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4 z-20">
+          <div className="w-0 h-0 border-l-6 border-r-6 border-b-12 border-l-transparent border-r-transparent border-b-primary drop-shadow-lg animate-pulse-glow scale-125"></div>
         </div>
 
         {/* Wheel */}

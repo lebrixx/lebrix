@@ -131,68 +131,71 @@ export const useGameLogic = () => {
   const stopWheel = useCallback(() => {
     if (!gameState.isSpinning) return;
 
-    setGameState(prev => ({ ...prev, isSpinning: false }));
-
-    // Check if wheel stopped in green zone
-    // Green zone is positioned at top (0 degrees) with size gameState.greenZoneSize
-    const stopPosition = gameState.wheelRotation;
+    // Check if cursor stopped in green zone (cursor is fixed at top - 0 degrees)
+    const cursorPosition = 0;
     const greenZoneStart = 360 - (gameState.greenZoneSize / 2);
     const greenZoneEnd = (gameState.greenZoneSize / 2);
     
-    const isSuccess = stopPosition >= greenZoneStart || stopPosition <= greenZoneEnd;
+    // Normalize wheel rotation to find where green zone currently is relative to cursor
+    const normalizedRotation = gameState.wheelRotation % 360;
+    const greenZoneCurrentStart = (greenZoneStart - normalizedRotation + 360) % 360;
+    const greenZoneCurrentEnd = (greenZoneEnd - normalizedRotation + 360) % 360;
+    
+    // Check if cursor (at 0 degrees) is in the green zone
+    const isSuccess = greenZoneCurrentStart > greenZoneCurrentEnd 
+      ? (cursorPosition >= greenZoneCurrentStart || cursorPosition <= greenZoneCurrentEnd)
+      : (cursorPosition >= greenZoneCurrentStart && cursorPosition <= greenZoneCurrentEnd);
 
-    // Immediate processing - no setTimeout delays
     if (isSuccess) {
-      // Success - continue to next level immediately
+      // Success - immediate continuation
       const newScore = gameState.currentScore + 1;
       const newSpeed = Math.max(gameState.wheelSpeed * SPEED_INCREASE, MIN_SPEED);
       const newZoneSize = Math.max(gameState.greenZoneSize * ZONE_DECREASE, MIN_GREEN_ZONE);
-      const coinsEarned = gameState.level;
       
-      // Randomize rotation direction occasionally for variety
-      const shouldReverse = Math.random() < 0.15;
+      // 30% chance to reverse direction
+      const shouldReverse = Math.random() < 0.3;
+      
+      // Randomize green zone position for next round
+      const newGreenZonePosition = Math.random() * 360;
 
       setGameState(prev => ({
         ...prev,
         currentScore: newScore,
         wheelSpeed: newSpeed,
         greenZoneSize: newZoneSize,
-        coins: prev.coins + coinsEarned,
-        isSpinning: true, // Continue immediately
+        coins: prev.coins + newScore, // Simple coin reward
+        // Keep spinning immediately - no pause
         showResult: true,
         lastResult: 'success',
         level: prev.level + 1,
-        wheelRotation: shouldReverse ? 360 - prev.wheelRotation : prev.wheelRotation,
+        // Apply direction change if needed
+        wheelRotation: shouldReverse ? 360 - prev.wheelRotation + newGreenZonePosition : prev.wheelRotation + newGreenZonePosition,
       }));
 
-      // Non-blocking result hide
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showResult: false }));
-        }, 800);
-      });
+      // Hide success message quickly without blocking
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, showResult: false }));
+      }, 300);
 
     } else {
-      // Failure - end game
+      // Failure - stop game
       const finalScore = gameState.currentScore;
       const newBestScore = Math.max(finalScore, gameState.bestScore);
-      const bonusCoins = Math.floor(finalScore / 2);
 
       setGameState(prev => ({
         ...prev,
         isPlaying: false,
+        isSpinning: false,
         bestScore: newBestScore,
-        coins: prev.coins + bonusCoins,
+        coins: prev.coins + Math.floor(finalScore / 2),
         showResult: true,
         lastResult: 'failure',
       }));
 
-      // Non-blocking result hide
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showResult: false }));
-        }, 1500);
-      });
+      // Hide failure message
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, showResult: false }));
+      }, 1500);
     }
   }, [gameState.isSpinning, gameState.wheelRotation, gameState.greenZoneSize, gameState.currentScore, gameState.bestScore, gameState.wheelSpeed, gameState.level]);
 
