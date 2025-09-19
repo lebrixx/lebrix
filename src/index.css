@@ -2,95 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Lucky Stop Game Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Game Background & Base Colors */
+    --game-dark: 220 25% 8%;
+    --game-darker: 220 30% 4%;
+    --text-primary: 0 0% 100%;
+    --text-secondary: 0 0% 70%;
+    --text-muted: 0 0% 50%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Neon Theme (Default) */
+    --primary: 180 100% 50%;
+    --primary-glow: 180 100% 60%;
+    --secondary: 300 100% 60%;
+    --secondary-glow: 300 100% 70%;
+    --success: 120 100% 50%;
+    --success-glow: 120 100% 60%;
+    --danger: 0 100% 60%;
+    --danger-glow: 0 100% 70%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Wheel Colors */
+    --wheel-base: 220 20% 15%;
+    --wheel-segment: 220 15% 20%;
+    --wheel-border: 0 0% 30%;
+    --green-zone: var(--success);
+    --green-zone-glow: var(--success-glow);
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* UI Elements */
+    --button-bg: 220 20% 15%;
+    --button-border: 0 0% 30%;
+    --button-hover: 220 20% 20%;
+    --button-active: var(--primary);
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-game: linear-gradient(135deg, hsl(var(--game-darker)), hsl(var(--game-dark)));
+    --gradient-wheel: radial-gradient(circle, hsl(var(--wheel-segment)), hsl(var(--wheel-base)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-glow)));
+    --gradient-danger: linear-gradient(135deg, hsl(var(--danger)), hsl(var(--danger-glow)));
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Shadows & Glows */
+    --glow-primary: 0 0 20px hsl(var(--primary) / 0.5);
+    --glow-success: 0 0 20px hsl(var(--success) / 0.8);
+    --glow-danger: 0 0 20px hsl(var(--danger) / 0.6);
+    --shadow-card: 0 8px 32px hsl(var(--game-darker) / 0.8);
+    --shadow-wheel: 0 0 40px hsl(var(--primary) / 0.3);
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --spin-speed: 2s;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Legacy shadcn tokens for compatibility */
+    --background: var(--game-dark);
+    --foreground: var(--text-primary);
+    --card: var(--game-dark);
+    --card-foreground: var(--text-primary);
+    --popover: var(--game-dark);
+    --popover-foreground: var(--text-primary);
+    --primary-foreground: var(--game-dark);
+    --secondary-foreground: var(--text-primary);
+    --muted: var(--game-dark);
+    --muted-foreground: var(--text-muted);
+    --accent: var(--primary);
+    --accent-foreground: var(--game-dark);
+    --destructive: var(--danger);
+    --destructive-foreground: var(--text-primary);
+    --border: var(--wheel-border);
+    --input: var(--button-bg);
+    --ring: var(--primary);
+    --radius: 1rem;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+  /* Theme Variations */
+  .theme-sunset {
+    --primary: 25 100% 60%;
+    --primary-glow: 25 100% 70%;
+    --secondary: 320 100% 65%;
+    --secondary-glow: 320 100% 75%;
+    --success: 45 100% 55%;
+    --success-glow: 45 100% 65%;
+  }
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+  .theme-matrix {
+    --primary: 120 100% 50%;
+    --primary-glow: 120 100% 60%;
+    --secondary: 140 80% 40%;
+    --secondary-glow: 140 80% 50%;
+    --success: 100 100% 50%;
+    --success-glow: 100 100% 60%;
+    --game-dark: 120 30% 5%;
+    --game-darker: 120 40% 2%;
+  }
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+  .theme-ocean {
+    --primary: 200 100% 50%;
+    --primary-glow: 200 100% 60%;
+    --secondary: 220 100% 60%;
+    --secondary-glow: 220 100% 70%;
+    --success: 180 100% 50%;
+    --success-glow: 180 100% 60%;
+  }
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+  .theme-royal {
+    --primary: 270 100% 60%;
+    --primary-glow: 270 100% 70%;
+    --secondary: 45 100% 60%;
+    --secondary-glow: 45 100% 70%;
+    --success: 290 100% 50%;
+    --success-glow: 290 100% 60%;
+  }
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  .theme-lava {
+    --primary: 0 100% 60%;
+    --primary-glow: 0 100% 70%;
+    --secondary: 20 100% 50%;
+    --secondary-glow: 20 100% 60%;
+    --success: 10 100% 55%;
+    --success-glow: 10 100% 65%;
+    --game-dark: 0 30% 8%;
+    --game-darker: 0 40% 4%;
   }
 }
 

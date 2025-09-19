@@ -1,0 +1,109 @@
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Play, ShoppingBag, Trophy, Star, Coins } from 'lucide-react';
+
+interface MainMenuProps {
+  bestScore: number;
+  coins: number;
+  currentTheme: string;
+  onPlay: () => void;
+  onShop: () => void;
+  onChallenges: () => void;
+}
+
+export const MainMenu: React.FC<MainMenuProps> = ({ 
+  bestScore, 
+  coins, 
+  currentTheme,
+  onPlay, 
+  onShop, 
+  onChallenges 
+}) => {
+  return (
+    <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${currentTheme}`}>
+      {/* Logo/Title */}
+      <div className="text-center mb-12 animate-fade-in">
+        <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
+          LUCKY STOP
+        </h1>
+        <p className="text-text-secondary text-xl">
+          Stop the wheel at the perfect moment!
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 gap-4 mb-8 w-full max-w-md animate-scale-in">
+        <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
+          <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
+          <div className="text-2xl font-bold text-primary">{bestScore}</div>
+          <div className="text-sm text-text-muted">Best Score</div>
+        </Card>
+        
+        <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
+          <Coins className="w-8 h-8 text-secondary mx-auto mb-2" />
+          <div className="text-2xl font-bold text-secondary">{coins}</div>
+          <div className="text-sm text-text-muted">Coins</div>
+        </Card>
+      </div>
+
+      {/* Main Menu Buttons */}
+      <div className="flex flex-col gap-4 w-full max-w-sm animate-fade-in">
+        <Button 
+          onClick={onPlay}
+          size="lg"
+          className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6 text-xl font-bold group"
+        >
+          <Play className="w-8 h-8 mr-3 group-hover:animate-pulse" />
+          PLAY NOW
+        </Button>
+
+        <Button 
+          onClick={onShop}
+          variant="outline"
+          size="lg"
+          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+        >
+          <ShoppingBag className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+          SHOP
+          <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark">
+            {coins}
+          </Badge>
+        </Button>
+
+        <Button 
+          onClick={onChallenges}
+          variant="outline"
+          size="lg"
+          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+        >
+          <Star className="w-6 h-6 mr-3 group-hover:animate-spin" />
+          DAILY CHALLENGES
+        </Button>
+      </div>
+
+      {/* Theme Preview */}
+      <div className="mt-8 text-center animate-fade-in">
+        <div className="text-sm text-text-muted mb-2">Current Theme</div>
+        <Badge 
+          variant="outline" 
+          className="border-primary text-primary text-sm px-4 py-2 animate-pulse-glow"
+        >
+          {currentTheme.replace('theme-', '').toUpperCase()}
+        </Badge>
+      </div>
+
+      {/* Floating Mini Wheel */}
+      <div className="absolute top-20 right-8 w-16 h-16 rounded-full bg-gradient-wheel border-2 border-wheel-border animate-spin-wheel opacity-20 hidden lg:block" 
+           style={{ animationDuration: '8s' }}>
+        <div className="absolute inset-2 rounded-full bg-primary opacity-30"></div>
+      </div>
+
+      {/* Version Info */}
+      <div className="absolute bottom-4 text-text-muted text-xs animate-fade-in">
+        Lucky Stop v1.0 • Made with ❤️
+      </div>
+    </div>
+  );
+};
