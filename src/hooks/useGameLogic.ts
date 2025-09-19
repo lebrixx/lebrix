@@ -12,6 +12,7 @@ export interface GameState {
   showResult: boolean;
   lastResult: 'success' | 'failure' | null;
   level: number;
+  cursorPosition: number; // Position of the fixed cursor (0-360 degrees)
 }
 
 export interface GameStats {
@@ -43,6 +44,7 @@ export const useGameLogic = () => {
       showResult: false,
       lastResult: null,
       level: 1,
+      cursorPosition: 0, // Start at top
     };
     
     if (saved) {
@@ -125,29 +127,29 @@ export const useGameLogic = () => {
       showResult: false,
       lastResult: null,
       level: 1,
+      cursorPosition: 0,
     }));
   }, []);
 
   const stopWheel = useCallback(() => {
     if (!gameState.isSpinning) return;
 
-    // Check if cursor stopped in green zone (cursor is fixed at top - 0 degrees)
-    const cursorPosition = 0;
-    const greenZoneStart = 360 - (gameState.greenZoneSize / 2);
-    const greenZoneEnd = (gameState.greenZoneSize / 2);
-    
-    // Normalize wheel rotation to find where green zone currently is relative to cursor
+    // Check if cursor is in green zone
     const normalizedRotation = gameState.wheelRotation % 360;
-    const greenZoneCurrentStart = (greenZoneStart - normalizedRotation + 360) % 360;
-    const greenZoneCurrentEnd = (greenZoneEnd - normalizedRotation + 360) % 360;
+    const greenZoneStart = (360 - gameState.greenZoneSize / 2) % 360;
+    const greenZoneEnd = (gameState.greenZoneSize / 2) % 360;
     
-    // Check if cursor (at 0 degrees) is in the green zone
-    const isSuccess = greenZoneCurrentStart > greenZoneCurrentEnd 
-      ? (cursorPosition >= greenZoneCurrentStart || cursorPosition <= greenZoneCurrentEnd)
-      : (cursorPosition >= greenZoneCurrentStart && cursorPosition <= greenZoneCurrentEnd);
+    // Calculate actual green zone position on wheel relative to cursor
+    const actualGreenStart = (greenZoneStart - normalizedRotation + 360) % 360;
+    const actualGreenEnd = (greenZoneEnd - normalizedRotation + 360) % 360;
+    
+    // Check if cursor position intersects with green zone
+    const isSuccess = actualGreenStart > actualGreenEnd 
+      ? (gameState.cursorPosition >= actualGreenStart || gameState.cursorPosition <= actualGreenEnd)
+      : (gameState.cursorPosition >= actualGreenStart && gameState.cursorPosition <= actualGreenEnd);
 
     if (isSuccess) {
-      // Success - immediate continuation
+      // SUCCESS - IMMEDIATE CONTINUATION, NO DELAYS
       const newScore = gameState.currentScore + 1;
       const newSpeed = Math.max(gameState.wheelSpeed * SPEED_INCREASE, MIN_SPEED);
       const newZoneSize = Math.max(gameState.greenZoneSize * ZONE_DECREASE, MIN_GREEN_ZONE);
@@ -155,39 +157,29 @@ export const useGameLogic = () => {
       // 30% chance to reverse direction
       const shouldReverse = Math.random() < 0.3;
       
-      // Randomize green zone position for next round
-      const newGreenZonePosition = Math.random() * 360;
+      // Change cursor position randomly to make it more addictive
+      const newCursorPosition = Math.floor(Math.random() * 8) * 45; // 8 positions around the circle
 
       setGameState(prev => ({
         ...prev,
         currentScore: newScore,
         wheelSpeed: newSpeed,
         greenZoneSize: newZoneSize,
-        coins: prev.coins + newScore, // Simple coin reward
-        // Keep spinning immediately - no pause
-        showResult: true,
-        lastResult: 'success',
+        coins: prev.coins + newScore,
         level: prev.level + 1,
-        // Apply direction change if needed
-        wheelRotation: shouldReverse ? 360 - prev.wheelRotation + newGreenZonePosition : prev.wheelRotation + newGreenZonePosition,
+        cursorPosition: newCursorPosition,
+        wheelRotation: shouldReverse ? 360 - prev.wheelRotation : prev.wheelRotation,
+        // NO showResult, NO delays - keep it fluid
       }));
 
-      // Hide success message quickly without blocking
-      setTimeout(() => {
-        setGameState(prev => ({ ...prev, showResult: false }));
-      }, 300);
-
     } else {
-      // Failure - stop game
-      const finalScore = gameState.currentScore;
-      const newBestScore = Math.max(finalScore, gameState.bestScore);
-
+      // FAILURE - stop game
       setGameState(prev => ({
         ...prev,
         isPlaying: false,
         isSpinning: false,
-        bestScore: newBestScore,
-        coins: prev.coins + Math.floor(finalScore / 2),
+        bestScore: Math.max(gameState.currentScore, prev.bestScore),
+        coins: prev.coins + Math.floor(gameState.currentScore / 2),
         showResult: true,
         lastResult: 'failure',
       }));
@@ -197,7 +189,7 @@ export const useGameLogic = () => {
         setGameState(prev => ({ ...prev, showResult: false }));
       }, 1500);
     }
-  }, [gameState.isSpinning, gameState.wheelRotation, gameState.greenZoneSize, gameState.currentScore, gameState.bestScore, gameState.wheelSpeed, gameState.level]);
+  }, [gameState.isSpinning, gameState.wheelRotation, gameState.greenZoneSize, gameState.currentScore, gameState.bestScore, gameState.wheelSpeed, gameState.level, gameState.cursorPosition]);
 
   const resetGame = useCallback(() => {
     setGameState(prev => ({
