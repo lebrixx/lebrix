@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Target, Zap, Trophy, Clock, Star, CheckCircle, Lock } from 'lucide-react';
+import { ArrowLeft, Target, Trophy, Star, CheckCircle, Lock, Flame, Crown } from 'lucide-react';
 
 interface Challenge {
   id: string;
@@ -11,9 +11,7 @@ interface Challenge {
   description: string;
   target: number;
   reward: number;
-  icon: React.ReactNode;
-  difficulty: 'facile' | 'moyen' | 'difficile' | 'expert';
-  type: 'score' | 'speed' | 'precision' | 'endurance';
+  difficulty: 'facile' | 'moyen' | 'difficile' | 'expert' | 'impossible';
 }
 
 interface ChallengesProps {
@@ -28,152 +26,108 @@ interface ChallengesProps {
 }
 
 const CHALLENGES: Challenge[] = [
-  // Défis de Score
+  // Défis Faciles
   {
     id: 'score_5',
-    title: 'Premier Pas',
+    title: 'Premier Contact',
     description: 'Atteignez le score de 5',
     target: 5,
-    reward: 20,
-    icon: <Target className="w-5 h-5" />,
+    reward: 25,
     difficulty: 'facile',
-    type: 'score',
   },
   {
     id: 'score_10',
-    title: 'En Rythme',
+    title: 'En Cadence',
     description: 'Atteignez le score de 10',
     target: 10,
     reward: 50,
-    icon: <Target className="w-5 h-5" />,
     difficulty: 'facile',
-    type: 'score',
   },
+  {
+    id: 'score_15',
+    title: 'Rythme Soutenu',
+    description: 'Atteignez le score de 15',
+    target: 15,
+    reward: 75,
+    difficulty: 'moyen',
+  },
+  
+  // Défis Moyens
   {
     id: 'score_25',
     title: 'Maître du Timing',
     description: 'Atteignez le score de 25',
     target: 25,
     reward: 100,
-    icon: <Trophy className="w-5 h-5" />,
     difficulty: 'moyen',
-    type: 'score',
+  },
+  {
+    id: 'score_35',
+    title: 'Réflexes d\'Acier',
+    description: 'Atteignez le score de 35',
+    target: 35,
+    reward: 150,
+    difficulty: 'moyen',
   },
   {
     id: 'score_50',
-    title: 'Réflexes d\'Acier',
+    title: 'Machine de Précision',
     description: 'Atteignez le score de 50',
     target: 50,
     reward: 200,
-    icon: <Trophy className="w-5 h-5" />,
     difficulty: 'difficile',
-    type: 'score',
+  },
+  
+  // Défis Difficiles
+  {
+    id: 'score_75',
+    title: 'Virtuose Ultime',
+    description: 'Atteignez le score de 75',
+    target: 75,
+    reward: 300,
+    difficulty: 'difficile',
   },
   {
     id: 'score_100',
-    title: 'Légende Vivante',
+    title: 'Centurion',
     description: 'Atteignez le score de 100',
     target: 100,
     reward: 500,
-    icon: <Star className="w-5 h-5" />,
     difficulty: 'expert',
-    type: 'score',
-  },
-
-  // Défis de Vitesse
-  {
-    id: 'speed_fast',
-    title: 'Vitesse Supersonique',
-    description: 'Survivez à 3.0 rad/s de vitesse',
-    target: 3.0,
-    reward: 75,
-    icon: <Zap className="w-5 h-5" />,
-    difficulty: 'moyen',
-    type: 'speed',
   },
   {
-    id: 'speed_extreme',
-    title: 'Warp Speed',
-    description: 'Survivez à 4.0 rad/s de vitesse',
-    target: 4.0,
-    reward: 150,
-    icon: <Zap className="w-5 h-5" />,
-    difficulty: 'difficile',
-    type: 'speed',
-  },
-  {
-    id: 'speed_insane',
-    title: 'Vitesse de la Lumière',
-    description: 'Survivez à 5.0 rad/s de vitesse',
-    target: 5.0,
-    reward: 300,
-    icon: <Zap className="w-5 h-5" />,
+    id: 'score_150',
+    title: 'Légende Vivante',
+    description: 'Atteignez le score de 150',
+    target: 150,
+    reward: 750,
     difficulty: 'expert',
-    type: 'speed',
   },
-
-  // Défis de Précision
+  
+  // Défis Impossibles
   {
-    id: 'precision_10',
-    title: 'Oeil de Lynx',
-    description: 'Réussissez 10 fois d\'affilée',
-    target: 10,
-    reward: 80,
-    icon: <Target className="w-5 h-5" />,
-    difficulty: 'moyen',
-    type: 'precision',
+    id: 'score_200',
+    title: 'Dieu du Timing',
+    description: 'Atteignez le score de 200',
+    target: 200,
+    reward: 1000,
+    difficulty: 'impossible',
   },
   {
-    id: 'precision_20',
-    title: 'Sniper Élite',
-    description: 'Réussissez 20 fois d\'affilée',
-    target: 20,
-    reward: 180,
-    icon: <Target className="w-5 h-5" />,
-    difficulty: 'difficile',
-    type: 'precision',
+    id: 'score_300',
+    title: 'Transcendance',
+    description: 'Atteignez le score de 300',
+    target: 300,
+    reward: 1500,
+    difficulty: 'impossible',
   },
   {
-    id: 'precision_30',
-    title: 'Machine Parfaite',
-    description: 'Réussissez 30 fois d\'affilée',
-    target: 30,
-    reward: 350,
-    icon: <Star className="w-5 h-5" />,
-    difficulty: 'expert',
-    type: 'precision',
-  },
-
-  // Défis d'Endurance
-  {
-    id: 'endurance_directions',
-    title: 'Caméléon',
-    description: 'Survivez à 15 changements de direction',
-    target: 15,
-    reward: 120,
-    icon: <Clock className="w-5 h-5" />,
-    difficulty: 'moyen',
-    type: 'endurance',
-  },
-  {
-    id: 'endurance_marathon',
-    title: 'Marathon Mental',
-    description: 'Survivez à 30 changements de direction',
-    target: 30,
-    reward: 250,
-    icon: <Clock className="w-5 h-5" />,
-    difficulty: 'difficile',
-    type: 'endurance',
-  },
-  {
-    id: 'endurance_ultimate',
-    title: 'Endurance Ultime',
-    description: 'Survivez à 50 changements de direction',
-    target: 50,
-    reward: 500,
-    icon: <Star className="w-5 h-5" />,
-    difficulty: 'expert',
-    type: 'endurance',
+    id: 'score_500',
+    title: 'Au-delà de l\'Impossible',
+    description: 'Atteignez le score de 500',
+    target: 500,
+    reward: 2500,
+    difficulty: 'impossible',
   },
 ];
 
@@ -192,26 +146,10 @@ export const Challenges: React.FC<ChallengesProps> = ({
     return saved ? JSON.parse(saved) : [];
   });
 
-
   const checkAndCompleteChallenge = (challenge: Challenge) => {
     if (completedChallenges.includes(challenge.id)) return false;
 
-    let isCompleted = false;
-
-    switch (challenge.type) {
-      case 'score':
-        isCompleted = bestScore >= challenge.target;
-        break;
-      case 'speed':
-        isCompleted = maxSpeedReached >= challenge.target;
-        break;
-      case 'precision':
-        isCompleted = bestScore >= challenge.target;
-        break;
-      case 'endurance':
-        isCompleted = directionChanges >= challenge.target;
-        break;
-    }
+    const isCompleted = bestScore >= challenge.target;
 
     if (isCompleted) {
       const newCompleted = [...completedChallenges, challenge.id];
@@ -228,54 +166,47 @@ export const Challenges: React.FC<ChallengesProps> = ({
     CHALLENGES.forEach(challenge => {
       checkAndCompleteChallenge(challenge);
     });
-  }, [bestScore, maxSpeedReached, directionChanges]);
+  }, [bestScore]);
 
   const getProgress = (challenge: Challenge) => {
-    switch (challenge.type) {
-      case 'score':
-        return Math.min((bestScore / challenge.target) * 100, 100);
-      case 'speed':
-        return Math.min((maxSpeedReached / challenge.target) * 100, 100);
-      case 'precision':
-        return Math.min((bestScore / challenge.target) * 100, 100);
-      case 'endurance':
-        return Math.min((directionChanges / challenge.target) * 100, 100);
-      default:
-        return 0;
-    }
+    return Math.min((bestScore / challenge.target) * 100, 100);
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'facile': return 'text-green-500';
-      case 'moyen': return 'text-yellow-500';
-      case 'difficile': return 'text-orange-500';
-      case 'expert': return 'text-red-500';
-      default: return 'text-text-muted';
+      case 'facile': return 'text-green-400 border-green-500/30 bg-green-500/10';
+      case 'moyen': return 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10';
+      case 'difficile': return 'text-orange-400 border-orange-500/30 bg-orange-500/10';
+      case 'expert': return 'text-red-400 border-red-500/30 bg-red-500/10';
+      case 'impossible': return 'text-purple-400 border-purple-500/30 bg-purple-500/10';
+      default: return 'text-gray-400 border-gray-500/30 bg-gray-500/10';
     }
   };
 
-  const getDifficultyBadge = (difficulty: string) => {
+  const getDifficultyIcon = (difficulty: string) => {
     switch (difficulty) {
-      case 'facile': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'moyen': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'difficile': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'expert': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'facile': return <Target className="w-4 h-4" />;
+      case 'moyen': return <Trophy className="w-4 h-4" />;
+      case 'difficile': return <Star className="w-4 h-4" />;
+      case 'expert': return <Flame className="w-4 h-4" />;
+      case 'impossible': return <Crown className="w-4 h-4" />;
+      default: return <Target className="w-4 h-4" />;
     }
   };
 
   const groupedChallenges = CHALLENGES.reduce((acc, challenge) => {
-    if (!acc[challenge.type]) acc[challenge.type] = [];
-    acc[challenge.type].push(challenge);
+    if (!acc[challenge.difficulty]) acc[challenge.difficulty] = [];
+    acc[challenge.difficulty].push(challenge);
     return acc;
   }, {} as Record<string, Challenge[]>);
 
-  const categoryNames = {
-    score: 'Défis de Score',
-    speed: 'Défis de Vitesse',
-    precision: 'Défis de Précision',
-    endurance: 'Défis d\'Endurance',
+  const difficultyOrder = ['facile', 'moyen', 'difficile', 'expert', 'impossible'];
+  const difficultyNames = {
+    facile: '🟢 Défis Faciles',
+    moyen: '🟡 Défis Moyens',
+    difficile: '🟠 Défis Difficiles',
+    expert: '🔴 Défis Experts',
+    impossible: '🟣 Défis Impossibles',
   };
 
   return (
@@ -292,108 +223,118 @@ export const Challenges: React.FC<ChallengesProps> = ({
         </Button>
         
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary mb-2">DÉFIS</h1>
+          <h1 className="text-3xl font-bold text-primary mb-2">🏆 DÉFIS DE SCORE</h1>
           <div className="text-text-secondary">
-            Meilleur Score: {bestScore} • Vitesse Max: {maxSpeedReached.toFixed(1)} rad/s
+            Meilleur Score: <span className="text-primary font-bold">{bestScore}</span>
           </div>
         </div>
 
         <div className="w-20"></div>
       </div>
 
-      {/* Challenges by Category */}
+      {/* Description */}
+      <div className="text-center mb-6 text-text-muted animate-fade-in">
+        <p>🎯 Testez vos limites avec des objectifs de score toujours plus élevés!</p>
+      </div>
+
+      {/* Challenges by Difficulty */}
       <div className="max-w-6xl mx-auto space-y-8">
-        {Object.entries(groupedChallenges).map(([type, challenges]) => (
-          <div key={type} className="animate-fade-in">
-            <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-              {type === 'score' && <Trophy className="w-6 h-6" />}
-              {type === 'speed' && <Zap className="w-6 h-6" />}
-              {type === 'precision' && <Target className="w-6 h-6" />}
-              {type === 'endurance' && <Clock className="w-6 h-6" />}
-              {categoryNames[type as keyof typeof categoryNames]}
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {challenges.map((challenge) => {
-                const isCompleted = completedChallenges.includes(challenge.id);
-                const progress = getProgress(challenge);
-                
-                return (
-                  <Card
-                    key={challenge.id}
-                    className={`
-                      bg-button-bg border-wheel-border p-6 transition-all duration-300 animate-scale-in
-                      ${isCompleted ? 'border-success shadow-glow-success' : 'hover:scale-105'}
-                    `}
-                  >
-                    {/* Challenge Header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2 text-primary">
-                        {challenge.icon}
-                        <h3 className="font-bold text-lg">{challenge.title}</h3>
+        {difficultyOrder.map((difficulty) => {
+          const challenges = groupedChallenges[difficulty];
+          if (!challenges) return null;
+          
+          return (
+            <div key={difficulty} className="animate-fade-in">
+              <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+                {getDifficultyIcon(difficulty)}
+                {difficultyNames[difficulty as keyof typeof difficultyNames]}
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {challenges.map((challenge) => {
+                  const isCompleted = completedChallenges.includes(challenge.id);
+                  const progress = getProgress(challenge);
+                  
+                  return (
+                    <Card
+                      key={challenge.id}
+                      className={`
+                        bg-button-bg border-wheel-border p-6 transition-all duration-300 animate-scale-in
+                        ${isCompleted ? 'border-success shadow-glow-success' : 'hover:scale-105'}
+                        ${difficulty === 'impossible' ? 'border-purple-500/50 shadow-purple-500/20' : ''}
+                        ${difficulty === 'expert' ? 'border-red-500/50 shadow-red-500/20' : ''}
+                      `}
+                    >
+                      {/* Challenge Header */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2 text-primary">
+                          <Target className="w-5 h-5" />
+                          <h3 className="font-bold text-lg">{challenge.title}</h3>
+                        </div>
+                        
+                        {isCompleted ? (
+                          <CheckCircle className="w-6 h-6 text-success flex-shrink-0" />
+                        ) : (
+                          <Lock className="w-6 h-6 text-text-muted flex-shrink-0" />
+                        )}
                       </div>
-                      
-                      {isCompleted ? (
-                        <CheckCircle className="w-6 h-6 text-success flex-shrink-0" />
-                      ) : (
-                        <Lock className="w-6 h-6 text-text-muted flex-shrink-0" />
-                      )}
-                    </div>
 
-                    {/* Challenge Description */}
-                    <p className="text-text-secondary text-sm mb-4">
-                      {challenge.description}
-                    </p>
+                      {/* Challenge Description */}
+                      <p className="text-text-secondary text-sm mb-4">
+                        {challenge.description}
+                      </p>
 
-                    {/* Progress Bar */}
-                    <div className="mb-4">
-                      <div className="flex justify-between text-xs text-text-muted mb-1">
-                        <span>Progression</span>
-                        <span>{Math.round(progress)}%</span>
+                      {/* Progress Bar */}
+                      <div className="mb-4">
+                        <div className="flex justify-between text-xs text-text-muted mb-1">
+                          <span>Progression: {bestScore}/{challenge.target}</span>
+                          <span>{Math.round(progress)}%</span>
+                        </div>
+                        <Progress 
+                          value={progress} 
+                          className="h-2"
+                        />
                       </div>
-                      <Progress 
-                        value={progress} 
-                        className="h-2"
-                      />
-                    </div>
 
-                    {/* Challenge Footer */}
-                    <div className="flex items-center justify-between">
-                      <Badge 
-                        variant="outline" 
-                        className={`text-xs ${getDifficultyBadge(challenge.difficulty)}`}
-                      >
-                        {challenge.difficulty.toUpperCase()}
-                      </Badge>
-                      
-                      <div className="flex items-center gap-1 text-secondary font-bold">
-                        <Trophy className="w-4 h-4" />
-                        {challenge.reward}
-                      </div>
-                    </div>
-
-                    {/* Completion Status */}
-                    {isCompleted && (
-                      <div className="mt-3 pt-3 border-t border-success/30">
-                        <div className="text-success text-sm font-bold text-center">
-                          ✨ DÉFI ACCOMPLI ✨
+                      {/* Challenge Footer */}
+                      <div className="flex items-center justify-between">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${getDifficultyColor(challenge.difficulty)}`}
+                        >
+                          {getDifficultyIcon(challenge.difficulty)}
+                          {challenge.difficulty.toUpperCase()}
+                        </Badge>
+                        
+                        <div className="flex items-center gap-1 text-secondary font-bold">
+                          <Trophy className="w-4 h-4" />
+                          {challenge.reward}
                         </div>
                       </div>
-                    )}
-                  </Card>
-                );
-              })}
+
+                      {/* Completion Status */}
+                      {isCompleted && (
+                        <div className="mt-3 pt-3 border-t border-success/30">
+                          <div className="text-success text-sm font-bold text-center">
+                            ✨ DÉFI ACCOMPLI ✨
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Summary Stats */}
       <div className="max-w-2xl mx-auto mt-8 p-6 bg-button-bg border border-wheel-border rounded-lg animate-fade-in">
-        <h3 className="text-xl font-bold text-primary mb-4 text-center">Statistiques</h3>
+        <h3 className="text-xl font-bold text-primary mb-4 text-center">Vos Statistiques</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-primary">{completedChallenges.length}</div>
+            <div className="text-2xl font-bold text-success">{completedChallenges.length}</div>
             <div className="text-text-muted text-sm">Défis Accomplis</div>
           </div>
           <div>
@@ -405,8 +346,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <div className="text-text-muted text-sm">Meilleur Score</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-accent">{directionChanges}</div>
-            <div className="text-text-muted text-sm">Directions</div>
+            <div className="text-2xl font-bold text-accent">{Math.round(((completedChallenges.length / CHALLENGES.length) * 100))}%</div>
+            <div className="text-text-muted text-sm">Complétés</div>
           </div>
         </div>
       </div>

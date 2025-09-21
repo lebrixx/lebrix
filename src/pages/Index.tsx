@@ -3,11 +3,10 @@ import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
-import { Customization } from '@/components/Customization';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { toast } from 'sonner';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'customization';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -37,7 +36,6 @@ const Index = () => {
             coins={gameState.coins}
             theme={currentTheme}
             onStartGame={() => setCurrentScreen('game')}
-            onOpenCustomization={() => setCurrentScreen('customization')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
           />
@@ -64,8 +62,15 @@ const Index = () => {
           <Shop
             coins={gameState.coins}
             ownedItems={gameState.ownedItems}
+            currentTheme={currentTheme}
             onBack={() => setCurrentScreen('menu')}
-            onPurchaseItem={purchaseItem}
+            onPurchaseTheme={(theme) => {
+              if (purchaseItem(theme)) {
+                handleThemeChange(theme.id);
+                return true;
+              }
+              return false;
+            }}
           />
         );
       
@@ -83,20 +88,6 @@ const Index = () => {
             maxSpeedReached={gameState.maxSpeedReached}
             directionChanges={gameState.directionChanges}
             totalGamesPlayed={gameState.totalGamesPlayed}
-          />
-        );
-
-      case 'customization':
-        return (
-          <Customization
-            ownedItems={gameState.ownedItems}
-            currentCustomization={gameState.currentCustomization}
-            onApplyCustomization={(customization) => {
-              gameState.setCustomization(customization);
-              setCurrentScreen('game'); // Retour automatique au jeu après application
-              toast.success('Personnalisation appliquée!');
-            }}
-            onBack={() => setCurrentScreen('menu')}
           />
         );
       

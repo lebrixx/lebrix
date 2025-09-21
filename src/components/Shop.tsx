@@ -2,67 +2,184 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Check, Coins, Lock, Palette, Circle, Sparkles, Crown, Zap, Star } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
-const availableItems = [
-  // Palettes de couleurs
-  { id: 'palette-neon', name: 'Néon', type: 'background' as const, preview: 'linear-gradient(135deg, #00ffff, #ff00ff)', price: 0, description: 'Couleurs cyber électriques', color: '#00ffff', rarity: 'common' },
-  { id: 'palette-sunset', name: 'Coucher de soleil', type: 'background' as const, preview: 'linear-gradient(135deg, #ff6b35, #f7931e)', price: 50, description: 'Horizon doré et rose', color: '#ff6b35', rarity: 'common' },
-  { id: 'palette-ocean', name: 'Océan', type: 'background' as const, preview: 'linear-gradient(135deg, #0077be, #00a8cc)', price: 75, description: 'Abysses bleu profond', color: '#0077be', rarity: 'rare' },
-  { id: 'palette-forest', name: 'Forêt', type: 'background' as const, preview: 'linear-gradient(135deg, #2d5a27, #76c893)', price: 75, description: 'Forêt enchantée verte', color: '#2d5a27', rarity: 'rare' },
-  { id: 'palette-lava', name: 'Lave', type: 'background' as const, preview: 'linear-gradient(135deg, #ff4444, #cc2936)', price: 100, description: 'Brasier rouge orange', color: '#ff4444', rarity: 'epic' },
-  { id: 'palette-arctic', name: 'Arctique', type: 'background' as const, preview: 'linear-gradient(135deg, #a8dadc, #f1faee)', price: 60, description: 'Glace cristalline', color: '#a8dadc', rarity: 'common' },
-  { id: 'palette-cosmic', name: 'Cosmique', type: 'background' as const, preview: 'linear-gradient(135deg, #1a0533, #4c1d95)', price: 150, description: 'Nébuleuse galactique', color: '#4c1d95', rarity: 'legendary' },
-  { id: 'palette-rainbow', name: 'Arc-en-ciel', type: 'background' as const, preview: 'linear-gradient(135deg, #ff0080, #00ff80)', price: 200, description: 'Spectre complet', color: '#ff0080', rarity: 'legendary' },
-  
-  // Cercles
-  { id: 'circle-default', name: 'Défaut', type: 'circle' as const, preview: '', color: '#4ee1a0', price: 0, description: 'Cercle standard', rarity: 'common' },
-  { id: 'circle-neon', name: 'Néon Cyan', type: 'circle' as const, preview: '', color: '#00ffff', price: 30, description: 'Éclat cyber électrique', rarity: 'common' },
-  { id: 'circle-fire', name: 'Feu Ardent', type: 'circle' as const, preview: '', color: '#ff4444', price: 30, description: 'Rouge flamboyant', rarity: 'common' },
-  { id: 'circle-gold', name: 'Or Brillant', type: 'circle' as const, preview: '', color: '#ffd700', price: 35, description: 'Éclat doré luxueux', rarity: 'rare' },
-  { id: 'circle-emerald', name: 'Émeraude', type: 'circle' as const, preview: '', color: '#059669', price: 40, description: 'Vert émeraude mystique', rarity: 'rare' },
-  { id: 'circle-plasma', name: 'Plasma', type: 'circle' as const, preview: '', color: '#3b82f6', price: 45, description: 'Énergie bleu électrique', rarity: 'rare' },
-  { id: 'circle-shadow', name: 'Ombre', type: 'circle' as const, preview: '', color: '#1f2937', price: 80, description: 'Ténèbres profondes', rarity: 'epic' },
-  { id: 'circle-diamond', name: 'Diamant', type: 'circle' as const, preview: '', color: '#e5e7eb', price: 120, description: 'Éclat cristallin pur', rarity: 'legendary' },
-  
-  // Effets
-  { id: 'effect-default', name: 'Défaut', type: 'effect' as const, preview: '', color: '#4ee1a0', price: 0, description: 'Effet standard', rarity: 'common' },
-  { id: 'effect-glow', name: 'Lueur Rapide', type: 'effect' as const, preview: '', color: '#4ee1a0', price: 40, description: 'Pulsation accélérée', rarity: 'common' },
-  { id: 'effect-rainbow', name: 'Arc-en-ciel', type: 'effect' as const, preview: '', color: '#ff6b6b', price: 50, description: 'Couleurs changeantes', rarity: 'rare' },
-  { id: 'effect-lightning', name: 'Éclairs', type: 'effect' as const, preview: '', color: '#60a5fa', price: 60, description: 'Éclairs sauvages', rarity: 'rare' },
-  { id: 'effect-pulse', name: 'Pulsation', type: 'effect' as const, preview: '', color: '#a855f7', price: 55, description: 'Battement hypnotique', rarity: 'rare' },
-  { id: 'effect-tornado', name: 'Tornado', type: 'effect' as const, preview: '', color: '#10b981', price: 90, description: 'Tourbillon énergique', rarity: 'epic' },
-  { id: 'effect-cosmic', name: 'Cosmique', type: 'effect' as const, preview: '', color: '#8b5cf6', price: 150, description: 'Énergie stellaire', rarity: 'legendary' },
+const availableThemes = [
+  {
+    id: 'theme-neon',
+    name: 'Néon Électrique',
+    price: 0,
+    description: 'Le thème par défaut avec des couleurs cyber électriques',
+    rarity: 'common',
+    preview: {
+      background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d2d5e 100%)',
+      circle: '#00ffff',
+      successZone: '#4ee1a0'
+    }
+  },
+  {
+    id: 'theme-sunset',
+    name: 'Coucher de Soleil',
+    price: 100,
+    description: 'Horizon doré et rose avec des nuances chaudes',
+    rarity: 'common',
+    preview: {
+      background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc29 100%)',
+      circle: '#ff4444',
+      successZone: '#ff6b35'
+    }
+  },
+  {
+    id: 'theme-ocean',
+    name: 'Profondeur Océanique',
+    price: 150,
+    description: 'Abysses bleu profond avec des reflets argentés',
+    rarity: 'rare',
+    preview: {
+      background: 'linear-gradient(135deg, #0077be 0%, #00a8cc 50%, #4dd0e1 100%)',
+      circle: '#0077be',
+      successZone: '#00a8cc'
+    }
+  },
+  {
+    id: 'theme-forest',
+    name: 'Forêt Enchantée',
+    price: 150,
+    description: 'Forêt mystique avec des verts naturels',
+    rarity: 'rare',
+    preview: {
+      background: 'linear-gradient(135deg, #2d5a27 0%, #76c893 50%, #99d98c 100%)',
+      circle: '#2d5a27',
+      successZone: '#76c893'
+    }
+  },
+  {
+    id: 'theme-volcanic',
+    name: 'Éruption Volcanique',
+    price: 200,
+    description: 'Lave ardente avec des rouges et oranges intenses',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #ff4444 0%, #cc2936 50%, #8b0000 100%)',
+      circle: '#ff4444',
+      successZone: '#cc2936'
+    }
+  },
+  {
+    id: 'theme-arctic',
+    name: 'Cristaux Arctiques',
+    price: 120,
+    description: 'Glace cristalline avec des bleus glacés',
+    rarity: 'rare',
+    preview: {
+      background: 'linear-gradient(135deg, #a8dadc 0%, #f1faee 50%, #e9ecef 100%)',
+      circle: '#a8dadc',
+      successZone: '#457b9d'
+    }
+  },
+  {
+    id: 'theme-cosmic',
+    name: 'Nébuleuse Cosmique',
+    price: 300,
+    description: 'Galaxie lointaine avec des violets et bleus mystiques',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #1a0533 0%, #4c1d95 50%, #6366f1 100%)',
+      circle: '#8b5cf6',
+      successZone: '#a855f7'
+    }
+  },
+  {
+    id: 'theme-golden',
+    name: 'Luxe Doré',
+    price: 250,
+    description: 'Opulence dorée avec des accents luxueux',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #b8860b 0%, #ffd700 50%, #ffed4e 100%)',
+      circle: '#ffd700',
+      successZone: '#f59e0b'
+    }
+  },
+  {
+    id: 'theme-rainbow',
+    name: 'Spectre Arc-en-ciel',
+    price: 500,
+    description: 'Toutes les couleurs du spectre en harmonie parfaite',
+    rarity: 'legendary',
+    preview: {
+      background: 'linear-gradient(135deg, #ff0080 0%, #ff8c00 25%, #ffd700 50%, #00ff80 75%, #0080ff 100%)',
+      circle: '#ff0080',
+      successZone: '#00ff80'
+    }
+  },
+  {
+    id: 'theme-shadow',
+    name: 'Ombres Mystiques',
+    price: 400,
+    description: 'Ténèbres profondes avec des éclats violets',
+    rarity: 'legendary',
+    preview: {
+      background: 'linear-gradient(135deg, #000000 0%, #1f2937 50%, #374151 100%)',
+      circle: '#6b7280',
+      successZone: '#8b5cf6'
+    }
+  },
+  {
+    id: 'theme-emerald',
+    name: 'Émeraude Pure',
+    price: 180,
+    description: 'Verts émeraude cristallins et purs',
+    rarity: 'rare',
+    preview: {
+      background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+      circle: '#059669',
+      successZone: '#10b981'
+    }
+  },
+  {
+    id: 'theme-plasma',
+    name: 'Énergie Plasma',
+    price: 220,
+    description: 'Énergie électrique bleue pure',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)',
+      circle: '#3b82f6',
+      successZone: '#1d4ed8'
+    }
+  }
 ];
 
 interface ShopProps {
   coins: number;
   ownedItems: any[];
+  currentTheme: string;
   onBack: () => void;
-  onPurchaseItem: (item: any) => boolean;
+  onPurchaseTheme: (theme: any) => boolean;
 }
 
 export const Shop: React.FC<ShopProps> = ({
   coins,
   ownedItems,
+  currentTheme,
   onBack,
-  onPurchaseItem,
+  onPurchaseTheme,
 }) => {
-  const handlePurchase = (item: any) => {
-    if (ownedItems.find(owned => owned.id === item.id)) {
-      toast.error('Vous possédez déjà cet élément!');
+  const handlePurchase = (theme: any) => {
+    if (ownedItems.find(owned => owned.id === theme.id)) {
+      toast.error('Vous possédez déjà ce thème!');
       return;
     }
 
-    if (onPurchaseItem(item)) {
-      toast.success(`${item.name} acheté!`, {
-        description: `Vous avez dépensé ${item.price} coins`,
+    if (onPurchaseTheme(theme)) {
+      toast.success(`${theme.name} acheté et équipé!`, {
+        description: `Vous avez dépensé ${theme.price} coins`,
       });
     } else {
       toast.error('Pas assez de coins!', {
-        description: `Il vous manque ${item.price - coins} coins`,
+        description: `Il vous manque ${theme.price - coins} coins`,
       });
     }
   };
@@ -86,83 +203,83 @@ export const Shop: React.FC<ShopProps> = ({
     }
   };
 
-  const backgrounds = availableItems.filter(item => item.type === 'background');
-  const circles = availableItems.filter(item => item.type === 'circle');
-  const effects = availableItems.filter(item => item.type === 'effect');
-
-  const renderItemCard = (item: any) => {
-    const isOwned = ownedItems.find(owned => owned.id === item.id);
-    const canAfford = coins >= item.price;
-    const isFree = item.price === 0;
+  const renderThemeCard = (theme: any) => {
+    const isOwned = ownedItems.find(owned => owned.id === theme.id) || theme.price === 0;
+    const isEquipped = currentTheme === theme.id;
+    const canAfford = coins >= theme.price;
+    const isFree = theme.price === 0;
 
     return (
       <Card 
-        key={item.id}
+        key={theme.id}
         className={`
           bg-button-bg border-wheel-border p-4 hover:scale-105 transition-all duration-300 cursor-pointer animate-scale-in
-          ${isOwned ? 'border-success shadow-glow-success' : ''}
-          ${item.rarity === 'rare' ? 'shadow-blue-500/20' : ''}
-          ${item.rarity === 'epic' ? 'shadow-purple-500/20' : ''}
-          ${item.rarity === 'legendary' ? 'shadow-yellow-500/20' : ''}
+          ${isEquipped ? 'border-success shadow-glow-success ring-2 ring-success/50' : ''}
+          ${isOwned && !isEquipped ? 'border-blue-500/50 shadow-blue-500/20' : ''}
+          ${theme.rarity === 'rare' ? 'shadow-blue-500/20' : ''}
+          ${theme.rarity === 'epic' ? 'shadow-purple-500/20' : ''}
+          ${theme.rarity === 'legendary' ? 'shadow-yellow-500/20' : ''}
         `}
       >
         {/* Preview */}
         <div className="relative mb-3">
-          {item.type === 'background' && (
-            <div 
-              className={`
-                w-full h-20 rounded-lg border-2 border-wheel-border
-                ${item.rarity === 'legendary' ? 'animate-pulse' : ''}
-              `}
-              style={{ background: item.preview }}
-            />
-          )}
-          
-          {item.type === 'circle' && (
-            <div className="w-full h-20 bg-game-dark rounded-lg border-2 border-wheel-border flex items-center justify-center">
-              <div 
-                className={`
-                  w-16 h-16 rounded-full border-4
-                  ${item.rarity === 'legendary' ? 'animate-spin' : item.rarity === 'epic' ? 'animate-pulse' : ''}
-                `}
-                style={{ borderColor: item.color }}
-              />
+          <div 
+            className={`
+              w-full h-24 rounded-lg border-2 border-wheel-border relative overflow-hidden
+              ${theme.rarity === 'legendary' ? 'animate-pulse' : ''}
+            `}
+            style={{ background: theme.preview.background }}
+          >
+            {/* Mini game preview */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-16 h-16">
+                {/* Circle */}
+                <div 
+                  className="absolute inset-0 rounded-full border-2"
+                  style={{ borderColor: theme.preview.circle }}
+                />
+                {/* Success zone */}
+                <div 
+                  className="absolute w-3 h-3 rounded-full top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  style={{ backgroundColor: theme.preview.successZone }}
+                />
+                {/* Ball */}
+                <div 
+                  className="absolute w-2 h-2 rounded-full top-1 left-1/2 transform -translate-x-1/2"
+                  style={{ backgroundColor: theme.preview.circle }}
+                />
+              </div>
             </div>
-          )}
-          
-          {item.type === 'effect' && (
-            <div className="w-full h-20 bg-game-dark rounded-lg border-2 border-wheel-border flex items-center justify-center">
-              <div 
-                className={`
-                  w-8 h-8 rounded-full
-                  ${item.rarity === 'legendary' ? 'animate-bounce' : 'animate-pulse'}
-                `}
-                style={{ backgroundColor: item.color }}
-              />
-            </div>
-          )}
+          </div>
           
           {/* Rarity Badge */}
-          {item.rarity !== 'common' && (
-            <Badge className={`absolute -top-2 -left-2 ${getRarityColor(item.rarity)}`}>
-              {getRarityIcon(item.rarity)}
-              {item.rarity.toUpperCase()}
+          {theme.rarity !== 'common' && (
+            <Badge className={`absolute -top-2 -left-2 ${getRarityColor(theme.rarity)}`}>
+              {getRarityIcon(theme.rarity)}
+              {theme.rarity.toUpperCase()}
             </Badge>
           )}
           
           {/* Status Badge */}
-          {isOwned && (
-            <Badge className="absolute -top-2 -right-2 bg-success text-game-dark">
+          {isEquipped && (
+            <Badge className="absolute -top-2 -right-2 bg-success text-game-dark animate-pulse">
+              <Check className="w-3 h-3 mr-1" />
+              ÉQUIPÉ
+            </Badge>
+          )}
+          
+          {isOwned && !isEquipped && (
+            <Badge className="absolute -top-2 -right-2 bg-blue-500 text-white">
               <Check className="w-3 h-3 mr-1" />
               POSSÉDÉ
             </Badge>
           )}
         </div>
 
-        {/* Item Info */}
+        {/* Theme Info */}
         <div className="text-center mb-3">
-          <h3 className="text-lg font-bold text-primary mb-1">{item.name}</h3>
-          <p className="text-text-muted text-xs">{item.description}</p>
+          <h3 className="text-lg font-bold text-primary mb-1">{theme.name}</h3>
+          <p className="text-text-muted text-xs">{theme.description}</p>
         </div>
 
         {/* Price and Action */}
@@ -173,36 +290,43 @@ export const Shop: React.FC<ShopProps> = ({
             ) : (
               <>
                 <Coins className="w-3 h-3 mr-1" />
-                {item.price}
+                {theme.price}
               </>
             )}
           </div>
 
           <Button
-            onClick={() => handlePurchase(item)}
+            onClick={() => isOwned ? null : handlePurchase(theme)}
             size="sm"
             className={`
               w-full text-xs transition-all duration-300
-              ${isOwned 
+              ${isEquipped 
                 ? 'bg-success hover:bg-success text-game-dark cursor-default' 
+                : isOwned
+                ? 'bg-blue-500 hover:bg-blue-600 text-white'
                 : canAfford || isFree
                 ? 'bg-gradient-primary hover:scale-105'
                 : 'bg-button-bg border border-wheel-border text-text-muted cursor-not-allowed'
               }
             `}
-            disabled={isOwned || (!canAfford && !isFree)}
+            disabled={isEquipped || (!canAfford && !isFree && !isOwned)}
           >
-            {isOwned ? (
+            {isEquipped ? (
               <>
                 <Check className="w-3 h-3 mr-1" />
-                POSSÉDÉ
+                ÉQUIPÉ
+              </>
+            ) : isOwned ? (
+              <>
+                <Palette className="w-3 h-3 mr-1" />
+                ÉQUIPER
               </>
             ) : (canAfford || isFree) ? (
-              isFree ? 'RÉCUPÉRER' : 'ACHETER'
+              isFree ? 'RÉCUPÉRER' : 'ACHETER & ÉQUIPER'
             ) : (
               <>
-                <Lock className="w-3 h-3 mr-1" />
-                VERROUILLÉ
+                <Coins className="w-3 h-3 mr-1" />
+                {theme.price - coins} coins manquants
               </>
             )}
           </Button>
@@ -225,7 +349,7 @@ export const Shop: React.FC<ShopProps> = ({
         </Button>
         
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-primary mb-1">🛍️ BOUTIQUE PREMIUM</h1>
+          <h1 className="text-2xl font-bold text-primary mb-1">🎨 THÈMES PREMIUM</h1>
           <div className="flex items-center justify-center text-secondary">
             <Coins className="w-4 h-4 mr-2" />
             <span className="text-xl font-bold">{coins}</span>
@@ -236,50 +360,18 @@ export const Shop: React.FC<ShopProps> = ({
         <div className="w-20"></div>
       </div>
 
-      {/* Shop Tabs */}
-      <Tabs defaultValue="backgrounds" className="max-w-6xl mx-auto">
-        <TabsList className="grid w-full grid-cols-3 bg-button-bg border border-wheel-border">
-          <TabsTrigger value="backgrounds" className="flex items-center gap-2">
-            <Palette className="w-4 h-4" />
-            Palettes ({backgrounds.length})
-          </TabsTrigger>
-          <TabsTrigger value="circles" className="flex items-center gap-2">
-            <Circle className="w-4 h-4" />
-            Cercles ({circles.length})
-          </TabsTrigger>
-          <TabsTrigger value="effects" className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4" />
-            Effets ({effects.length})
-          </TabsTrigger>
-        </TabsList>
+      {/* Description */}
+      <div className="text-center mb-6 text-text-muted animate-fade-in">
+        <p>🌈 Transformez votre expérience de jeu avec des thèmes complets!</p>
+        <p className="text-sm mt-1">Chaque thème inclut: fond, cercle, zone de succès et bille assortis</p>
+      </div>
 
-        <TabsContent value="backgrounds" className="mt-6">
-          <div className="mb-4 text-center text-text-muted">
-            <p>🎨 Transformez votre jeu avec des palettes de couleurs uniques!</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {backgrounds.map((item) => renderItemCard(item))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="circles" className="mt-6">
-          <div className="mb-4 text-center text-text-muted">
-            <p>⭕ Personnalisez la zone de succès avec style!</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {circles.map((item) => renderItemCard(item))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="effects" className="mt-6">
-          <div className="mb-4 text-center text-text-muted">
-            <p>✨ Ajoutez des effets visuels époustouflants!</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {effects.map((item) => renderItemCard(item))}
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* Themes Grid */}
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {availableThemes.map((theme) => renderThemeCard(theme))}
+        </div>
+      </div>
 
       {/* Rarity Legend */}
       <div className="max-w-4xl mx-auto mt-8 p-4 bg-button-bg/50 border border-wheel-border rounded-lg animate-fade-in">
@@ -307,7 +399,7 @@ export const Shop: React.FC<ShopProps> = ({
       {/* Tips */}
       <div className="text-center mt-6 text-text-muted animate-fade-in">
         <p className="text-sm">
-          💡 Gagnez des coins en jouant et complétez des défis pour débloquer plus d'éléments!
+          💡 Les thèmes achetés sont équipés automatiquement et changent immédiatement votre jeu!
         </p>
       </div>
     </div>
