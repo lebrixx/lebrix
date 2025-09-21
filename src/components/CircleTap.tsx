@@ -3,6 +3,7 @@ import { useGameLogic } from '@/hooks/useGameLogic';
 import { useSound } from '@/hooks/useSound';
 import { Button } from '@/components/ui/button';
 import { Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { THEMES } from '@/constants/themes';
 
 interface CircleTapProps {
   theme: string;
@@ -16,6 +17,12 @@ interface CircleTapProps {
 export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) => {
   const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic();
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
+
+  // Resolve current theme definition for visuals (background, bar, success zone)
+  const themeDef = THEMES.find((t) => t.id === theme) || THEMES[0];
+  const zoneColor = themeDef.preview.successZone;
+  const barColor = themeDef.preview.circle;
+  const backgroundCss = themeDef.preview.background;
 
   // Gestion des touches clavier
   useEffect(() => {
@@ -58,29 +65,10 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
   const zoneArcDeg = (cfg.zoneArc * 180) / Math.PI;
 
   // Couleur du cercle basée sur la personnalisation
-  const getCircleColor = () => {
-    if (customization?.circle === 'circle-neon') return '#00ffff';
-    if (customization?.circle === 'circle-fire') return '#ff4444';
-    if (customization?.circle === 'circle-gold') return '#ffd700';
-    if (customization?.circle === 'circle-emerald') return '#059669';
-    if (customization?.circle === 'circle-plasma') return '#3b82f6';
-    if (customization?.circle === 'circle-shadow') return '#1f2937';
-    if (customization?.circle === 'circle-diamond') return '#e5e7eb';
-    return '#4ee1a0'; // Défaut
-  };
+  const getCircleColor = () => zoneColor;
 
   // Style de l'arrière-plan basé sur la palette sélectionnée
-  const getBackgroundStyle = () => {
-    if (customization?.background === 'palette-sunset') return { background: 'linear-gradient(135deg, #ff6b35, #f7931e)' };
-    if (customization?.background === 'palette-ocean') return { background: 'linear-gradient(135deg, #0077be, #00a8cc)' };
-    if (customization?.background === 'palette-forest') return { background: 'linear-gradient(135deg, #2d5a27, #76c893)' };
-    if (customization?.background === 'palette-lava') return { background: 'linear-gradient(135deg, #ff4444, #cc2936)' };
-    if (customization?.background === 'palette-arctic') return { background: 'linear-gradient(135deg, #a8dadc, #f1faee)' };
-    if (customization?.background === 'palette-cosmic') return { background: 'linear-gradient(135deg, #1a0533, #4c1d95)' };
-    if (customization?.background === 'palette-rainbow') return { background: 'linear-gradient(135deg, #ff0080, #00ff80)' };
-    // Néon par défaut (fond violet avec accents néon)
-    return { background: 'linear-gradient(135deg, hsl(270, 40%, 4%), hsl(270, 30%, 8%))' };
-  };
+  const getBackgroundStyle = () => ({ background: backgroundCss });
 
   return (
     <div 
@@ -116,11 +104,11 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
             cy={cfg.radius + 40}
             r={cfg.radius}
             fill="none"
-            stroke="hsl(var(--ring))"
+            stroke={barColor}
             strokeWidth="12"
             className="opacity-90"
             style={{
-              filter: 'drop-shadow(0 0 5px hsl(var(--ring) / 0.5))',
+              filter: `drop-shadow(0 0 5px ${barColor})`,
             }}
           />
 
@@ -146,10 +134,10 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
               y={-3}
               width={30}
               height={6}
-              fill="#FF4444"
+              fill={barColor}
               className="drop-shadow-lg"
               style={{
-                filter: 'drop-shadow(0 0 10px #FF4444) drop-shadow(0 0 20px #FF4444)',
+                filter: `drop-shadow(0 0 10px ${barColor}) drop-shadow(0 0 20px ${barColor})`,
               }}
             />
             
@@ -158,10 +146,10 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
               cx={cfg.radius}
               cy={0}
               r={8}
-              fill="#FF4444"
+              fill={barColor}
               className="animate-pulse"
               style={{
-                filter: 'drop-shadow(0 0 8px #FF4444)',
+                filter: `drop-shadow(0 0 8px ${barColor})`,
               }}
             />
           </g>
@@ -176,7 +164,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
                   y={-2}
                   width={25}
                   height={4}
-                  fill="#FF4444"
+                  fill={barColor}
                   className="opacity-40 animate-trail-fade"
                 />
               </g>
@@ -187,7 +175,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
                   y={-1}
                   width={15}
                   height={2}
-                  fill="#FF4444"
+                  fill={barColor}
                   className="opacity-20 animate-trail-fade"
                 />
               </g>

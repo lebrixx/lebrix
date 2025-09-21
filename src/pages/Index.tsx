@@ -15,7 +15,7 @@ const Index = () => {
     return saved || 'theme-neon';
   });
   
-  const { gameState, spendCoins, purchaseTheme, purchaseItem } = useGameLogic();
+  const { gameState, purchaseTheme, addCoins } = useGameLogic();
 
   // Sauvegarder le thème dans localStorage
   useEffect(() => {
@@ -61,16 +61,17 @@ const Index = () => {
         return (
           <Shop
             coins={gameState.coins}
-            ownedItems={gameState.ownedItems}
+            ownedThemes={gameState.ownedThemes}
             currentTheme={currentTheme}
             onBack={() => setCurrentScreen('menu')}
             onPurchaseTheme={(theme) => {
-              if (purchaseItem(theme)) {
+              if (gameState.ownedThemes.includes(theme.id) || purchaseTheme(theme.id, theme.price)) {
                 handleThemeChange(theme.id);
                 return true;
               }
               return false;
             }}
+            onEquipTheme={(themeId) => handleThemeChange(themeId)}
           />
         );
       
@@ -80,7 +81,7 @@ const Index = () => {
             coins={gameState.coins}
             onBack={() => setCurrentScreen('menu')}
             onReward={(reward) => {
-              // Ajouter des coins depuis les défis
+              addCoins(reward);
               toast.success(`${reward} coins gagnés!`);
             }}
             currentScore={gameState.currentScore}

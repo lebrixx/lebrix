@@ -284,6 +284,7 @@ export const useGameLogic = () => {
       setGameState(prev => ({
         ...prev,
         currentScore: newScore,
+        bestScore: Math.max(prev.bestScore, newScore),
         ballSpeed: newSpeed,
         ballDirection: newDirection,
         zoneStart: newZoneStart,
@@ -358,24 +359,27 @@ export const useGameLogic = () => {
     return false;
   }, [gameState.coins]);
 
+  // Ajouter des coins (récompenses, défis)
+  const addCoins = useCallback((amount: number) => {
+    if (amount <= 0) return;
+    setGameState(prev => ({ ...prev, coins: prev.coins + amount }));
+  }, []);
+
   // Sauvegarde automatique
   useEffect(() => {
     saveProgress();
   }, [saveProgress]);
 
-  // Acheter un thème
-  const purchaseTheme = useCallback((themeId: string): boolean => {
+  // Acheter un thème (prix variable)
+  const purchaseTheme = useCallback((themeId: string, price: number): boolean => {
     if (gameState.ownedThemes.includes(themeId)) {
       return false; // Déjà possédé
     }
-    
-    const themePrice = 50; // Prix fixe pour tous les thèmes
-    
-    if (gameState.coins >= themePrice) {
+    if (gameState.coins >= price) {
       setGameState(prev => ({
         ...prev,
-        coins: prev.coins - themePrice,
-        ownedThemes: [...prev.ownedThemes, themeId]
+        coins: prev.coins - price,
+        ownedThemes: [...prev.ownedThemes, themeId],
       }));
       return true;
     }
@@ -407,6 +411,7 @@ export const useGameLogic = () => {
     onTap,
     resetGame,
     spendCoins,
+    addCoins,
     purchaseTheme,
     purchaseItem,
     cfg, // Export config pour l'affichage

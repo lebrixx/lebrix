@@ -4,172 +4,31 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { THEMES } from '@/constants/themes';
 
-const availableThemes = [
-  {
-    id: 'theme-neon',
-    name: 'Néon Électrique',
-    price: 0,
-    description: 'Le thème par défaut avec des couleurs cyber électriques',
-    rarity: 'common',
-    preview: {
-      background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d2d5e 100%)',
-      circle: '#00ffff',
-      successZone: '#4ee1a0'
-    }
-  },
-  {
-    id: 'theme-sunset',
-    name: 'Coucher de Soleil',
-    price: 100,
-    description: 'Horizon doré et rose avec des nuances chaudes',
-    rarity: 'common',
-    preview: {
-      background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc29 100%)',
-      circle: '#ff4444',
-      successZone: '#ff6b35'
-    }
-  },
-  {
-    id: 'theme-ocean',
-    name: 'Profondeur Océanique',
-    price: 150,
-    description: 'Abysses bleu profond avec des reflets argentés',
-    rarity: 'rare',
-    preview: {
-      background: 'linear-gradient(135deg, #0077be 0%, #00a8cc 50%, #4dd0e1 100%)',
-      circle: '#0077be',
-      successZone: '#00a8cc'
-    }
-  },
-  {
-    id: 'theme-forest',
-    name: 'Forêt Enchantée',
-    price: 150,
-    description: 'Forêt mystique avec des verts naturels',
-    rarity: 'rare',
-    preview: {
-      background: 'linear-gradient(135deg, #2d5a27 0%, #76c893 50%, #99d98c 100%)',
-      circle: '#2d5a27',
-      successZone: '#76c893'
-    }
-  },
-  {
-    id: 'theme-volcanic',
-    name: 'Éruption Volcanique',
-    price: 200,
-    description: 'Lave ardente avec des rouges et oranges intenses',
-    rarity: 'epic',
-    preview: {
-      background: 'linear-gradient(135deg, #ff4444 0%, #cc2936 50%, #8b0000 100%)',
-      circle: '#ff4444',
-      successZone: '#cc2936'
-    }
-  },
-  {
-    id: 'theme-arctic',
-    name: 'Cristaux Arctiques',
-    price: 120,
-    description: 'Glace cristalline avec des bleus glacés',
-    rarity: 'rare',
-    preview: {
-      background: 'linear-gradient(135deg, #a8dadc 0%, #f1faee 50%, #e9ecef 100%)',
-      circle: '#a8dadc',
-      successZone: '#457b9d'
-    }
-  },
-  {
-    id: 'theme-cosmic',
-    name: 'Nébuleuse Cosmique',
-    price: 300,
-    description: 'Galaxie lointaine avec des violets et bleus mystiques',
-    rarity: 'epic',
-    preview: {
-      background: 'linear-gradient(135deg, #1a0533 0%, #4c1d95 50%, #6366f1 100%)',
-      circle: '#8b5cf6',
-      successZone: '#a855f7'
-    }
-  },
-  {
-    id: 'theme-golden',
-    name: 'Luxe Doré',
-    price: 250,
-    description: 'Opulence dorée avec des accents luxueux',
-    rarity: 'epic',
-    preview: {
-      background: 'linear-gradient(135deg, #b8860b 0%, #ffd700 50%, #ffed4e 100%)',
-      circle: '#ffd700',
-      successZone: '#f59e0b'
-    }
-  },
-  {
-    id: 'theme-rainbow',
-    name: 'Spectre Arc-en-ciel',
-    price: 500,
-    description: 'Toutes les couleurs du spectre en harmonie parfaite',
-    rarity: 'legendary',
-    preview: {
-      background: 'linear-gradient(135deg, #ff0080 0%, #ff8c00 25%, #ffd700 50%, #00ff80 75%, #0080ff 100%)',
-      circle: '#ff0080',
-      successZone: '#00ff80'
-    }
-  },
-  {
-    id: 'theme-shadow',
-    name: 'Ombres Mystiques',
-    price: 400,
-    description: 'Ténèbres profondes avec des éclats violets',
-    rarity: 'legendary',
-    preview: {
-      background: 'linear-gradient(135deg, #000000 0%, #1f2937 50%, #374151 100%)',
-      circle: '#6b7280',
-      successZone: '#8b5cf6'
-    }
-  },
-  {
-    id: 'theme-emerald',
-    name: 'Émeraude Pure',
-    price: 180,
-    description: 'Verts émeraude cristallins et purs',
-    rarity: 'rare',
-    preview: {
-      background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
-      circle: '#059669',
-      successZone: '#10b981'
-    }
-  },
-  {
-    id: 'theme-plasma',
-    name: 'Énergie Plasma',
-    price: 220,
-    description: 'Énergie électrique bleue pure',
-    rarity: 'epic',
-    preview: {
-      background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)',
-      circle: '#3b82f6',
-      successZone: '#1d4ed8'
-    }
-  }
-];
+const availableThemes = THEMES;
 
 interface ShopProps {
   coins: number;
-  ownedItems: any[];
+  ownedThemes: string[];
   currentTheme: string;
   onBack: () => void;
   onPurchaseTheme: (theme: any) => boolean;
+  onEquipTheme: (themeId: string) => void;
 }
 
 export const Shop: React.FC<ShopProps> = ({
   coins,
-  ownedItems,
+  ownedThemes,
   currentTheme,
   onBack,
   onPurchaseTheme,
+  onEquipTheme,
 }) => {
   const handlePurchase = (theme: any) => {
-    if (ownedItems.find(owned => owned.id === theme.id)) {
-      toast.error('Vous possédez déjà ce thème!');
+    if (ownedThemes.includes(theme.id)) {
+      toast.message('Thème déjà possédé', { description: 'Équipement automatique...' });
+      onEquipTheme(theme.id);
       return;
     }
 
@@ -204,7 +63,7 @@ export const Shop: React.FC<ShopProps> = ({
   };
 
   const renderThemeCard = (theme: any) => {
-    const isOwned = ownedItems.find(owned => owned.id === theme.id) || theme.price === 0;
+    const isOwned = ownedThemes.includes(theme.id) || theme.price === 0;
     const isEquipped = currentTheme === theme.id;
     const canAfford = coins >= theme.price;
     const isFree = theme.price === 0;
@@ -296,7 +155,7 @@ export const Shop: React.FC<ShopProps> = ({
           </div>
 
           <Button
-            onClick={() => isOwned ? null : handlePurchase(theme)}
+            onClick={() => (isOwned ? onEquipTheme(theme.id) : handlePurchase(theme))}
             size="sm"
             className={`
               w-full text-xs transition-all duration-300
