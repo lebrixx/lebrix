@@ -186,7 +186,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
   }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization]);
 
-  // Animation de la bille (60 FPS)
+  // Animation de la bille (60 FPS) + Zone mobile
   const animateBall = useCallback(() => {
     if (gameState.gameStatus !== 'running') return;
 
@@ -203,9 +203,38 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         // Normaliser l'angle entre 0 et 2π (gérer les angles négatifs)
         newAngle = ((newAngle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
         
+        let newZoneStart = prev.zoneStart;
+        let newTimeLeft = prev.timeLeft;
+        
+        // Mode Zone Mobile : faire glisser la zone verte
+        const modeConfig = cfgModes[prev.currentMode];
+        if (modeConfig.keepMovingZone && prev.zoneDriftSpeed) {
+          newZoneStart = prev.zoneStart + (prev.zoneDriftSpeed * deltaTime);
+          newZoneStart = ((newZoneStart % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+        }
+        
+        // Mode Survie : décrémenter le timer
+        if (modeConfig.survival && prev.timeLeft !== undefined) {
+          newTimeLeft = Math.max(0, prev.timeLeft - deltaTime);
+          
+          // Fin du temps en mode survie
+          if (newTimeLeft <= 0 && prev.timeLeft > 0) {
+            return {
+              ...prev,
+              gameStatus: 'gameover',
+              timeLeft: 0,
+              showResult: true,
+              lastResult: 'failure',
+            };
+          }
+        }
+        
         return {
           ...prev,
           ballAngle: newAngle,
+          zoneStart: newZoneStart,
+          zoneEnd: newZoneStart + prev.zoneArc,
+          timeLeft: newTimeLeft,
         };
       });
 
@@ -215,7 +244,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     };
 
     animationFrameRef.current = requestAnimationFrame(animate);
-  }, [gameState.gameStatus]);
+  }, [gameState.gameStatus, gameState.currentMode]);
 
   useEffect(() => {
     if (gameState.gameStatus === 'running') {
@@ -299,11 +328,28 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       const shouldReverse = Math.random() < cfg.directionReverseChance;
       const newDirection = shouldReverse ? gameState.ballDirection * -1 : gameState.ballDirection;
       
-      const newZoneStart = Math.random() * 2 * Math.PI;
-      const modeConfig = cfgModes[currentMode];
-      const newZoneArc = modeConfig.variableArc 
-        ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
-        : gameState.zoneArc;
+      const modeConfig = cfgModes[gameState.currentMode];
+      let newZoneStart = gameState.zoneStart;
+      let newZoneArc = gameState.zoneArc;
+      let newZoneDriftSpeed = gameState.zoneDriftSpeed;
+
+      // Mode Arc Changeant : changer la taille et position de l'arc
+      if (modeConfig.variableArc) {
+        newZoneArc = Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!;
+        newZoneStart = Math.random() * 2 * Math.PI;
+      }
+      // Mode Zone Mobile : accélérer le drift et inverser parfois
+      else if (modeConfig.keepMovingZone && newZoneDriftSpeed) {
+        newZoneDriftSpeed = newZoneDriftSpeed * (modeConfig.zoneDriftGain || 1.05);
+        // Chance d'inverser le sens de rotation
+        if (Math.random() < (modeConfig.zoneDriftInvertChance || 0.3)) {
+          newZoneDriftSpeed = -newZoneDriftSpeed;
+        }
+      }
+      // Mode classique/survie : repositionner l'arc normalement
+      else if (!modeConfig.keepMovingZone) {
+        newZoneStart = Math.random() * 2 * Math.PI;
+      }
 
       setGameState(prev => ({
         ...prev,
@@ -314,6 +360,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         zoneStart: newZoneStart,
         zoneEnd: newZoneStart + newZoneArc,
         zoneArc: newZoneArc,
+        zoneDriftSpeed: newZoneDriftSpeed,
         coins: prev.coins + newScore, // Gain de coins basé sur le score
         level: prev.level + 1,
         lastResult: 'success',
@@ -335,20 +382,37 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       }, 200);
 
     } else {
-      // ÉCHEC - Fin de partie
-      setGameState(prev => ({
-        ...prev,
-        gameStatus: 'gameover',
-        bestScore: Math.max(prev.currentScore, prev.bestScore),
-        coins: prev.coins + Math.floor(prev.currentScore / 2), // Bonus coins pour essayer
-        showResult: true,
-        lastResult: 'failure',
-      }));
+      // ÉCHEC - Fin de partie (sauf en mode survie où on continue)
+      const modeConfig = cfgModes[gameState.currentMode];
+      
+      if (modeConfig.survival && gameState.timeLeft && gameState.timeLeft > 0) {
+        // En mode survie, on continue après un échec
+        setGameState(prev => ({
+          ...prev,
+          lastResult: 'failure',
+          showResult: true,
+        }));
 
-      // Masquer le message de game over après 2 secondes
-      setTimeout(() => {
-        setGameState(prev => ({ ...prev, showResult: false }));
-      }, 2000);
+        // Masquer le message d'échec après 1 seconde
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, showResult: false }));
+        }, 1000);
+      } else {
+        // Mode normal : game over
+        setGameState(prev => ({
+          ...prev,
+          gameStatus: 'gameover',
+          bestScore: Math.max(prev.currentScore, prev.bestScore),
+          coins: prev.coins + Math.floor(prev.currentScore / 2), // Bonus coins pour essayer
+          showResult: true,
+          lastResult: 'failure',
+        }));
+
+        // Masquer le message de game over après 2 secondes
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, showResult: false }));
+        }, 2000);
+      }
     }
   }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode]);
 

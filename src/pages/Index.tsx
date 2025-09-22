@@ -26,7 +26,7 @@ const Index = () => {
     return (saved as ModeType) || ModeID.CLASSIC;
   });
 
-  const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic(currentMode);
+  const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { toast } = useToast();
 
   const handleThemeChange = (theme: string) => {
@@ -84,7 +84,11 @@ const Index = () => {
         return (
           <Shop
             coins={gameState.coins}
+            ownedThemes={gameState.ownedThemes}
+            currentTheme={currentTheme}
             onBack={() => setCurrentScreen('menu')}
+            onPurchaseTheme={(theme) => spendCoins(theme.price)}
+            onEquipTheme={handleThemeChange}
           />
         );
         
@@ -92,6 +96,13 @@ const Index = () => {
         return (
           <Challenges
             onBack={() => setCurrentScreen('menu')}
+            currentScore={gameState.currentScore}
+            bestScore={gameState.bestScore}
+            coins={gameState.coins}
+            maxSpeedReached={gameState.maxSpeedReached}
+            directionChanges={gameState.directionChanges}
+            totalGamesPlayed={gameState.totalGamesPlayed}
+            onReward={addCoins}
           />
         );
 
