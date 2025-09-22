@@ -7,6 +7,7 @@ import { THEMES } from '@/constants/themes';
 
 interface CircleTapProps {
   theme: string;
+  onBack?: () => void;
   customization?: {
     background: string;
     circle: string;
@@ -14,7 +15,7 @@ interface CircleTapProps {
   };
 }
 
-export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) => {
+export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack }) => {
   const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic();
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
 
@@ -62,7 +63,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
 
   // Position de la zone verte
   const zoneStartDeg = (gameState.zoneStart * 180) / Math.PI;
-  const zoneArcDeg = (cfg.zoneArc * 180) / Math.PI;
+  const zoneArcDeg = (gameState.zoneArc * 180) / Math.PI;
 
   // Couleur du cercle basée sur la personnalisation
   const getCircleColor = () => zoneColor;
@@ -261,7 +262,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization }) =>
           }
         </p>
         <p className="text-xs mt-2">
-          Vitesse: {gameState.ballSpeed.toFixed(1)} rad/s • Zone: {Math.round((cfg.zoneArc * 180) / Math.PI)}°
+          Vitesse: {gameState.ballSpeed.toFixed(1)} rad/s • Zone: {Math.round((gameState.zoneArc * 180) / Math.PI)}°
         </p>
       </div>
     </div>

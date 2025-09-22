@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import * as React from 'react';
+import { ModeType, ModeID, cfgModes, cfgBase, inArc } from '@/constants/modes';
 
 interface CustomizationItem {
   id: string;
@@ -28,6 +29,7 @@ export interface GameState {
   ballDirection: number; // Direction: 1 ou -1
   zoneStart: number; // Angle de début de la zone verte (radians)
   zoneEnd: number; // Angle de fin de la zone verte (radians)
+  zoneArc: number; // Taille de l'arc vert (radians)
   showResult: boolean;
   lastResult: 'success' | 'failure' | null;
   level: number;
@@ -40,6 +42,11 @@ export interface GameState {
   maxSpeedReached: number;
   directionChanges: number;
   totalGamesPlayed: number;
+  // Mode-specific
+  currentMode: ModeType;
+  timeLeft?: number; // Pour mode survie
+  zoneDrift?: number; // Pour zone mobile
+  zoneDriftSpeed?: number;
 }
 
 // Configuration du jeu
@@ -48,7 +55,6 @@ const cfg = {
   ballSize: 10,               // diamètre visuel de la bille (px)
   baseSpeed: 1.8,            // radians/seconde au départ
   speedGain: 1.03,           // +3% à chaque réussite (comme demandé)
-  zoneArc: Math.PI / 5,      // taille de l'arc vert (constante, ~36°)
   debounceMs: 40,            // anti double-tap
   directionReverseChance: 0.2, // 20% de chance d'inverser la direction
   speedVariation: 0.05       // ±5% de variation de vitesse aléatoire
@@ -71,10 +77,15 @@ const defaultItems: CustomizationItem[] = [
   { id: 'effect-default', name: 'Défaut', type: 'effect', preview: '', color: '#4ee1a0' },
 ];
 
-export const useGameLogic = () => {
+export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('luckyStopGame');
+    const modeConfig = cfgModes[currentMode];
     const zoneStart = Math.random() * 2 * Math.PI;
+    const zoneArc = modeConfig.variableArc 
+      ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
+      : modeConfig.zoneArc || cfgBase.zoneArc;
+    
     const defaultState: GameState = {
       gameStatus: 'idle',
       currentScore: 0,
@@ -91,7 +102,8 @@ export const useGameLogic = () => {
       ballSpeed: cfg.baseSpeed,
       ballDirection: 1,
       zoneStart: zoneStart,
-      zoneEnd: zoneStart + cfg.zoneArc,
+      zoneEnd: zoneStart + zoneArc,
+      zoneArc: zoneArc,
       showResult: false,
       lastResult: null,
       level: 1,
@@ -102,6 +114,10 @@ export const useGameLogic = () => {
       maxSpeedReached: cfg.baseSpeed,
       directionChanges: 0,
       totalGamesPlayed: 0,
+      currentMode: currentMode,
+      timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
+      zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
+      zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
     };
     
     if (saved) {
@@ -109,7 +125,7 @@ export const useGameLogic = () => {
         const parsedState = JSON.parse(saved);
         return {
           ...defaultState,
-          bestScore: parsedState.bestScore || 0,
+          bestScore: parsedState[`bestScore_${currentMode}`] || 0,
           coins: parsedState.coins || 100,
           ownedThemes: parsedState.ownedThemes || [],
           ownedItems: parsedState.ownedItems || [...defaultItems],
@@ -207,7 +223,12 @@ export const useGameLogic = () => {
 
   // Démarrer le jeu
   const startGame = useCallback(() => {
+    const modeConfig = cfgModes[currentMode];
     const zoneStart = Math.random() * 2 * Math.PI;
+    const zoneArc = modeConfig.variableArc 
+      ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
+      : modeConfig.zoneArc || cfgBase.zoneArc;
+      
     setGameState(prev => ({
       ...prev,
       gameStatus: 'running',
@@ -216,7 +237,8 @@ export const useGameLogic = () => {
       ballSpeed: cfg.baseSpeed,
       ballDirection: 1,
       zoneStart: zoneStart,
-      zoneEnd: zoneStart + cfg.zoneArc,
+      zoneEnd: zoneStart + zoneArc,
+      zoneArc: zoneArc,
       showResult: false,
       lastResult: null,
       level: 1,
@@ -226,8 +248,11 @@ export const useGameLogic = () => {
       maxSpeedReached: cfg.baseSpeed,
       directionChanges: 0,
       totalGamesPlayed: prev.totalGamesPlayed + 1,
+      timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
+      zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
+      zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
     }));
-  }, []);
+  }, [currentMode]);
 
   // Vérifier si l'angle est dans la zone verte (gère le wrap 0-2π)
   const isInGreenZone = useCallback((angle: number, zoneStart: number): boolean => {
@@ -264,7 +289,7 @@ export const useGameLogic = () => {
     if (gameState.gameStatus !== 'running') return;
 
     // Vérifier si la bille est dans la zone verte
-    const success = isInGreenZone(gameState.ballAngle, gameState.zoneStart);
+    const success = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
 
     if (success) {
       // SUCCÈS - Continue immédiatement sans pause
@@ -280,6 +305,10 @@ export const useGameLogic = () => {
       const newDirection = shouldReverse ? gameState.ballDirection * -1 : gameState.ballDirection;
       
       const newZoneStart = Math.random() * 2 * Math.PI;
+      const modeConfig = cfgModes[currentMode];
+      const newZoneArc = modeConfig.variableArc 
+        ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
+        : gameState.zoneArc;
 
       setGameState(prev => ({
         ...prev,
@@ -288,7 +317,8 @@ export const useGameLogic = () => {
         ballSpeed: newSpeed,
         ballDirection: newDirection,
         zoneStart: newZoneStart,
-        zoneEnd: newZoneStart + cfg.zoneArc,
+        zoneEnd: newZoneStart + newZoneArc,
+        zoneArc: newZoneArc,
         coins: prev.coins + newScore, // Gain de coins basé sur le score
         level: prev.level + 1,
         lastResult: 'success',
@@ -329,7 +359,12 @@ export const useGameLogic = () => {
 
   // Réinitialiser le jeu
   const resetGame = useCallback(() => {
+    const modeConfig = cfgModes[currentMode];
     const zoneStart = Math.random() * 2 * Math.PI;
+    const zoneArc = modeConfig.variableArc 
+      ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
+      : modeConfig.zoneArc || cfgBase.zoneArc;
+      
     setGameState(prev => ({
       ...prev,
       gameStatus: 'idle',
@@ -338,7 +373,8 @@ export const useGameLogic = () => {
       ballSpeed: cfg.baseSpeed,
       ballDirection: 1,
       zoneStart: zoneStart,
-      zoneEnd: zoneStart + cfg.zoneArc,
+      zoneEnd: zoneStart + zoneArc,
+      zoneArc: zoneArc,
       showResult: false,
       lastResult: null,
       level: 1,
@@ -347,8 +383,11 @@ export const useGameLogic = () => {
       comboCount: 0,
       maxSpeedReached: cfg.baseSpeed,
       directionChanges: 0,
+      timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
+      zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
+      zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
     }));
-  }, []);
+  }, [currentMode]);
 
   // Dépenser des coins
   const spendCoins = useCallback((amount: number): boolean => {

@@ -2,24 +2,28 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Palette } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2 } from 'lucide-react';
 
 interface MainMenuProps {
   bestScore: number;
   coins: number;
   theme: string;
+  currentMode: string;
   onStartGame: () => void;
   onOpenShop: () => void;
   onOpenChallenges: () => void;
+  onOpenModes: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
   bestScore, 
   coins, 
   theme,
+  currentMode,
   onStartGame, 
   onOpenShop, 
-  onOpenChallenges
+  onOpenChallenges,
+  onOpenModes
 }) => {
   return (
     <div className={`min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4 ${theme}`}>
@@ -60,6 +64,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </Button>
 
         <Button
+          onClick={onOpenModes}
+          variant="outline"
+          size="lg"
+          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+        >
+          <Gamepad2 className="w-6 h-6 mr-3 group-hover:animate-pulse" />
+          MODES DE JEU
+        </Button>
+
+        <Button
           onClick={onOpenShop}
           variant="outline"
           size="lg"
@@ -83,15 +97,26 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </Button>
       </div>
 
-      {/* Theme Preview */}
-      <div className="mt-8 text-center animate-fade-in">
-        <div className="text-sm text-text-muted mb-2">Thème Actuel</div>
-        <Badge 
-          variant="outline" 
-          className="border-primary text-primary text-sm px-4 py-2 animate-pulse-glow"
-        >
-          {theme.replace('theme-', '').toUpperCase() || 'NEON'}
-        </Badge>
+      {/* Current Theme & Mode */}
+      <div className="mt-8 text-center animate-fade-in space-y-3">
+        <div>
+          <div className="text-sm text-text-muted mb-2">Thème Actuel</div>
+          <Badge 
+            variant="outline" 
+            className="border-primary text-primary text-sm px-4 py-2 animate-pulse-glow"
+          >
+            {theme.replace('theme-', '').toUpperCase() || 'NEON'}
+          </Badge>
+        </div>
+        <div>
+          <div className="text-sm text-text-muted mb-2">Mode de Jeu</div>
+          <Badge 
+            variant="outline" 
+            className="border-secondary text-secondary text-sm px-4 py-2"
+          >
+            {currentMode.replace('_', ' ').toUpperCase()}
+          </Badge>
+        </div>
       </div>
 
       {/* Floating Mini Wheel */}

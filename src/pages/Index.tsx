@@ -1,30 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
+import { ModeSelection } from '@/components/ModeSelection';
 import { useGameLogic } from '@/hooks/useGameLogic';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
+import { THEMES } from '@/constants/themes';
+import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    const saved = localStorage.getItem('luckyStopTheme');
+  
+  // État du thème actuel avec persistance
+  const [currentTheme, setCurrentTheme] = useState<string>(() => {
+    const saved = localStorage.getItem('currentTheme');
     return saved || 'theme-neon';
   });
-  
-  const { gameState, purchaseTheme, addCoins } = useGameLogic();
 
-  // Sauvegarder le thème dans localStorage
-  useEffect(() => {
-    localStorage.setItem('luckyStopTheme', currentTheme);
-  }, [currentTheme]);
+  // État du mode actuel avec persistance
+  const [currentMode, setCurrentMode] = useState<ModeType>(() => {
+    const saved = localStorage.getItem('ls_mode');
+    return (saved as ModeType) || ModeID.CLASSIC;
+  });
+
+  const { gameState, startGame, onTap, resetGame } = useGameLogic(currentMode);
+  const { toast } = useToast();
 
   const handleThemeChange = (theme: string) => {
     setCurrentTheme(theme);
-    toast.success('Thème changé!');
+    localStorage.setItem('currentTheme', theme);
+    toast({
+      title: "Thème équipé!",
+      description: `Le thème a été équipé avec succès.`,
+    });
+  };
+
+  const handleModeChange = (mode: ModeType) => {
+    if (gameState.gameStatus === 'running') {
+      toast({
+        title: "Impossible de changer de mode",
+        description: "Termine ta partie actuelle pour changer de mode.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setCurrentMode(mode);
+    localStorage.setItem('ls_mode', mode);
+    toast({
+      title: "Mode changé!",
+      description: `Mode ${cfgModes[mode].name} sélectionné.`,
+    });
   };
 
   const renderScreen = () => {
@@ -35,63 +64,47 @@ const Index = () => {
             bestScore={gameState.bestScore}
             coins={gameState.coins}
             theme={currentTheme}
+            currentMode={currentMode}
             onStartGame={() => setCurrentScreen('game')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
+            onOpenModes={() => setCurrentScreen('modes')}
           />
         );
-      
+        
       case 'game':
         return (
-          <div className="relative">
-            <CircleTap 
-              theme={currentTheme} 
-              customization={gameState.currentCustomization}
-            />
-            <button
-              onClick={() => setCurrentScreen('menu')}
-              className="absolute top-4 left-4 px-4 py-2 bg-button-bg border border-wheel-border rounded-lg text-text-primary hover:bg-button-hover transition-colors"
-            >
-              ← Menu
-            </button>
-          </div>
+          <CircleTap
+            theme={currentTheme}
+            onBack={() => setCurrentScreen('menu')}
+          />
         );
-      
+        
       case 'shop':
         return (
           <Shop
             coins={gameState.coins}
-            ownedThemes={gameState.ownedThemes}
-            currentTheme={currentTheme}
             onBack={() => setCurrentScreen('menu')}
-            onPurchaseTheme={(theme) => {
-              if (gameState.ownedThemes.includes(theme.id) || purchaseTheme(theme.id, theme.price)) {
-                handleThemeChange(theme.id);
-                return true;
-              }
-              return false;
-            }}
-            onEquipTheme={(themeId) => handleThemeChange(themeId)}
           />
         );
-      
+        
       case 'challenges':
         return (
-          <Challenges 
-            coins={gameState.coins}
+          <Challenges
             onBack={() => setCurrentScreen('menu')}
-            onReward={(reward) => {
-              addCoins(reward);
-              toast.success(`${reward} coins gagnés!`);
-            }}
-            currentScore={gameState.currentScore}
-            bestScore={gameState.bestScore}
-            maxSpeedReached={gameState.maxSpeedReached}
-            directionChanges={gameState.directionChanges}
-            totalGamesPlayed={gameState.totalGamesPlayed}
           />
         );
-      
+
+      case 'modes':
+        return (
+          <ModeSelection
+            currentMode={currentMode}
+            gameStatus={gameState.gameStatus}
+            onSelectMode={handleModeChange}
+            onBack={() => setCurrentScreen('menu')}
+          />
+        );
+        
       default:
         return null;
     }
