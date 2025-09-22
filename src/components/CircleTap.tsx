@@ -100,6 +100,9 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
         </div>
         <div className="text-text-muted text-sm mt-2">
           Coins: {gameState.coins} • Niveau: {gameState.level}
+          {gameState.currentMode === 'survie_60s' && gameState.timeLeft && (
+            <span className="ml-2 text-red-400 font-bold">⏱ {Math.ceil(gameState.timeLeft)}s</span>
+          )}
         </div>
       </div>
 
@@ -140,6 +143,22 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
               filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
             }}
           />
+
+          {/* Deuxième zone verte pour le mode survie */}
+          {gameState.currentMode === 'survie_60s' && (
+            <path
+              d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg + 180 - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + 180 - 90) * Math.PI / 180) * cfg.radius}
+                  A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
+                  ${cfg.radius + 40 + Math.cos((zoneStartDeg + 180 + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + 180 + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
+              fill="none"
+              stroke={getCircleColor()}
+              strokeWidth="20"
+              className="drop-shadow-lg animate-pulse-zone opacity-80"
+              style={{
+                filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+              }}
+            />
+          )}
 
           {/* Bille - Barre rouge qui dépasse */}
           <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
@@ -212,6 +231,24 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
                 />
               ))}
             </g>
+          )}
+          {/* Chrono au centre pour le mode survie */}
+          {gameState.currentMode === 'survie_60s' && gameState.timeLeft && (
+            <text
+              x={cfg.radius + 40}
+              y={cfg.radius + 40}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="white"
+              fontSize="24"
+              fontWeight="bold"
+              className="drop-shadow-lg animate-pulse"
+              style={{
+                filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.8))',
+              }}
+            >
+              {Math.ceil(gameState.timeLeft)}
+            </text>
           )}
         </svg>
 

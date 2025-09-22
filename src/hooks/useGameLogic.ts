@@ -173,7 +173,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
   // Sauvegarde du progress
   const saveProgress = useCallback(() => {
     const dataToSave = {
-      bestScore: gameState.bestScore,
+      [`bestScore_${gameState.currentMode}`]: gameState.bestScore,
       coins: gameState.coins,
       ownedThemes: gameState.ownedThemes,
       ownedItems: gameState.ownedItems,
@@ -184,7 +184,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       timestamp: Date.now(),
     };
     localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
-  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization]);
+  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization, gameState.currentMode]);
 
   // Animation de la bille (60 FPS) + Zone mobile
   const animateBall = useCallback(() => {
@@ -312,8 +312,10 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
     if (gameState.gameStatus !== 'running') return;
 
-    // Vérifier si la bille est dans la zone verte
-    const success = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
+    // Vérifier si la bille est dans la zone verte (ou la deuxième zone en mode survie)
+    const modeConfig = cfgModes[gameState.currentMode];
+    const success = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd) ||
+      (modeConfig.survival && inArc(gameState.ballAngle, (gameState.zoneStart + Math.PI) % (2 * Math.PI), (gameState.zoneEnd + Math.PI) % (2 * Math.PI)));
 
     if (success) {
       // SUCCÈS - Continue immédiatement sans pause
@@ -361,7 +363,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         zoneEnd: newZoneStart + newZoneArc,
         zoneArc: newZoneArc,
         zoneDriftSpeed: newZoneDriftSpeed,
-        coins: prev.coins + newScore, // Gain de coins basé sur le score
+        coins: prev.coins + Math.floor(newScore / 6), // Gain de coins réduit
         level: prev.level + 1,
         lastResult: 'success',
         showResult: false,

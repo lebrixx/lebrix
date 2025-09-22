@@ -32,7 +32,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Premier pas',
     description: 'Atteindre un score de 5 pour tester le système',
     target: 5,
-    reward: 3000,
+    reward: 500,
     difficulty: 'facile'
   },
   {
@@ -40,7 +40,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Précision maîtrisée',
     description: 'Atteindre un score de 30 points',
     target: 30,
-    reward: 500,
+    reward: 83,
     difficulty: 'moyen'
   },
   {
@@ -48,7 +48,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Expert du timing',
     description: 'Atteindre un score de 40 points',
     target: 40,
-    reward: 750,
+    reward: 125,
     difficulty: 'difficile'
   },
   {
@@ -56,7 +56,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Maître du cercle',
     description: 'Atteindre un score de 50 points',
     target: 50,
-    reward: 1000,
+    reward: 167,
     difficulty: 'expert'
   },
   {
@@ -64,7 +64,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Persévérant',
     description: 'Jouer 50 parties',
     target: 50,
-    reward: 300,
+    reward: 50,
     difficulty: 'facile'
   },
   {
@@ -72,7 +72,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Accro du jeu',
     description: 'Jouer 300 parties',
     target: 300,
-    reward: 1500,
+    reward: 250,
     difficulty: 'expert'
   }
 ];
