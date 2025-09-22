@@ -126,7 +126,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       </div>
 
       {/* Version Info */}
-      <div className="absolute bottom-4 text-text-muted text-xs animate-fade-in">
+      <div className="mt-4 text-text-muted text-xs animate-fade-in">
         Lucky Stop v1.0 • Made with ❤️
       </div>
     </div>

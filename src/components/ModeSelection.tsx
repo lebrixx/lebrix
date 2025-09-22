@@ -166,7 +166,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     }
                   `}
                 >
-                  {isCurrentMode ? 'Mode Actuel' : 'Choisir ce Mode'}
+                  {isCurrentMode ? 'Jouer maintenant' : 'Choisir ce Mode'}
                 </Button>
               </div>
 

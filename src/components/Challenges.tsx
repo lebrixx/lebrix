@@ -79,7 +79,7 @@ const CHALLENGES: Challenge[] = [
   {
     id: 'mode-classic-100',
     title: 'Légende Classique',
-    description: 'Atteindre 100 points en mode Classique',
+    description: 'Atteindre 100 points en mode Classique uniquement',
     target: 100,
     reward: 50,
     difficulty: 'impossible'
@@ -87,7 +87,7 @@ const CHALLENGES: Challenge[] = [
   {
     id: 'mode-arc-75',
     title: 'Maître de l\'Adaptation',
-    description: 'Atteindre 75 points en mode Arc Changeant',
+    description: 'Atteindre 75 points en mode Arc Changeant uniquement',
     target: 75,
     reward: 45,
     difficulty: 'expert'
@@ -95,9 +95,17 @@ const CHALLENGES: Challenge[] = [
   {
     id: 'mode-survie-40',
     title: 'Survivant Ultime',
-    description: 'Atteindre 40 points en mode Survie 30s',
+    description: 'Atteindre 40 points en mode Survie 30s uniquement',
     target: 40,
     reward: 40,
+    difficulty: 'expert'
+  },
+  {
+    id: 'mode-mobile-60',
+    title: 'Chasseur de Zone',
+    description: 'Atteindre 60 points en mode Zone Mobile uniquement',
+    target: 60,
+    reward: 35,
     difficulty: 'expert'
   }
 ];
@@ -228,7 +236,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       </div>
 
       {/* Challenges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 max-w-7xl mx-auto">
         {CHALLENGES.map((challenge) => {
           const completed = isChallengeCompleted(challenge);
           const progress = getChallengeProgress(challenge);
@@ -266,19 +274,19 @@ export const Challenges: React.FC<ChallengesProps> = ({
                 </div>
               )}
 
-              <div className="p-4 pt-12">
+              <div className="p-3 pt-10">
                 {/* Challenge Info */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-text-primary mb-1">
+                <div className="mb-3">
+                  <h3 className="text-sm font-bold text-text-primary mb-1 leading-tight">
                     {challenge.title}
                   </h3>
-                  <p className="text-text-secondary text-xs leading-relaxed">
+                  <p className="text-text-secondary text-xs leading-snug">
                     {challenge.description}
                   </p>
                 </div>
 
                 {/* Progress */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-text-muted text-xs">Progrès</span>
                     <span className="text-text-primary font-bold text-sm">

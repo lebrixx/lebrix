@@ -50,6 +50,11 @@ const Index = () => {
     
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
+    
+    // Si on sélectionne le mode actuel, lancer le jeu directement
+    if (mode === currentMode || currentScreen === 'modes') {
+      setCurrentScreen('game');
+    }
   };
 
   const renderScreen = () => {
