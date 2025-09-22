@@ -14,18 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      leaderboard: {
+        Row: {
+          coins: number
+          created_at: string
+          direction_changes: number
+          games_played: number
+          id: string
+          max_speed_reached: number
+          mode: string
+          score: number
+          updated_at: string
+          user_id: number
+        }
+        Insert: {
+          coins?: number
+          created_at?: string
+          direction_changes?: number
+          games_played?: number
+          id?: string
+          max_speed_reached?: number
+          mode: string
+          score?: number
+          updated_at?: string
+          user_id: number
+        }
+        Update: {
+          coins?: number
+          created_at?: string
+          direction_changes?: number
+          games_played?: number
+          id?: string
+          max_speed_reached?: number
+          mode?: string
+          score?: number
+          updated_at?: string
+          user_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
+          email: string | null
           id: number
+          updated_at: string | null
+          username: string | null
         }
         Insert: {
           created_at?: string
+          email?: string | null
           id?: number
+          updated_at?: string | null
+          username?: string | null
         }
         Update: {
           created_at?: string
+          email?: string | null
           id?: number
+          updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
       }
