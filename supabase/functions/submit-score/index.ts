@@ -79,7 +79,10 @@ serve(async (req) => {
       if (gameDuration < MIN_GAME_DURATION) {
         console.log(`Game duration too short: ${gameDuration}ms`);
         return new Response(
-          JSON.stringify({ error: 'Game session too short' }),
+          JSON.stringify({ 
+            error: 'GAME_TOO_SHORT',
+            message: `Partie trop courte (${Math.round(gameDuration/1000)}s). Joue au moins ${MIN_GAME_DURATION/1000}s pour soumettre un score.` 
+          }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }

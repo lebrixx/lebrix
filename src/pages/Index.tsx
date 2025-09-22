@@ -36,17 +36,55 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { toast } = useToast();
 
-  // Surveiller la fin de partie pour proposer la soumission de score
+  // Auto-submit scores when game ends (if username exists)
   useEffect(() => {
     if (gameState.gameStatus === 'gameover' && gameState.currentScore > 0) {
       setLastGameScore(gameState.currentScore);
       
-      // Proposer la soumission après un petit délai
+      const identity = getLocalIdentity();
+      
+      // Auto-submit if username exists, otherwise show username modal
       setTimeout(() => {
-        setShowSubmitScoreModal(true);
+        if (identity.username) {
+          // Auto-submit score
+          import('@/utils/scoresApi').then(({ submitScore }) => {
+            submitScore({ score: gameState.currentScore, mode: currentMode })
+              .then(success => {
+                if (success) {
+                  toast({
+                    title: "Score soumis !",
+                    description: `Score de ${gameState.currentScore} enregistré en ligne.`,
+                  });
+                } else {
+                  toast({
+                    title: "Erreur",
+                    description: "Impossible de soumettre le score. Partie trop courte ?",
+                    variant: "destructive"
+                  });
+                }
+              })
+              .catch((error) => {
+                if (error?.message === 'GAME_TOO_SHORT') {
+                  toast({
+                    title: "Partie trop courte",
+                    description: "Joue au moins 5 secondes pour soumettre un score.",
+                    variant: "destructive"
+                  });
+                } else {
+                  toast({
+                    title: "Erreur réseau",
+                    description: "Score non soumis. Vérifie ta connexion.",
+                    variant: "destructive"
+                  });
+                }
+              });
+          });
+        } else {
+          setShowUsernameModal(true);
+        }
       }, 1500);
     }
-  }, [gameState.gameStatus, gameState.currentScore]);
+  }, [gameState.gameStatus, gameState.currentScore, currentMode, toast]);
 
   const handleThemeChange = (theme: string) => {
     setCurrentTheme(theme);
@@ -173,11 +211,23 @@ const Index = () => {
           setShowUsernameModal(false);
           toast({
             title: "Pseudo enregistré !",
-            description: "Tu peux maintenant soumettre tes scores.",
+            description: "Soumission automatique de tes scores activée.",
           });
-          // Rouvrir le modal de soumission si on venait de là
+          // Auto-submit le score du dernier jeu si disponible
           if (lastGameScore > 0) {
-            setTimeout(() => setShowSubmitScoreModal(true), 500);
+            setTimeout(() => {
+              import('@/utils/scoresApi').then(({ submitScore }) => {
+                submitScore({ score: lastGameScore, mode: currentMode })
+                  .then(success => {
+                    if (success) {
+                      toast({
+                        title: "Score soumis !",
+                        description: `Score de ${lastGameScore} enregistré en ligne.`,
+                      });
+                    }
+                  });
+              });
+            }, 500);
           }
         }}
       />
