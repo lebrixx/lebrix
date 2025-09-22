@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit } from 'lucide-react';
 import { fetchTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
+import { getLocalIdentity, setUsername, generateDefaultUsername } from '@/utils/localIdentity';
+import { UsernameModal } from '@/components/UsernameModal';
 
 interface OnlineLeaderboardProps {
   onBack: () => void;
@@ -22,7 +24,26 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   const [scores, setScores] = useState<Score[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [currentUsername, setCurrentUsername] = useState<string>('');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
   const { toast } = useToast();
+
+  // Load current username on mount
+  useEffect(() => {
+    const identity = getLocalIdentity();
+    setCurrentUsername(identity.username || 'Aucun pseudo');
+  }, []);
+
+  const handleUsernameChange = () => {
+    const identity = getLocalIdentity();
+    setCurrentUsername(identity.username || 'Aucun pseudo');
+    setShowUsernameModal(false);
+    toast({
+      title: "Pseudo modifié",
+      description: "Votre nouveau pseudo a été sauvegardé",
+      duration: 2000
+    });
+  };
 
   const loadScores = async (mode: string) => {
     setLoading(true);
@@ -121,9 +142,26 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <WifiOff className="w-5 h-5 text-red-400" />
             )}
           </div>
-          <p className="text-text-secondary">
+          <p className="text-text-secondary mb-4">
             Top 100 des meilleurs scores
           </p>
+          
+          {/* Current Username Display */}
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-button-bg border border-wheel-border rounded-lg">
+              <User className="w-4 h-4 text-primary" />
+              <span className="text-text-primary font-medium">{currentUsername}</span>
+            </div>
+            <Button
+              onClick={() => setShowUsernameModal(true)}
+              variant="outline"
+              size="sm"
+              className="border-wheel-border hover:bg-button-hover"
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              Changer
+            </Button>
+          </div>
         </div>
 
         {/* Mode Selection */}
@@ -218,6 +256,12 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           </div>
         )}
       </div>
+      
+      {/* Username Modal */}
+      <UsernameModal 
+        isOpen={showUsernameModal}
+        onUsernameSet={handleUsernameChange}
+      />
     </div>
   );
 };
