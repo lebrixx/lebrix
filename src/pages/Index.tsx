@@ -38,14 +38,11 @@ const Index = () => {
 
   // Surveiller la fin de partie pour proposer la soumission de score
   useEffect(() => {
-    console.log('Game status changed:', gameState.gameStatus, 'Score:', gameState.currentScore);
     if (gameState.gameStatus === 'gameover' && gameState.currentScore > 0) {
       setLastGameScore(gameState.currentScore);
-      console.log('Setting up score submission modal for score:', gameState.currentScore);
       
       // Proposer la soumission après un petit délai
       setTimeout(() => {
-        console.log('Showing submit score modal');
         setShowSubmitScoreModal(true);
       }, 1500);
     }

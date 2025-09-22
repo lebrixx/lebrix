@@ -1,15 +1,16 @@
-// API REST pour les scores sans authentification
+// Secure API for score submission via Edge Function
 import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
+import { generateDeviceFingerprint } from './deviceFingerprint';
+import { supabase } from '@/integrations/supabase/client';
 
 // Constantes de configuration
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraHJ0dmduemN1ZnBsemhvcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NjU1NjgsImV4cCI6MjA3NDE0MTU2OH0.3mYkFLKEqJFllX8487LdqnkEFXUw5Y4cZnzlZyfJ-a4";
-const TABLE = "scores";
-const SCORE_CAP = 9999;
 const FETCH_LIMIT = 100;
 
-// Anti-spam: timestamp du dernier submit
+// Enhanced anti-spam
 let lastSubmitTime = 0;
+let gameSessionStart = 0;
 const SUBMIT_COOLDOWN = 3000; // 3 secondes
 
 export interface Score {
@@ -27,8 +28,8 @@ const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile'];
 
 export async function submitScore({ score, mode }: SubmitScoreParams): Promise<boolean> {
   try {
-    // Validations côté client
-    if (typeof score !== 'number' || score < 0 || score > SCORE_CAP) {
+    // Basic client-side validation
+    if (typeof score !== 'number' || score < 0) {
       console.warn('Score invalide:', score);
       return false;
     }
@@ -38,7 +39,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
       return false;
     }
 
-    // Anti-spam
+    // Enhanced anti-spam
     const now = Date.now();
     if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
       console.warn('Trop de submissions rapides, attendre', SUBMIT_COOLDOWN - (now - lastSubmitTime), 'ms');
@@ -54,24 +55,29 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
       throw new Error('USERNAME_REQUIRED');
     }
 
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON,
-        "Authorization": `Bearer ${SUPABASE_ANON}`,
-        "Prefer": "return=minimal"
-      },
-      body: JSON.stringify({
+    // Generate enhanced device fingerprint
+    const clientFingerprint = generateDeviceFingerprint();
+
+    // Call the secure Edge Function instead of direct database access
+    const { data, error } = await supabase.functions.invoke('submit-score', {
+      body: {
         device_id: deviceId,
         username,
         score,
-        mode
-      })
+        mode,
+        session_start_time: gameSessionStart || now - 10000, // Fallback if not set
+        client_fingerprint: clientFingerprint
+      }
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    if (error) {
+      console.error('Edge Function error:', error);
+      return false;
+    }
+
+    if (!data?.success) {
+      console.warn('Score submission failed:', data?.error);
+      return false;
     }
 
     lastSubmitTime = now;
@@ -93,21 +99,19 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/${TABLE}?mode=eq.${mode}&select=username,score,created_at&order=score.desc&limit=${limit}`,
-      {
-        headers: {
-          "apikey": SUPABASE_ANON,
-          "Authorization": `Bearer ${SUPABASE_ANON}`
-        }
-      }
-    );
+    // Use Supabase client instead of raw fetch for better security
+    const { data, error } = await supabase
+      .from('scores')
+      .select('username,score,created_at')
+      .eq('mode', mode)
+      .order('score', { ascending: false })
+      .limit(limit);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    if (error) {
+      console.error('Error fetching leaderboard:', error);
+      return [];
     }
 
-    const data = await response.json();
     return data || [];
 
   } catch (error) {
@@ -118,4 +122,9 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
 
 export function setUsernameForScores(username: string): void {
   setUsername(username);
+}
+
+// Function to mark the start of a game session for timing validation
+export function startGameSession(): void {
+  gameSessionStart = Date.now();
 }

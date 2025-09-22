@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import * as React from 'react';
 import { ModeType, ModeID, cfgModes, cfgBase, inArc } from '@/constants/modes';
+import { startGameSession } from '@/utils/scoresApi';
 
 interface CustomizationItem {
   id: string;
@@ -263,6 +264,9 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Démarrer le jeu
   const startGame = useCallback(() => {
+    // Mark the start of game session for security tracking
+    startGameSession();
+    
     const modeConfig = cfgModes[currentMode];
     const zoneStart = Math.random() * 2 * Math.PI;
     const zoneArc = modeConfig.variableArc 
