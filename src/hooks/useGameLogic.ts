@@ -379,14 +379,12 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         directionChanges: shouldReverse ? prev.directionChanges + 1 : prev.directionChanges,
       }));
 
-      // Effacer les effets visuels après 200ms
-      setTimeout(() => {
-        setGameState(prev => ({
-          ...prev,
-          successFlash: false,
-          successParticles: false,
-        }));
-      }, 200);
+      // Effacer les effets visuels immédiatement
+      setGameState(prev => ({
+        ...prev,
+        successFlash: false,
+        successParticles: false,
+      }));
 
     } else {
       // ÉCHEC - Fin de partie pour tous les modes
@@ -399,10 +397,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         lastResult: 'failure',
       }));
 
-      // Masquer le message de game over après 2 secondes
-      setTimeout(() => {
-        setGameState(prev => ({ ...prev, showResult: false }));
-      }, 2000);
+      // Masquer le message de game over immédiatement
+      setGameState(prev => ({ ...prev, showResult: false }));
     }
   }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode]);
 

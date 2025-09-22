@@ -100,7 +100,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
 
       {/* HUD - Score en gros et best score */}
       <div className="text-center mb-8 animate-fade-in">
-        <div className="text-8xl font-bold text-primary mb-2 drop-shadow-lg animate-pulse-glow">
+        <div className="text-8xl font-bold text-primary mb-2 drop-shadow-lg">
           {gameState.currentScore}
         </div>
         <div className="text-text-secondary text-xl font-semibold">
@@ -120,7 +120,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
         <svg
           width={cfg.radius * 2 + 80}
           height={cfg.radius * 2 + 80}
-          className={`drop-shadow-2xl ${gameState.successFlash ? 'animate-circle-flash' : ''}`}
+          className="drop-shadow-2xl"
           onClick={handleTap}
           style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
         >
@@ -146,7 +146,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
             fill="none"
             stroke={getCircleColor()}
             strokeWidth="20"
-            className="drop-shadow-lg animate-pulse-zone"
+            className="drop-shadow-lg"
             style={{
               filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
             }}
@@ -161,7 +161,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
               fill="none"
               stroke={getCircleColor()}
               strokeWidth="20"
-              className="drop-shadow-lg animate-pulse-zone opacity-80"
+              className="drop-shadow-lg opacity-80"
               style={{
                 filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
               }}
@@ -189,7 +189,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
               cy={0}
               r={8}
               fill={barColor}
-              className="animate-pulse"
+              className=""
               style={{
                 filter: `drop-shadow(0 0 8px ${barColor})`,
               }}
@@ -207,7 +207,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
                   width={25}
                   height={4}
                   fill={barColor}
-                  className="opacity-40 animate-trail-fade"
+                  className="opacity-40"
                 />
               </g>
               {/* Trail secondaire (retardé) */}
@@ -218,7 +218,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
                   width={15}
                   height={2}
                   fill={barColor}
-                  className="opacity-20 animate-trail-fade"
+                  className="opacity-20"
                 />
               </g>
             </>
@@ -234,8 +234,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
                   cy={Math.sin(i * Math.PI / 3) * 15}
                   r={3}
                   fill={getCircleColor()}
-                  className="animate-particle-burst"
-                  style={{ animationDelay: `${i * 20}ms` }}
+                  className=""
                 />
               ))}
             </g>
@@ -250,7 +249,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
               fill="white"
               fontSize="24"
               fontWeight="bold"
-              className="drop-shadow-lg animate-pulse"
+              className="drop-shadow-lg"
               style={{
                 filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.8))',
               }}

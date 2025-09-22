@@ -42,21 +42,19 @@ const Index = () => {
 
     const identity = getLocalIdentity();
 
-    setTimeout(() => {
-      if (identity.username) {
-        import('@/utils/scoresApi').then(({ submitScore }) => {
-          submitScore({ score: finalScore, mode: currentMode })
-            .then(success => {
-              // Soumission silencieuse - pas de notifications
-            })
-            .catch((error) => {
-              // Erreurs silencieuses - pas de notifications
-            });
-        });
-      } else {
-        setShowUsernameModal(true);
-      }
-    }, 800);
+    if (identity.username) {
+      import('@/utils/scoresApi').then(({ submitScore }) => {
+        submitScore({ score: finalScore, mode: currentMode })
+          .then(success => {
+            // Soumission silencieuse - pas de notifications
+          })
+          .catch((error) => {
+            // Erreurs silencieuses - pas de notifications
+          });
+      });
+    } else {
+      setShowUsernameModal(true);
+    }
   };
 
   const handleThemeChange = (theme: string) => {
@@ -185,11 +183,9 @@ const Index = () => {
           setShowUsernameModal(false);
           // Auto-submit le score du dernier jeu si disponible
           if (lastGameScore > 0) {
-            setTimeout(() => {
-              import('@/utils/scoresApi').then(({ submitScore }) => {
-                submitScore({ score: lastGameScore, mode: currentMode });
-              });
-            }, 500);
+            import('@/utils/scoresApi').then(({ submitScore }) => {
+              submitScore({ score: lastGameScore, mode: currentMode });
+            });
           }
         }}
       />
