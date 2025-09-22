@@ -47,33 +47,10 @@ const Index = () => {
         import('@/utils/scoresApi').then(({ submitScore }) => {
           submitScore({ score: finalScore, mode: currentMode })
             .then(success => {
-              if (success) {
-                toast({
-                  title: "Score soumis !",
-                  description: `Score de ${finalScore} enregistré en ligne.`,
-                });
-              } else {
-                toast({
-                  title: "Erreur",
-                  description: "Impossible de soumettre le score. Partie trop courte ?",
-                  variant: "destructive"
-                });
-              }
+              // Soumission silencieuse - pas de notifications
             })
             .catch((error) => {
-              if (error?.message === 'GAME_TOO_SHORT') {
-                toast({
-                  title: "Partie trop courte",
-                  description: "Joue au moins 5 secondes pour soumettre un score.",
-                  variant: "destructive"
-                });
-              } else {
-                toast({
-                  title: "Erreur réseau",
-                  description: "Score non soumis. Vérifie ta connexion.",
-                  variant: "destructive"
-                });
-              }
+              // Erreurs silencieuses - pas de notifications
             });
         });
       } else {
@@ -206,23 +183,11 @@ const Index = () => {
         isOpen={showUsernameModal}
         onUsernameSet={() => {
           setShowUsernameModal(false);
-          toast({
-            title: "Pseudo enregistré !",
-            description: "Soumission automatique de tes scores activée.",
-          });
           // Auto-submit le score du dernier jeu si disponible
           if (lastGameScore > 0) {
             setTimeout(() => {
               import('@/utils/scoresApi').then(({ submitScore }) => {
-                submitScore({ score: lastGameScore, mode: currentMode })
-                  .then(success => {
-                    if (success) {
-                      toast({
-                        title: "Score soumis !",
-                        description: `Score de ${lastGameScore} enregistré en ligne.`,
-                      });
-                    }
-                  });
+                submitScore({ score: lastGameScore, mode: currentMode });
               });
             }, 500);
           }

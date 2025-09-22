@@ -140,15 +140,34 @@ serve(async (req) => {
       );
     }
 
-    // Insert the validated score
+    // Check if there's an existing score for this device_id and mode
+    const { data: existingScore } = await supabase
+      .from('scores')
+      .select('score')
+      .eq('device_id', device_id)
+      .eq('mode', mode)
+      .single();
+
+    // Only submit if no existing score or new score is better
+    if (existingScore && score <= existingScore.score) {
+      console.log(`Score not better than existing: ${score} <= ${existingScore.score}`);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Score not improved' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Upsert the score (insert or update if better)
     const { data, error } = await supabase
       .from('scores')
-      .insert({
+      .upsert({
         device_id,
         username,
         score,
         mode,
         created_at: new Date().toISOString()
+      }, {
+        onConflict: 'device_id,mode'
       })
       .select();
 
