@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useSound } from '@/hooks/useSound';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 
 interface CircleTapProps {
@@ -76,6 +76,18 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
       className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
       style={getBackgroundStyle()}
     >
+      {/* Bouton retour au menu */}
+      {onBack && (
+        <Button
+          onClick={onBack}
+          variant="outline"
+          className="absolute top-4 left-4 border-wheel-border hover:bg-button-hover z-10"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Menu
+        </Button>
+      )}
+
       {/* HUD - Score en gros et best score */}
       <div className="text-center mb-8 animate-fade-in">
         <div className="text-8xl font-bold text-primary mb-2 drop-shadow-lg animate-pulse-glow">

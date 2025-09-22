@@ -26,7 +26,7 @@ const Index = () => {
     return (saved as ModeType) || ModeID.CLASSIC;
   });
 
-  const { gameState, startGame, onTap, resetGame } = useGameLogic(currentMode);
+  const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic(currentMode);
   const { toast } = useToast();
 
   const handleThemeChange = (theme: string) => {

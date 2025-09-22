@@ -78,9 +78,20 @@ const defaultItems: CustomizationItem[] = [
 ];
 
 export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
+  // Réinitialiser le jeu quand le mode change
   const [gameState, setGameState] = useState<GameState>(() => {
+    return createInitialState(currentMode);
+  });
+
+  // Effet pour réinitialiser le jeu quand le mode change
+  useEffect(() => {
+    setGameState(createInitialState(currentMode));
+  }, [currentMode]);
+
+  // Fonction pour créer l'état initial basé sur le mode
+  function createInitialState(mode: ModeType): GameState {
     const saved = localStorage.getItem('luckyStopGame');
-    const modeConfig = cfgModes[currentMode];
+    const modeConfig = cfgModes[mode];
     const zoneStart = Math.random() * 2 * Math.PI;
     const zoneArc = modeConfig.variableArc 
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
@@ -114,7 +125,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       maxSpeedReached: cfg.baseSpeed,
       directionChanges: 0,
       totalGamesPlayed: 0,
-      currentMode: currentMode,
+      currentMode: mode,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
       zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
@@ -125,7 +136,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         const parsedState = JSON.parse(saved);
         return {
           ...defaultState,
-          bestScore: parsedState[`bestScore_${currentMode}`] || 0,
+          bestScore: parsedState[`bestScore_${mode}`] || 0,
           coins: parsedState.coins || 100,
           ownedThemes: parsedState.ownedThemes || [],
           ownedItems: parsedState.ownedItems || [...defaultItems],
@@ -143,7 +154,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       }
     }
     return defaultState;
-  });
+  }
 
   const animationFrameRef = useRef<number>();
   const lastTimeRef = useRef<number>();
