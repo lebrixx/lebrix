@@ -254,22 +254,6 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     }));
   }, [currentMode]);
 
-  // Vérifier si l'angle est dans la zone verte (gère le wrap 0-2π)
-  const isInGreenZone = useCallback((angle: number, zoneStart: number): boolean => {
-    // Normaliser tous les angles entre 0 et 2π
-    const normalizedAngle = ((angle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
-    const normalizedZoneStart = ((zoneStart % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
-    const normalizedZoneEnd = ((normalizedZoneStart + cfg.zoneArc) % (2 * Math.PI));
-    
-    if (normalizedZoneStart <= normalizedZoneEnd) {
-      // Zone normale (ne traverse pas 0)
-      return normalizedAngle >= normalizedZoneStart && normalizedAngle <= normalizedZoneEnd;
-    } else {
-      // La zone traverse 0 (ex: de 5.5 à 0.5)
-      return normalizedAngle >= normalizedZoneStart || normalizedAngle <= normalizedZoneEnd;
-    }
-  }, []);
-
   // Tap/Click du joueur
   const onTap = useCallback(() => {
     const now = Date.now();
@@ -355,7 +339,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         setGameState(prev => ({ ...prev, showResult: false }));
       }, 2000);
     }
-  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, isInGreenZone]);
+  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode]);
 
   // Réinitialiser le jeu
   const resetGame = useCallback(() => {
