@@ -30,7 +30,7 @@ const Index = () => {
   // État du mode actuel avec persistance
   const [currentMode, setCurrentMode] = useState<ModeType>(() => {
     const saved = localStorage.getItem('ls_mode');
-    return (saved as ModeType) || 'arc_changeant'; // Mode par défaut sans classic
+    return (saved as ModeType) || 'classic'; // Mode par défaut classic
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);

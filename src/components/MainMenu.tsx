@@ -30,14 +30,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in mt-16">
-        <div className="flex justify-between items-start mb-4">
+      <div className="text-center animate-fade-in mt-12">
+        <div className="flex justify-between items-start mb-3">
           <div className="flex-1"></div>
           <div className="flex-1">
-            <h1 className="text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
+            <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
               LUCKY STOP
             </h1>
-            <p className="text-text-secondary text-xl">
+            <p className="text-text-secondary text-lg">
               Tapez dans la zone verte au bon moment!
             </p>
           </div>
@@ -48,7 +48,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       {/* Main Content */}
       <div className="flex-1 flex flex-col justify-center items-center">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-8 w-full max-w-md animate-scale-in">
+        <div className="grid grid-cols-2 gap-4 mb-6 w-full max-w-md animate-scale-in">
           <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
             <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
             <div className="text-2xl font-bold text-primary">{bestScore}</div>
@@ -63,13 +63,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </div>
 
         {/* Main Menu Buttons */}
-        <div className="flex flex-col gap-4 w-full max-w-sm animate-fade-in">
+        <div className="flex flex-col gap-3 w-full max-w-sm animate-fade-in">
           <Button 
             onClick={onStartGame}
             size="lg"
-            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6 text-xl font-bold group"
+            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-5 text-lg font-bold group"
           >
-            <Play className="w-8 h-8 mr-3 group-hover:animate-pulse" />
+            <Play className="w-6 h-6 mr-2 group-hover:animate-pulse" />
             JOUER MAINTENANT
           </Button>
 
@@ -77,9 +77,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenModes}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
           >
-            <Gamepad2 className="w-6 h-6 mr-3 group-hover:animate-pulse" />
+            <Gamepad2 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
             MODES DE JEU
           </Button>
 
@@ -87,9 +87,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenShop}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
           >
-            <ShoppingBag className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+            <ShoppingBag className="w-5 h-5 mr-2 group-hover:animate-bounce" />
             BOUTIQUE
             <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark">
               {coins}
@@ -100,9 +100,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenChallenges}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
           >
-            <Star className="w-6 h-6 mr-3 group-hover:animate-spin" />
+            <Star className="w-5 h-5 mr-2 group-hover:animate-spin" />
             DÉFIS QUOTIDIENS
           </Button>
 
@@ -110,9 +110,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenLeaderboard}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
           >
-            <Crown className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+            <Crown className="w-5 h-5 mr-2 group-hover:animate-bounce" />
             CLASSEMENT EN LIGNE
           </Button>
         </div>
