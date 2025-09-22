@@ -65,6 +65,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
 
   const getModeDisplayName = (mode: string) => {
     const names = {
+      classic: 'Classique',
       arc_changeant: 'Arc Changeant',
       survie_60s: 'Survie 60s',
       zone_mobile: 'Zone Mobile'
