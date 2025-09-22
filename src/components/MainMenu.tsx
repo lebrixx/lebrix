@@ -149,7 +149,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
           >
             <Crown className="w-6 h-6 mr-3 group-hover:animate-bounce" />
-            CLASSEMENT
+            CLASSEMENT EN LIGNE
           </Button>
         </div>
       </div>

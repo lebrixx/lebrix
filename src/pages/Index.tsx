@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
 import { ScoreSync } from '@/components/ScoreSync';
+import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
+import { UsernameModal } from '@/components/UsernameModal';
+import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { Leaderboard } from '@/pages/Leaderboard';
 import { Auth } from '@/pages/Auth';
 import { useGameLogic } from '@/hooks/useGameLogic';
@@ -12,11 +15,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
+import { getLocalIdentity } from '@/utils/localIdentity';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'auth';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showSubmitScoreModal, setShowSubmitScoreModal] = useState(false);
+  const [lastGameScore, setLastGameScore] = useState(0);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -33,6 +40,18 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { user, profile, loading: authLoading, signOut, updateLeaderboard, isAuthenticated } = useAuth();
   const { toast } = useToast();
+
+  // Surveiller la fin de partie pour proposer la soumission de score
+  useEffect(() => {
+    if (gameState.gameStatus === 'gameover' && gameState.currentScore > 0) {
+      setLastGameScore(gameState.currentScore);
+      
+      // Proposer la soumission après un petit délai
+      setTimeout(() => {
+        setShowSubmitScoreModal(true);
+      }, 1500);
+    }
+  }, [gameState.gameStatus, gameState.currentScore]);
 
   const handleThemeChange = (theme: string) => {
     setCurrentTheme(theme);
@@ -161,7 +180,7 @@ const Index = () => {
           
         case 'leaderboard':
           return (
-            <Leaderboard
+            <OnlineLeaderboard
               onBack={() => setCurrentScreen('menu')}
             />
           );
@@ -181,6 +200,33 @@ const Index = () => {
   return (
     <div className="overflow-hidden">
       {renderScreen()}
+      
+      {/* Modals */}
+      <UsernameModal
+        isOpen={showUsernameModal}
+        onUsernameSet={() => {
+          setShowUsernameModal(false);
+          toast({
+            title: "Pseudo enregistré !",
+            description: "Tu peux maintenant soumettre tes scores.",
+          });
+          // Rouvrir le modal de soumission si on venait de là
+          if (lastGameScore > 0) {
+            setTimeout(() => setShowSubmitScoreModal(true), 500);
+          }
+        }}
+      />
+      
+      <SubmitScoreModal
+        isOpen={showSubmitScoreModal}
+        onClose={() => setShowSubmitScoreModal(false)}
+        score={lastGameScore}
+        mode={currentMode}
+        onUsernameRequired={() => {
+          setShowSubmitScoreModal(false);
+          setShowUsernameModal(true);
+        }}
+      />
     </div>
   );
 };

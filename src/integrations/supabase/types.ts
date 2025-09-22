@@ -85,6 +85,33 @@ export type Database = {
         }
         Relationships: []
       }
+      scores: {
+        Row: {
+          created_at: string | null
+          device_id: string
+          id: string
+          mode: string
+          score: number
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_id: string
+          id?: string
+          mode: string
+          score: number
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          device_id?: string
+          id?: string
+          mode?: string
+          score?: number
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
