@@ -193,29 +193,74 @@
   body {
     @apply bg-background text-foreground;
     padding-top: var(--app-safe-area);
-    overflow: hidden;
-    height: 100vh;
-    height: 100dvh;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
     touch-action: manipulation;
   }
 
-  /* App mobile optimizations */
-  .min-h-screen {
-    min-height: 100vh;
-    min-height: 100dvh;
+  /* Menu principal sans scroll */
+  .main-menu-container {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
   }
 
-  /* Optimiser les composants pour mobile */
+  /* Optimisations pour mobile - menu principal uniquement */
   @media (max-height: 700px) {
-    .text-6xl { @apply text-4xl; }
-    .text-4xl { @apply text-3xl; }
-    .py-6 { @apply py-4; }
-    .py-4 { @apply py-3; }
-    .mb-12 { @apply mb-8; }
-    .mb-8 { @apply mb-6; }
-    .gap-4 { @apply gap-3; }
+    .main-menu-container .text-6xl {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+    .main-menu-container .text-4xl {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
+    .main-menu-container .py-6 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    .main-menu-container .py-4 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .main-menu-container .mb-12 {
+      margin-bottom: 1rem;
+    }
+    .main-menu-container .mb-8 {
+      margin-bottom: 1rem;
+    }
+    .main-menu-container .gap-4 {
+      gap: 0.5rem;
+    }
+    .main-menu-container .p-4 {
+      padding: 0.5rem;
+    }
+  }
+
+  @media (max-height: 600px) {
+    .main-menu-container .text-4xl {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+    .main-menu-container .text-xl {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+    .main-menu-container .text-2xl {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
+    .main-menu-container .mb-4 {
+      margin-bottom: 0.5rem;
+    }
+    .main-menu-container .py-3 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
   }
 }
