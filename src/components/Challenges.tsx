@@ -26,108 +26,56 @@ interface ChallengesProps {
 }
 
 const CHALLENGES: Challenge[] = [
-  // Défis Faciles
+  // Défi temporaire pour test
   {
-    id: 'score_5',
-    title: 'Premier Contact',
+    id: 'score_5_test',
+    title: 'Test Facile',
     description: 'Atteignez le score de 5',
     target: 5,
-    reward: 25,
+    reward: 3000,
     difficulty: 'facile',
   },
+  // Défis de Score
   {
-    id: 'score_10',
-    title: 'En Cadence',
-    description: 'Atteignez le score de 10',
-    target: 10,
-    reward: 50,
-    difficulty: 'facile',
-  },
-  {
-    id: 'score_15',
-    title: 'Rythme Soutenu',
-    description: 'Atteignez le score de 15',
-    target: 15,
-    reward: 75,
-    difficulty: 'moyen',
-  },
-  
-  // Défis Moyens
-  {
-    id: 'score_25',
+    id: 'score_30',
     title: 'Maître du Timing',
-    description: 'Atteignez le score de 25',
-    target: 25,
-    reward: 100,
-    difficulty: 'moyen',
+    description: 'Atteignez le score de 30',
+    target: 30,
+    reward: 500,
+    difficulty: 'difficile',
   },
   {
-    id: 'score_35',
+    id: 'score_40',
     title: 'Réflexes d\'Acier',
-    description: 'Atteignez le score de 35',
-    target: 35,
-    reward: 150,
-    difficulty: 'moyen',
+    description: 'Atteignez le score de 40',
+    target: 40,
+    reward: 750,
+    difficulty: 'difficile',
   },
   {
     id: 'score_50',
     title: 'Machine de Précision',
     description: 'Atteignez le score de 50',
     target: 50,
-    reward: 200,
-    difficulty: 'difficile',
-  },
-  
-  // Défis Difficiles
-  {
-    id: 'score_75',
-    title: 'Virtuose Ultime',
-    description: 'Atteignez le score de 75',
-    target: 75,
-    reward: 300,
-    difficulty: 'difficile',
-  },
-  {
-    id: 'score_100',
-    title: 'Centurion',
-    description: 'Atteignez le score de 100',
-    target: 100,
-    reward: 500,
-    difficulty: 'expert',
-  },
-  {
-    id: 'score_150',
-    title: 'Légende Vivante',
-    description: 'Atteignez le score de 150',
-    target: 150,
-    reward: 750,
-    difficulty: 'expert',
-  },
-  
-  // Défis Impossibles
-  {
-    id: 'score_200',
-    title: 'Dieu du Timing',
-    description: 'Atteignez le score de 200',
-    target: 200,
     reward: 1000,
-    difficulty: 'impossible',
+    difficulty: 'expert',
+  },
+  // Défis de Parties Jouées
+  {
+    id: 'games_50',
+    title: 'Persévérant',
+    description: 'Jouez 50 parties',
+    target: 50,
+    reward: 800,
+    difficulty: 'moyen',
   },
   {
-    id: 'score_300',
-    title: 'Transcendance',
-    description: 'Atteignez le score de 300',
+    id: 'games_300',
+    title: 'Vétéran Ultime',
+    description: 'Jouez 300 parties',
     target: 300,
-    reward: 1500,
-    difficulty: 'impossible',
-  },
-  {
-    id: 'score_500',
-    title: 'Au-delà de l\'Impossible',
-    description: 'Atteignez le score de 500',
-    target: 500,
-    reward: 2500,
-    difficulty: 'impossible',
+    reward: 2000,
+    difficulty: 'expert',
   },
 ];
 
@@ -149,7 +97,14 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const checkAndCompleteChallenge = (challenge: Challenge) => {
     if (completedChallenges.includes(challenge.id)) return false;
 
-    const isCompleted = bestScore >= challenge.target;
+    let isCompleted = false;
+    
+    // Vérifier selon le type de défi
+    if (challenge.id.startsWith('score_')) {
+      isCompleted = bestScore >= challenge.target;
+    } else if (challenge.id.startsWith('games_')) {
+      isCompleted = totalGamesPlayed >= challenge.target;
+    }
 
     if (isCompleted) {
       const newCompleted = [...completedChallenges, challenge.id];
@@ -166,10 +121,15 @@ export const Challenges: React.FC<ChallengesProps> = ({
     CHALLENGES.forEach(challenge => {
       checkAndCompleteChallenge(challenge);
     });
-  }, [bestScore]);
+  }, [bestScore, totalGamesPlayed]);
 
   const getProgress = (challenge: Challenge) => {
-    return Math.min((bestScore / challenge.target) * 100, 100);
+    if (challenge.id.startsWith('score_')) {
+      return Math.min((bestScore / challenge.target) * 100, 100);
+    } else if (challenge.id.startsWith('games_')) {
+      return Math.min((totalGamesPlayed / challenge.target) * 100, 100);
+    }
+    return 0;
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -287,7 +247,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                       {/* Progress Bar */}
                       <div className="mb-4">
                         <div className="flex justify-between text-xs text-text-muted mb-1">
-                          <span>Progression: {bestScore}/{challenge.target}</span>
+                          <span>Progression: {challenge.id.startsWith('score_') ? bestScore : totalGamesPlayed}/{challenge.target}</span>
                           <span>{Math.round(progress)}%</span>
                         </div>
                         <Progress 

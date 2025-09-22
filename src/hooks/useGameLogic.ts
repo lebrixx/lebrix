@@ -314,8 +314,8 @@ export const useGameLogic = () => {
       setGameState(prev => ({
         ...prev,
         gameStatus: 'gameover',
-        bestScore: Math.max(gameState.currentScore, prev.bestScore),
-        coins: prev.coins + Math.floor(gameState.currentScore / 2), // Bonus coins pour essayer
+        bestScore: Math.max(prev.currentScore, prev.bestScore),
+        coins: prev.coins + Math.floor(prev.currentScore / 2), // Bonus coins pour essayer
         showResult: true,
         lastResult: 'failure',
       }));
