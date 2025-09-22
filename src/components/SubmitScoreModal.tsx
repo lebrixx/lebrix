@@ -37,7 +37,9 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
     setSubmitStatus('idle');
     
     try {
+      console.log('Tentative de soumission:', { score, mode, username: getLocalIdentity().username });
       const success = await submitScore({ score, mode });
+      console.log('Résultat soumission:', success);
       
       if (success) {
         setSubmitStatus('success');

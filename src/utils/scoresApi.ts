@@ -59,6 +59,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     const clientFingerprint = generateDeviceFingerprint();
 
     // Call the secure Edge Function instead of direct database access
+    console.log('Appel Edge Function avec:', { deviceId, username, score, mode });
     const { data, error } = await supabase.functions.invoke('submit-score', {
       body: {
         device_id: deviceId,

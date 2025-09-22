@@ -52,13 +52,6 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
     try {
       const data = await fetchTop(mode);
       setScores(data);
-      if (data.length === 0 && isOnline) {
-        toast({
-          title: "Aucun score",
-          description: "Sois le premier à jouer dans ce mode !",
-          duration: 2000
-        });
-      }
     } catch (error) {
       toast({
         title: "Erreur réseau",
