@@ -3,7 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserProfile {
-  id: number;
+  id: string;
   username: string;
   email: string;
   created_at: string;

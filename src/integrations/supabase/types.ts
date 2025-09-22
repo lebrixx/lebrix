@@ -25,7 +25,7 @@ export type Database = {
           mode: string
           score: number
           updated_at: string
-          user_id: number
+          user_id: string
         }
         Insert: {
           coins?: number
@@ -37,7 +37,7 @@ export type Database = {
           mode: string
           score?: number
           updated_at?: string
-          user_id: number
+          user_id: string
         }
         Update: {
           coins?: number
@@ -49,7 +49,7 @@ export type Database = {
           mode?: string
           score?: number
           updated_at?: string
-          user_id?: number
+          user_id?: string
         }
         Relationships: [
           {
@@ -65,22 +65,22 @@ export type Database = {
         Row: {
           created_at: string
           email: string | null
-          id: number
-          updated_at: string | null
+          id: string
+          updated_at: string
           username: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
-          id?: number
-          updated_at?: string | null
+          id: string
+          updated_at?: string
           username?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
-          id?: number
-          updated_at?: string | null
+          id?: string
+          updated_at?: string
           username?: string | null
         }
         Relationships: []
