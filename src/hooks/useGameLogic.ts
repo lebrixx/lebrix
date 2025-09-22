@@ -343,13 +343,11 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         newZoneArc = Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!;
         newZoneStart = Math.random() * 2 * Math.PI;
       }
-      // Mode Zone Mobile : accélérer le drift et inverser parfois
+      // Mode Zone Mobile : accélérer le drift et TOUJOURS inverser pour aller dans le sens opposé
       else if (modeConfig.keepMovingZone && newZoneDriftSpeed) {
         newZoneDriftSpeed = newZoneDriftSpeed * (modeConfig.zoneDriftGain || 1.05);
-        // Chance d'inverser le sens de rotation
-        if (Math.random() < (modeConfig.zoneDriftInvertChance || 0.3)) {
-          newZoneDriftSpeed = -newZoneDriftSpeed;
-        }
+        // TOUJOURS inverser le sens de rotation pour que zone et balle aillent dans des sens opposés
+        newZoneDriftSpeed = -newZoneDriftSpeed;
       }
       // Mode classique/survie : repositionner l'arc normalement
       else if (!modeConfig.keepMovingZone) {

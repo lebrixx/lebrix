@@ -135,7 +135,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     }
   };
 
-  // Vérifier si un défi est complété
+  // Vérifier si un défi est complété et l'activer immédiatement
   const isChallengeCompleted = (challenge: Challenge): boolean => {
     const completed = getCompletedChallenges();
     if (completed.includes(challenge.id)) return true;
@@ -148,10 +148,17 @@ export const Challenges: React.FC<ChallengesProps> = ({
       isCompleted = totalGamesPlayed >= challenge.target;
     }
 
-    // Si complété, le marquer et donner la récompense
+    // Si complété, le marquer et donner la récompense IMMÉDIATEMENT
     if (isCompleted && !completed.includes(challenge.id)) {
       markChallengeCompleted(challenge.id);
       onReward(challenge.reward);
+      // Forcer le re-render pour actualiser l'affichage
+      setTimeout(() => {
+        // Trigger une mise à jour du composant parent si nécessaire
+        window.dispatchEvent(new CustomEvent('challengeCompleted', { 
+          detail: { challengeId: challenge.id, reward: challenge.reward } 
+        }));
+      }, 0);
     }
 
     return isCompleted;
