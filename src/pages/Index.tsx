@@ -4,20 +4,16 @@ import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
-import { ScoreSync } from '@/components/ScoreSync';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
-import { Leaderboard } from '@/pages/Leaderboard';
-import { Auth } from '@/pages/Auth';
 import { useGameLogic } from '@/hooks/useGameLogic';
-import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'auth';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -34,11 +30,10 @@ const Index = () => {
   // État du mode actuel avec persistance
   const [currentMode, setCurrentMode] = useState<ModeType>(() => {
     const saved = localStorage.getItem('ls_mode');
-    return (saved as ModeType) || ModeID.CLASSIC;
+    return (saved as ModeType) || 'arc_changeant'; // Mode par défaut sans classic
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
-  const { user, profile, loading: authLoading, signOut, updateLeaderboard, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
   // Surveiller la fin de partie pour proposer la soumission de score
@@ -81,22 +76,6 @@ const Index = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la déconnexion",
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Déconnexion réussie",
-        description: "À bientôt !",
-      });
-    }
-  };
-
   const renderScreen = () => {
     switch (currentScreen) {
       case 'menu':
@@ -115,23 +94,16 @@ const Index = () => {
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
-            onOpenAuth={() => setCurrentScreen('auth')}
-            onSignOut={handleSignOut}
-            username={profile?.username}
-            isAuthenticated={isAuthenticated}
           />
         );
         
         case 'game':
           return (
-            <>
-              <CircleTap
-                theme={currentTheme}
-                currentMode={currentMode}
-                onBack={() => setCurrentScreen('menu')}
-              />
-              <ScoreSync gameState={gameState} currentMode={currentMode} />
-            </>
+            <CircleTap
+              theme={currentTheme}
+              currentMode={currentMode}
+              onBack={() => setCurrentScreen('menu')}
+            />
           );
         
       case 'shop':
@@ -162,7 +134,6 @@ const Index = () => {
 
         case 'modes':
           const bestScores = {
-            classic: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_classic`] || 0,
             arc_changeant: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_arc_changeant`] || 0,
             survie_60s: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_survie_60s`] || 0,
             zone_mobile: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_mobile`] || 0,
@@ -181,13 +152,6 @@ const Index = () => {
         case 'leaderboard':
           return (
             <OnlineLeaderboard
-              onBack={() => setCurrentScreen('menu')}
-            />
-          );
-          
-        case 'auth':
-          return (
-            <Auth
               onBack={() => setCurrentScreen('menu')}
             />
           );

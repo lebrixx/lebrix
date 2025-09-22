@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, LogOut, User } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown } from 'lucide-react';
 
 interface MainMenuProps {
   bestScore: number;
@@ -14,10 +14,6 @@ interface MainMenuProps {
   onOpenChallenges: () => void;
   onOpenModes: () => void;
   onOpenLeaderboard: () => void;
-  onOpenAuth: () => void;
-  onSignOut: () => void;
-  username?: string;
-  isAuthenticated: boolean;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -29,11 +25,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenShop, 
   onOpenChallenges,
   onOpenModes,
-  onOpenLeaderboard,
-  onOpenAuth,
-  onSignOut,
-  username,
-  isAuthenticated
+  onOpenLeaderboard
 }) => {
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
@@ -49,35 +41,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               Tapez dans la zone verte au bon moment!
             </p>
           </div>
-          <div className="flex-1 flex justify-end">
-            {isAuthenticated ? (
-              <div className="flex flex-col items-end gap-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <User className="w-4 h-4 text-primary" />
-                  <span className="text-primary font-medium">{username}</span>
-                </div>
-                <Button
-                  onClick={onSignOut}
-                  variant="outline"
-                  size="sm"
-                  className="border-wheel-border hover:bg-destructive hover:text-destructive-foreground"
-                >
-                  <LogOut className="w-4 h-4 mr-1" />
-                  Déconnexion
-                </Button>
-              </div>
-            ) : (
-              <Button
-                onClick={onOpenAuth}
-                variant="outline"
-                size="sm"
-                className="border-wheel-border hover:bg-button-hover"
-              >
-                <User className="w-4 h-4 mr-2" />
-                Connexion
-              </Button>
-            )}
-          </div>
+          <div className="flex-1"></div>
         </div>
       </div>
 

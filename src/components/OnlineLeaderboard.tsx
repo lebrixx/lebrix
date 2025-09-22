@@ -11,14 +11,13 @@ interface OnlineLeaderboardProps {
 }
 
 const modeNames = {
-  classic: 'Classique',
   arc_changeant: 'Arc Changeant',
   survie_60s: 'Survie 60s',
   zone_mobile: 'Zone Mobile'
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {
-  const [selectedMode, setSelectedMode] = useState<string>('classic');
+  const [selectedMode, setSelectedMode] = useState<string>('arc_changeant');
   const [scores, setScores] = useState<Score[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
