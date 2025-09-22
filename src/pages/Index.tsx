@@ -50,10 +50,6 @@ const Index = () => {
     
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
-    toast({
-      title: "Mode changé!",
-      description: `Mode ${cfgModes[mode].name} sélectionné.`,
-    });
   };
 
   const renderScreen = () => {

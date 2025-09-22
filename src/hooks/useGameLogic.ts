@@ -268,13 +268,16 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     const zoneArc = modeConfig.variableArc 
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
+    
+    // Vitesse de base modifiée pour le mode survie (+17%)
+    const baseSpeed = modeConfig.survival ? cfg.baseSpeed * 1.17 : cfg.baseSpeed;
       
     setGameState(prev => ({
       ...prev,
       gameStatus: 'running',
       currentScore: 0,
       ballAngle: 0,
-      ballSpeed: cfg.baseSpeed,
+      ballSpeed: baseSpeed,
       ballDirection: 1,
       zoneStart: zoneStart,
       zoneEnd: zoneStart + zoneArc,
@@ -285,7 +288,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       successFlash: false,
       successParticles: false,
       comboCount: 0,
-      maxSpeedReached: cfg.baseSpeed,
+      maxSpeedReached: baseSpeed,
       directionChanges: 0,
       totalGamesPlayed: prev.totalGamesPlayed + 1,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
@@ -408,13 +411,16 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     const zoneArc = modeConfig.variableArc 
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
+    
+    // Vitesse de base modifiée pour le mode survie (+17%)
+    const baseSpeed = modeConfig.survival ? cfg.baseSpeed * 1.17 : cfg.baseSpeed;
       
     setGameState(prev => ({
       ...prev,
       gameStatus: 'idle',
       currentScore: 0,
       ballAngle: 0,
-      ballSpeed: cfg.baseSpeed,
+      ballSpeed: baseSpeed,
       ballDirection: 1,
       zoneStart: zoneStart,
       zoneEnd: zoneStart + zoneArc,
@@ -425,7 +431,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       successFlash: false,
       successParticles: false,
       comboCount: 0,
-      maxSpeedReached: cfg.baseSpeed,
+      maxSpeedReached: baseSpeed,
       directionChanges: 0,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,

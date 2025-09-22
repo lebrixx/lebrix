@@ -54,6 +54,11 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --spin-speed: 2s;
+
+    /* App-optimized spacing */
+    --app-padding: 1rem;
+    --app-safe-area: env(safe-area-inset-top, 0px);
+    --app-content-max-width: 100vw;
     
     /* Zone Pulsation */
     --pulse-zone-duration: 1s;
@@ -187,5 +192,11 @@
 
   body {
     @apply bg-background text-foreground;
+    padding-top: var(--app-safe-area);
+    overflow-x: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
   }
 }
