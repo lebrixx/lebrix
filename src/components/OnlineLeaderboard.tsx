@@ -38,6 +38,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
     const identity = getLocalIdentity();
     setCurrentUsername(identity.username || 'Aucun pseudo');
     setShowUsernameModal(false);
+    // Recharger le classement pour voir les nouveaux scores
+    loadScores(selectedMode);
     toast({
       title: "Pseudo modifié",
       description: "Votre nouveau pseudo a été sauvegardé",
