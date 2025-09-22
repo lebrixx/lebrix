@@ -28,8 +28,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in">
-        <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
+      <div className="text-center animate-fade-in mt-8">
+        <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
           LUCKY STOP
         </h1>
         <p className="text-text-secondary text-xl">
