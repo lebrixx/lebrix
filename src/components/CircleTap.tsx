@@ -15,9 +15,10 @@ interface CircleTapProps {
     circle: string;
     effect: string;
   };
+  onGameOver?: (score: number) => void;
 }
 
-export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack, currentMode }) => {
+export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack, currentMode, onGameOver }) => {
   const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic(currentMode);
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
 
@@ -48,6 +49,13 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
       playFailure();
     }
   }, [gameState.lastResult, gameState.showResult, gameState.comboCount, playSuccess, playFailure]);
+
+  // Notify parent on game over with final score
+  useEffect(() => {
+    if (gameState.gameStatus === 'gameover' && gameState.currentScore > 0) {
+      onGameOver?.(gameState.currentScore);
+    }
+  }, [gameState.gameStatus, gameState.currentScore, onGameOver]);
 
   const handleTap = () => {
     playClick();

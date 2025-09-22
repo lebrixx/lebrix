@@ -36,55 +36,51 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { toast } = useToast();
 
-  // Auto-submit scores when game ends (if username exists)
-  useEffect(() => {
-    if (gameState.gameStatus === 'gameover' && gameState.currentScore > 0) {
-      setLastGameScore(gameState.currentScore);
-      
-      const identity = getLocalIdentity();
-      
-      // Auto-submit if username exists, otherwise show username modal
-      setTimeout(() => {
-        if (identity.username) {
-          // Auto-submit score
-          import('@/utils/scoresApi').then(({ submitScore }) => {
-            submitScore({ score: gameState.currentScore, mode: currentMode })
-              .then(success => {
-                if (success) {
-                  toast({
-                    title: "Score soumis !",
-                    description: `Score de ${gameState.currentScore} enregistré en ligne.`,
-                  });
-                } else {
-                  toast({
-                    title: "Erreur",
-                    description: "Impossible de soumettre le score. Partie trop courte ?",
-                    variant: "destructive"
-                  });
-                }
-              })
-              .catch((error) => {
-                if (error?.message === 'GAME_TOO_SHORT') {
-                  toast({
-                    title: "Partie trop courte",
-                    description: "Joue au moins 5 secondes pour soumettre un score.",
-                    variant: "destructive"
-                  });
-                } else {
-                  toast({
-                    title: "Erreur réseau",
-                    description: "Score non soumis. Vérifie ta connexion.",
-                    variant: "destructive"
-                  });
-                }
-              });
-          });
-        } else {
-          setShowUsernameModal(true);
-        }
-      }, 1500);
-    }
-  }, [gameState.gameStatus, gameState.currentScore, currentMode, toast]);
+  // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
+  const handleGameOver = (finalScore: number) => {
+    setLastGameScore(finalScore);
+
+    const identity = getLocalIdentity();
+
+    setTimeout(() => {
+      if (identity.username) {
+        import('@/utils/scoresApi').then(({ submitScore }) => {
+          submitScore({ score: finalScore, mode: currentMode })
+            .then(success => {
+              if (success) {
+                toast({
+                  title: "Score soumis !",
+                  description: `Score de ${finalScore} enregistré en ligne.`,
+                });
+              } else {
+                toast({
+                  title: "Erreur",
+                  description: "Impossible de soumettre le score. Partie trop courte ?",
+                  variant: "destructive"
+                });
+              }
+            })
+            .catch((error) => {
+              if (error?.message === 'GAME_TOO_SHORT') {
+                toast({
+                  title: "Partie trop courte",
+                  description: "Joue au moins 5 secondes pour soumettre un score.",
+                  variant: "destructive"
+                });
+              } else {
+                toast({
+                  title: "Erreur réseau",
+                  description: "Score non soumis. Vérifie ta connexion.",
+                  variant: "destructive"
+                });
+              }
+            });
+        });
+      } else {
+        setShowUsernameModal(true);
+      }
+    }, 800);
+  };
 
   const handleThemeChange = (theme: string) => {
     setCurrentTheme(theme);
@@ -141,6 +137,7 @@ const Index = () => {
               theme={currentTheme}
               currentMode={currentMode}
               onBack={() => setCurrentScreen('menu')}
+              onGameOver={handleGameOver}
             />
           );
         
