@@ -65,38 +65,15 @@ serve(async (req) => {
 
     // Score validation
     const maxScore = SCORE_LIMITS[mode as keyof typeof SCORE_LIMITS];
-    if (score < 0 || score > maxScore) {
-      console.log(`Score validation failed: ${score} exceeds limit ${maxScore} for mode ${mode}`);
+    if (score < 2 || score > maxScore) {
+      console.log(`Score validation failed: ${score} (must be >= 2 and <= ${maxScore}) for mode ${mode}`);
       return new Response(
         JSON.stringify({ error: 'Invalid score range' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Game duration validation (if provided)
-    if (session_start_time) {
-      const gameDuration = Date.now() - session_start_time;
-      if (gameDuration < MIN_GAME_DURATION) {
-        console.log(`Game duration too short: ${gameDuration}ms`);
-        return new Response(
-          JSON.stringify({ 
-            error: 'GAME_TOO_SHORT',
-            message: `Partie trop courte (${Math.round(gameDuration/1000)}s). Joue au moins ${MIN_GAME_DURATION/1000}s pour soumettre un score.` 
-          }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      // Basic score-to-time ratio validation (rough estimate)
-      const expectedMinTime = score * 100; // 100ms per point minimum
-      if (gameDuration < expectedMinTime) {
-        console.log(`Score vs time validation failed: ${score} in ${gameDuration}ms`);
-        return new Response(
-          JSON.stringify({ error: 'Score progression suspicious' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-    }
+    // Remove game duration validation completely - no time restrictions
 
     // Enhanced rate limiting with device fingerprint
     const fingerprint = `${device_id}_${client_fingerprint || 'unknown'}`;

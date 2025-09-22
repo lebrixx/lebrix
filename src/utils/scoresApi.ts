@@ -29,7 +29,7 @@ const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile'];
 export async function submitScore({ score, mode }: SubmitScoreParams): Promise<boolean> {
   try {
     // Basic client-side validation
-    if (typeof score !== 'number' || score < 0) {
+    if (typeof score !== 'number' || score < 2) {
       console.warn('Score invalide:', score);
       return false;
     }
@@ -78,12 +78,6 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     if (!data?.success) {
       console.warn('Score submission failed:', data?.error);
-      
-      // Handle specific errors from server
-      if (data?.error === 'GAME_TOO_SHORT') {
-        throw new Error('GAME_TOO_SHORT');
-      }
-      
       return false;
     }
 
@@ -95,12 +89,6 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
       throw error; // Re-throw pour que l'UI puisse gérer
     }
     console.error('Erreur lors de la soumission du score:', error);
-    
-    // Handle specific error types
-    if (error?.message?.includes('GAME_TOO_SHORT')) {
-      throw new Error('GAME_TOO_SHORT');
-    }
-    
     return false;
   }
 }
