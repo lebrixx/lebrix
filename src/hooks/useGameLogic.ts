@@ -384,37 +384,20 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       }, 200);
 
     } else {
-      // ÉCHEC - Fin de partie (sauf en mode survie où on continue)
-      const modeConfig = cfgModes[gameState.currentMode];
-      
-      if (modeConfig.survival && gameState.timeLeft && gameState.timeLeft > 0) {
-        // En mode survie, on continue après un échec
-        setGameState(prev => ({
-          ...prev,
-          lastResult: 'failure',
-          showResult: true,
-        }));
+      // ÉCHEC - Fin de partie pour tous les modes
+      setGameState(prev => ({
+        ...prev,
+        gameStatus: 'gameover',
+        bestScore: Math.max(prev.currentScore, prev.bestScore),
+        coins: prev.coins + Math.floor(prev.currentScore / 20), // Réduction drastique des coins
+        showResult: true,
+        lastResult: 'failure',
+      }));
 
-        // Masquer le message d'échec après 1 seconde
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showResult: false }));
-        }, 1000);
-      } else {
-        // Mode normal : game over
-        setGameState(prev => ({
-          ...prev,
-          gameStatus: 'gameover',
-          bestScore: Math.max(prev.currentScore, prev.bestScore),
-          coins: prev.coins + Math.floor(prev.currentScore / 2), // Bonus coins pour essayer
-          showResult: true,
-          lastResult: 'failure',
-        }));
-
-        // Masquer le message de game over après 2 secondes
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showResult: false }));
-        }, 2000);
-      }
+      // Masquer le message de game over après 2 secondes
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, showResult: false }));
+      }, 2000);
     }
   }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode]);
 

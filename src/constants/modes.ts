@@ -53,12 +53,12 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: true
   },
   [ModeID.SURVIE_60S]: {
-    name: "Survie 60s",
-    desc: "Tu as 60 secondes pour réussir le plus de hits. Les échecs n'arrêtent pas la partie.",
+    name: "Survie 30s",
+    desc: "Tu as 30 secondes pour réussir le plus de hits. Un échec = game over !",
     zoneArc: Math.PI / 5,
     keepMovingZone: false,
     survival: true,
-    survivalTime: 60,
+    survivalTime: 30,
     variableArc: false
   },
   [ModeID.ZONE_MOBILE]: {

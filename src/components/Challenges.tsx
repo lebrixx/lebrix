@@ -26,13 +26,13 @@ interface ChallengesProps {
 }
 
 const CHALLENGES: Challenge[] = [
-  // Défi temporaire pour test
+  // Défis généraux
   {
     id: 'test-easy',
     title: 'Premier pas',
     description: 'Atteindre un score de 5 pour tester le système',
     target: 5,
-    reward: 500,
+    reward: 50,
     difficulty: 'facile'
   },
   {
@@ -40,7 +40,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Précision maîtrisée',
     description: 'Atteindre un score de 30 points',
     target: 30,
-    reward: 83,
+    reward: 8,
     difficulty: 'moyen'
   },
   {
@@ -48,7 +48,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Expert du timing',
     description: 'Atteindre un score de 40 points',
     target: 40,
-    reward: 125,
+    reward: 12,
     difficulty: 'difficile'
   },
   {
@@ -56,7 +56,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Maître du cercle',
     description: 'Atteindre un score de 50 points',
     target: 50,
-    reward: 167,
+    reward: 17,
     difficulty: 'expert'
   },
   {
@@ -64,7 +64,7 @@ const CHALLENGES: Challenge[] = [
     title: 'Persévérant',
     description: 'Jouer 50 parties',
     target: 50,
-    reward: 50,
+    reward: 5,
     difficulty: 'facile'
   },
   {
@@ -72,7 +72,32 @@ const CHALLENGES: Challenge[] = [
     title: 'Accro du jeu',
     description: 'Jouer 300 parties',
     target: 300,
-    reward: 250,
+    reward: 25,
+    difficulty: 'expert'
+  },
+  // Défis spécifiques aux modes
+  {
+    id: 'mode-classic-100',
+    title: 'Légende Classique',
+    description: 'Atteindre 100 points en mode Classique',
+    target: 100,
+    reward: 50,
+    difficulty: 'impossible'
+  },
+  {
+    id: 'mode-arc-75',
+    title: 'Maître de l\'Adaptation',
+    description: 'Atteindre 75 points en mode Arc Changeant',
+    target: 75,
+    reward: 45,
+    difficulty: 'expert'
+  },
+  {
+    id: 'mode-survie-40',
+    title: 'Survivant Ultime',
+    description: 'Atteindre 40 points en mode Survie 30s',
+    target: 40,
+    reward: 40,
     difficulty: 'expert'
   }
 ];
@@ -203,7 +228,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       </div>
 
       {/* Challenges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
         {CHALLENGES.map((challenge) => {
           const completed = isChallengeCompleted(challenge);
           const progress = getChallengeProgress(challenge);
@@ -221,48 +246,48 @@ export const Challenges: React.FC<ChallengesProps> = ({
               `}
             >
               {/* Difficulty Badge */}
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-2 right-2">
                 <Badge 
                   variant="outline" 
-                  className={`${getDifficultyColor(challenge.difficulty)} bg-transparent`}
+                  className={`${getDifficultyColor(challenge.difficulty)} bg-transparent text-xs px-2 py-1`}
                 >
                   {getDifficultyIcon(challenge.difficulty)}
-                  <span className="ml-1 capitalize">{challenge.difficulty}</span>
+                  <span className="ml-1 capitalize text-xs">{challenge.difficulty}</span>
                 </Badge>
               </div>
 
               {/* Completed Badge */}
               {completed && (
-                <div className="absolute top-4 left-4">
-                  <Badge className="bg-success text-game-dark">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Complété
+                <div className="absolute top-2 left-2">
+                  <Badge className="bg-success text-game-dark text-xs px-2 py-1">
+                    <CheckCircle className="w-2 h-2 mr-1" />
+                    OK
                   </Badge>
                 </div>
               )}
 
-              <div className="p-6 pt-16">
+              <div className="p-4 pt-12">
                 {/* Challenge Info */}
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-text-primary mb-2">
+                <div className="mb-4">
+                  <h3 className="text-lg font-bold text-text-primary mb-1">
                     {challenge.title}
                   </h3>
-                  <p className="text-text-secondary text-sm leading-relaxed">
+                  <p className="text-text-secondary text-xs leading-relaxed">
                     {challenge.description}
                   </p>
                 </div>
 
                 {/* Progress */}
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-text-muted text-sm">Progrès</span>
-                    <span className="text-text-primary font-bold">
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-text-muted text-xs">Progrès</span>
+                    <span className="text-text-primary font-bold text-sm">
                       {currentValue} / {challenge.target}
                     </span>
                   </div>
                   <Progress 
                     value={progress} 
-                    className="h-2"
+                    className="h-1.5"
                   />
                   <div className="text-right mt-1">
                     <span className="text-xs text-text-muted">{Math.round(progress)}%</span>
@@ -271,15 +296,15 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
                 {/* Reward */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-secondary" />
-                    <span className="text-secondary font-bold">{challenge.reward} coins</span>
+                  <div className="flex items-center gap-1">
+                    <Trophy className="w-3 h-3 text-secondary" />
+                    <span className="text-secondary font-bold text-xs">{challenge.reward}</span>
                   </div>
                   
                   {completed ? (
-                    <CheckCircle className="w-6 h-6 text-success" />
+                    <CheckCircle className="w-4 h-4 text-success" />
                   ) : (
-                    <Lock className="w-6 h-6 text-text-muted" />
+                    <Lock className="w-4 h-4 text-text-muted" />
                   )}
                 </div>
               </div>

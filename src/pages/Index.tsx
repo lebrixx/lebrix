@@ -61,7 +61,11 @@ const Index = () => {
       case 'menu':
         return (
           <MainMenu
-            bestScore={gameState.bestScore}
+            bestScore={(() => {
+              const saved = localStorage.getItem('luckyStopGame');
+              const data = saved ? JSON.parse(saved) : {};
+              return data[`bestScore_${currentMode}`] || 0;
+            })()}
             coins={gameState.coins}
             theme={currentTheme}
             currentMode={currentMode}
@@ -107,15 +111,23 @@ const Index = () => {
           />
         );
 
-      case 'modes':
-        return (
-          <ModeSelection
-            currentMode={currentMode}
-            gameStatus={gameState.gameStatus}
-            onSelectMode={handleModeChange}
-            onBack={() => setCurrentScreen('menu')}
-          />
-        );
+        case 'modes':
+          const bestScores = {
+            classic: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_classic`] || 0,
+            arc_changeant: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_arc_changeant`] || 0,
+            survie_60s: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_survie_60s`] || 0,
+            zone_mobile: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_mobile`] || 0,
+          };
+          
+          return (
+            <ModeSelection
+              currentMode={currentMode}
+              gameStatus={gameState.gameStatus}
+              bestScores={bestScores}
+              onSelectMode={handleModeChange}
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
         
       default:
         return null;

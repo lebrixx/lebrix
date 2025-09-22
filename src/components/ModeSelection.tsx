@@ -8,6 +8,7 @@ import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 interface ModeSelectionProps {
   currentMode: ModeType;
   gameStatus: 'idle' | 'running' | 'gameover';
+  bestScores: Record<string, number>;
   onSelectMode: (mode: ModeType) => void;
   onBack: () => void;
 }
@@ -30,6 +31,7 @@ const getModeIcon = (modeId: ModeType) => {
 export const ModeSelection: React.FC<ModeSelectionProps> = ({
   currentMode,
   gameStatus,
+  bestScores,
   onSelectMode,
   onBack
 }) => {
@@ -140,6 +142,16 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                       <span>Zone mobile</span>
                     </div>
                   )}
+                </div>
+
+                {/* Best Score */}
+                <div className="mb-4 p-3 bg-wheel-segment/20 rounded-lg border border-wheel-border">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-text-muted">Meilleur Score:</span>
+                    <Badge variant="outline" className="border-primary text-primary">
+                      {bestScores[modeId] || 0}
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Select Button */}
