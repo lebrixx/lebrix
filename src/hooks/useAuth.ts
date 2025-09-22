@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 export interface UserProfile {
   id: string;
   username: string;
-  email: string;
   created_at: string;
   updated_at: string;
 }
@@ -29,7 +28,7 @@ export const useAuth = () => {
             try {
               const { data: profileData, error } = await supabase
                 .from('profiles')
-                .select('*')
+                .select('id, username, created_at, updated_at')
                 .eq('id', session.user.id)
                 .maybeSingle();
               
@@ -61,7 +60,7 @@ export const useAuth = () => {
           try {
             const { data: profileData, error } = await supabase
               .from('profiles')
-              .select('*')
+              .select('id, username, created_at, updated_at')
               .eq('id', session.user.id)
               .maybeSingle();
             
