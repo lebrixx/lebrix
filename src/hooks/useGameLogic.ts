@@ -128,7 +128,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       currentMode: mode,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
-      zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
+      zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
     };
     
     if (saved) {
@@ -293,7 +293,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       totalGamesPlayed: prev.totalGamesPlayed + 1,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
-      zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
+      zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
     }));
   }, [currentMode]);
 
@@ -329,11 +329,12 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       const speedVariation = (Math.random() - 0.5) * 2 * cfg.speedVariation;
       const newSpeed = baseSpeed * (1 + speedVariation);
       
-      // Chance aléatoire d'inverser la direction (20%)
-      const shouldReverse = Math.random() < cfg.directionReverseChance;
+      const modeConfig = cfgModes[gameState.currentMode];
+      
+      // Chance aléatoire d'inverser la direction (20%) - SAUF en mode zone mobile
+      const shouldReverse = modeConfig.keepMovingZone ? false : Math.random() < cfg.directionReverseChance;
       const newDirection = shouldReverse ? gameState.ballDirection * -1 : gameState.ballDirection;
       
-      const modeConfig = cfgModes[gameState.currentMode];
       let newZoneStart = gameState.zoneStart;
       let newZoneArc = gameState.zoneArc;
       let newZoneDriftSpeed = gameState.zoneDriftSpeed;
@@ -343,11 +344,10 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         newZoneArc = Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!;
         newZoneStart = Math.random() * 2 * Math.PI;
       }
-      // Mode Zone Mobile : accélérer le drift et TOUJOURS inverser pour aller dans le sens opposé
+      // Mode Zone Mobile : accélérer le drift mais GARDER le sens opposé constant
       else if (modeConfig.keepMovingZone && newZoneDriftSpeed) {
         newZoneDriftSpeed = newZoneDriftSpeed * (modeConfig.zoneDriftGain || 1.05);
-        // TOUJOURS inverser le sens de rotation pour que zone et balle aillent dans des sens opposés
-        newZoneDriftSpeed = -newZoneDriftSpeed;
+        // Garder le même sens (pas d'inversion) pour maintenir l'opposition avec la balle
       }
       // Mode classique/survie : repositionner l'arc normalement
       else if (!modeConfig.keepMovingZone) {
@@ -433,7 +433,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       directionChanges: 0,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
-      zoneDriftSpeed: modeConfig.keepMovingZone ? modeConfig.zoneDriftSpeed : undefined,
+      zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
     }));
   }, [currentMode]);
 
