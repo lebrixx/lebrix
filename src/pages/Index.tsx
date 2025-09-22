@@ -4,12 +4,16 @@ import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
+import { ScoreSync } from '@/components/ScoreSync';
+import { Leaderboard } from '@/pages/Leaderboard';
+import { Auth } from '@/pages/Auth';
 import { useGameLogic } from '@/hooks/useGameLogic';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'auth';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -27,6 +31,7 @@ const Index = () => {
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
+  const { user, profile, loading: authLoading, signOut, updateLeaderboard, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
   const handleThemeChange = (theme: string) => {
@@ -57,6 +62,22 @@ const Index = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la déconnexion",
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !",
+      });
+    }
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'menu':
@@ -74,17 +95,25 @@ const Index = () => {
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
+            onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
+            onOpenAuth={() => setCurrentScreen('auth')}
+            onSignOut={handleSignOut}
+            username={profile?.username}
+            isAuthenticated={isAuthenticated}
           />
         );
         
-      case 'game':
-        return (
-          <CircleTap
-            theme={currentTheme}
-            currentMode={currentMode}
-            onBack={() => setCurrentScreen('menu')}
-          />
-        );
+        case 'game':
+          return (
+            <>
+              <CircleTap
+                theme={currentTheme}
+                currentMode={currentMode}
+                onBack={() => setCurrentScreen('menu')}
+              />
+              <ScoreSync gameState={gameState} currentMode={currentMode} />
+            </>
+          );
         
       case 'shop':
         return (
@@ -129,9 +158,23 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
             />
           );
+          
+        case 'leaderboard':
+          return (
+            <Leaderboard
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
+          
+        case 'auth':
+          return (
+            <Auth
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
         
-      default:
-        return null;
+        default:
+          return null;
     }
   };
 

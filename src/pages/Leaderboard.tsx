@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface LeaderboardEntry {
   id: string;
-  user_id: number;
+  user_id: string;
   username: string;
   mode: string;
   score: number;
@@ -43,7 +43,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
         .from('leaderboard')
         .select(`
           *,
-          profiles!inner(username)
+          profiles(username)
         `)
         .eq('mode', mode)
         .order('score', { ascending: false })

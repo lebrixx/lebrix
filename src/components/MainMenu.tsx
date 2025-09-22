@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2 } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, LogOut, User } from 'lucide-react';
 
 interface MainMenuProps {
   bestScore: number;
@@ -13,6 +13,11 @@ interface MainMenuProps {
   onOpenShop: () => void;
   onOpenChallenges: () => void;
   onOpenModes: () => void;
+  onOpenLeaderboard: () => void;
+  onOpenAuth: () => void;
+  onSignOut: () => void;
+  username?: string;
+  isAuthenticated: boolean;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -23,18 +28,57 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onStartGame, 
   onOpenShop, 
   onOpenChallenges,
-  onOpenModes
+  onOpenModes,
+  onOpenLeaderboard,
+  onOpenAuth,
+  onSignOut,
+  username,
+  isAuthenticated
 }) => {
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
       <div className="text-center animate-fade-in mt-16">
-        <h1 className="text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
-          LUCKY STOP
-        </h1>
-        <p className="text-text-secondary text-xl">
-          Tapez dans la zone verte au bon moment!
-        </p>
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex-1"></div>
+          <div className="flex-1">
+            <h1 className="text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
+              LUCKY STOP
+            </h1>
+            <p className="text-text-secondary text-xl">
+              Tapez dans la zone verte au bon moment!
+            </p>
+          </div>
+          <div className="flex-1 flex justify-end">
+            {isAuthenticated ? (
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="w-4 h-4 text-primary" />
+                  <span className="text-primary font-medium">{username}</span>
+                </div>
+                <Button
+                  onClick={onSignOut}
+                  variant="outline"
+                  size="sm"
+                  className="border-wheel-border hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Déconnexion
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={onOpenAuth}
+                variant="outline"
+                size="sm"
+                className="border-wheel-border hover:bg-button-hover"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Connexion
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -96,6 +140,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           >
             <Star className="w-6 h-6 mr-3 group-hover:animate-spin" />
             DÉFIS QUOTIDIENS
+          </Button>
+
+          <Button
+            onClick={onOpenLeaderboard}
+            variant="outline"
+            size="lg"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-4 text-lg group"
+          >
+            <Crown className="w-6 h-6 mr-3 group-hover:animate-bounce" />
+            CLASSEMENT
           </Button>
         </div>
       </div>
