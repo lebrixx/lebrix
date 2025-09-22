@@ -76,6 +76,7 @@ const Index = () => {
         return (
           <CircleTap
             theme={currentTheme}
+            currentMode={currentMode}
             onBack={() => setCurrentScreen('menu')}
           />
         );

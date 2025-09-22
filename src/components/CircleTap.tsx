@@ -4,9 +4,11 @@ import { useSound } from '@/hooks/useSound';
 import { Button } from '@/components/ui/button';
 import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
+import { ModeType } from '@/constants/modes';
 
 interface CircleTapProps {
   theme: string;
+  currentMode: ModeType;
   onBack?: () => void;
   customization?: {
     background: string;
@@ -15,8 +17,8 @@ interface CircleTapProps {
   };
 }
 
-export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack }) => {
-  const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic();
+export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack, currentMode }) => {
+  const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic(currentMode);
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
 
   // Resolve current theme definition for visuals (background, bar, success zone)
