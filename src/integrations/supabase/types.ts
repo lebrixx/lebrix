@@ -111,7 +111,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_scores: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          mode: string | null
+          score: number | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          mode?: string | null
+          score?: number | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          mode?: string | null
+          score?: number | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_old_scores: {
