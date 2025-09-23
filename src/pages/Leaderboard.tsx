@@ -145,7 +145,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             <p className="text-text-muted text-sm">Soyez le premier à jouer !</p>
           </Card>
         ) : (
-          <div className="space-y-2">
+          <div className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'hsl(var(--primary)) transparent'
+          }}>
             {leaderboard.map((entry, index) => (
               <Card key={entry.id} 
                     className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${

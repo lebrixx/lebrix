@@ -246,7 +246,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 <p className="text-text-muted text-sm">Sois le premier à jouer !</p>
               </Card>
             ) : (
-              <div className="space-y-2">
+              <div className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'hsl(var(--primary)) transparent'
+              }}>
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
@@ -291,7 +294,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 <p className="text-text-muted text-sm">Sois le premier à jouer cette semaine !</p>
               </Card>
             ) : (
-              <div className="space-y-2">
+              <div className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'hsl(var(--secondary)) transparent'
+              }}>
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
