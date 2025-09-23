@@ -133,4 +133,16 @@ export const THEMES: ThemeDef[] = [
       successZone: '#34d399',
     },
   },
+  {
+    id: 'theme-royal',
+    name: 'Majesté Royale',
+    price: -1, // Pas achetable, uniquement via récompense 7 jours
+    description: 'Thème exclusif des fidèles - Or royal et pourpre impérial',
+    rarity: 'legendary',
+    preview: {
+      background: 'linear-gradient(135deg, #1a0d2e 0%, #2d1b69 50%, #5b21b6 100%)',
+      circle: '#fbbf24',
+      successZone: '#10b981',
+    },
+  },
 ];

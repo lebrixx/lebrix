@@ -7,11 +7,13 @@ import { ModeSelection } from '@/components/ModeSelection';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
+import { DailyRewards } from '@/components/DailyRewards';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
+import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
@@ -19,7 +21,9 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showSubmitScoreModal, setShowSubmitScoreModal] = useState(false);
+  const [showDailyRewards, setShowDailyRewards] = useState(false);
   const [lastGameScore, setLastGameScore] = useState(0);
+  const [hasAvailableReward, setHasAvailableReward] = useState(false);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -35,6 +39,39 @@ const Index = () => {
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { toast } = useToast();
+
+  // Vérifier les récompenses disponibles au montage
+  useEffect(() => {
+    resetDayIfNeeded();
+    setHasAvailableReward(canClaimReward());
+  }, []);
+
+  const handleDailyRewardClaimed = (coins: number, theme?: string) => {
+    addCoins(coins);
+    
+    if (theme) {
+      // Ajouter le thème aux possédés
+      const currentOwnedThemes = gameState.ownedThemes;
+      if (!currentOwnedThemes.includes(theme)) {
+        const newOwnedThemes = [...currentOwnedThemes, theme];
+        const gameData = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
+        gameData.ownedThemes = newOwnedThemes;
+        localStorage.setItem('luckyStopGame', JSON.stringify(gameData));
+      }
+      
+      toast({
+        title: "🎉 Récompense spéciale !",
+        description: `Tu as reçu ${coins} coins et le thème exclusif "Majesté Royale" !`,
+      });
+    } else {
+      toast({
+        title: "Récompense récupérée !",
+        description: `Tu as reçu ${coins} coins pour ta connexion quotidienne !`,
+      });
+    }
+    
+    setHasAvailableReward(false);
+  };
 
   // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
   const handleGameOver = (finalScore: number) => {
@@ -103,6 +140,8 @@ const Index = () => {
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
+            onOpenDailyRewards={() => setShowDailyRewards(true)}
+            hasAvailableReward={hasAvailableReward}
           />
         );
         
@@ -199,6 +238,12 @@ const Index = () => {
           setShowSubmitScoreModal(false);
           setShowUsernameModal(true);
         }}
+      />
+
+      <DailyRewards
+        isOpen={showDailyRewards}
+        onClose={() => setShowDailyRewards(false)}
+        onRewardClaimed={handleDailyRewardClaimed}
       />
     </div>
   );
