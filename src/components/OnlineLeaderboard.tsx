@@ -181,6 +181,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             </TabsTrigger>
           </TabsList>
         </Tabs>
+        
+        <div className="flex justify-center mb-2">
+          <Badge variant="secondary" className="uppercase tracking-wide">Top 100</Badge>
+        </div>
 
         {/* Timer hebdomadaire */}
         {selectedTab === 'weekly' && (
@@ -246,9 +250,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 <p className="text-text-muted text-sm">Sois le premier à jouer !</p>
               </Card>
             ) : (
-              <div className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
+              <div data-scroll="true" className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'hsl(var(--primary)) transparent'
+                scrollbarColor: 'hsl(var(--primary)) transparent',
+                WebkitOverflowScrolling: 'touch'
               }}>
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
@@ -294,9 +299,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 <p className="text-text-muted text-sm">Sois le premier à jouer cette semaine !</p>
               </Card>
             ) : (
-              <div className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
+              <div data-scroll="true" className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'hsl(var(--secondary)) transparent'
+                scrollbarColor: 'hsl(var(--secondary)) transparent',
+                WebkitOverflowScrolling: 'touch'
               }}>
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
