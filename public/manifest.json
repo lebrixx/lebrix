@@ -1,0 +1,49 @@
+{
+  "name": "Lucky Stop - Jeu de Réflexes",
+  "short_name": "Lucky Stop",
+  "description": "Testez vos réflexes avec Lucky Stop ! Tapez dans la zone verte au bon moment.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#4ee1a0",
+  "orientation": "portrait",
+  "categories": ["games", "entertainment"],
+  "lang": "fr-FR",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "placeholder.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "placeholder.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jouer maintenant",
+      "short_name": "Jouer",
+      "description": "Commencer une partie",
+      "url": "/",
+      "icons": [{ "src": "placeholder.svg", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "placeholder.svg",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ]
+}

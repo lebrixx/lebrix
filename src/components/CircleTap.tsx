@@ -84,7 +84,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
   return (
     <div 
       className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
-      style={getBackgroundStyle()}
+      style={{
+        ...getBackgroundStyle(),
+        // Support pour les encoches d'écran et hauteur full viewport pour mobile
+        paddingTop: `max(1rem, env(safe-area-inset-top))`,
+        paddingBottom: `max(1rem, env(safe-area-inset-bottom))`,
+        paddingLeft: `max(1rem, env(safe-area-inset-left))`,
+        paddingRight: `max(1rem, env(safe-area-inset-right))`,
+        height: '100dvh',
+      }}
     >
       {/* Bouton retour au menu */}
       {onBack && (
@@ -122,7 +130,11 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
           height={cfg.radius * 2 + 80}
           className="drop-shadow-2xl"
           onClick={handleTap}
-          style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
+          onTouchStart={handleTap} // Support tactile amélioré
+          style={{ 
+            cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default',
+            touchAction: 'manipulation' // Éviter zoom/scroll accidentel
+          }}
         >
           {/* Cercle de base avec glow */}
           <circle
