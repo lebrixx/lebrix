@@ -214,7 +214,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     .reduce((sum, challenge) => sum + challenge.reward, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-game flex flex-col p-4">
+    <div className="min-h-screen bg-gradient-game flex flex-col p-4" data-scroll="true">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <Button 

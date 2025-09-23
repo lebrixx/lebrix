@@ -133,7 +133,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       </div>
 
       {/* Leaderboard */}
-      <div className="flex-1 px-4 pb-4">
+      <div className="flex-1 px-4 pb-4" data-scroll="true">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
