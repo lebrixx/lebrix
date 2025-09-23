@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { GameState } from '@/hooks/useGameLogic';
-import { logger } from '@/utils/logger';
 
 interface ScoreSyncProps {
   gameState: GameState;
@@ -29,7 +28,7 @@ export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) 
             direction_changes: gameState.directionChanges,
           });
         } catch (error) {
-          logger.error('Error syncing score to leaderboard:', error);
+          console.error('Error syncing score to leaderboard:', error);
         }
       };
       

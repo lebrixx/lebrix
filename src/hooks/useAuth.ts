@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/utils/logger';
 
 export interface UserProfile {
   id: string;
@@ -34,12 +33,12 @@ export const useAuth = () => {
                 .maybeSingle();
               
               if (error) {
-                logger.error('Error fetching profile:', error);
+                console.error('Error fetching profile:', error);
               } else if (profileData) {
                 setProfile(profileData);
               }
             } catch (err) {
-              logger.error('Error in profile fetch:', err);
+              console.error('Error in profile fetch:', err);
             }
           }, 0);
         } else {
@@ -66,12 +65,12 @@ export const useAuth = () => {
               .maybeSingle();
             
             if (error) {
-              logger.error('Error fetching profile:', error);
+              console.error('Error fetching profile:', error);
             } else if (profileData) {
               setProfile(profileData);
             }
           } catch (err) {
-            logger.error('Error in profile fetch:', err);
+            console.error('Error in profile fetch:', err);
           }
           setLoading(false);
         }, 0);
@@ -86,7 +85,7 @@ export const useAuth = () => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      logger.error('Error signing out:', error);
+      console.error('Error signing out:', error);
       return { error };
     }
     return { error: null };
@@ -119,7 +118,7 @@ export const useAuth = () => {
 
       return { data, error };
     } catch (err) {
-      logger.error('Error updating leaderboard:', err);
+      console.error('Error updating leaderboard:', err);
       return { error: err };
     }
   };

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Trophy, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { submitScore } from '@/utils/scoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
-import { logger } from '@/utils/logger';
 
 interface SubmitScoreModalProps {
   isOpen: boolean;
@@ -38,9 +37,9 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
     setSubmitStatus('idle');
     
     try {
-      logger.log('Tentative de soumission:', { score, mode, username: getLocalIdentity().username });
+      console.log('Tentative de soumission:', { score, mode, username: getLocalIdentity().username });
       const success = await submitScore({ score, mode });
-      logger.log('Résultat soumission:', success);
+      console.log('Résultat soumission:', success);
       
       if (success) {
         setSubmitStatus('success');
