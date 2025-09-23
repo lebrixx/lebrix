@@ -61,12 +61,7 @@ const Index = () => {
       
       toast({
         title: "🎉 Récompense spéciale !",
-        description: `Tu as reçu ${coins} coins et le thème exclusif "Majesté Royale" !`,
-      });
-    } else {
-      toast({
-        title: "Récompense récupérée !",
-        description: `Tu as reçu ${coins} coins pour ta connexion quotidienne !`,
+        description: `Tu as débloqué le thème exclusif "Majesté Royale" !`,
       });
     }
     

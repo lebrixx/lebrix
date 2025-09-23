@@ -45,19 +45,19 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               Tapez dans la zone verte au bon moment!
             </p>
           </div>
-          <div className="flex-1 flex justify-end pr-4">
+          <div className="flex-1 flex justify-end pr-8">
             <Button
               onClick={onOpenDailyRewards}
               variant="ghost"
               size="icon"
               className={`
-                relative hover:bg-primary/20 transition-all duration-300
+                relative hover:bg-primary/20 transition-all duration-300 mr-2
                 ${hasAvailableReward ? 'animate-pulse-glow' : ''}
               `}
             >
-              <Gift className={`w-5 h-5 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
+              <Gift className={`w-4 h-4 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
               {hasAvailableReward && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
               )}
             </Button>
           </div>
