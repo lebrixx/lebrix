@@ -193,21 +193,26 @@
   body {
     @apply bg-background text-foreground;
     padding-top: var(--app-safe-area);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    touch-action: manipulation;
   }
 
-  /* Menu principal sans scroll */
+  /* Menu principal avec scroll sécurisé */
   .main-menu-container {
     height: 100vh;
     height: 100dvh;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 1rem;
+  }
+
+  /* Désactiver les interactions seulement sur les éléments de jeu */
+  .game-area, .game-circle, .circle-tap-game {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
   }
 
   /* Optimisations pour mobile - menu principal uniquement */
