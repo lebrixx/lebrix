@@ -133,7 +133,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       </div>
 
       {/* Leaderboard */}
-      <div className="px-4 pb-4" data-scroll="true">
+      <div className="flex-1 px-4 pb-4">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -145,7 +145,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             <p className="text-text-muted text-sm">Soyez le premier à jouer !</p>
           </Card>
         ) : (
-          <div className="space-y-2 pr-2">
+          <div className="space-y-2">
             {leaderboard.map((entry, index) => (
               <Card key={entry.id} 
                     className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${

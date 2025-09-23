@@ -38,11 +38,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1"></div>
           <div className="flex-1">
-            <h1 className="text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3 drop-shadow-2xl animate-float">
+            <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
               LUCKY STOP
             </h1>
-            <p className="text-text-secondary text-base leading-tight">
-              Tapez au bon moment!
+            <p className="text-text-secondary text-lg">
+              Tapez dans la zone verte au bon moment!
             </p>
           </div>
           <div className="flex-1 flex justify-end pr-8">
