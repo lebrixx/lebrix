@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Trophy, Medal, Award, Crown, Target, Coins, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/utils/logger';
 
 interface LeaderboardEntry {
   id: string;
@@ -63,7 +64,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
         description: "Impossible de charger le classement",
         variant: "destructive"
       });
-      console.error('Error fetching leaderboard:', error);
+      logger.error('Error fetching leaderboard:', error);
     }
     setLoading(false);
   };

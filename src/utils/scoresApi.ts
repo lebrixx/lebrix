@@ -1,3 +1,5 @@
+import { logger } from '@/utils/logger';
+
 // Secure API for score submission via Edge Function
 import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
 import { generateDeviceFingerprint } from './deviceFingerprint';
@@ -30,19 +32,19 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
   try {
     // Basic client-side validation
     if (typeof score !== 'number' || score < 2) {
-      console.warn('Score invalide:', score);
+      logger.warn('Score invalide:', score);
       return false;
     }
 
     if (!VALID_MODES.includes(mode)) {
-      console.warn('Mode invalide:', mode);
+      logger.warn('Mode invalide:', mode);
       return false;
     }
 
     // Enhanced anti-spam
     const now = Date.now();
     if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
-      console.warn('Trop de submissions rapides, attendre', SUBMIT_COOLDOWN - (now - lastSubmitTime), 'ms');
+      logger.warn('Trop de submissions rapides, attendre', SUBMIT_COOLDOWN - (now - lastSubmitTime), 'ms');
       return false;
     }
 
@@ -59,7 +61,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     const clientFingerprint = generateDeviceFingerprint();
 
     // Call the secure Edge Function instead of direct database access
-    console.log('Appel Edge Function avec:', { deviceId, username, score, mode });
+    logger.log('Appel Edge Function avec:', { deviceId, username, score, mode });
     const { data, error } = await supabase.functions.invoke('submit-score', {
       body: {
         device_id: deviceId,
@@ -72,12 +74,12 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     });
 
     if (error) {
-      console.error('Edge Function error:', error);
+      logger.error('Edge Function error:', error);
       return false;
     }
 
     if (!data?.success) {
-      console.warn('Score submission failed:', data?.error);
+      logger.warn('Score submission failed:', data?.error);
       return false;
     }
 
@@ -88,7 +90,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     if (error instanceof Error && error.message === 'USERNAME_REQUIRED') {
       throw error; // Re-throw pour que l'UI puisse gérer
     }
-    console.error('Erreur lors de la soumission du score:', error);
+    logger.error('Erreur lors de la soumission du score:', error);
     return false;
   }
 }
@@ -96,7 +98,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promise<Score[]> {
   try {
     if (!VALID_MODES.includes(mode)) {
-      console.warn('Mode invalide pour fetchTop:', mode);
+      logger.warn('Mode invalide pour fetchTop:', mode);
       return [];
     }
 
@@ -109,14 +111,14 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       .limit(limit);
 
     if (error) {
-      console.error('Error fetching leaderboard:', error);
+      logger.error('Error fetching leaderboard:', error);
       return [];
     }
 
     return data || [];
 
   } catch (error) {
-    console.error('Erreur lors de la récupération du classement:', error);
+    logger.error('Erreur lors de la récupération du classement:', error);
     return [];
   }
 }
@@ -124,7 +126,7 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
 export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT): Promise<Score[]> {
   try {
     if (!VALID_MODES.includes(mode)) {
-      console.warn('Mode invalide pour fetchWeeklyTop:', mode);
+      logger.warn('Mode invalide pour fetchWeeklyTop:', mode);
       return [];
     }
 
@@ -144,14 +146,14 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       .limit(limit);
 
     if (error) {
-      console.error('Error fetching weekly leaderboard:', error);
+      logger.error('Error fetching weekly leaderboard:', error);
       return [];
     }
 
     return data || [];
 
   } catch (error) {
-    console.error('Erreur lors de la récupération du classement hebdomadaire:', error);
+    logger.error('Erreur lors de la récupération du classement hebdomadaire:', error);
     return [];
   }
 }
