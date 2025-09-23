@@ -121,6 +121,41 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
   }
 }
 
+export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT): Promise<Score[]> {
+  try {
+    if (!VALID_MODES.includes(mode)) {
+      console.warn('Mode invalide pour fetchWeeklyTop:', mode);
+      return [];
+    }
+
+    // Calculer le début de la semaine (lundi 00:00)
+    const now = new Date();
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(now.setDate(diff));
+    monday.setHours(0, 0, 0, 0);
+
+    const { data, error } = await supabase
+      .from('scores')
+      .select('username,score,created_at')
+      .eq('mode', mode)
+      .gte('created_at', monday.toISOString())
+      .order('score', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('Error fetching weekly leaderboard:', error);
+      return [];
+    }
+
+    return data || [];
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération du classement hebdomadaire:', error);
+    return [];
+  }
+}
+
 export function setUsernameForScores(username: string): void {
   setUsername(username);
 }

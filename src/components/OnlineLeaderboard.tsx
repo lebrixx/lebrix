@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit } from 'lucide-react';
-import { fetchTop, Score } from '@/utils/scoresApi';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit, Calendar, Globe } from 'lucide-react';
+import { fetchTop, fetchWeeklyTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
-import { getLocalIdentity, setUsername, generateDefaultUsername } from '@/utils/localIdentity';
+import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
+import { WeeklyTimer } from '@/components/WeeklyTimer';
 
 interface OnlineLeaderboardProps {
   onBack: () => void;
@@ -21,7 +23,9 @@ const modeNames = {
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {
   const [selectedMode, setSelectedMode] = useState<string>('classic');
+  const [selectedTab, setSelectedTab] = useState<string>('global');
   const [scores, setScores] = useState<Score[]>([]);
+  const [weeklyScores, setWeeklyScores] = useState<Score[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [currentUsername, setCurrentUsername] = useState<string>('');
@@ -50,8 +54,12 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   const loadScores = async (mode: string) => {
     setLoading(true);
     try {
-      const data = await fetchTop(mode);
-      setScores(data);
+      const [globalData, weeklyData] = await Promise.all([
+        fetchTop(mode),
+        fetchWeeklyTop(mode)
+      ]);
+      setScores(globalData);
+      setWeeklyScores(weeklyData);
     } catch (error) {
       toast({
         title: "Erreur réseau",
@@ -60,6 +68,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
         duration: 3000
       });
       setScores([]);
+      setWeeklyScores([]);
     }
     setLoading(false);
   };
@@ -137,27 +146,48 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <WifiOff className="w-5 h-5 text-red-400" />
             )}
           </div>
-          <p className="text-text-secondary mb-4">
-            Top 100 des meilleurs scores
-          </p>
           
-          {/* Current Username Display */}
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-button-bg border border-wheel-border rounded-lg">
-              <User className="w-4 h-4 text-primary" />
-              <span className="text-text-primary font-medium">{currentUsername}</span>
-            </div>
+          {/* Current Username - Plus discret */}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="text-text-secondary text-sm">Pseudo: </span>
+            <span className="text-text-primary font-medium">{currentUsername}</span>
             <Button
               onClick={() => setShowUsernameModal(true)}
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="border-wheel-border hover:bg-button-hover"
+              className="h-6 px-2 text-text-muted hover:text-text-primary hover:bg-button-hover"
             >
-              <Edit className="w-4 h-4 mr-1" />
-              Changer
+              <Edit className="w-3 h-3" />
             </Button>
           </div>
         </div>
+
+        {/* Onglets Classement */}
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-4">
+          <TabsList className="grid w-full grid-cols-2 bg-button-bg border border-wheel-border">
+            <TabsTrigger 
+              value="global" 
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+            >
+              <Globe className="w-4 h-4" />
+              Global
+            </TabsTrigger>
+            <TabsTrigger 
+              value="weekly"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+            >
+              <Calendar className="w-4 h-4" />
+              Hebdomadaire
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Timer hebdomadaire */}
+        {selectedTab === 'weekly' && (
+          <div className="flex justify-center mb-4">
+            <WeeklyTimer />
+          </div>
+        )}
 
         {/* Mode Selection */}
         <div className="flex flex-wrap gap-2 justify-center mb-4">
@@ -203,53 +233,97 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           </Card>
         )}
 
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : scores.length === 0 ? (
-          <Card className="p-8 text-center bg-button-bg border-wheel-border">
-            <Trophy className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
-            <p className="text-text-muted">Aucun score enregistré pour ce mode</p>
-            <p className="text-text-muted text-sm">Sois le premier à jouer !</p>
-          </Card>
-        ) : (
-          <div className="space-y-2">
-            {scores.map((entry, index) => (
-              <Card key={`${entry.username}-${entry.score}-${index}`} 
-                    className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                      index < 3 ? 'shadow-glow-primary' : ''
-                    }`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    {/* Rank */}
-                    <div className="flex items-center gap-2">
-                      {getRankIcon(index + 1)}
-                      <Badge variant={getRankBadgeVariant(index + 1)} className="font-bold">
-                        #{index + 1}
-                      </Badge>
-                    </div>
-
-                    {/* Username */}
-                    <div>
-                      <h3 className="font-bold text-text-primary text-lg">
-                        {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                      </h3>
-                      <p className="text-text-muted text-sm">
-                        {formatDate(entry.created_at)}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Score */}
-                  <div className="text-right">
-                    <span className="font-bold text-primary text-xl">{entry.score}</span>
-                  </div>
-                </div>
+        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+          <TabsContent value="global" className="mt-0">
+            {loading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : scores.length === 0 ? (
+              <Card className="p-8 text-center bg-button-bg border-wheel-border">
+                <Trophy className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
+                <p className="text-text-muted">Aucun score enregistré pour ce mode</p>
+                <p className="text-text-muted text-sm">Sois le premier à jouer !</p>
               </Card>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="space-y-2">
+                {scores.map((entry, index) => (
+                  <Card key={`global-${entry.username}-${entry.score}-${index}`} 
+                        className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
+                          index < 3 ? 'shadow-glow-primary' : ''
+                        }`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          {getRankIcon(index + 1)}
+                          <Badge variant={getRankBadgeVariant(index + 1)} className="font-bold">
+                            #{index + 1}
+                          </Badge>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-text-primary text-lg">
+                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                          </h3>
+                          <p className="text-text-muted text-sm">
+                            {formatDate(entry.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-primary text-xl">{entry.score}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="weekly" className="mt-0">
+            {loading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
+              </div>
+            ) : weeklyScores.length === 0 ? (
+              <Card className="p-8 text-center bg-button-bg border-wheel-border">
+                <Calendar className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
+                <p className="text-text-muted">Aucun score cette semaine pour ce mode</p>
+                <p className="text-text-muted text-sm">Sois le premier à jouer cette semaine !</p>
+              </Card>
+            ) : (
+              <div className="space-y-2">
+                {weeklyScores.map((entry, index) => (
+                  <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
+                        className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
+                          index < 3 ? 'shadow-glow-primary' : ''
+                        }`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          {getRankIcon(index + 1)}
+                          <Badge variant={getRankBadgeVariant(index + 1)} className="font-bold">
+                            #{index + 1}
+                          </Badge>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-text-primary text-lg">
+                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                          </h3>
+                          <p className="text-text-muted text-sm">
+                            {formatDate(entry.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-secondary text-xl">{entry.score}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
       
       {/* Username Modal */}
