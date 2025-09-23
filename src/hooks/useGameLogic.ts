@@ -358,6 +358,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         newZoneStart = Math.random() * 2 * Math.PI;
       }
 
+      // Mise à jour unique de l'état pour éviter les conflits
       setGameState(prev => ({
         ...prev,
         currentScore: newScore,
@@ -372,33 +373,24 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         level: prev.level + 1,
         lastResult: 'success',
         showResult: false,
-        successFlash: true,
-        successParticles: true,
+        // Effets visuels reset immédiatement pour éviter les conflits
+        successFlash: false,
+        successParticles: false,
         comboCount: newScore,
         maxSpeedReached: Math.max(prev.maxSpeedReached, newSpeed),
         directionChanges: shouldReverse ? prev.directionChanges + 1 : prev.directionChanges,
       }));
 
-      // Effacer les effets visuels immédiatement
-      setGameState(prev => ({
-        ...prev,
-        successFlash: false,
-        successParticles: false,
-      }));
-
     } else {
-      // ÉCHEC - Fin de partie pour tous les modes
+      // ÉCHEC - Fin de partie pour tous les modes - Une seule mise à jour d'état
       setGameState(prev => ({
         ...prev,
         gameStatus: 'gameover',
         bestScore: Math.max(prev.currentScore, prev.bestScore),
         coins: prev.coins + Math.floor(prev.currentScore / 20), // Réduction drastique des coins
-        showResult: true,
+        showResult: false, // Pas d'affichage de résultat pour éviter les conflits
         lastResult: 'failure',
       }));
-
-      // Masquer le message de game over immédiatement
-      setGameState(prev => ({ ...prev, showResult: false }));
     }
   }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode]);
 
