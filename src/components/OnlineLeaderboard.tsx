@@ -227,7 +227,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
       </div>
 
       {/* Leaderboard */}
-      <div className="flex-1 px-4 pb-4">
+      <div className="px-4 pb-4">
         {!isOnline && (
           <Card className="p-4 mb-4 bg-button-bg border-wheel-border border-red-400/30">
             <div className="flex items-center gap-2 text-red-400">
@@ -250,11 +250,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 <p className="text-text-muted text-sm">Sois le premier à jouer !</p>
               </Card>
             ) : (
-              <div data-scroll="true" className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'hsl(var(--primary)) transparent',
-                WebkitOverflowScrolling: 'touch'
-              }}>
+              <div data-scroll="true" className="space-y-2 pr-2">
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
@@ -299,11 +295,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 <p className="text-text-muted text-sm">Sois le premier à jouer cette semaine !</p>
               </Card>
             ) : (
-              <div data-scroll="true" className="h-[60vh] overflow-y-auto space-y-2 pr-2" style={{
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'hsl(var(--secondary)) transparent',
-                WebkitOverflowScrolling: 'touch'
-              }}>
+              <div data-scroll="true" className="space-y-2 pr-2">
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
