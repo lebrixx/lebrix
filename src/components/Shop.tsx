@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles } from 'lucide-react';
-import { toast } from 'sonner';
 import { THEMES } from '@/constants/themes';
 
 const availableThemes = THEMES;
@@ -27,21 +26,13 @@ export const Shop: React.FC<ShopProps> = ({
 }) => {
   const handlePurchase = (theme: any) => {
     if (ownedThemes.includes(theme.id)) {
-      toast.message('Thème déjà possédé', { description: 'Équipement automatique...' });
       onEquipTheme(theme.id);
       return;
     }
 
     const success = onPurchaseTheme(theme);
     if (success) {
-      toast.success('Thème acheté!', { 
-        description: `${theme.name} a été acheté et équipé automatiquement.`
-      });
       onEquipTheme(theme.id);
-    } else {
-      toast.error('Pas assez de coins', { 
-        description: `Il vous faut ${theme.price} coins pour acheter ce thème.`
-      });
     }
   };
 
