@@ -75,7 +75,23 @@ const CHALLENGES: Challenge[] = [
     reward: 25,
     difficulty: 'expert'
   },
-  // Défis spécifiques aux modes
+  // Défis spécifiques aux modes - CLASSIQUE
+  {
+    id: 'mode-classic-20',
+    title: 'Initié Classique',
+    description: 'Atteindre 20 points en mode Classique',
+    target: 20,
+    reward: 15,
+    difficulty: 'facile'
+  },
+  {
+    id: 'mode-classic-50',
+    title: 'Vétéran Classique',
+    description: 'Atteindre 50 points en mode Classique',
+    target: 50,
+    reward: 30,
+    difficulty: 'moyen'
+  },
   {
     id: 'mode-classic-100',
     title: 'Légende Classique',
@@ -83,6 +99,24 @@ const CHALLENGES: Challenge[] = [
     target: 100,
     reward: 50,
     difficulty: 'impossible'
+  },
+  
+  // Défis spécifiques aux modes - ARC CHANGEANT
+  {
+    id: 'mode-arc-15',
+    title: 'Adaptateur Débutant',
+    description: 'Atteindre 15 points en mode Arc Changeant',
+    target: 15,
+    reward: 12,
+    difficulty: 'facile'
+  },
+  {
+    id: 'mode-arc-35',
+    title: 'Caméléon du Timing',
+    description: 'Atteindre 35 points en mode Arc Changeant',
+    target: 35,
+    reward: 25,
+    difficulty: 'moyen'
   },
   {
     id: 'mode-arc-75',
@@ -92,13 +126,49 @@ const CHALLENGES: Challenge[] = [
     reward: 45,
     difficulty: 'expert'
   },
+  
+  // Défis spécifiques aux modes - SURVIE 60S
+  {
+    id: 'mode-survie-10',
+    title: 'Première Survie',
+    description: 'Atteindre 10 points en mode Survie 60s',
+    target: 10,
+    reward: 10,
+    difficulty: 'facile'
+  },
+  {
+    id: 'mode-survie-25',
+    title: 'Survivant Aguerri',
+    description: 'Atteindre 25 points en mode Survie 60s',
+    target: 25,
+    reward: 20,
+    difficulty: 'moyen'
+  },
   {
     id: 'mode-survie-40',
     title: 'Survivant Ultime',
-    description: 'Atteindre 40 points en mode Survie 30s uniquement',
+    description: 'Atteindre 40 points en mode Survie 60s uniquement',
     target: 40,
     reward: 40,
     difficulty: 'expert'
+  },
+  
+  // Défis spécifiques aux modes - ZONE MOBILE
+  {
+    id: 'mode-mobile-12',
+    title: 'Traqueur Novice',
+    description: 'Atteindre 12 points en mode Zone Mobile',
+    target: 12,
+    reward: 12,
+    difficulty: 'facile'
+  },
+  {
+    id: 'mode-mobile-30',
+    title: 'Poursuite Experte',
+    description: 'Atteindre 30 points en mode Zone Mobile',
+    target: 30,
+    reward: 22,
+    difficulty: 'moyen'
   },
   {
     id: 'mode-mobile-60',

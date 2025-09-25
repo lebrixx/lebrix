@@ -145,4 +145,77 @@ export const THEMES: ThemeDef[] = [
       successZone: '#10b981',
     },
   },
+  // Nouveaux skins premium
+  {
+    id: 'theme-diamond',
+    name: 'Éclat de Diamant',
+    price: 500,
+    description: 'Pureté cristalline avec reflets prismatiques',
+    rarity: 'legendary',
+    preview: {
+      background: 'linear-gradient(135deg, #0a0a0a 0%, #1e1e2e 50%, #2a2a3a 100%)',
+      circle: '#e0e7ff',
+      successZone: '#c7d2fe',
+    },
+  },
+  {
+    id: 'theme-phoenix',
+    name: 'Résurrection du Phénix',
+    price: 450,
+    description: 'Flammes éternelles aux couleurs incandescentes',
+    rarity: 'legendary',
+    preview: {
+      background: 'linear-gradient(135deg, #7c2d12 0%, #dc2626 50%, #f97316 100%)',
+      circle: '#fbbf24',
+      successZone: '#84cc16',
+    },
+  },
+  {
+    id: 'theme-aurora',
+    name: 'Aurore Boréale',
+    price: 400,
+    description: 'Lumières polaires dansantes dans la nuit arctique',
+    rarity: 'legendary',
+    preview: {
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
+      circle: '#06b6d4',
+      successZone: '#10b981',
+    },
+  },
+  {
+    id: 'theme-nebula',
+    name: 'Nébuleuse Stellaire',
+    price: 380,
+    description: 'Poussières d\'étoiles et gaz cosmiques luminescents',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #1e1b4b 0%, #3730a3 50%, #7c3aed 100%)',
+      circle: '#f472b6',
+      successZone: '#34d399',
+    },
+  },
+  {
+    id: 'theme-void',
+    name: 'Abysses du Néant',
+    price: 360,
+    description: 'Profondeurs infinies aux lueurs violettes mystérieuses',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%)',
+      circle: '#8b5cf6',
+      successZone: '#06d6a0',
+    },
+  },
+  {
+    id: 'theme-crystal',
+    name: 'Caverne de Cristal',
+    price: 340,
+    description: 'Formations cristallines aux reflets bleu glacé',
+    rarity: 'epic',
+    preview: {
+      background: 'linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0284c7 100%)',
+      circle: '#38bdf8',
+      successZone: '#22d3ee',
+    },
+  },
 ];

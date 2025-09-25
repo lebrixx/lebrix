@@ -135,6 +135,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     if (saved) {
       try {
         const parsedState = JSON.parse(saved);
+        console.log('Loading saved state for mode:', mode, parsedState);
         return {
           ...defaultState,
           bestScore: parsedState[`bestScore_${mode}`] || 0,
@@ -151,6 +152,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           totalGamesPlayed: parsedState.totalGamesPlayed || 0,
         };
       } catch (e) {
+        console.error('Error loading saved state:', e);
         return defaultState;
       }
     }
@@ -173,19 +175,37 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Sauvegarde du progress
   const saveProgress = useCallback(() => {
-    const dataToSave = {
-      [`bestScore_${gameState.currentMode}`]: gameState.bestScore,
-      coins: gameState.coins,
-      ownedThemes: gameState.ownedThemes,
-      ownedItems: gameState.ownedItems,
-      currentCustomization: gameState.currentCustomization,
-      maxSpeedReached: gameState.maxSpeedReached,
-      directionChanges: gameState.directionChanges,
-      totalGamesPlayed: gameState.totalGamesPlayed,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
-  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization, gameState.currentMode]);
+    try {
+      // Récupérer les données existantes pour préserver les scores des autres modes
+      const existingData = localStorage.getItem('luckyStopGame');
+      let savedData = {};
+      if (existingData) {
+        try {
+          savedData = JSON.parse(existingData);
+        } catch (e) {
+          console.warn('Error parsing existing save data:', e);
+        }
+      }
+
+      const dataToSave = {
+        ...savedData, // Préserver les données existantes
+        [`bestScore_${gameState.currentMode}`]: gameState.bestScore,
+        coins: gameState.coins,
+        ownedThemes: gameState.ownedThemes,
+        ownedItems: gameState.ownedItems,
+        currentCustomization: gameState.currentCustomization,
+        maxSpeedReached: gameState.maxSpeedReached,
+        directionChanges: gameState.directionChanges,
+        totalGamesPlayed: gameState.totalGamesPlayed,
+        timestamp: Date.now(),
+      };
+      
+      localStorage.setItem('luckyStopGame', JSON.stringify(dataToSave));
+      console.log('Game progress saved successfully:', dataToSave);
+    } catch (error) {
+      console.error('Failed to save game progress:', error);
+    }
+  }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization, gameState.currentMode, gameState.maxSpeedReached, gameState.directionChanges, gameState.totalGamesPlayed]);
 
   // Animation de la bille (60 FPS) + Zone mobile
   const animateBall = useCallback(() => {

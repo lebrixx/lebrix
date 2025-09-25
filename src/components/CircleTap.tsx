@@ -272,23 +272,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
       {/* Contrôles du jeu */}
       <div className="flex gap-4 items-center animate-fade-in">
         {gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover' ? (
-          <Button 
-            onClick={handleTap}
-            size="lg"
-            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 px-8 py-4 text-lg font-bold"
-          >
-            <Play className="w-6 h-6 mr-2" />
-            {gameState.gameStatus === 'idle' ? 'COMMENCER' : 'REJOUER'}
-          </Button>
-        ) : (
-          <Button 
-            onClick={handleTap}
-            size="lg"
-            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 px-8 py-4 text-lg font-bold"
-          >
-            TAPER
-          </Button>
-        )}
+          <div className="text-center">
+            <div 
+              className="text-2xl font-bold text-primary mb-2 cursor-pointer select-none animate-pulse"
+              onClick={handleTap}
+            >
+              🎯 Tape sur l'écran
+            </div>
+          </div>
+        ) : null}
 
         <Button
           onClick={handleReset}
@@ -315,8 +307,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
           {gameState.gameStatus === 'running' 
             ? 'Tapez quand la barre rouge est dans la zone verte!'
             : gameState.gameStatus === 'idle'
-            ? 'Cliquez COMMENCER ou appuyez sur ESPACE/ENTRÉE'
-            : 'Tapez pour rejouer'
+            ? 'Tapez sur l\'écran pour commencer ou appuyez sur ESPACE/ENTRÉE'
+            : ''
           }
         </p>
         <p className="text-xs mt-2">
