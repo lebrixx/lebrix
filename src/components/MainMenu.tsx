@@ -38,7 +38,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1"></div>
           <div className="flex-1">
-            <h1 className="text-8xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8 drop-shadow-2xl animate-float">
+            <h1 className="text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8 drop-shadow-2xl animate-float">
               LUCKY STOP
             </h1>
           </div>
