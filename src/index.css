@@ -192,7 +192,8 @@
 
   body {
     @apply bg-background text-foreground;
-    padding-top: var(--app-safe-area);
+    padding-top: env(safe-area-inset-top);
+    background-color: #000;
   }
 
   /* Menu principal avec scroll sécurisé */
