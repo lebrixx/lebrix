@@ -91,7 +91,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
         <Button
           onClick={onBack}
           variant="outline"
-          className="absolute top-4 left-4 border-wheel-border hover:bg-button-hover z-10"
+          className="absolute top-12 left-4 border-wheel-border hover:bg-button-hover z-10 safe-area-inset-top"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Menu

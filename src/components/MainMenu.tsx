@@ -34,16 +34,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in mt-12">
-        <div className="flex justify-between items-start mb-3">
+      <div className="text-center animate-fade-in mt-4">
+        <div className="flex justify-between items-start mb-8">
           <div className="flex-1"></div>
           <div className="flex-1">
-            <h1 className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2 drop-shadow-2xl animate-float">
+            <h1 className="text-8xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8 drop-shadow-2xl animate-float">
               LUCKY STOP
             </h1>
-            <p className="text-text-secondary text-lg">
-              Tapez dans la zone verte au bon moment!
-            </p>
           </div>
           <div className="flex-1 flex justify-end pr-8">
             <Button
@@ -66,6 +63,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col justify-center items-center">
+        {/* Subtitle closer to cards */}
+        <div className="text-center mb-4">
+          <p className="text-text-secondary text-lg">
+            Tapez dans la zone verte au bon moment!
+          </p>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4 mb-6 w-full max-w-md animate-scale-in">
           <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
