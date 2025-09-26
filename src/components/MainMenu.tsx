@@ -34,7 +34,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in mt-24">
+      <div className="text-center animate-fade-in mt-28">
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1"></div>
           <div className="flex-1">

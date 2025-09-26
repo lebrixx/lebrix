@@ -43,7 +43,7 @@ export const Customization: React.FC<CustomizationProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-game p-4">
+    <div className="min-h-screen bg-gradient-game p-4 pt-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <Button 
