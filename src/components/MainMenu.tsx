@@ -34,7 +34,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in mt-4">
+      <div className="text-center animate-fade-in mt-16">
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1"></div>
           <div className="flex-1">
@@ -42,22 +42,25 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               LUCKY STOP
             </h1>
           </div>
-          <div className="flex-1 flex justify-end pr-8">
-            <Button
-              onClick={onOpenDailyRewards}
-              variant="ghost"
-              size="icon"
-              className={`
-                relative hover:bg-primary/20 transition-all duration-300 mr-2
-                ${hasAvailableReward ? 'animate-pulse-glow' : ''}
-              `}
-            >
-              <Gift className={`w-4 h-4 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
-              {hasAvailableReward && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
-              )}
-            </Button>
-          </div>
+          <div className="flex-1"></div>
+        </div>
+        
+        {/* Bouton cadeau déplacé sous le titre */}
+        <div className="flex justify-center mb-4">
+          <Button
+            onClick={onOpenDailyRewards}
+            variant="ghost"
+            size="icon"
+            className={`
+              relative hover:bg-primary/20 transition-all duration-300
+              ${hasAvailableReward ? 'animate-pulse-glow' : ''}
+            `}
+          >
+            <Gift className={`w-4 h-4 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
+            {hasAvailableReward && (
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+            )}
+          </Button>
         </div>
       </div>
 

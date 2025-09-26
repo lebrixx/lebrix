@@ -91,7 +91,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
         <Button
           onClick={onBack}
           variant="outline"
-          className="absolute top-18 left-4 border-wheel-border hover:bg-button-hover z-10"
+          className="absolute top-32 left-4 border-wheel-border hover:bg-button-hover z-10"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Menu
@@ -99,11 +99,11 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
       )}
 
       {/* HUD - Score en gros et best score */}
-      <div className="text-center mb-8 animate-fade-in">
-        <div className="text-8xl font-bold text-primary mb-2 drop-shadow-lg">
+      <div className="text-center mb-8 animate-fade-in mt-16">
+        <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">
           {gameState.currentScore}
         </div>
-        <div className="text-text-secondary text-xl font-semibold">
+        <div className="text-text-secondary text-lg font-semibold">
           Meilleur: {gameState.bestScore}
         </div>
         <div className="text-text-muted text-sm mt-2">
