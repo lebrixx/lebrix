@@ -124,7 +124,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   return (
     <div className="min-h-screen bg-gradient-game theme-neon flex flex-col">
       {/* Header */}
-      <div className="p-4 pb-0">
+      <div className="pt-12 px-4 pb-0">
         <Button
           onClick={onBack}
           variant="outline"
