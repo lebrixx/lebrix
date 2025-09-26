@@ -38,7 +38,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   const isGameRunning = gameStatus === 'running';
 
   return (
-    <div className="min-h-screen bg-gradient-game flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-game flex flex-col items-center p-4 pt-12">
       {/* Header */}
       <div className="w-full max-w-4xl mb-8">
         <Button

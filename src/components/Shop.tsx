@@ -60,7 +60,7 @@ export const Shop: React.FC<ShopProps> = ({
   const isEquipped = (themeId: string) => currentTheme === themeId;
 
   return (
-    <div className="min-h-screen bg-gradient-game flex flex-col p-4">
+    <div className="min-h-screen bg-gradient-game flex flex-col p-4 pt-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <Button 

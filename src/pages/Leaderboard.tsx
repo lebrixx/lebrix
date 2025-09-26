@@ -91,7 +91,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-game theme-neon flex flex-col">
+    <div className="min-h-screen bg-gradient-game theme-neon flex flex-col pt-12">
       {/* Header */}
       <div className="p-4 pb-0">
         <Button
