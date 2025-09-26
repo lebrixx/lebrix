@@ -196,16 +196,17 @@
     background-color: #000;
   }
 
-  /* Menu principal avec scroll sécurisé */
+  /* Menu principal optimisé mobile - pas de scroll */
   .main-menu-container {
     height: 100vh;
     height: 100dvh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 0.75rem;
+    padding-top: max(env(safe-area-inset-top), 0.75rem);
+    padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
   }
 
   /* Désactiver les interactions seulement sur les éléments de jeu */

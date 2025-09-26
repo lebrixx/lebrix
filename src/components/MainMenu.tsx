@@ -34,11 +34,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in mt-28">
-        <div className="flex justify-between items-start mb-8">
+      <div className="text-center animate-fade-in mt-16">
+        <div className="flex justify-between items-start mb-4">
           <div className="flex-1"></div>
           <div className="flex-1">
-            <h1 className="text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8 drop-shadow-2xl animate-float">
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
               LUCKY STOP
             </h1>
           </div>
@@ -46,7 +46,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </div>
         
         {/* Bouton cadeau déplacé sous le titre */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-2">
           <Button
             onClick={onOpenDailyRewards}
             variant="ghost"
@@ -65,37 +65,37 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center">
+      <div className="flex-1 flex flex-col justify-center items-center min-h-0">
         {/* Subtitle closer to cards */}
-        <div className="text-center mb-4">
-          <p className="text-text-secondary text-lg">
+        <div className="text-center mb-3">
+          <p className="text-text-secondary text-base">
             Tapez dans la zone verte au bon moment!
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-6 w-full max-w-md animate-scale-in">
-          <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
-            <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
-            <div className="text-2xl font-bold text-primary">{bestScore}</div>
-            <div className="text-sm text-text-muted">Meilleur Score</div>
+        <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
+          <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
+            <Trophy className="w-6 h-6 text-primary mx-auto mb-1" />
+            <div className="text-xl font-bold text-primary">{bestScore}</div>
+            <div className="text-xs text-text-muted">Meilleur Score</div>
           </Card>
           
-          <Card className="bg-button-bg border-wheel-border p-4 text-center hover:scale-105 transition-transform duration-300">
-            <Coins className="w-8 h-8 text-secondary mx-auto mb-2" />
-            <div className="text-2xl font-bold text-secondary">{coins}</div>
-            <div className="text-sm text-text-muted">Coins</div>
+          <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
+            <Coins className="w-6 h-6 text-secondary mx-auto mb-1" />
+            <div className="text-xl font-bold text-secondary">{coins}</div>
+            <div className="text-xs text-text-muted">Coins</div>
           </Card>
         </div>
 
         {/* Main Menu Buttons */}
-        <div className="flex flex-col gap-3 w-full max-w-sm animate-fade-in">
+        <div className="flex flex-col gap-2 w-full max-w-sm animate-fade-in">
           <Button 
             onClick={onStartGame}
             size="lg"
-            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-5 text-lg font-bold group"
+            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-4 text-base font-bold group"
           >
-            <Play className="w-6 h-6 mr-2 group-hover:animate-pulse" />
+            <Play className="w-5 h-5 mr-2 group-hover:animate-pulse" />
             JOUER MAINTENANT
           </Button>
 
@@ -103,9 +103,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenModes}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
-            <Gamepad2 className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+            <Gamepad2 className="w-4 h-4 mr-2 group-hover:animate-pulse" />
             MODES DE JEU
           </Button>
 
@@ -113,11 +113,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenShop}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
-            <ShoppingBag className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+            <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
             BOUTIQUE
-            <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark">
+            <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark text-xs">
               {coins}
             </Badge>
           </Button>
@@ -126,9 +126,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenChallenges}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
-            <Star className="w-5 h-5 mr-2 group-hover:animate-spin" />
+            <Star className="w-4 h-4 mr-2 group-hover:animate-spin" />
             DÉFIS QUOTIDIENS
           </Button>
 
@@ -136,32 +136,32 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenLeaderboard}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-3 text-base group"
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
-            <Crown className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+            <Crown className="w-4 h-4 mr-2 group-hover:animate-bounce" />
             CLASSEMENT EN LIGNE
           </Button>
         </div>
       </div>
 
       {/* Bottom Section */}
-      <div className="flex flex-col items-center space-y-3">
+      <div className="flex flex-col items-center space-y-2 mt-auto">
         {/* Current Theme & Mode */}
-        <div className="flex justify-center gap-6 animate-fade-in">
+        <div className="flex justify-center gap-4 animate-fade-in">
           <div className="text-center">
-            <div className="text-xs text-text-muted mb-1">Thème</div>
+            <div className="text-xs text-text-muted mb-0.5">Thème</div>
             <Badge 
               variant="outline" 
-              className="border-primary text-primary text-xs px-3 py-1 animate-pulse-glow"
+              className="border-primary text-primary text-xs px-2 py-0.5 animate-pulse-glow"
             >
               {theme.replace('theme-', '').toUpperCase() || 'NEON'}
             </Badge>
           </div>
           <div className="text-center">
-            <div className="text-xs text-text-muted mb-1">Mode</div>
+            <div className="text-xs text-text-muted mb-0.5">Mode</div>
             <Badge 
               variant="outline" 
-              className="border-secondary text-secondary text-xs px-3 py-1"
+              className="border-secondary text-secondary text-xs px-2 py-0.5"
             >
               {currentMode.replace('_', ' ').toUpperCase()}
             </Badge>
@@ -170,7 +170,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         {/* Version Info */}
         <div className="text-text-muted text-xs animate-fade-in">
-          Lucky Stop v1.0 • Made with ❤️
+          Lucky Stop v1.0
         </div>
       </div>
 
