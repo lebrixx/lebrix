@@ -138,19 +138,21 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
             }}
           />
 
-          {/* Zone verte (arc de succès) avec glow visible et pulsation subtile */}
-          <path
-            d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
-                A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
-                ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
-            fill="none"
-            stroke={getCircleColor()}
-            strokeWidth="20"
-            className="drop-shadow-lg"
-            style={{
-              filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
-            }}
-          />
+          {/* Zone verte (arc de succès) - Seulement pour les modes non-traîtresse */}
+          {gameState.currentMode !== 'zone_traitresse' && (
+            <path
+              d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
+                  A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
+                  ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
+              fill="none"
+              stroke={getCircleColor()}
+              strokeWidth="20"
+              className="drop-shadow-lg"
+              style={{
+                filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+              }}
+            />
+          )}
 
           {/* Deuxième zone verte pour le mode survie */}
           {gameState.currentMode === 'survie_60s' && (
