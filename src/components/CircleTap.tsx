@@ -172,18 +172,27 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
           {gameState.currentMode === 'zone_traitresse' && gameState.multipleZones && (
             <>
               {gameState.multipleZones.map((zone, index) => {
+                // Convertir en degrés pour le SVG
                 const startDeg = (zone.start * 180) / Math.PI;
                 const arcDeg = (zone.arc * 180) / Math.PI;
+                
                 // La zone piégée est légèrement plus sombre
                 const isTrap = index === gameState.trapZoneIndex;
                 const opacity = isTrap ? 0.7 : 0.9;
                 
+                // Calculer les coordonnées de début et fin de l'arc
+                const startX = cfg.radius + 40 + Math.cos((startDeg - 90) * Math.PI / 180) * cfg.radius;
+                const startY = cfg.radius + 40 + Math.sin((startDeg - 90) * Math.PI / 180) * cfg.radius;
+                const endX = cfg.radius + 40 + Math.cos((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius;
+                const endY = cfg.radius + 40 + Math.sin((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius;
+                
+                // Large arc flag (1 si l'arc est > 180°, sinon 0)
+                const largeArcFlag = arcDeg > 180 ? 1 : 0;
+                
                 return (
                   <path
                     key={index}
-                    d={`M ${cfg.radius + 40 + Math.cos((startDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((startDeg - 90) * Math.PI / 180) * cfg.radius}
-                        A ${cfg.radius} ${cfg.radius} 0 ${arcDeg > 180 ? 1 : 0} 1 
-                        ${cfg.radius + 40 + Math.cos((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius}`}
+                    d={`M ${startX} ${startY} A ${cfg.radius} ${cfg.radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`}
                     fill="none"
                     stroke={getCircleColor()}
                     strokeWidth="20"

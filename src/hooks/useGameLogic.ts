@@ -106,11 +106,16 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     let trapZoneIndex: number | undefined;
     if (modeConfig.multipleZones && modeConfig.numberOfZones) {
       multipleZones = [];
-      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones;
+      const fixedArc = modeConfig.zoneArc || cfgBase.zoneArc; // Arc fixe pour toutes les zones
+      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones; // Espacement uniforme
+      
       for (let i = 0; i < modeConfig.numberOfZones; i++) {
-        const start = i * angleStep; // Positions fixes, pas de décalage aléatoire
-        const arc = modeConfig.zoneArc || cfgBase.zoneArc;
-        multipleZones.push({ start, end: start + arc, arc });
+        const start = i * angleStep; // Position fixe basée sur l'index
+        multipleZones.push({ 
+          start, 
+          end: start + fixedArc, 
+          arc: fixedArc // Même arc pour toutes les zones
+        });
       }
       trapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
     }
@@ -317,11 +322,16 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     let trapZoneIndex: number | undefined;
     if (modeConfig.multipleZones && modeConfig.numberOfZones) {
       multipleZones = [];
-      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones;
+      const fixedArc = modeConfig.zoneArc || cfgBase.zoneArc; // Arc fixe pour toutes les zones
+      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones; // Espacement uniforme
+      
       for (let i = 0; i < modeConfig.numberOfZones; i++) {
-        const start = i * angleStep; // Positions fixes, pas de décalage aléatoire
-        const arc = modeConfig.zoneArc || cfgBase.zoneArc;
-        multipleZones.push({ start, end: start + arc, arc });
+        const start = i * angleStep; // Position fixe basée sur l'index
+        multipleZones.push({ 
+          start, 
+          end: start + fixedArc, 
+          arc: fixedArc // Même arc pour toutes les zones
+        });
       }
       trapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
     }

@@ -80,7 +80,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.ZONE_TRAITRESSE]: {
     name: "Zone traîtresse",
     desc: "Plusieurs zones vertes, mais une seule est piégée. Trouve la bonne zone pour gagner !",
-    zoneArc: Math.PI / 6,     // ~30° par zone
+    zoneArc: Math.PI / 5,     // ~36° par zone (même taille que le mode classique)
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
