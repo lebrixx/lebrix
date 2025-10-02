@@ -33,6 +33,9 @@ export const translations = {
     onlineLeaderboard: 'CLASSEMENT EN LIGNE',
     theme: 'Thème',
     mode: 'Mode',
+    trapWarning: '⚠️ Attention : une des zones est un piège. Choisis bien…',
+    avoidTrap: 'Évite la zone piégée !',
+    trapZone: 'Zone traîtresse !',
   },
   en: {
     title: 'LUCKY STOP',
@@ -46,6 +49,9 @@ export const translations = {
     onlineLeaderboard: 'ONLINE LEADERBOARD',
     theme: 'Theme',
     mode: 'Mode',
+    trapWarning: '⚠️ Warning: one of the zones is a trap. Choose wisely…',
+    avoidTrap: 'Avoid the trap zone!',
+    trapZone: 'Trap zone!',
   },
   es: {
     title: 'LUCKY STOP',
@@ -59,5 +65,8 @@ export const translations = {
     onlineLeaderboard: 'CLASIFICACIÓN EN LÍNEA',
     theme: 'Tema',
     mode: 'Modo',
+    trapWarning: '⚠️ Advertencia: una de las zonas es una trampa. Elige bien…',
+    avoidTrap: '¡Evita la zona trampa!',
+    trapZone: '¡Zona trampa!',
   },
 };

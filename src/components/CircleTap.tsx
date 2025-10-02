@@ -168,6 +168,36 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
             />
           )}
 
+          {/* Zones multiples pour le mode zone traîtresse */}
+          {gameState.currentMode === 'zone_traitresse' && gameState.multipleZones && (
+            <>
+              {gameState.multipleZones.map((zone, index) => {
+                const startDeg = (zone.start * 180) / Math.PI;
+                const arcDeg = (zone.arc * 180) / Math.PI;
+                // La zone piégée est légèrement plus sombre
+                const isTrap = index === gameState.trapZoneIndex;
+                const opacity = isTrap ? 0.7 : 0.9;
+                
+                return (
+                  <path
+                    key={index}
+                    d={`M ${cfg.radius + 40 + Math.cos((startDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((startDeg - 90) * Math.PI / 180) * cfg.radius}
+                        A ${cfg.radius} ${cfg.radius} 0 ${arcDeg > 180 ? 1 : 0} 1 
+                        ${cfg.radius + 40 + Math.cos((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius}`}
+                    fill="none"
+                    stroke={getCircleColor()}
+                    strokeWidth="20"
+                    className="drop-shadow-lg"
+                    style={{
+                      filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+                      opacity,
+                    }}
+                  />
+                );
+              })}
+            </>
+          )}
+
           {/* Bille - Barre rouge qui dépasse */}
           <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
             {/* Barre rouge principale qui dépasse */}
@@ -303,9 +333,16 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
 
       {/* Instructions */}
       <div className="text-center mt-8 text-text-muted animate-fade-in">
+        {gameState.currentMode === 'zone_traitresse' && gameState.gameStatus === 'idle' && (
+          <p className="text-sm font-bold text-red-400 mb-2 animate-pulse">
+            ⚠️ Attention : une des zones est un piège. Choisis bien…
+          </p>
+        )}
         <p className="text-sm">
           {gameState.gameStatus === 'running' 
-            ? 'Tapez quand la barre rouge est dans la zone verte!'
+            ? gameState.currentMode === 'zone_traitresse'
+              ? 'Évite la zone piégée !'
+              : 'Tapez quand la barre rouge est dans la zone verte!'
             : gameState.gameStatus === 'idle'
             ? 'Tapez sur l\'écran pour commencer ou appuyez sur ESPACE/ENTRÉE'
             : ''
