@@ -23,6 +23,8 @@ const getModeIcon = (modeId: ModeType) => {
       return <Clock className="w-8 h-8" />;
     case ModeID.ZONE_MOBILE:
       return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
+    case ModeID.ZONE_TRAITRESSE:
+      return <AlertTriangle className="w-8 h-8" />;
     default:
       return <Target className="w-8 h-8" />;
   }
