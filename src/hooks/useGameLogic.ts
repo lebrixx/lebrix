@@ -101,14 +101,14 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
     
-    // Créer plusieurs zones pour le mode zone traîtresse
+    // Créer plusieurs zones pour le mode zone traîtresse (positions fixes)
     let multipleZones: Array<{ start: number; end: number; arc: number }> | undefined;
     let trapZoneIndex: number | undefined;
     if (modeConfig.multipleZones && modeConfig.numberOfZones) {
       multipleZones = [];
       const angleStep = (2 * Math.PI) / modeConfig.numberOfZones;
       for (let i = 0; i < modeConfig.numberOfZones; i++) {
-        const start = i * angleStep + Math.random() * 0.2; // Petit décalage aléatoire
+        const start = i * angleStep; // Positions fixes, pas de décalage aléatoire
         const arc = modeConfig.zoneArc || cfgBase.zoneArc;
         multipleZones.push({ start, end: start + arc, arc });
       }
@@ -312,14 +312,14 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
     
-    // Créer plusieurs zones pour le mode zone traîtresse
+    // Créer plusieurs zones pour le mode zone traîtresse (positions fixes)
     let multipleZones: Array<{ start: number; end: number; arc: number }> | undefined;
     let trapZoneIndex: number | undefined;
     if (modeConfig.multipleZones && modeConfig.numberOfZones) {
       multipleZones = [];
       const angleStep = (2 * Math.PI) / modeConfig.numberOfZones;
       for (let i = 0; i < modeConfig.numberOfZones; i++) {
-        const start = i * angleStep + Math.random() * 0.2; // Petit décalage aléatoire
+        const start = i * angleStep; // Positions fixes, pas de décalage aléatoire
         const arc = modeConfig.zoneArc || cfgBase.zoneArc;
         multipleZones.push({ start, end: start + arc, arc });
       }
@@ -442,15 +442,9 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         newZoneArc = Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!;
         newZoneStart = Math.random() * 2 * Math.PI;
       }
-      // Mode Zone Traîtresse : régénérer les zones et choisir une nouvelle zone piégée
+      // Mode Zone Traîtresse : changer seulement la zone piégée (garder les positions fixes)
       else if (modeConfig.multipleZones && modeConfig.numberOfZones) {
-        newMultipleZones = [];
-        const angleStep = (2 * Math.PI) / modeConfig.numberOfZones;
-        for (let i = 0; i < modeConfig.numberOfZones; i++) {
-          const start = i * angleStep + Math.random() * 0.2;
-          const arc = modeConfig.zoneArc || cfgBase.zoneArc;
-          newMultipleZones.push({ start, end: start + arc, arc });
-        }
+        // Les zones restent fixes, on change juste quelle zone est piégée
         newTrapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
       }
       // Mode Zone Mobile : accélérer le drift mais GARDER le sens opposé constant
