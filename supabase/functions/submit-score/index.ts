@@ -12,7 +12,8 @@ const SCORE_LIMITS = {
   classic: 10000,
   arc_changeant: 8000,
   survie_60s: 6000,
-  zone_mobile: 7000
+  zone_mobile: 7000,
+  zone_traitresse: 8000
 };
 
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
@@ -55,7 +56,7 @@ serve(async (req) => {
     }
 
     // Validate mode
-    const validModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile'];
+    const validModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse'];
     if (!validModes.includes(mode)) {
       return new Response(
         JSON.stringify({ error: 'Invalid game mode' }),
