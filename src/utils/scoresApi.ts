@@ -24,7 +24,7 @@ export interface SubmitScoreParams {
   mode: string;
 }
 
-const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile'];
+const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse'];
 
 export async function submitScore({ score, mode }: SubmitScoreParams): Promise<boolean> {
   try {
