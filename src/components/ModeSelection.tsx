@@ -2,15 +2,17 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
   gameStatus: 'idle' | 'running' | 'gameover';
   bestScores: Record<string, number>;
+  unlockedModes: string[];
   onSelectMode: (mode: ModeType) => void;
   onBack: () => void;
+  onOpenShop: () => void;
 }
 
 const getModeIcon = (modeId: ModeType) => {
@@ -34,8 +36,10 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   currentMode,
   gameStatus,
   bestScores,
+  unlockedModes,
   onSelectMode,
-  onBack
+  onBack,
+  onOpenShop
 }) => {
   const isGameRunning = gameStatus === 'running';
 
@@ -84,7 +88,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
         {Object.entries(cfgModes).map(([modeId, config]) => {
           const isCurrentMode = modeId === currentMode;
-          const canSelect = !isGameRunning;
+          const isLocked = !unlockedModes.includes(modeId);
+          const canSelect = !isGameRunning && !isLocked;
 
           return (
             <Card
@@ -93,11 +98,30 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 relative overflow-hidden border-2 transition-all duration-300
                 ${isCurrentMode 
                   ? 'border-primary bg-primary/5 shadow-glow-primary' 
-                  : 'border-wheel-border bg-button-bg hover:border-primary/50'
+                  : isLocked
+                    ? 'border-wheel-border bg-button-bg/50 opacity-75'
+                    : 'border-wheel-border bg-button-bg hover:border-primary/50'
                 }
-                ${canSelect ? 'hover:scale-105' : 'opacity-50'}
+                ${!isLocked && !isGameRunning ? 'hover:scale-105' : ''}
               `}
             >
+              {/* Locked Overlay */}
+              {isLocked && (
+                <div className="absolute inset-0 bg-game-dark/80 z-10 flex items-center justify-center backdrop-blur-sm">
+                  <div className="text-center p-4">
+                    <Lock className="w-12 h-12 text-primary mx-auto mb-3" />
+                    <p className="text-text-primary font-bold mb-2">Mode Verrouillé</p>
+                    <Button
+                      onClick={onOpenShop}
+                      size="sm"
+                      className="bg-gradient-primary hover:scale-105 transition-all"
+                    >
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      Acheter en Boutique
+                    </Button>
+                  </div>
+                </div>
+              )}
               <div className="p-6">
                 {/* Mode Icon & Name */}
                 <div className="flex items-center gap-4 mb-4">
@@ -157,19 +181,21 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 </div>
 
                 {/* Select Button */}
-                <Button
-                  onClick={() => onSelectMode(modeId as ModeType)}
-                  disabled={!canSelect}
-                  className={`
-                    w-full transition-all duration-300
-                    ${isCurrentMode 
-                      ? 'bg-primary hover:bg-primary/90' 
-                      : 'bg-gradient-primary hover:scale-105'
-                    }
-                  `}
-                >
-                  {isCurrentMode ? 'Jouer maintenant' : 'Choisir ce Mode'}
-                </Button>
+                {!isLocked && (
+                  <Button
+                    onClick={() => onSelectMode(modeId as ModeType)}
+                    disabled={!canSelect}
+                    className={`
+                      w-full transition-all duration-300
+                      ${isCurrentMode 
+                        ? 'bg-primary hover:bg-primary/90' 
+                        : 'bg-gradient-primary hover:scale-105'
+                      }
+                    `}
+                  >
+                    {isCurrentMode ? 'Jouer maintenant' : 'Choisir ce Mode'}
+                  </Button>
+                )}
               </div>
 
               {/* Current Mode Indicator */}
