@@ -99,27 +99,19 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 ${isCurrentMode 
                   ? 'border-primary bg-primary/5 shadow-glow-primary' 
                   : isLocked
-                    ? 'border-wheel-border bg-button-bg/50 opacity-75'
+                    ? 'border-danger/50 bg-button-bg/50'
                     : 'border-wheel-border bg-button-bg hover:border-primary/50'
                 }
                 ${!isLocked && !isGameRunning ? 'hover:scale-105' : ''}
               `}
             >
-              {/* Locked Overlay */}
+              {/* Locked Badge */}
               {isLocked && (
-                <div className="absolute inset-0 bg-game-dark/80 z-10 flex items-center justify-center backdrop-blur-sm">
-                  <div className="text-center p-4">
-                    <Lock className="w-12 h-12 text-primary mx-auto mb-3" />
-                    <p className="text-text-primary font-bold mb-2">Mode Verrouillé</p>
-                    <Button
-                      onClick={onOpenShop}
-                      size="sm"
-                      className="bg-gradient-primary hover:scale-105 transition-all"
-                    >
-                      <ShoppingBag className="w-4 h-4 mr-2" />
-                      Acheter en Boutique
-                    </Button>
-                  </div>
+                <div className="absolute top-4 right-4 z-10">
+                  <Badge className="bg-danger/90 text-white border-danger">
+                    <Lock className="w-3 h-3 mr-1" />
+                    Verrouillé
+                  </Badge>
                 </div>
               )}
               <div className="p-6">
@@ -181,7 +173,15 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 </div>
 
                 {/* Select Button */}
-                {!isLocked && (
+                {isLocked ? (
+                  <Button
+                    onClick={onOpenShop}
+                    className="w-full bg-danger hover:bg-danger/90 transition-all"
+                  >
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Acheter en Boutique
+                  </Button>
+                ) : (
                   <Button
                     onClick={() => onSelectMode(modeId as ModeType)}
                     disabled={!canSelect}
