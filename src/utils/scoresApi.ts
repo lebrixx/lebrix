@@ -1,11 +1,9 @@
 // Secure API for score submission via Edge Function
-import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
+import { getLocalIdentity, setUsername } from './localIdentity';
 import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
 
 // Constantes de configuration
-const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
-const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraHJ0dmduemN1ZnBsemhvcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NjU1NjgsImV4cCI6MjA3NDE0MTU2OH0.3mYkFLKEqJFllX8487LdqnkEFXUw5Y4cZnzlZyfJ-a4";
 const FETCH_LIMIT = 100;
 
 // Enhanced anti-spam
