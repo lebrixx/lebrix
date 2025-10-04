@@ -102,15 +102,19 @@ export const useAuth = () => {
     if (!profile) return { error: 'No profile found' };
 
     try {
-      // Use secure RPC function instead of direct upsert to prevent score manipulation
-      const { data, error } = await supabase.rpc('update_leaderboard_secure', {
-        p_mode: gameData.mode,
-        p_score: Math.max(gameData.score, 0),
-        p_coins: Math.max(gameData.coins, 0),
-        p_games_played: Math.max(gameData.games_played, 1),
-        p_max_speed_reached: Math.max(gameData.max_speed_reached, 0),
-        p_direction_changes: Math.max(gameData.direction_changes, 0),
-      });
+      const { data, error } = await supabase
+        .from('leaderboard')
+        .upsert({
+          user_id: profile.id,
+          mode: gameData.mode,
+          score: Math.max(gameData.score, 0), // Ensure score is never negative
+          coins: Math.max(gameData.coins, 0),
+          games_played: Math.max(gameData.games_played, 1),
+          max_speed_reached: Math.max(gameData.max_speed_reached, 0),
+          direction_changes: Math.max(gameData.direction_changes, 0),
+        }, {
+          onConflict: 'user_id,mode'
+        });
 
       return { data, error };
     } catch (err) {
