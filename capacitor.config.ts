@@ -1,13 +1,9 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.luckystop.app', // ⚠️ IMPORTANT: Remplacez par votre Bundle ID Apple
+  appId: 'app.lovable.2dd90aa453b647199c4d45da7e4a8847', // ⚠️ NE JAMAIS CHANGER pour une mise à jour !
   appName: 'Lucky Stop',
   webDir: 'dist',
-  server: {
-    cleartext: true,
-    androidScheme: 'https'
-  },
   plugins: {
     StatusBar: {
       style: 'dark',
