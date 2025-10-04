@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
+import { BoostShop } from '@/components/BoostShop';
+import { PreGameMenu } from '@/components/PreGameMenu';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
@@ -9,13 +11,15 @@ import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { useGameLogic } from '@/hooks/useGameLogic';
+import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
+import { BoostType } from '@/types/boosts';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'boostShop' | 'preGame' | 'challenges' | 'modes' | 'leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -24,6 +28,7 @@ const Index = () => {
   const [showDailyRewards, setShowDailyRewards] = useState(false);
   const [lastGameScore, setLastGameScore] = useState(0);
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
+  const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -43,7 +48,8 @@ const Index = () => {
     return saved ? JSON.parse(saved) : ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile']; // Modes de base débloqués
   });
 
-  const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
+  const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins, reviveGame } = useGameLogic(currentMode);
+  const { inventory, addBoost, useBoost, hasBoost, incrementGamesPlayed, canShowRevive } = useBoosts();
   const { toast } = useToast();
 
   // Vérifier les récompenses disponibles au montage
@@ -77,6 +83,7 @@ const Index = () => {
   // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
   const handleGameOver = (finalScore: number) => {
     setLastGameScore(finalScore);
+    incrementGamesPlayed(); // Incrémenter le compteur de parties
 
     const identity = getLocalIdentity();
 
@@ -92,6 +99,68 @@ const Index = () => {
       });
     } else {
       setShowUsernameModal(true);
+    }
+  };
+
+  // Gestion de l'achat de boosts avec coins
+  const handlePurchaseBoostWithCoins = (boostId: string, price: number): boolean => {
+    if (spendCoins(price)) {
+      addBoost(boostId as BoostType);
+      toast({
+        title: "Boost acheté !",
+        description: "Le boost a été ajouté à ton inventaire.",
+      });
+      return true;
+    } else {
+      toast({
+        title: "Coins insuffisants",
+        description: `Il te faut ${price} coins pour acheter ce boost.`,
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  // Gestion de l'achat de boosts avec pub (placeholder pour AdMob)
+  const handlePurchaseBoostWithAd = (boostId: string) => {
+    // TODO: Intégrer AdMob Rewarded Ad
+    // Pour l'instant, on simule le succès
+    toast({
+      title: "Pub non disponible",
+      description: "La connexion AdMob sera activée prochainement.",
+      variant: "destructive",
+    });
+  };
+
+  // Démarrer la partie avec les boosts sélectionnés
+  const handleStartGameWithBoosts = (selectedBoosts: BoostType[]) => {
+    // Consommer les boosts sélectionnés de l'inventaire
+    selectedBoosts.forEach(boostId => {
+      useBoost(boostId);
+    });
+    
+    setSelectedBoostsForGame(selectedBoosts);
+    setCurrentScreen('game');
+  };
+
+  // Gérer le bouton revivre avec pub
+  const handleReviveWithAd = () => {
+    // TODO: Intégrer AdMob Rewarded Ad
+    // Si la pub est regardée jusqu'au bout, on revive
+    const adWatched = false; // Placeholder
+    
+    if (adWatched) {
+      reviveGame();
+      toast({
+        title: "Partie relancée !",
+        description: "Continue à jouer !",
+      });
+    } else {
+      toast({
+        title: "Pub non disponible",
+        description: "La connexion AdMob sera activée prochainement.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -167,8 +236,9 @@ const Index = () => {
             coins={gameState.coins}
             theme={currentTheme}
             currentMode={currentMode}
-            onStartGame={() => setCurrentScreen('game')}
+            onStartGame={() => setCurrentScreen('preGame')}
             onOpenShop={() => setCurrentScreen('shop')}
+            onOpenBoostShop={() => setCurrentScreen('boostShop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
@@ -177,15 +247,30 @@ const Index = () => {
           />
         );
         
-        case 'game':
-          return (
-            <CircleTap
-              theme={currentTheme}
-              currentMode={currentMode}
-              onBack={() => setCurrentScreen('menu')}
-              onGameOver={handleGameOver}
-            />
-          );
+      case 'preGame':
+        return (
+          <PreGameMenu
+            inventory={inventory}
+            onStartGame={handleStartGameWithBoosts}
+            onCancel={() => setCurrentScreen('menu')}
+          />
+        );
+        
+      case 'game':
+        return (
+          <CircleTap
+            theme={currentTheme}
+            currentMode={currentMode}
+            onBack={() => {
+              setCurrentScreen('menu');
+              setSelectedBoostsForGame([]);
+            }}
+            onGameOver={handleGameOver}
+            selectedBoosts={selectedBoostsForGame}
+            canShowRevive={canShowRevive()}
+            onReviveWithAd={handleReviveWithAd}
+          />
+        );
         
       case 'shop':
         return (
@@ -198,6 +283,17 @@ const Index = () => {
             onPurchaseTheme={(theme) => spendCoins(theme.price)}
             onEquipTheme={handleThemeChange}
             onPurchaseMode={handlePurchaseMode}
+          />
+        );
+        
+      case 'boostShop':
+        return (
+          <BoostShop
+            coins={gameState.coins}
+            inventory={inventory}
+            onBack={() => setCurrentScreen('menu')}
+            onPurchaseWithCoins={handlePurchaseBoostWithCoins}
+            onPurchaseWithAd={handlePurchaseBoostWithAd}
           />
         );
         
@@ -215,36 +311,36 @@ const Index = () => {
           />
         );
 
-        case 'modes':
-          const bestScores = {
-            classic: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_classic`] || 0,
-            arc_changeant: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_arc_changeant`] || 0,
-            survie_60s: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_survie_60s`] || 0,
-            zone_mobile: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_mobile`] || 0,
-            zone_traitresse: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_traitresse`] || 0,
-          };
-          
-          return (
-            <ModeSelection
-              currentMode={currentMode}
-              gameStatus={gameState.gameStatus}
-              bestScores={bestScores}
-              unlockedModes={unlockedModes}
-              onSelectMode={handleModeChange}
-              onBack={() => setCurrentScreen('menu')}
-              onOpenShop={() => setCurrentScreen('shop')}
-            />
-          );
-          
-        case 'leaderboard':
-          return (
-            <OnlineLeaderboard
-              onBack={() => setCurrentScreen('menu')}
-            />
-          );
+      case 'modes':
+        const bestScores = {
+          classic: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_classic`] || 0,
+          arc_changeant: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_arc_changeant`] || 0,
+          survie_60s: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_survie_60s`] || 0,
+          zone_mobile: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_mobile`] || 0,
+          zone_traitresse: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_traitresse`] || 0,
+        };
         
-        default:
-          return null;
+        return (
+          <ModeSelection
+            currentMode={currentMode}
+            gameStatus={gameState.gameStatus}
+            bestScores={bestScores}
+            unlockedModes={unlockedModes}
+            onSelectMode={handleModeChange}
+            onBack={() => setCurrentScreen('menu')}
+            onOpenShop={() => setCurrentScreen('shop')}
+          />
+        );
+        
+      case 'leaderboard':
+        return (
+          <OnlineLeaderboard
+            onBack={() => setCurrentScreen('menu')}
+          />
+        );
+        
+      default:
+        return null;
     }
   };
 

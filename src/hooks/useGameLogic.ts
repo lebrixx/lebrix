@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import * as React from 'react';
 import { ModeType, ModeID, cfgModes, cfgBase, inArc } from '@/constants/modes';
 import { startGameSession } from '@/utils/scoresApi';
+import { BoostType, ActiveBoosts } from '@/types/boosts';
 
 interface CustomizationItem {
   id: string;
@@ -51,6 +52,9 @@ export interface GameState {
   // Pour mode zone traîtresse
   multipleZones?: Array<{ start: number; end: number; arc: number }>;
   trapZoneIndex?: number; // Index de la zone piégée
+  // Boosts actifs
+  activeBoosts: ActiveBoosts;
+  shieldUsed: boolean; // Pour savoir si le bouclier a déjà été utilisé
 }
 
 // Configuration du jeu
@@ -154,6 +158,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
       multipleZones,
       trapZoneIndex,
+      activeBoosts: { shield: false, slowdown: false, start20: false },
+      shieldUsed: false,
     };
     
     if (saved) {
@@ -231,7 +237,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     }
   }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization, gameState.currentMode, gameState.maxSpeedReached, gameState.directionChanges, gameState.totalGamesPlayed]);
 
-  // Animation de la bille (60 FPS) + Zone mobile
+  // Animation de la bille (60 FPS) + Zone mobile + Boosts
   const animateBall = useCallback(() => {
     if (gameState.gameStatus !== 'running') return;
 
@@ -244,12 +250,35 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       lastTimeRef.current = currentTime;
 
       setGameState(prev => {
-        let newAngle = prev.ballAngle + prev.ballSpeed * prev.ballDirection * deltaTime;
+        // Appliquer le boost ralentir (50% de la vitesse)
+        const speedMultiplier = prev.activeBoosts.slowdown ? 0.5 : 1;
+        let newAngle = prev.ballAngle + (prev.ballSpeed * speedMultiplier) * prev.ballDirection * deltaTime;
         // Normaliser l'angle entre 0 et 2π (gérer les angles négatifs)
         newAngle = ((newAngle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
         
         let newZoneStart = prev.zoneStart;
         let newTimeLeft = prev.timeLeft;
+        
+        // Décrémenter le timer du boost ralentir
+        let newSlowdownTimeLeft = prev.activeBoosts.slowdownTimeLeft;
+        if (prev.activeBoosts.slowdown && newSlowdownTimeLeft !== undefined) {
+          newSlowdownTimeLeft = Math.max(0, newSlowdownTimeLeft - deltaTime);
+          if (newSlowdownTimeLeft <= 0) {
+            // Désactiver le boost ralentir
+            return {
+              ...prev,
+              ballAngle: newAngle,
+              zoneStart: newZoneStart,
+              zoneEnd: newZoneStart + prev.zoneArc,
+              timeLeft: newTimeLeft,
+              activeBoosts: {
+                ...prev.activeBoosts,
+                slowdown: false,
+                slowdownTimeLeft: undefined,
+              },
+            };
+          }
+        }
         
         // Mode Zone Mobile : faire glisser la zone verte
         const modeConfig = cfgModes[prev.currentMode];
@@ -280,6 +309,10 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           zoneStart: newZoneStart,
           zoneEnd: newZoneStart + prev.zoneArc,
           timeLeft: newTimeLeft,
+          activeBoosts: {
+            ...prev.activeBoosts,
+            slowdownTimeLeft: newSlowdownTimeLeft,
+          },
         };
       });
 
@@ -306,8 +339,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     };
   }, [gameState.gameStatus, animateBall]);
 
-  // Démarrer le jeu
-  const startGame = useCallback(() => {
+  // Démarrer le jeu avec boosts optionnels
+  const startGame = useCallback((selectedBoosts: BoostType[] = []) => {
     // Mark the start of game session for security tracking
     startGameSession();
     
@@ -338,11 +371,22 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     
     // Vitesse de base modifiée pour le mode survie (+17%)
     const baseSpeed = modeConfig.survival ? cfg.baseSpeed * 1.17 : cfg.baseSpeed;
+    
+    // Activer les boosts sélectionnés
+    const activeBoosts: ActiveBoosts = {
+      shield: selectedBoosts.includes('shield'),
+      slowdown: selectedBoosts.includes('slowdown'),
+      slowdownTimeLeft: selectedBoosts.includes('slowdown') ? 5 : undefined,
+      start20: selectedBoosts.includes('start20'),
+    };
+    
+    // Score de départ basé sur le boost start20
+    const startScore = activeBoosts.start20 ? 20 : 0;
       
     setGameState(prev => ({
       ...prev,
       gameStatus: 'running',
-      currentScore: 0,
+      currentScore: startScore,
       ballAngle: 0,
       ballSpeed: baseSpeed,
       ballDirection: 1,
@@ -363,6 +407,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
       multipleZones,
       trapZoneIndex,
+      activeBoosts,
+      shieldUsed: false,
     }));
   }, [currentMode]);
 
@@ -498,6 +544,21 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       }));
 
     } else {
+      // ÉCHEC - Vérifier si le bouclier est actif
+      if (gameState.activeBoosts.shield && !gameState.shieldUsed) {
+        // Le bouclier protège de cette erreur
+        setGameState(prev => ({
+          ...prev,
+          shieldUsed: true,
+          activeBoosts: {
+            ...prev.activeBoosts,
+            shield: false, // Désactiver le bouclier après utilisation
+          },
+        }));
+        // Ne pas terminer la partie, continuer
+        return;
+      }
+      
       // ÉCHEC - Fin de partie pour tous les modes
       setGameState(prev => ({
         ...prev,
@@ -619,11 +680,24 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     return false;
   }, [gameState.coins, gameState.ownedItems]);
 
+  // Fonction pour revivre après un game over
+  const reviveGame = useCallback(() => {
+    if (gameState.gameStatus === 'gameover') {
+      setGameState(prev => ({
+        ...prev,
+        gameStatus: 'running',
+        showResult: false,
+        lastResult: null,
+      }));
+    }
+  }, [gameState.gameStatus]);
+
   return {
     gameState,
     startGame,
     onTap,
     resetGame,
+    reviveGame,
     spendCoins,
     addCoins,
     purchaseTheme,
