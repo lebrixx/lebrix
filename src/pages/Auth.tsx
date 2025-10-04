@@ -6,23 +6,6 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Mail, User, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
-
-// Validation schemas
-const emailSchema = z.string()
-  .trim()
-  .email({ message: "Email invalide" })
-  .max(255, { message: "Email trop long" });
-
-const passwordSchema = z.string()
-  .min(6, { message: "Mot de passe trop court (minimum 6 caractères)" })
-  .max(128, { message: "Mot de passe trop long" });
-
-const usernameSchema = z.string()
-  .trim()
-  .regex(/^[a-zA-Z0-9_]{3,16}$/, { 
-    message: "Pseudo invalide (3-16 caractères alphanumériques)" 
-  });
 
 interface AuthProps {
   onBack: () => void;
@@ -38,22 +21,13 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
   const { toast } = useToast();
 
   const handleAuth = async () => {
-    // Validate inputs using zod schemas
-    try {
-      emailSchema.parse(email);
-      passwordSchema.parse(password);
-      if (!isLogin) {
-        usernameSchema.parse(username);
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast({
-          title: "Erreur de validation",
-          description: error.errors[0].message,
-          variant: "destructive"
-        });
-        return;
-      }
+    if (!email || !password || (!isLogin && !username)) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir tous les champs",
+        variant: "destructive"
+      });
+      return;
     }
 
     setLoading(true);
