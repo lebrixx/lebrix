@@ -118,6 +118,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      update_leaderboard_secure: {
+        Args: {
+          p_coins: number
+          p_direction_changes: number
+          p_games_played: number
+          p_max_speed_reached: number
+          p_mode: string
+          p_score: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
