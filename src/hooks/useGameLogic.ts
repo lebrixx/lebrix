@@ -48,6 +48,9 @@ export interface GameState {
   timeLeft?: number; // Pour mode survie
   zoneDrift?: number; // Pour zone mobile
   zoneDriftSpeed?: number;
+  // Pour mode zone traîtresse
+  multipleZones?: Array<{ start: number; end: number; arc: number }>;
+  trapZoneIndex?: number; // Index de la zone piégée
 }
 
 // Configuration du jeu
@@ -98,6 +101,25 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
     
+    // Créer plusieurs zones pour le mode zone traîtresse (positions fixes)
+    let multipleZones: Array<{ start: number; end: number; arc: number }> | undefined;
+    let trapZoneIndex: number | undefined;
+    if (modeConfig.multipleZones && modeConfig.numberOfZones) {
+      multipleZones = [];
+      const fixedArc = modeConfig.zoneArc || cfgBase.zoneArc; // Arc fixe pour toutes les zones
+      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones; // Espacement uniforme
+      
+      for (let i = 0; i < modeConfig.numberOfZones; i++) {
+        const start = i * angleStep; // Position fixe basée sur l'index
+        multipleZones.push({ 
+          start, 
+          end: start + fixedArc, 
+          arc: fixedArc // Même arc pour toutes les zones
+        });
+      }
+      trapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
+    }
+    
     const defaultState: GameState = {
       gameStatus: 'idle',
       currentScore: 0,
@@ -130,6 +152,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
+      multipleZones,
+      trapZoneIndex,
     };
     
     if (saved) {
@@ -293,6 +317,25 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
     
+    // Créer plusieurs zones pour le mode zone traîtresse (positions fixes)
+    let multipleZones: Array<{ start: number; end: number; arc: number }> | undefined;
+    let trapZoneIndex: number | undefined;
+    if (modeConfig.multipleZones && modeConfig.numberOfZones) {
+      multipleZones = [];
+      const fixedArc = modeConfig.zoneArc || cfgBase.zoneArc; // Arc fixe pour toutes les zones
+      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones; // Espacement uniforme
+      
+      for (let i = 0; i < modeConfig.numberOfZones; i++) {
+        const start = i * angleStep; // Position fixe basée sur l'index
+        multipleZones.push({ 
+          start, 
+          end: start + fixedArc, 
+          arc: fixedArc // Même arc pour toutes les zones
+        });
+      }
+      trapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
+    }
+    
     // Vitesse de base modifiée pour le mode survie (+17%)
     const baseSpeed = modeConfig.survival ? cfg.baseSpeed * 1.17 : cfg.baseSpeed;
       
@@ -318,6 +361,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
+      multipleZones,
+      trapZoneIndex,
     }));
   }, [currentMode]);
 
@@ -339,10 +384,47 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
     if (gameState.gameStatus !== 'running') return;
 
-    // Vérifier si la bille est dans la zone verte (ou la deuxième zone en mode survie)
+    // Vérifier si la bille est dans la zone verte
     const modeConfig = cfgModes[gameState.currentMode];
-    const success = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd) ||
-      (modeConfig.survival && inArc(gameState.ballAngle, (gameState.zoneStart + Math.PI) % (2 * Math.PI), (gameState.zoneEnd + Math.PI) % (2 * Math.PI)));
+    
+    let success = false;
+    let hitTrapZone = false;
+    
+    // Mode zone traîtresse : vérifier toutes les zones
+    if (modeConfig.multipleZones && gameState.multipleZones && gameState.trapZoneIndex !== undefined) {
+      for (let i = 0; i < gameState.multipleZones.length; i++) {
+        const zone = gameState.multipleZones[i];
+        if (inArc(gameState.ballAngle, zone.start, zone.end)) {
+          if (i === gameState.trapZoneIndex) {
+            hitTrapZone = true;
+          } else {
+            success = true;
+          }
+          break;
+        }
+      }
+    }
+    // Mode normal : vérifier la zone standard (ou la deuxième zone en mode survie)
+    else {
+      success = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd) ||
+        (modeConfig.survival && inArc(gameState.ballAngle, (gameState.zoneStart + Math.PI) % (2 * Math.PI), (gameState.zoneEnd + Math.PI) % (2 * Math.PI)));
+    }
+    
+    // Si le joueur a touché la zone piégée, c'est game over
+    if (hitTrapZone) {
+      setGameState(prev => ({
+        ...prev,
+        gameStatus: 'gameover',
+        bestScore: Math.max(prev.currentScore, prev.bestScore),
+        coins: prev.coins + Math.floor(prev.currentScore / 20),
+        showResult: true,
+        lastResult: 'failure',
+      }));
+
+      // Masquer le message de game over immédiatement
+      setGameState(prev => ({ ...prev, showResult: false }));
+      return;
+    }
 
     if (success) {
       // SUCCÈS - Continue immédiatement sans pause
@@ -362,11 +444,18 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       let newZoneStart = gameState.zoneStart;
       let newZoneArc = gameState.zoneArc;
       let newZoneDriftSpeed = gameState.zoneDriftSpeed;
+      let newMultipleZones = gameState.multipleZones;
+      let newTrapZoneIndex = gameState.trapZoneIndex;
 
       // Mode Arc Changeant : changer la taille et position de l'arc
       if (modeConfig.variableArc) {
         newZoneArc = Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!;
         newZoneStart = Math.random() * 2 * Math.PI;
+      }
+      // Mode Zone Traîtresse : changer seulement la zone piégée (garder les positions fixes)
+      else if (modeConfig.multipleZones && modeConfig.numberOfZones) {
+        // Les zones restent fixes, on change juste quelle zone est piégée
+        newTrapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
       }
       // Mode Zone Mobile : accélérer le drift mais GARDER le sens opposé constant
       else if (modeConfig.keepMovingZone && newZoneDriftSpeed) {
@@ -397,6 +486,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         comboCount: newScore,
         maxSpeedReached: Math.max(prev.maxSpeedReached, newSpeed),
         directionChanges: shouldReverse ? prev.directionChanges + 1 : prev.directionChanges,
+        multipleZones: newMultipleZones,
+        trapZoneIndex: newTrapZoneIndex,
       }));
 
       // Effacer les effets visuels immédiatement
@@ -430,6 +521,20 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       ? Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!
       : modeConfig.zoneArc || cfgBase.zoneArc;
     
+    // Créer plusieurs zones pour le mode zone traîtresse
+    let multipleZones: Array<{ start: number; end: number; arc: number }> | undefined;
+    let trapZoneIndex: number | undefined;
+    if (modeConfig.multipleZones && modeConfig.numberOfZones) {
+      multipleZones = [];
+      const angleStep = (2 * Math.PI) / modeConfig.numberOfZones;
+      for (let i = 0; i < modeConfig.numberOfZones; i++) {
+        const start = i * angleStep + Math.random() * 0.2;
+        const arc = modeConfig.zoneArc || cfgBase.zoneArc;
+        multipleZones.push({ start, end: start + arc, arc });
+      }
+      trapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
+    }
+    
     // Vitesse de base modifiée pour le mode survie (+17%)
     const baseSpeed = modeConfig.survival ? cfg.baseSpeed * 1.17 : cfg.baseSpeed;
       
@@ -454,6 +559,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
+      multipleZones,
+      trapZoneIndex,
     }));
   }, [currentMode]);
 

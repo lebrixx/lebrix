@@ -19,6 +19,9 @@ const RATE_LIMIT_WINDOW = 60000; // 1 minute
 const MAX_SUBMISSIONS_PER_WINDOW = 3;
 const MIN_GAME_DURATION = 5000; // 5 seconds minimum
 
+// Simple in-memory rate limiting (in production, use Redis or similar)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -72,59 +75,46 @@ serve(async (req) => {
 
     // Remove game duration validation completely - no time restrictions
 
-    // Persistent rate limiting with database-backed storage
+    // Enhanced rate limiting with device fingerprint
     const fingerprint = `${device_id}_${client_fingerprint || 'unknown'}`;
     const now = Date.now();
+    const rateLimitData = rateLimitMap.get(fingerprint);
 
-    // Check rate limit from database
-    const { data: rateLimitData, error: rateLimitError } = await supabase
-      .from('rate_limits')
-      .select('*')
-      .eq('fingerprint', fingerprint)
-      .single();
-
-    if (!rateLimitError && rateLimitData) {
-      const windowStart = new Date(rateLimitData.window_start).getTime();
-      const timeSinceWindowStart = now - windowStart;
-
-      if (timeSinceWindowStart < RATE_LIMIT_WINDOW) {
-        if (rateLimitData.submission_count >= MAX_SUBMISSIONS_PER_WINDOW) {
-          console.log(`Persistent rate limit exceeded for fingerprint: ${fingerprint}`);
+    if (rateLimitData) {
+      if (now < rateLimitData.resetTime) {
+        if (rateLimitData.count >= MAX_SUBMISSIONS_PER_WINDOW) {
+          console.log(`Rate limit exceeded for fingerprint: ${fingerprint}`);
           return new Response(
             JSON.stringify({ error: 'Too many submissions, please wait' }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-
-        // Increment count in current window
-        await supabase
-          .from('rate_limits')
-          .update({
-            submission_count: rateLimitData.submission_count + 1,
-            last_submission: new Date().toISOString()
-          })
-          .eq('fingerprint', fingerprint);
+        rateLimitData.count++;
       } else {
-        // Reset window
-        await supabase
-          .from('rate_limits')
-          .update({
-            submission_count: 1,
-            window_start: new Date().toISOString(),
-            last_submission: new Date().toISOString()
-          })
-          .eq('fingerprint', fingerprint);
+        rateLimitData.count = 1;
+        rateLimitData.resetTime = now + RATE_LIMIT_WINDOW;
       }
     } else {
-      // Create new rate limit entry
-      await supabase
-        .from('rate_limits')
-        .insert({
-          fingerprint,
-          submission_count: 1,
-          window_start: new Date().toISOString(),
-          last_submission: new Date().toISOString()
-        });
+      rateLimitMap.set(fingerprint, {
+        count: 1,
+        resetTime: now + RATE_LIMIT_WINDOW
+      });
+    }
+
+    // Check for recent submissions from this device
+    const { data: recentScores } = await supabase
+      .from('scores')
+      .select('created_at')
+      .eq('device_id', device_id)
+      .gte('created_at', new Date(now - RATE_LIMIT_WINDOW).toISOString())
+      .order('created_at', { ascending: false });
+
+    if (recentScores && recentScores.length >= MAX_SUBMISSIONS_PER_WINDOW) {
+      console.log(`Database rate limit exceeded for device: ${device_id}`);
+      return new Response(
+        JSON.stringify({ error: 'Too many recent submissions' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Check if there's an existing score for this device_id and mode

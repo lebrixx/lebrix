@@ -27,7 +27,8 @@ const modeNames = {
   classic: 'Classique',
   arc_changeant: 'Arc Changeant',
   survie_60s: 'Survie 60s',
-  zone_mobile: 'Zone Mobile'
+  zone_mobile: 'Zone Mobile',
+  zone_traitresse: 'Zone Traîtresse'
 };
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {

@@ -82,30 +82,6 @@ export type Database = {
         }
         Relationships: []
       }
-      rate_limits: {
-        Row: {
-          created_at: string
-          fingerprint: string
-          last_submission: string
-          submission_count: number
-          window_start: string
-        }
-        Insert: {
-          created_at?: string
-          fingerprint: string
-          last_submission?: string
-          submission_count?: number
-          window_start?: string
-        }
-        Update: {
-          created_at?: string
-          fingerprint?: string
-          last_submission?: string
-          submission_count?: number
-          window_start?: string
-        }
-        Relationships: []
-      }
       scores: {
         Row: {
           created_at: string | null
@@ -135,45 +111,11 @@ export type Database = {
       }
     }
     Views: {
-      scores_public: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          mode: string | null
-          score: number | null
-          username: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          mode?: string | null
-          score?: number | null
-          username?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          mode?: string | null
-          score?: number | null
-          username?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       cleanup_old_scores: {
         Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      update_leaderboard_secure: {
-        Args: {
-          p_coins: number
-          p_direction_changes: number
-          p_games_played: number
-          p_max_speed_reached: number
-          p_mode: string
-          p_score: number
-        }
         Returns: undefined
       }
     }
