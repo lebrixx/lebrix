@@ -5,7 +5,6 @@ export const ModeID = {
   ARC_CHANGEANT: "arc_changeant", 
   SURVIE_60S: "survie_60s",
   ZONE_MOBILE: "zone_mobile",
-  ZONE_TRAITRESSE: "zone_traitresse",
 } as const;
 
 export type ModeType = typeof ModeID[keyof typeof ModeID];
@@ -31,9 +30,6 @@ interface ModeConfig {
   zoneDriftSpeed?: number;
   zoneDriftGain?: number;
   zoneDriftInvertChance?: number;
-  multipleZones?: boolean;
-  numberOfZones?: number;
-  trapZone?: boolean;
 }
 
 export const cfgModes: Record<ModeType, ModeConfig> = {
@@ -76,18 +72,6 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survival: false,
     survivalTime: 0,
     variableArc: false
-  },
-  [ModeID.ZONE_TRAITRESSE]: {
-    name: "Zone traîtresse",
-    desc: "Plusieurs zones vertes, mais une seule est piégée. Trouve la bonne zone pour gagner !",
-    zoneArc: Math.PI / 5,     // ~36° par zone (même taille que le mode classique)
-    keepMovingZone: false,
-    survival: false,
-    survivalTime: 0,
-    variableArc: false,
-    multipleZones: true,
-    numberOfZones: 4,         // 4 zones vertes au total
-    trapZone: true            // Une des zones est piégée
   }
 };
 

@@ -138,21 +138,19 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
             }}
           />
 
-          {/* Zone verte (arc de succès) - Seulement pour les modes non-traîtresse */}
-          {gameState.currentMode !== 'zone_traitresse' && (
-            <path
-              d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
-                  A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
-                  ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
-              fill="none"
-              stroke={getCircleColor()}
-              strokeWidth="20"
-              className="drop-shadow-lg"
-              style={{
-                filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
-              }}
-            />
-          )}
+          {/* Zone verte (arc de succès) avec glow visible et pulsation subtile */}
+          <path
+            d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
+                A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
+                ${cfg.radius + 40 + Math.cos((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg + zoneArcDeg - 90) * Math.PI / 180) * cfg.radius}`}
+            fill="none"
+            stroke={getCircleColor()}
+            strokeWidth="20"
+            className="drop-shadow-lg"
+            style={{
+              filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+            }}
+          />
 
           {/* Deuxième zone verte pour le mode survie */}
           {gameState.currentMode === 'survie_60s' && (
@@ -168,45 +166,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
                 filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
               }}
             />
-          )}
-
-          {/* Zones multiples pour le mode zone traîtresse */}
-          {gameState.currentMode === 'zone_traitresse' && gameState.multipleZones && (
-            <>
-              {gameState.multipleZones.map((zone, index) => {
-                // Convertir en degrés pour le SVG
-                const startDeg = (zone.start * 180) / Math.PI;
-                const arcDeg = (zone.arc * 180) / Math.PI;
-                
-                // La zone piégée est légèrement plus sombre
-                const isTrap = index === gameState.trapZoneIndex;
-                const opacity = isTrap ? 0.7 : 0.9;
-                
-                // Calculer les coordonnées de début et fin de l'arc
-                const startX = cfg.radius + 40 + Math.cos((startDeg - 90) * Math.PI / 180) * cfg.radius;
-                const startY = cfg.radius + 40 + Math.sin((startDeg - 90) * Math.PI / 180) * cfg.radius;
-                const endX = cfg.radius + 40 + Math.cos((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius;
-                const endY = cfg.radius + 40 + Math.sin((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius;
-                
-                // Large arc flag (1 si l'arc est > 180°, sinon 0)
-                const largeArcFlag = arcDeg > 180 ? 1 : 0;
-                
-                return (
-                  <path
-                    key={index}
-                    d={`M ${startX} ${startY} A ${cfg.radius} ${cfg.radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`}
-                    fill="none"
-                    stroke={getCircleColor()}
-                    strokeWidth="20"
-                    className="drop-shadow-lg"
-                    style={{
-                      filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
-                      opacity,
-                    }}
-                  />
-                );
-              })}
-            </>
           )}
 
           {/* Bille - Barre rouge qui dépasse */}
@@ -344,16 +303,9 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
 
       {/* Instructions */}
       <div className="text-center mt-8 text-text-muted animate-fade-in">
-        {gameState.currentMode === 'zone_traitresse' && gameState.gameStatus === 'idle' && (
-          <p className="text-sm font-bold text-red-400 mb-2 animate-pulse">
-            ⚠️ Attention : une des zones est un piège. Choisis bien…
-          </p>
-        )}
         <p className="text-sm">
           {gameState.gameStatus === 'running' 
-            ? gameState.currentMode === 'zone_traitresse'
-              ? 'Évite la zone piégée !'
-              : 'Tapez quand la barre rouge est dans la zone verte!'
+            ? 'Tapez quand la barre rouge est dans la zone verte!'
             : gameState.gameStatus === 'idle'
             ? 'Tapez sur l\'écran pour commencer ou appuyez sur ESPACE/ENTRÉE'
             : ''

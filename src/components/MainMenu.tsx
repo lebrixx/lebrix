@@ -2,9 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useLanguage, translations, Language } from '@/hooks/useLanguage';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift } from 'lucide-react';
 
 interface MainMenuProps {
   bestScore: number;
@@ -33,8 +31,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenDailyRewards,
   hasAvailableReward
 }) => {
-  const { language, setLanguage } = useLanguage();
-  const t = translations[language];
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
@@ -49,8 +45,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <div className="flex-1"></div>
         </div>
         
-        {/* Boutons cadeau et langue */}
-        <div className="flex justify-center gap-2 mb-2">
+        {/* Bouton cadeau déplacé sous le titre */}
+        <div className="flex justify-center mb-2">
           <Button
             onClick={onOpenDailyRewards}
             variant="ghost"
@@ -65,33 +61,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
             )}
           </Button>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative hover:bg-primary/20 transition-all duration-300"
-              >
-                <Languages className="w-4 h-4 text-text-muted" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-32 p-2 bg-button-bg border-wheel-border">
-              <div className="flex flex-col gap-1">
-                {(['fr', 'en', 'es'] as Language[]).map((lang) => (
-                  <Button
-                    key={lang}
-                    onClick={() => setLanguage(lang)}
-                    variant={language === lang ? 'default' : 'ghost'}
-                    size="sm"
-                    className="justify-start text-xs"
-                  >
-                    {lang === 'fr' ? '🇫🇷 Français' : lang === 'en' ? '🇬🇧 English' : '🇪🇸 Español'}
-                  </Button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
         </div>
       </div>
 
@@ -100,7 +69,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         {/* Subtitle closer to cards */}
         <div className="text-center mb-3">
           <p className="text-text-secondary text-base">
-            {t.subtitle}
+            Tapez dans la zone verte au bon moment!
           </p>
         </div>
 
@@ -109,13 +78,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
             <Trophy className="w-6 h-6 text-primary mx-auto mb-1" />
             <div className="text-xl font-bold text-primary">{bestScore}</div>
-            <div className="text-xs text-text-muted">{t.bestScore}</div>
+            <div className="text-xs text-text-muted">Meilleur Score</div>
           </Card>
           
           <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
             <Coins className="w-6 h-6 text-secondary mx-auto mb-1" />
             <div className="text-xl font-bold text-secondary">{coins}</div>
-            <div className="text-xs text-text-muted">{t.coins}</div>
+            <div className="text-xs text-text-muted">Coins</div>
           </Card>
         </div>
 
@@ -127,7 +96,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-4 text-base font-bold group"
           >
             <Play className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-            {t.playNow}
+            JOUER MAINTENANT
           </Button>
 
           <Button
@@ -137,7 +106,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
             <Gamepad2 className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-            {t.gameModes}
+            MODES DE JEU
           </Button>
 
           <Button
@@ -147,7 +116,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
             <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-            {t.shop}
+            BOUTIQUE
             <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark text-xs">
               {coins}
             </Badge>
@@ -160,7 +129,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
             <Star className="w-4 h-4 mr-2 group-hover:animate-spin" />
-            {t.dailyChallenges}
+            DÉFIS QUOTIDIENS
           </Button>
 
           <Button
@@ -170,7 +139,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
             <Crown className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-            {t.onlineLeaderboard}
+            CLASSEMENT EN LIGNE
           </Button>
         </div>
       </div>
@@ -180,7 +149,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         {/* Current Theme & Mode */}
         <div className="flex justify-center gap-4 animate-fade-in">
           <div className="text-center">
-            <div className="text-xs text-text-muted mb-0.5">{t.theme}</div>
+            <div className="text-xs text-text-muted mb-0.5">Thème</div>
             <Badge 
               variant="outline" 
               className="border-primary text-primary text-xs px-2 py-0.5 animate-pulse-glow"
@@ -189,7 +158,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             </Badge>
           </div>
           <div className="text-center">
-            <div className="text-xs text-text-muted mb-0.5">{t.mode}</div>
+            <div className="text-xs text-text-muted mb-0.5">Mode</div>
             <Badge 
               variant="outline" 
               className="border-secondary text-secondary text-xs px-2 py-0.5"

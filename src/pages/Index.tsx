@@ -37,12 +37,6 @@ const Index = () => {
     return (saved as ModeType) || 'classic'; // Mode par défaut classic
   });
 
-  // Modes débloqués avec persistance
-  const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const saved = localStorage.getItem('unlockedModes');
-    return saved ? JSON.parse(saved) : ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile']; // Modes de base débloqués
-  });
-
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { toast } = useToast();
 
@@ -113,16 +107,6 @@ const Index = () => {
       });
       return;
     }
-
-    // Vérifier si le mode est débloqué
-    if (!unlockedModes.includes(mode)) {
-      toast({
-        title: "Mode verrouillé",
-        description: "Débloquez ce mode dans la boutique !",
-        variant: "destructive"
-      });
-      return;
-    }
     
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
@@ -130,27 +114,6 @@ const Index = () => {
     // Si on sélectionne le mode actuel, lancer le jeu directement
     if (mode === currentMode || currentScreen === 'modes') {
       setCurrentScreen('game');
-    }
-  };
-
-  const handlePurchaseMode = (modeId: string, price: number): boolean => {
-    if (spendCoins(price)) {
-      const newUnlockedModes = [...unlockedModes, modeId];
-      setUnlockedModes(newUnlockedModes);
-      localStorage.setItem('unlockedModes', JSON.stringify(newUnlockedModes));
-      
-      toast({
-        title: "Mode débloqué !",
-        description: "Le nouveau mode de jeu est maintenant disponible.",
-      });
-      return true;
-    } else {
-      toast({
-        title: "Coins insuffisants",
-        description: `Il te faut ${price} coins pour débloquer ce mode.`,
-        variant: "destructive"
-      });
-      return false;
     }
   };
 
@@ -193,11 +156,9 @@ const Index = () => {
             coins={gameState.coins}
             ownedThemes={gameState.ownedThemes}
             currentTheme={currentTheme}
-            unlockedModes={unlockedModes}
             onBack={() => setCurrentScreen('menu')}
             onPurchaseTheme={(theme) => spendCoins(theme.price)}
             onEquipTheme={handleThemeChange}
-            onPurchaseMode={handlePurchaseMode}
           />
         );
         
@@ -221,7 +182,6 @@ const Index = () => {
             arc_changeant: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_arc_changeant`] || 0,
             survie_60s: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_survie_60s`] || 0,
             zone_mobile: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_mobile`] || 0,
-            zone_traitresse: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_traitresse`] || 0,
           };
           
           return (
@@ -229,10 +189,8 @@ const Index = () => {
               currentMode={currentMode}
               gameStatus={gameState.gameStatus}
               bestScores={bestScores}
-              unlockedModes={unlockedModes}
               onSelectMode={handleModeChange}
               onBack={() => setCurrentScreen('menu')}
-              onOpenShop={() => setCurrentScreen('shop')}
             />
           );
           
