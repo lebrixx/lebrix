@@ -12,7 +12,8 @@ const SCORE_LIMITS = {
   classic: 10000,
   arc_changeant: 8000,
   survie_60s: 6000,
-  zone_mobile: 7000
+  zone_mobile: 7000,
+  zone_traitresse: 7000
 };
 
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
@@ -55,7 +56,7 @@ serve(async (req) => {
     }
 
     // Validate mode
-    const validModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile'];
+    const validModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse'];
     if (!validModes.includes(mode)) {
       return new Response(
         JSON.stringify({ error: 'Invalid game mode' }),
@@ -120,10 +121,10 @@ serve(async (req) => {
     // Check if there's an existing score for this device_id and mode
     const { data: existingScore } = await supabase
       .from('scores')
-      .select('score')
+      .select('id, score')
       .eq('device_id', device_id)
       .eq('mode', mode)
-      .single();
+      .maybeSingle();
 
     // Only submit if no existing score or new score is better
     if (existingScore && score <= existingScore.score) {
@@ -134,19 +135,37 @@ serve(async (req) => {
       );
     }
 
-    // Upsert the score (insert or update if better)
-    const { data, error } = await supabase
-      .from('scores')
-      .upsert({
-        device_id,
-        username,
-        score,
-        mode,
-        created_at: new Date().toISOString()
-      }, {
-        onConflict: 'device_id,mode'
-      })
-      .select();
+    // Insert or update explicitly to avoid relying on a unique constraint
+    let data;
+    let error;
+
+    if (existingScore) {
+      const updateRes = await supabase
+        .from('scores')
+        .update({
+          username,
+          score,
+          created_at: new Date().toISOString()
+        })
+        .eq('device_id', device_id)
+        .eq('mode', mode)
+        .select();
+      data = updateRes.data;
+      error = updateRes.error;
+    } else {
+      const insertRes = await supabase
+        .from('scores')
+        .insert({
+          device_id,
+          username,
+          score,
+          mode,
+          created_at: new Date().toISOString()
+        })
+        .select();
+      data = insertRes.data;
+      error = insertRes.error;
+    }
 
     if (error) {
       console.error('Database error:', error);
