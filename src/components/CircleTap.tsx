@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useSound } from '@/hooks/useSound';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video, Zap } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { ModeType } from '@/constants/modes';
 import { BOOSTS, BoostType } from '@/types/boosts';
+import { PostGameBoostMenu } from './PostGameBoostMenu';
 
 interface CircleTapProps {
   theme: string;
@@ -33,6 +34,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
 }) => {
   const { gameState, startGame, onTap, resetGame, reviveGame, cfg } = useGameLogic(currentMode);
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
+  const [showBoostMenu, setShowBoostMenu] = useState(false);
 
   // Resolve current theme definition for visuals (background, bar, success zone)
   const themeDef = THEMES.find((t) => t.id === theme) || THEMES[0];
@@ -91,6 +93,21 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     // TODO: Intégrer AdMob ici
     // Pour l'instant, on fait juste revive sans pub
     reviveGame();
+  };
+
+  const handleBoostMenuOpen = () => {
+    setShowBoostMenu(true);
+  };
+
+  const handleBoostMenuClose = () => {
+    setShowBoostMenu(false);
+  };
+
+  const handleRestartWithBoosts = (boosts: BoostType[]) => {
+    setShowBoostMenu(false);
+    resetGame();
+    // Petit délai pour laisser l'animation de reset se faire
+    setTimeout(() => startGame(boosts), 100);
   };
 
   // Position de la bille
@@ -358,15 +375,28 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       <div className="flex gap-4 items-center animate-fade-in">
         {gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover' ? (
           <div className="text-center">
-            {gameState.gameStatus === 'gameover' && totalGamesPlayed >= 2 && (
-              <Button
-                onClick={handleRevive}
-                className="bg-gradient-primary hover:scale-105 transition-all duration-300 mb-3"
-                disabled={true} // Désactivé pour l'instant (pas de pub)
-              >
-                <Video className="w-4 h-4 mr-2" />
-                Revivre via pub
-              </Button>
+            {gameState.gameStatus === 'gameover' && (
+              <div className="flex flex-col gap-3 mb-3">
+                {totalGamesPlayed >= 2 && (
+                  <Button
+                    onClick={handleRevive}
+                    variant="outline"
+                    className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+                    disabled={true} // Désactivé pour l'instant (pas de pub)
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Revivre via pub
+                  </Button>
+                )}
+                <Button
+                  onClick={handleBoostMenuOpen}
+                  variant="outline"
+                  className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Boosts
+                </Button>
+              </div>
             )}
             <div 
               className="text-2xl font-bold text-primary mb-2 cursor-pointer select-none animate-pulse"
@@ -395,6 +425,14 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </Button>
       </div>
+
+      {/* Post-Game Boost Menu */}
+      {showBoostMenu && (
+        <PostGameBoostMenu
+          onStartGame={handleRestartWithBoosts}
+          onCancel={handleBoostMenuClose}
+        />
+      )}
 
       {/* Instructions */}
       <div className="text-center mt-8 text-text-muted animate-fade-in">

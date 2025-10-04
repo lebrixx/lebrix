@@ -378,9 +378,6 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins }) => {
       title: "Boost acheté !",
       description: `Tu as acheté un boost ${BOOSTS[boostId].name}.`,
     });
-
-    // Forcer un rafraîchissement
-    window.location.reload();
   };
 
   const handlePurchaseWithAd = (boostId: any) => {
