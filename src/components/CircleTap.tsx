@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useSound } from '@/hooks/useSound';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { ModeType } from '@/constants/modes';
+import { BOOSTS, BoostType } from '@/types/boosts';
 
 interface CircleTapProps {
   theme: string;
@@ -16,10 +18,20 @@ interface CircleTapProps {
     effect: string;
   };
   onGameOver?: (score: number) => void;
+  selectedBoosts?: BoostType[];
+  totalGamesPlayed?: number;
 }
 
-export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack, currentMode, onGameOver }) => {
-  const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic(currentMode);
+export const CircleTap: React.FC<CircleTapProps> = ({ 
+  theme, 
+  customization, 
+  onBack, 
+  currentMode, 
+  onGameOver,
+  selectedBoosts = [],
+  totalGamesPlayed = 0 
+}) => {
+  const { gameState, startGame, onTap, resetGame, reviveGame, cfg } = useGameLogic(currentMode);
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
 
   // Resolve current theme definition for visuals (background, bar, success zone)
@@ -33,13 +45,17 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.code === 'Space' || event.code === 'Enter') {
         event.preventDefault();
-        onTap();
+        if (gameState.gameStatus === 'idle') {
+          startGame(selectedBoosts);
+        } else {
+          onTap();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [onTap]);
+  }, [onTap, gameState.gameStatus, startGame, selectedBoosts]);
 
   // Sons basés sur le résultat avec combo
   useEffect(() => {
@@ -59,12 +75,22 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
 
   const handleTap = () => {
     playClick();
-    onTap();
+    if (gameState.gameStatus === 'idle') {
+      startGame(selectedBoosts);
+    } else {
+      onTap();
+    }
   };
 
   const handleReset = () => {
     playClick();
     resetGame();
+  };
+  
+  const handleRevive = () => {
+    // TODO: Intégrer AdMob ici
+    // Pour l'instant, on fait juste revive sans pub
+    reviveGame();
   };
 
   // Position de la bille
@@ -112,6 +138,24 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
             <span className="ml-2 text-red-400 font-bold">⏱ {Math.ceil(gameState.timeLeft)}s</span>
           )}
         </div>
+        
+        {/* Boosts actifs */}
+        {gameState.activeBoosts.length > 0 && (
+          <div className="flex gap-2 justify-center mt-3">
+            {gameState.activeBoosts.map(boostId => {
+              const boost = BOOSTS[boostId];
+              return (
+                <Badge 
+                  key={boostId}
+                  variant="secondary"
+                  className="bg-primary/20 text-primary border border-primary/50 px-3 py-1"
+                >
+                  {boost.icon} {boost.name}
+                </Badge>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Conteneur du jeu */}
@@ -314,6 +358,16 @@ export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBa
       <div className="flex gap-4 items-center animate-fade-in">
         {gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover' ? (
           <div className="text-center">
+            {gameState.gameStatus === 'gameover' && totalGamesPlayed >= 2 && (
+              <Button
+                onClick={handleRevive}
+                className="bg-gradient-primary hover:scale-105 transition-all duration-300 mb-3"
+                disabled={true} // Désactivé pour l'instant (pas de pub)
+              >
+                <Video className="w-4 h-4 mr-2" />
+                Revivre via pub
+              </Button>
+            )}
             <div 
               className="text-2xl font-bold text-primary mb-2 cursor-pointer select-none animate-pulse"
               onClick={handleTap}

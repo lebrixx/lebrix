@@ -8,14 +8,17 @@ import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
+import { PreGameMenu } from '@/components/PreGameMenu';
 import { useGameLogic } from '@/hooks/useGameLogic';
+import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
+import { BoostType } from '@/types/boosts';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
+type GameScreen = 'menu' | 'pregame' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -24,6 +27,7 @@ const Index = () => {
   const [showDailyRewards, setShowDailyRewards] = useState(false);
   const [lastGameScore, setLastGameScore] = useState(0);
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
+  const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -44,6 +48,7 @@ const Index = () => {
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
+  const { removeBoost } = useBoosts();
   const { toast } = useToast();
 
   // Vérifier les récompenses disponibles au montage
@@ -77,6 +82,12 @@ const Index = () => {
   // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
   const handleGameOver = (finalScore: number) => {
     setLastGameScore(finalScore);
+
+    // Consommer les boosts utilisés
+    selectedBoostsForGame.forEach(boostId => {
+      removeBoost(boostId);
+    });
+    setSelectedBoostsForGame([]);
 
     const identity = getLocalIdentity();
 
@@ -167,13 +178,24 @@ const Index = () => {
             coins={gameState.coins}
             theme={currentTheme}
             currentMode={currentMode}
-            onStartGame={() => setCurrentScreen('game')}
+            onStartGame={() => setCurrentScreen('pregame')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
             onOpenDailyRewards={() => setShowDailyRewards(true)}
             hasAvailableReward={hasAvailableReward}
+          />
+        );
+        
+      case 'pregame':
+        return (
+          <PreGameMenu
+            onStartGame={(selectedBoosts) => {
+              setSelectedBoostsForGame(selectedBoosts);
+              setCurrentScreen('game');
+            }}
+            onCancel={() => setCurrentScreen('menu')}
           />
         );
         
@@ -184,6 +206,8 @@ const Index = () => {
               currentMode={currentMode}
               onBack={() => setCurrentScreen('menu')}
               onGameOver={handleGameOver}
+              selectedBoosts={selectedBoostsForGame}
+              totalGamesPlayed={gameState.totalGamesPlayed}
             />
           );
         

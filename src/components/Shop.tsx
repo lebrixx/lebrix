@@ -3,9 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeID } from '@/constants/modes';
+import { BOOSTS } from '@/types/boosts';
+import { useBoosts } from '@/hooks/useBoosts';
+import { useToast } from '@/hooks/use-toast';
 
 const availableThemes = THEMES;
 
@@ -329,19 +332,7 @@ export const Shop: React.FC<ShopProps> = ({
 
         {/* Boosts Tab */}
         <TabsContent value="boosts">
-          <div className="flex flex-col items-center justify-center py-16">
-            <div className="text-center max-w-md">
-              <div className="w-20 h-20 bg-wheel-segment/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-10 h-10 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold text-text-primary mb-4">
-                Bientôt Disponible
-              </h3>
-              <p className="text-text-secondary">
-                Les boosts arriveront prochainement pour vous aider à améliorer vos performances !
-              </p>
-            </div>
-          </div>
+          <BoostsSection coins={coins} />
         </TabsContent>
       </Tabs>
 
@@ -349,6 +340,116 @@ export const Shop: React.FC<ShopProps> = ({
       <div className="text-center mt-8 text-text-muted">
         <p>Gagnez des coins en jouant pour débloquer de nouveaux thèmes !</p>
       </div>
+    </div>
+  );
+};
+
+// Section Boosts
+interface BoostsSectionProps {
+  coins: number;
+}
+
+const BoostsSection: React.FC<BoostsSectionProps> = ({ coins }) => {
+  const { addBoost, getBoostCount } = useBoosts();
+  const { toast } = useToast();
+  const [spendCoinsHandler, setSpendCoinsHandler] = useState<((amount: number) => boolean) | null>(null);
+
+  // Récupérer le handler spendCoins depuis le localStorage/gameState
+  const canAfford = (price: number) => coins >= price;
+
+  const handlePurchaseWithCoins = (boostId: any, price: number) => {
+    if (!canAfford(price)) {
+      toast({
+        title: "Coins insuffisants",
+        description: `Il te faut ${price} coins pour acheter ce boost.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Déduire les coins du localStorage
+    const gameData = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
+    gameData.coins = (gameData.coins || 0) - price;
+    localStorage.setItem('luckyStopGame', JSON.stringify(gameData));
+
+    addBoost(boostId);
+    
+    toast({
+      title: "Boost acheté !",
+      description: `Tu as acheté un boost ${BOOSTS[boostId].name}.`,
+    });
+
+    // Forcer un rafraîchissement
+    window.location.reload();
+  };
+
+  const handlePurchaseWithAd = (boostId: any) => {
+    // TODO: Intégrer AdMob ici
+    toast({
+      title: "Pub non disponible",
+      description: "La fonctionnalité sera disponible prochainement.",
+      variant: "destructive"
+    });
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Object.values(BOOSTS).map((boost) => {
+        const owned = getBoostCount(boost.id);
+        
+        return (
+          <Card 
+            key={boost.id}
+            className="relative overflow-hidden border-2 transition-all duration-300 hover:scale-105 border-wheel-border bg-button-bg hover:border-primary/50"
+          >
+            <div className="p-6">
+              {/* Boost Icon & Name */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="text-5xl">
+                  {boost.icon}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-text-primary mb-1">
+                    {boost.name}
+                  </h3>
+                  <Badge variant="secondary" className="text-xs">
+                    Possédés: {owned}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-text-secondary mb-6 leading-relaxed text-sm">
+                {boost.description}
+              </p>
+
+              {/* Purchase Options */}
+              <div className="space-y-3">
+                {/* Purchase with Coins */}
+                <Button 
+                  onClick={() => handlePurchaseWithCoins(boost.id, boost.coinPrice)}
+                  className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
+                  disabled={!canAfford(boost.coinPrice)}
+                >
+                  <Coins className="w-4 h-4 mr-2" />
+                  Acheter pour {boost.coinPrice} coins
+                </Button>
+
+                {/* Purchase with Ad */}
+                <Button 
+                  onClick={() => handlePurchaseWithAd(boost.id)}
+                  variant="outline"
+                  className="w-full border-wheel-border hover:bg-button-hover"
+                  disabled={true} // Désactivé pour l'instant
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Obtenir via pub
+                </Button>
+              </div>
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 };
