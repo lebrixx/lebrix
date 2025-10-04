@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useSound } from '@/hooks/useSound';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Heart } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { ModeType } from '@/constants/modes';
-import { BoostType } from '@/types/boosts';
 
 interface CircleTapProps {
   theme: string;
@@ -17,47 +16,17 @@ interface CircleTapProps {
     effect: string;
   };
   onGameOver?: (score: number) => void;
-  selectedBoosts?: BoostType[];
-  canShowRevive?: boolean;
-  onReviveWithAd?: () => void;
 }
 
-export const CircleTap: React.FC<CircleTapProps> = ({ 
-  theme, 
-  customization, 
-  onBack, 
-  currentMode, 
-  onGameOver,
-  selectedBoosts = [],
-  canShowRevive = false,
-  onReviveWithAd,
-}) => {
-  const { gameState, startGame, onTap, resetGame, cfg, reviveGame } = useGameLogic(currentMode);
+export const CircleTap: React.FC<CircleTapProps> = ({ theme, customization, onBack, currentMode, onGameOver }) => {
+  const { gameState, startGame, onTap, resetGame, cfg } = useGameLogic(currentMode);
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
-  const [showReviveButton, setShowReviveButton] = useState(false);
 
   // Resolve current theme definition for visuals (background, bar, success zone)
   const themeDef = THEMES.find((t) => t.id === theme) || THEMES[0];
   const zoneColor = themeDef.preview.successZone;
   const barColor = themeDef.preview.circle;
   const backgroundCss = themeDef.preview.background;
-
-  // Démarrer le jeu avec les boosts sélectionnés
-  useEffect(() => {
-    if (gameState.gameStatus === 'idle' && selectedBoosts.length > 0) {
-      // Auto-démarrer avec les boosts si des boosts ont été sélectionnés
-      startGame(selectedBoosts);
-    }
-  }, []);
-
-  // Afficher le bouton revivre après game over (si autorisé)
-  useEffect(() => {
-    if (gameState.gameStatus === 'gameover' && canShowRevive) {
-      setShowReviveButton(true);
-    } else {
-      setShowReviveButton(false);
-    }
-  }, [gameState.gameStatus, canShowRevive]);
 
   // Gestion des touches clavier
   useEffect(() => {
@@ -96,13 +65,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const handleReset = () => {
     playClick();
     resetGame();
-    setShowReviveButton(false);
-  };
-
-  const handleRevive = () => {
-    if (onReviveWithAd) {
-      onReviveWithAd();
-    }
   };
 
   // Position de la bille
@@ -150,22 +112,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
             <span className="ml-2 text-red-400 font-bold">⏱ {Math.ceil(gameState.timeLeft)}s</span>
           )}
         </div>
-        
-        {/* Boosts actifs */}
-        {(gameState.activeBoosts.shield || gameState.activeBoosts.slowdown || gameState.activeBoosts.start20) && (
-          <div className="flex justify-center gap-3 mt-3">
-            {gameState.activeBoosts.shield && !gameState.shieldUsed && (
-              <div className="px-3 py-1 bg-primary/20 rounded-full border border-primary/50 text-sm font-bold text-primary animate-pulse">
-                🛡️ Bouclier actif
-              </div>
-            )}
-            {gameState.activeBoosts.slowdown && gameState.activeBoosts.slowdownTimeLeft !== undefined && (
-              <div className="px-3 py-1 bg-primary/20 rounded-full border border-primary/50 text-sm font-bold text-primary animate-pulse">
-                🐢 Ralenti ({Math.ceil(gameState.activeBoosts.slowdownTimeLeft)}s)
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Conteneur du jeu */}
@@ -395,23 +341,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </Button>
       </div>
-
-      {/* Bouton Revivre */}
-      {showReviveButton && gameState.gameStatus === 'gameover' && (
-        <div className="mt-6 animate-fade-in">
-          <Button
-            onClick={handleRevive}
-            size="lg"
-            className="bg-gradient-to-r from-red-500 to-pink-500 hover:scale-105 transition-all duration-300 shadow-glow text-lg font-bold px-8"
-          >
-            <Heart className="w-5 h-5 mr-2" />
-            Revivre (pub)
-          </Button>
-          <p className="text-xs text-text-muted mt-2 opacity-70">
-            Regarde une pub pour continuer ta partie
-          </p>
-        </div>
-      )}
 
       {/* Instructions */}
       <div className="text-center mt-8 text-text-muted animate-fade-in">
