@@ -98,9 +98,9 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    // Use Supabase client instead of raw fetch for better security
+    // Use Supabase client with scores_public view for privacy
     const { data, error } = await supabase
-      .from('scores')
+      .from('scores_public')
       .select('username,score,created_at')
       .eq('mode', mode)
       .order('score', { ascending: false })
@@ -134,7 +134,7 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
     monday.setHours(0, 0, 0, 0);
 
     const { data, error } = await supabase
-      .from('scores')
+      .from('scores_public')
       .select('username,score,created_at')
       .eq('mode', mode)
       .gte('created_at', monday.toISOString())
