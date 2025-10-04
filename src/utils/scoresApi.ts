@@ -100,7 +100,8 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    // Use Supabase client instead of raw fetch for better security
+    // Use Supabase client to fetch from scores table
+    // RLS policies ensure device_id is not exposed to public
     const { data, error } = await supabase
       .from('scores')
       .select('username,score,created_at')
