@@ -1,17 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Target, Trophy, Star, CheckCircle, Lock, Flame, Crown } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull } from 'lucide-react';
+import { ModeID } from '@/constants/modes';
+import { toast } from 'sonner';
 
-interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  target: number;
-  reward: number;
-  difficulty: 'facile' | 'moyen' | 'difficile' | 'expert' | 'impossible';
+interface ChallengeProgress {
+  mode: string;
+  currentLevel: number; // 0-9 (paliers 1-10)
 }
 
 interface ChallengesProps {
@@ -25,160 +22,45 @@ interface ChallengesProps {
   onReward: (coins: number) => void;
 }
 
-const CHALLENGES: Challenge[] = [
-  // Défis généraux
-  {
-    id: 'test-easy',
-    title: 'Premier pas',
-    description: 'Atteindre un score de 5 pour tester le système',
-    target: 5,
-    reward: 50,
-    difficulty: 'facile'
+const MODE_INFO = {
+  [ModeID.CLASSIC]: {
+    name: 'Classique',
+    icon: Target,
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-400/10',
+    borderColor: 'border-blue-400/30'
   },
-  {
-    id: 'score-30',
-    title: 'Précision maîtrisée',
-    description: 'Atteindre un score de 30 points',
-    target: 30,
-    reward: 8,
-    difficulty: 'moyen'
+  [ModeID.ARC_CHANGEANT]: {
+    name: 'Équipé',
+    icon: Zap,
+    color: 'text-purple-400',
+    bgColor: 'bg-purple-400/10',
+    borderColor: 'border-purple-400/30'
   },
-  {
-    id: 'score-40',
-    title: 'Expert du timing',
-    description: 'Atteindre un score de 40 points',
-    target: 40,
-    reward: 12,
-    difficulty: 'difficile'
+  [ModeID.SURVIE_60S]: {
+    name: 'Survie 30s',
+    icon: Timer,
+    color: 'text-orange-400',
+    bgColor: 'bg-orange-400/10',
+    borderColor: 'border-orange-400/30'
   },
-  {
-    id: 'score-50',
-    title: 'Maître du cercle',
-    description: 'Atteindre un score de 50 points',
-    target: 50,
-    reward: 17,
-    difficulty: 'expert'
+  [ModeID.ZONE_MOBILE]: {
+    name: 'Zone mobile',
+    icon: MapPin,
+    color: 'text-green-400',
+    bgColor: 'bg-green-400/10',
+    borderColor: 'border-green-400/30'
   },
-  {
-    id: 'games-50',
-    title: 'Persévérant',
-    description: 'Jouer 50 parties',
-    target: 50,
-    reward: 5,
-    difficulty: 'facile'
-  },
-  {
-    id: 'games-300',
-    title: 'Accro du jeu',
-    description: 'Jouer 300 parties',
-    target: 300,
-    reward: 25,
-    difficulty: 'expert'
-  },
-  // Défis spécifiques aux modes - CLASSIQUE
-  {
-    id: 'mode-classic-20',
-    title: 'Initié Classique',
-    description: 'Atteindre 20 points en mode Classique',
-    target: 20,
-    reward: 15,
-    difficulty: 'facile'
-  },
-  {
-    id: 'mode-classic-50',
-    title: 'Vétéran Classique',
-    description: 'Atteindre 50 points en mode Classique',
-    target: 50,
-    reward: 30,
-    difficulty: 'moyen'
-  },
-  {
-    id: 'mode-classic-100',
-    title: 'Légende Classique',
-    description: 'Atteindre 100 points en mode Classique uniquement',
-    target: 100,
-    reward: 50,
-    difficulty: 'impossible'
-  },
-  
-  // Défis spécifiques aux modes - ARC CHANGEANT
-  {
-    id: 'mode-arc-15',
-    title: 'Adaptateur Débutant',
-    description: 'Atteindre 15 points en mode Arc Changeant',
-    target: 15,
-    reward: 12,
-    difficulty: 'facile'
-  },
-  {
-    id: 'mode-arc-35',
-    title: 'Caméléon du Timing',
-    description: 'Atteindre 35 points en mode Arc Changeant',
-    target: 35,
-    reward: 25,
-    difficulty: 'moyen'
-  },
-  {
-    id: 'mode-arc-75',
-    title: 'Maître de l\'Adaptation',
-    description: 'Atteindre 75 points en mode Arc Changeant uniquement',
-    target: 75,
-    reward: 45,
-    difficulty: 'expert'
-  },
-  
-  // Défis spécifiques aux modes - SURVIE 60S
-  {
-    id: 'mode-survie-10',
-    title: 'Première Survie',
-    description: 'Atteindre 10 points en mode Survie 60s',
-    target: 10,
-    reward: 10,
-    difficulty: 'facile'
-  },
-  {
-    id: 'mode-survie-25',
-    title: 'Survivant Aguerri',
-    description: 'Atteindre 25 points en mode Survie 60s',
-    target: 25,
-    reward: 20,
-    difficulty: 'moyen'
-  },
-  {
-    id: 'mode-survie-40',
-    title: 'Survivant Ultime',
-    description: 'Atteindre 40 points en mode Survie 60s uniquement',
-    target: 40,
-    reward: 40,
-    difficulty: 'expert'
-  },
-  
-  // Défis spécifiques aux modes - ZONE MOBILE
-  {
-    id: 'mode-mobile-12',
-    title: 'Traqueur Novice',
-    description: 'Atteindre 12 points en mode Zone Mobile',
-    target: 12,
-    reward: 12,
-    difficulty: 'facile'
-  },
-  {
-    id: 'mode-mobile-30',
-    title: 'Poursuite Experte',
-    description: 'Atteindre 30 points en mode Zone Mobile',
-    target: 30,
-    reward: 22,
-    difficulty: 'moyen'
-  },
-  {
-    id: 'mode-mobile-60',
-    title: 'Chasseur de Zone',
-    description: 'Atteindre 60 points en mode Zone Mobile uniquement',
-    target: 60,
-    reward: 35,
-    difficulty: 'expert'
+  [ModeID.ZONE_TRAITRESSE]: {
+    name: 'Zone traîtresse',
+    icon: Skull,
+    color: 'text-red-400',
+    bgColor: 'bg-red-400/10',
+    borderColor: 'border-red-400/30'
   }
-];
+};
+
+const MAX_LEVEL = 10;
 
 export const Challenges: React.FC<ChallengesProps> = ({
   onBack,
@@ -190,98 +72,92 @@ export const Challenges: React.FC<ChallengesProps> = ({
   totalGamesPlayed,
   onReward,
 }) => {
-  // Récupérer les défis complétés depuis localStorage
-  const getCompletedChallenges = (): string[] => {
-    const saved = localStorage.getItem('completedChallenges');
-    return saved ? JSON.parse(saved) : [];
+  const [, forceUpdate] = useState(0);
+
+  // Récupérer la progression depuis localStorage
+  const getChallengeProgress = (): Record<string, ChallengeProgress> => {
+    const saved = localStorage.getItem('challengeProgress');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    // Initialisation par défaut
+    const initial: Record<string, ChallengeProgress> = {};
+    Object.keys(ModeID).forEach(key => {
+      const mode = ModeID[key as keyof typeof ModeID];
+      initial[mode] = { mode, currentLevel: 0 };
+    });
+    return initial;
   };
 
-  // Sauvegarder un défi complété
-  const markChallengeCompleted = (challengeId: string) => {
-    const completed = getCompletedChallenges();
-    if (!completed.includes(challengeId)) {
-      completed.push(challengeId);
-      localStorage.setItem('completedChallenges', JSON.stringify(completed));
+  // Sauvegarder la progression
+  const saveChallengeProgress = (progress: Record<string, ChallengeProgress>) => {
+    localStorage.setItem('challengeProgress', JSON.stringify(progress));
+  };
+
+  // Récupérer le meilleur score pour un mode
+  const getBestScoreForMode = (mode: string): number => {
+    const saved = localStorage.getItem('luckyStopGame');
+    if (!saved) return 0;
+    const data = JSON.parse(saved);
+    return data[`bestScore_${mode}`] || 0;
+  };
+
+  // Vérifier et mettre à jour les défis
+  const checkAndUpdateChallenges = () => {
+    const progress = getChallengeProgress();
+    let hasUpdates = false;
+
+    Object.keys(ModeID).forEach(key => {
+      const mode = ModeID[key as keyof typeof ModeID];
+      const modeProgress = progress[mode];
+      const modeBestScore = getBestScoreForMode(mode);
+
+      // Vérifier tous les paliers jusqu'au palier actuel
+      while (modeProgress.currentLevel < MAX_LEVEL) {
+        const nextTarget = (modeProgress.currentLevel + 1) * 10;
+        
+        if (modeBestScore >= nextTarget) {
+          // Palier atteint !
+          modeProgress.currentLevel++;
+          onReward(nextTarget);
+          hasUpdates = true;
+
+          toast.success('🎉 Défi complété !', {
+            description: `${MODE_INFO[mode].name} - Score de ${nextTarget} atteint ! +${nextTarget} coins`,
+          });
+        } else {
+          break; // Arrêter si le palier suivant n'est pas atteint
+        }
+      }
+    });
+
+    if (hasUpdates) {
+      saveChallengeProgress(progress);
+      forceUpdate(prev => prev + 1);
     }
   };
 
-  // Vérifier si un défi est complété et l'activer immédiatement
-  const isChallengeCompleted = (challenge: Challenge): boolean => {
-    const completed = getCompletedChallenges();
-    if (completed.includes(challenge.id)) return true;
+  // Vérifier au montage et quand les scores changent
+  useEffect(() => {
+    checkAndUpdateChallenges();
+  }, [bestScore]);
 
-    // Vérifier la condition en temps réel
-    let isCompleted = false;
-    if (challenge.id.startsWith('score-') || challenge.id === 'test-easy') {
-      isCompleted = bestScore >= challenge.target;
-    } else if (challenge.id.startsWith('games-')) {
-      isCompleted = totalGamesPlayed >= challenge.target;
+  const progress = getChallengeProgress();
+
+  // Calculer les statistiques globales
+  const totalLevelsCompleted = Object.values(progress).reduce(
+    (sum, p) => sum + p.currentLevel,
+    0
+  );
+  const totalCoinsEarned = Object.values(progress).reduce((sum, p) => {
+    let total = 0;
+    for (let i = 1; i <= p.currentLevel; i++) {
+      total += i * 10;
     }
+    return sum + total;
+  }, 0);
 
-    // Si complété, le marquer et donner la récompense IMMÉDIATEMENT
-    if (isCompleted && !completed.includes(challenge.id)) {
-      markChallengeCompleted(challenge.id);
-      onReward(challenge.reward);
-      // Forcer le re-render pour actualiser l'affichage
-      setTimeout(() => {
-        // Trigger une mise à jour du composant parent si nécessaire
-        window.dispatchEvent(new CustomEvent('challengeCompleted', { 
-          detail: { challengeId: challenge.id, reward: challenge.reward } 
-        }));
-      }, 0);
-    }
-
-    return isCompleted;
-  };
-
-  // Calculer le progrès d'un défi
-  const getChallengeProgress = (challenge: Challenge): number => {
-    if (isChallengeCompleted(challenge)) return 100;
-
-    if (challenge.id.startsWith('score-') || challenge.id === 'test-easy') {
-      return Math.min((bestScore / challenge.target) * 100, 100);
-    } else if (challenge.id.startsWith('games-')) {
-      return Math.min((totalGamesPlayed / challenge.target) * 100, 100);
-    }
-    return 0;
-  };
-
-  // Obtenir la valeur actuelle pour un défi
-  const getCurrentValue = (challenge: Challenge): number => {
-    if (challenge.id.startsWith('score-') || challenge.id === 'test-easy') {
-      return bestScore;
-    } else if (challenge.id.startsWith('games-')) {
-      return totalGamesPlayed;
-    }
-    return 0;
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'facile': return 'text-green-400 border-green-400';
-      case 'moyen': return 'text-blue-400 border-blue-400';
-      case 'difficile': return 'text-orange-400 border-orange-400';
-      case 'expert': return 'text-red-400 border-red-400';
-      case 'impossible': return 'text-purple-400 border-purple-400';
-      default: return 'text-gray-400 border-gray-400';
-    }
-  };
-
-  const getDifficultyIcon = (difficulty: string) => {
-    switch (difficulty) {
-      case 'facile': return <Target className="w-4 h-4" />;
-      case 'moyen': return <Star className="w-4 h-4" />;
-      case 'difficile': return <Flame className="w-4 h-4" />;
-      case 'expert': return <Trophy className="w-4 h-4" />;
-      case 'impossible': return <Crown className="w-4 h-4" />;
-      default: return <Target className="w-4 h-4" />;
-    }
-  };
-
-  const completedCount = CHALLENGES.filter(challenge => isChallengeCompleted(challenge)).length;
-  const totalRewards = CHALLENGES
-    .filter(challenge => isChallengeCompleted(challenge))
-    .reduce((sum, challenge) => sum + challenge.reward, 0);
+  const allModes = Object.keys(ModeID).map(key => ModeID[key as keyof typeof ModeID]);
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col p-4 pt-12">
@@ -300,121 +176,123 @@ export const Challenges: React.FC<ChallengesProps> = ({
       {/* Title & Stats */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-          DÉFIS QUOTIDIENS
+          DÉFIS DE PROGRESSION
         </h1>
         <div className="flex justify-center gap-8 text-lg">
           <div className="text-text-secondary">
-            <span className="text-primary font-bold">{completedCount}</span>/{CHALLENGES.length} complétés
+            <span className="text-primary font-bold">{totalLevelsCompleted}</span>/{MAX_LEVEL * 5} paliers complétés
           </div>
           <div className="text-text-secondary">
-            <span className="text-secondary font-bold">{totalRewards}</span> coins gagnés
+            <span className="text-secondary font-bold">{totalCoinsEarned}</span> coins gagnés
           </div>
         </div>
       </div>
 
       {/* Challenges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 max-w-7xl mx-auto">
-        {CHALLENGES.map((challenge) => {
-          const completed = isChallengeCompleted(challenge);
-          const progress = getChallengeProgress(challenge);
-          const currentValue = getCurrentValue(challenge);
-          
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full">
+        {allModes.map((mode) => {
+          const modeProgress = progress[mode];
+          const modeBestScore = getBestScoreForMode(mode);
+          const info = MODE_INFO[mode];
+          const Icon = info.icon;
+          const currentTarget = (modeProgress.currentLevel + 1) * 10;
+          const isCompleted = modeProgress.currentLevel >= MAX_LEVEL;
+          const progressPercent = isCompleted 
+            ? 100 
+            : Math.min((modeBestScore / currentTarget) * 100, 100);
+
           return (
             <Card 
-              key={challenge.id}
+              key={mode}
               className={`
-                relative overflow-hidden border-2 transition-all duration-300
-                ${completed 
-                  ? 'border-success bg-success/5 shadow-glow-success' 
-                  : 'border-wheel-border bg-button-bg hover:border-primary/50 hover:scale-105'
+                relative overflow-hidden border-2 transition-all duration-300 p-6
+                ${isCompleted 
+                  ? 'border-success bg-success/10 shadow-glow-success' 
+                  : `${info.borderColor} ${info.bgColor} hover:scale-105`
                 }
               `}
             >
-              {/* Difficulty Badge */}
-              <div className="absolute top-2 right-2">
-                <Badge 
-                  variant="outline" 
-                  className={`${getDifficultyColor(challenge.difficulty)} bg-transparent text-xs px-2 py-1`}
-                >
-                  {getDifficultyIcon(challenge.difficulty)}
-                  <span className="ml-1 capitalize text-xs">{challenge.difficulty}</span>
-                </Badge>
-              </div>
-
-              {/* Completed Badge */}
-              {completed && (
-                <div className="absolute top-2 left-2">
-                  <Badge className="bg-success text-game-dark text-xs px-2 py-1">
-                    <CheckCircle className="w-2 h-2 mr-1" />
-                    OK
-                  </Badge>
+              {/* Icon & Mode Name */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`p-3 rounded-lg ${info.bgColor} ${info.color}`}>
+                  <Icon className="w-6 h-6" />
                 </div>
-              )}
-
-              <div className="p-3 pt-10">
-                {/* Challenge Info */}
-                <div className="mb-3">
-                  <h3 className="text-sm font-bold text-text-primary mb-1 leading-tight">
-                    {challenge.title}
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-text-primary">
+                    {info.name}
                   </h3>
-                  <p className="text-text-secondary text-xs leading-snug">
-                    {challenge.description}
+                  <p className="text-text-muted text-sm">
+                    {isCompleted ? 'Tous les paliers complétés !' : `Faire un score de ${currentTarget}`}
                   </p>
                 </div>
+              </div>
 
-                {/* Progress */}
-                <div className="mb-3">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-text-muted text-xs">Progrès</span>
-                    <span className="text-text-primary font-bold text-sm">
-                      {currentValue} / {challenge.target}
+              {/* Progress */}
+              {!isCompleted && (
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-text-muted text-sm">Score actuel</span>
+                    <span className="text-text-primary font-bold">
+                      {modeBestScore} / {currentTarget}
                     </span>
                   </div>
                   <Progress 
-                    value={progress} 
-                    className="h-1.5"
+                    value={progressPercent} 
+                    className="h-2 mb-1"
                   />
-                  <div className="text-right mt-1">
-                    <span className="text-xs text-text-muted">{Math.round(progress)}%</span>
+                  <div className="text-right">
+                    <span className="text-xs text-text-muted">{Math.round(progressPercent)}%</span>
                   </div>
                 </div>
+              )}
 
-                {/* Reward */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Trophy className="w-3 h-3 text-secondary" />
-                    <span className="text-secondary font-bold text-xs">{challenge.reward}</span>
-                  </div>
-                  
-                  {completed ? (
-                    <CheckCircle className="w-4 h-4 text-success" />
-                  ) : (
-                    <Lock className="w-4 h-4 text-text-muted" />
-                  )}
+              {/* Completion Status */}
+              <div className="flex items-center justify-between pt-4 border-t border-wheel-border">
+                <div className="flex items-center gap-2">
+                  <Trophy className={`w-5 h-5 ${isCompleted ? 'text-secondary' : 'text-text-muted'}`} />
+                  <span className="text-sm font-medium">
+                    Progression: <span className={`font-bold ${isCompleted ? 'text-success' : info.color}`}>
+                      {modeProgress.currentLevel}/{MAX_LEVEL}
+                    </span>
+                  </span>
                 </div>
+                
+                {isCompleted && (
+                  <CheckCircle className="w-6 h-6 text-success" />
+                )}
               </div>
 
-              {/* Glow Effect for Completed */}
-              {completed && (
-                <div className="absolute inset-0 bg-gradient-to-r from-success/10 to-transparent pointer-events-none" />
+              {/* Next Reward */}
+              {!isCompleted && (
+                <div className="mt-3 text-center">
+                  <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30">
+                    <span className="text-xs text-text-muted">Récompense:</span>
+                    <span className="text-sm font-bold text-secondary">{currentTarget} coins</span>
+                  </div>
+                </div>
               )}
             </Card>
           );
         })}
       </div>
 
-      {/* Current Stats */}
-      <div className="mt-8 text-center">
-        <Card className="max-w-md mx-auto bg-button-bg border-wheel-border p-6">
-          <h3 className="text-lg font-bold text-text-primary mb-4">Tes Statistiques</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <div className="text-text-muted">Meilleur Score</div>
-              <div className="text-primary font-bold text-xl">{bestScore}</div>
+      {/* Info Box */}
+      <div className="mt-8 max-w-3xl mx-auto w-full">
+        <Card className="bg-button-bg border-wheel-border p-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-lg bg-primary/10">
+              <Target className="w-6 h-6 text-primary" />
             </div>
-            <div>
-              <div className="text-text-muted">Parties Jouées</div>
-              <div className="text-secondary font-bold text-xl">{totalGamesPlayed}</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-text-primary mb-2">
+                Comment ça marche ?
+              </h3>
+              <ul className="text-text-secondary text-sm space-y-2">
+                <li>• Chaque mode a 10 paliers de progression (10, 20, 30... jusqu'à 100 points)</li>
+                <li>• Atteignez le score demandé dans le mode pour valider un palier</li>
+                <li>• Gagnez des coins égaux au score atteint (10 points = 10 coins, 100 points = 100 coins)</li>
+                <li>• Les paliers se débloquent automatiquement dès que vous atteignez le score requis</li>
+              </ul>
             </div>
           </div>
         </Card>
