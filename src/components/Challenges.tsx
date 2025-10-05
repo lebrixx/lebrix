@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 interface ChallengeProgress {
   mode: string;
   currentLevel: number; // 0-9 (paliers 1-10)
+  pendingRewards: number[]; // Paliers validés mais non réclamés
+  lastCheckedScore: number; // Dernier score vérifié pour éviter plusieurs validations dans une partie
 }
 
 interface ChallengesProps {
@@ -78,13 +80,21 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const getChallengeProgress = (): Record<string, ChallengeProgress> => {
     const saved = localStorage.getItem('challengeProgress');
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Migration des anciennes données
+      Object.keys(parsed).forEach(key => {
+        if (!parsed[key].pendingRewards) {
+          parsed[key].pendingRewards = [];
+          parsed[key].lastCheckedScore = 0;
+        }
+      });
+      return parsed;
     }
     // Initialisation par défaut
     const initial: Record<string, ChallengeProgress> = {};
     Object.keys(ModeID).forEach(key => {
       const mode = ModeID[key as keyof typeof ModeID];
-      initial[mode] = { mode, currentLevel: 0 };
+      initial[mode] = { mode, currentLevel: 0, pendingRewards: [], lastCheckedScore: 0 };
     });
     return initial;
   };
@@ -102,7 +112,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     return data[`bestScore_${mode}`] || 0;
   };
 
-  // Vérifier et mettre à jour les défis
+  // Vérifier et mettre à jour les défis (UN SEUL palier par partie max)
   const checkAndUpdateChallenges = () => {
     const progress = getChallengeProgress();
     let hasUpdates = false;
@@ -112,21 +122,25 @@ export const Challenges: React.FC<ChallengesProps> = ({
       const modeProgress = progress[mode];
       const modeBestScore = getBestScoreForMode(mode);
 
-      // Vérifier tous les paliers jusqu'au palier actuel
-      while (modeProgress.currentLevel < MAX_LEVEL) {
+      // Si le score n'a pas changé depuis la dernière vérification, ne rien faire
+      if (modeBestScore === modeProgress.lastCheckedScore) {
+        return;
+      }
+
+      // Vérifier UN SEUL palier suivant
+      if (modeProgress.currentLevel < MAX_LEVEL) {
         const nextTarget = (modeProgress.currentLevel + 1) * 10;
         
-        if (modeBestScore >= nextTarget) {
-          // Palier atteint !
+        if (modeBestScore >= nextTarget && modeBestScore > modeProgress.lastCheckedScore) {
+          // Palier atteint ! Ajouter aux récompenses en attente
+          modeProgress.pendingRewards.push(nextTarget);
           modeProgress.currentLevel++;
-          onReward(nextTarget);
+          modeProgress.lastCheckedScore = modeBestScore;
           hasUpdates = true;
 
           toast.success('🎉 Défi complété !', {
-            description: `${MODE_INFO[mode].name} - Score de ${nextTarget} atteint ! +${nextTarget} coins`,
+            description: `${MODE_INFO[mode].name} - Score de ${nextTarget} atteint ! Réclamez votre récompense dans les Défis.`,
           });
-        } else {
-          break; // Arrêter si le palier suivant n'est pas atteint
         }
       }
     });
@@ -134,6 +148,24 @@ export const Challenges: React.FC<ChallengesProps> = ({
     if (hasUpdates) {
       saveChallengeProgress(progress);
       forceUpdate(prev => prev + 1);
+    }
+  };
+
+  // Réclamer une récompense
+  const claimReward = (mode: string) => {
+    const progress = getChallengeProgress();
+    const modeProgress = progress[mode];
+    
+    if (modeProgress.pendingRewards.length > 0) {
+      const totalReward = modeProgress.pendingRewards.reduce((sum, r) => sum + r, 0);
+      modeProgress.pendingRewards = [];
+      saveChallengeProgress(progress);
+      onReward(totalReward);
+      forceUpdate(prev => prev + 1);
+      
+      toast.success('💰 Récompense réclamée !', {
+        description: `+${totalReward} coins ajoutés à votre compte`,
+      });
     }
   };
 
@@ -262,8 +294,17 @@ export const Challenges: React.FC<ChallengesProps> = ({
                 )}
               </div>
 
-              {/* Next Reward */}
-              {!isCompleted && (
+              {/* Pending Rewards / Next Reward */}
+              {modeProgress.pendingRewards.length > 0 ? (
+                <div className="mt-3">
+                  <Button
+                    onClick={() => claimReward(mode)}
+                    className="w-full bg-secondary hover:bg-secondary/80 text-white font-bold"
+                  >
+                    🎁 Réclamer {modeProgress.pendingRewards.reduce((sum, r) => sum + r, 0)} coins
+                  </Button>
+                </div>
+              ) : !isCompleted && (
                 <div className="mt-3 text-center">
                   <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30">
                     <span className="text-xs text-text-muted">Récompense:</span>
