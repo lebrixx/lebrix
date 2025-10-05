@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useSound } from '@/hooks/useSound';
-import { useBoosts } from '@/hooks/useBoosts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video, Zap } from 'lucide-react';
@@ -36,8 +35,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const { gameState, startGame, onTap, resetGame, reviveGame, cfg } = useGameLogic(currentMode);
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
   const [showBoostMenu, setShowBoostMenu] = useState(false);
-  const { inventory, getBoostCount } = useBoosts();
-  const [preGameSelectedBoosts, setPreGameSelectedBoosts] = useState<BoostType[]>([]);
 
   // Resolve current theme definition for visuals (background, bar, success zone)
   const themeDef = THEMES.find((t) => t.id === theme) || THEMES[0];
@@ -51,7 +48,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       if (event.code === 'Space' || event.code === 'Enter') {
         event.preventDefault();
         if (gameState.gameStatus === 'idle') {
-          startGame(preGameSelectedBoosts);
+          startGame(selectedBoosts);
         } else {
           onTap();
         }
@@ -60,7 +57,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [onTap, gameState.gameStatus, startGame, preGameSelectedBoosts]);
+  }, [onTap, gameState.gameStatus, startGame, selectedBoosts]);
 
   // Sons basés sur le résultat avec combo
   useEffect(() => {
@@ -81,27 +78,11 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const handleTap = () => {
     playClick();
     if (gameState.gameStatus === 'idle') {
-      startGame(preGameSelectedBoosts);
+      startGame(selectedBoosts);
     } else {
       onTap();
     }
   };
-
-  const togglePreGameBoost = (boostId: BoostType) => {
-    setPreGameSelectedBoosts(prev => 
-      prev.includes(boostId)
-        ? prev.filter(id => id !== boostId)
-        : [...prev, boostId]
-    );
-  };
-
-  const availableBoosts = Object.values(BOOSTS).filter(boost => {
-    // Filtrer le boost bigger_zone pour le mode arc_changeant
-    if (boost.id === 'bigger_zone' && currentMode === 'arc_changeant') {
-      return false;
-    }
-    return getBoostCount(boost.id) > 0;
-  });
 
   const handleReset = () => {
     playClick();
@@ -393,43 +374,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       {/* Contrôles du jeu */}
       <div className="flex gap-4 items-center animate-fade-in">
         {gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover' ? (
-          <div className="text-center w-full">
-            {/* Sélection de boosts pré-jeu (visible à l'idle) */}
-            {gameState.gameStatus === 'idle' && availableBoosts.length > 0 && (
-              <div className="mb-4 space-y-2">
-                <p className="text-text-secondary text-sm mb-3">
-                  Sélectionne des boosts pour cette partie :
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {availableBoosts.map(boost => {
-                    const isSelected = preGameSelectedBoosts.includes(boost.id);
-                    const count = getBoostCount(boost.id);
-                    
-                    return (
-                      <Button
-                        key={boost.id}
-                        onClick={() => togglePreGameBoost(boost.id)}
-                        variant={isSelected ? "default" : "outline"}
-                        className={`
-                          transition-all duration-300 hover:scale-105
-                          ${isSelected 
-                            ? 'bg-primary/90 border-primary' 
-                            : 'border-wheel-border hover:bg-button-hover'
-                          }
-                        `}
-                      >
-                        <span className="mr-2">{boost.icon}</span>
-                        {boost.name}
-                        <Badge variant="secondary" className="ml-2 text-xs">
-                          x{count}
-                        </Badge>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
+          <div className="text-center">
             {gameState.gameStatus === 'gameover' && (
               <div className="flex flex-col gap-3 mb-3">
                 {totalGamesPlayed >= 2 && (
