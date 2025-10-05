@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, X } from 'lucide-react';
+import { Play, X, Lock } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
+import { ModeType } from '@/constants/modes';
 
 interface PostGameBoostMenuProps {
   onStartGame: (selectedBoosts: BoostType[]) => void;
   onCancel: () => void;
+  currentMode: ModeType;
 }
 
-export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGame, onCancel }) => {
+export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGame, onCancel, currentMode }) => {
   const { getBoostCount } = useBoosts();
   const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
 
@@ -66,13 +68,18 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
               {availableBoosts.map(boost => {
                 const isSelected = selectedBoosts.includes(boost.id);
                 const count = getBoostCount(boost.id);
+                const isLocked = boost.id === 'bigger_zone' && currentMode === 'arc_changeant';
                 
                 return (
                   <Card
                     key={boost.id}
-                    onClick={() => toggleBoost(boost.id)}
+                    onClick={() => !isLocked && toggleBoost(boost.id)}
                     className={`
-                      p-4 cursor-pointer transition-all duration-300 hover:scale-105
+                      p-4 transition-all duration-300
+                      ${isLocked 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-105'
+                      }
                       ${isSelected 
                         ? 'bg-primary/20 border-primary border-2' 
                         : 'bg-wheel-segment/20 border-wheel-border hover:border-primary/50'
@@ -80,7 +87,14 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="text-3xl">{boost.icon}</div>
+                      <div className="text-3xl relative">
+                        {boost.icon}
+                        {isLocked && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-game-dark/80 rounded">
+                            <Lock className="w-4 h-4 text-text-muted" />
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-text-primary font-bold">
@@ -89,12 +103,20 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
                           <Badge variant="secondary" className="text-xs">
                             x{count}
                           </Badge>
+                          {isLocked && (
+                            <Badge variant="destructive" className="text-xs">
+                              Indisponible
+                            </Badge>
+                          )}
                         </div>
                         <p className="text-text-secondary text-sm">
-                          {boost.description}
+                          {isLocked 
+                            ? "Non compatible avec le mode Arc changeant" 
+                            : boost.description
+                          }
                         </p>
                       </div>
-                      {isSelected && (
+                      {isSelected && !isLocked && (
                         <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-game-dark" />
                         </div>

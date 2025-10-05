@@ -431,6 +431,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         <PostGameBoostMenu
           onStartGame={handleRestartWithBoosts}
           onCancel={handleBoostMenuClose}
+          currentMode={currentMode}
         />
       )}
 

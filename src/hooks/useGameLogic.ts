@@ -239,6 +239,11 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     }
   }, [gameState.bestScore, gameState.coins, gameState.ownedThemes, gameState.ownedItems, gameState.currentCustomization, gameState.currentMode, gameState.maxSpeedReached, gameState.directionChanges, gameState.totalGamesPlayed]);
 
+  // Sauvegarder automatiquement quand les coins ou le bestScore changent
+  useEffect(() => {
+    saveProgress();
+  }, [gameState.coins, gameState.bestScore, saveProgress]);
+
   // Animation de la bille (60 FPS) + Zone mobile
   const animateBall = useCallback(() => {
     if (gameState.gameStatus !== 'running') return;
