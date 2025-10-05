@@ -21,6 +21,7 @@ interface ShopProps {
   onPurchaseTheme: (theme: any) => boolean;
   onEquipTheme: (themeId: string) => void;
   onPurchaseMode: (modeId: string, price: number) => boolean;
+  onSpendCoins: (amount: number) => boolean;
 }
 
 const GAME_MODES_SHOP = [
@@ -42,6 +43,7 @@ export const Shop: React.FC<ShopProps> = ({
   onPurchaseTheme,
   onEquipTheme,
   onPurchaseMode,
+  onSpendCoins,
 }) => {
   const [activeTab, setActiveTab] = useState('themes');
   const handlePurchase = (theme: any) => {
@@ -332,7 +334,7 @@ export const Shop: React.FC<ShopProps> = ({
 
         {/* Boosts Tab */}
         <TabsContent value="boosts">
-          <BoostsSection coins={coins} />
+          <BoostsSection coins={coins} onSpendCoins={onSpendCoins} />
         </TabsContent>
       </Tabs>
 
@@ -347,14 +349,13 @@ export const Shop: React.FC<ShopProps> = ({
 // Section Boosts
 interface BoostsSectionProps {
   coins: number;
+  onSpendCoins: (amount: number) => boolean;
 }
 
-const BoostsSection: React.FC<BoostsSectionProps> = ({ coins }) => {
+const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) => {
   const { addBoost, getBoostCount } = useBoosts();
   const { toast } = useToast();
-  const [spendCoinsHandler, setSpendCoinsHandler] = useState<((amount: number) => boolean) | null>(null);
 
-  // Récupérer le handler spendCoins depuis le localStorage/gameState
   const canAfford = (price: number) => coins >= price;
 
   const handlePurchaseWithCoins = (boostId: any, price: number) => {
@@ -367,17 +368,15 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins }) => {
       return;
     }
 
-    // Déduire les coins du localStorage
-    const gameData = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
-    gameData.coins = (gameData.coins || 0) - price;
-    localStorage.setItem('luckyStopGame', JSON.stringify(gameData));
-
-    addBoost(boostId);
-    
-    toast({
-      title: "Boost acheté !",
-      description: `Tu as acheté un boost ${BOOSTS[boostId].name}.`,
-    });
+    // Utiliser le callback pour déduire les coins correctement
+    if (onSpendCoins(price)) {
+      addBoost(boostId);
+      
+      toast({
+        title: "Boost acheté !",
+        description: `Tu as acheté un boost ${BOOSTS[boostId].name}.`,
+      });
+    }
   };
 
   const handlePurchaseWithAd = (boostId: any) => {

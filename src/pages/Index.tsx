@@ -18,7 +18,7 @@ import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { BoostType } from '@/types/boosts';
 
-type GameScreen = 'menu' | 'pregame' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -178,7 +178,7 @@ const Index = () => {
             coins={gameState.coins}
             theme={currentTheme}
             currentMode={currentMode}
-            onStartGame={() => setCurrentScreen('pregame')}
+            onStartGame={() => setCurrentScreen('game')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
@@ -188,18 +188,7 @@ const Index = () => {
           />
         );
         
-      case 'pregame':
-        return (
-          <PreGameMenu
-            onStartGame={(selectedBoosts) => {
-              setSelectedBoostsForGame(selectedBoosts);
-              setCurrentScreen('game');
-            }}
-            onCancel={() => setCurrentScreen('menu')}
-          />
-        );
-        
-        case 'game':
+      case 'game':
           return (
             <CircleTap
               theme={currentTheme}
@@ -222,6 +211,7 @@ const Index = () => {
             onPurchaseTheme={(theme) => spendCoins(theme.price)}
             onEquipTheme={handleThemeChange}
             onPurchaseMode={handlePurchaseMode}
+            onSpendCoins={spendCoins}
           />
         );
         
