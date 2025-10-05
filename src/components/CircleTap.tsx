@@ -383,17 +383,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       {gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover' ? (
           <div className="text-center w-full">
             <div className="flex flex-col gap-3 mb-3">
-              {gameState.gameStatus === 'gameover' && totalGamesPlayed >= 2 && (
-                <Button
-                  onClick={handleRevive}
-                  variant="outline"
-                  className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
-                  disabled={true} // Désactivé pour l'instant (pas de pub)
-                >
-                  <Video className="w-4 h-4 mr-2" />
-                  Revivre via pub
-                </Button>
-              )}
               <Button
                 onClick={handleBoostMenuOpen}
                 variant="outline"
@@ -402,6 +391,17 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                 <Zap className="w-5 h-5 mr-2" />
                 Boosts
               </Button>
+              {gameState.gameStatus === 'gameover' && (
+                <Button
+                  onClick={handleRevive}
+                  variant="outline"
+                  className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 text-sm"
+                  disabled={true} // Désactivé pour l'instant (pas de pub)
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Revivre via pub
+                </Button>
+              )}
             </div>
             <div 
               className="text-2xl font-bold text-primary mb-2 cursor-pointer select-none animate-pulse"
