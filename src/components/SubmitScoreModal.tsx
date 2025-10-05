@@ -69,7 +69,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
     const names = {
       classic: 'Classique',
       arc_changeant: 'Arc Changeant',
-      survie_60s: 'Survie 60s',
+      survie_60s: 'Survie 30s',
       zone_mobile: 'Zone Mobile'
     };
     return names[mode as keyof typeof names] || mode;

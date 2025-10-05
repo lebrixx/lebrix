@@ -31,7 +31,7 @@ const MODE_INFO = {
     borderColor: 'border-blue-400/30'
   },
   [ModeID.ARC_CHANGEANT]: {
-    name: 'Équipé',
+    name: 'Arc changeant',
     icon: Zap,
     color: 'text-purple-400',
     bgColor: 'bg-purple-400/10',
