@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface MainMenuProps {
   bestScore: number;
@@ -35,6 +36,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
+  const [showComingSoon, setShowComingSoon] = useState(false);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
@@ -49,18 +51,19 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <div className="flex-1"></div>
         </div>
         
-        {/* Boutons cadeau et langue */}
+        {/* Boutons cadeau, langue et nouveautés */}
         <div className="flex justify-center gap-2 mb-2">
           <Button
             onClick={onOpenDailyRewards}
             variant="ghost"
-            size="icon"
+            size="sm"
             className={`
-              relative hover:bg-primary/20 transition-all duration-300
+              relative hover:bg-primary/20 transition-all duration-300 gap-1.5
               ${hasAvailableReward ? 'animate-pulse-glow' : ''}
             `}
           >
             <Gift className={`w-4 h-4 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
+            <span className="text-xs text-text-muted">{t.gifts}</span>
             {hasAvailableReward && (
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
             )}
@@ -70,13 +73,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="relative hover:bg-primary/20 transition-all duration-300"
+                size="sm"
+                className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
               >
                 <Languages className="w-4 h-4 text-text-muted" />
+                <span className="text-xs text-text-muted">{t.language}</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-32 p-2 bg-button-bg border-wheel-border">
+            <PopoverContent className="w-32 p-2 bg-button-bg border-wheel-border z-50">
               <div className="flex flex-col gap-1">
                 {(['fr', 'en', 'es'] as Language[]).map((lang) => (
                   <Button
@@ -92,6 +96,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               </div>
             </PopoverContent>
           </Popover>
+
+          <Button
+            onClick={() => setShowComingSoon(true)}
+            variant="ghost"
+            size="sm"
+            className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
+          >
+            <Sparkles className="w-4 h-4 text-text-muted" />
+            <span className="text-xs text-text-muted">{t.new}</span>
+          </Button>
         </div>
       </div>
 
@@ -210,6 +224,28 @@ export const MainMenu: React.FC<MainMenuProps> = ({
            style={{ animationDuration: '8s' }}>
         <div className="absolute inset-2 rounded-full bg-primary opacity-30"></div>
       </div>
+
+      {/* Coming Soon Dialog */}
+      <AlertDialog open={showComingSoon} onOpenChange={setShowComingSoon}>
+        <AlertDialogContent className="bg-button-bg border-wheel-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-primary text-center flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5" />
+              {t.comingSoon}
+              <Sparkles className="w-5 h-5" />
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-text-secondary">
+              {t.comingSoonDesc}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Button 
+            onClick={() => setShowComingSoon(false)}
+            className="bg-gradient-primary hover:scale-105 transition-all"
+          >
+            OK
+          </Button>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

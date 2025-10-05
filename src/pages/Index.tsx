@@ -50,6 +50,13 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { removeBoost } = useBoosts();
   const { toast } = useToast();
+  
+  // Force refresh des coins depuis localStorage
+  const [currentCoins, setCurrentCoins] = useState(gameState.coins);
+  
+  useEffect(() => {
+    setCurrentCoins(gameState.coins);
+  }, [gameState.coins]);
 
   // Vérifier les récompenses disponibles au montage
   useEffect(() => {
@@ -175,7 +182,7 @@ const Index = () => {
               const data = saved ? JSON.parse(saved) : {};
               return data[`bestScore_${currentMode}`] || 0;
             })()}
-            coins={gameState.coins}
+            coins={currentCoins}
             theme={currentTheme}
             currentMode={currentMode}
             onStartGame={() => setCurrentScreen('game')}
@@ -203,7 +210,7 @@ const Index = () => {
       case 'shop':
         return (
           <Shop
-            coins={gameState.coins}
+            coins={currentCoins}
             ownedThemes={gameState.ownedThemes}
             currentTheme={currentTheme}
             unlockedModes={unlockedModes}
