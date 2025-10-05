@@ -2,15 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2 } from 'lucide-react';
 import { ModeID } from '@/constants/modes';
 import { toast } from 'sonner';
+import { BOOSTS, BoostType } from '@/types/boosts';
 
 interface ChallengeProgress {
   mode: string;
   currentLevel: number; // 0-9 (paliers 1-10)
   pendingRewards: number[]; // Paliers validés mais non réclamés
   lastCheckedScore: number; // Dernier score vérifié pour éviter plusieurs validations dans une partie
+}
+
+interface GamesPlayedProgress {
+  currentLevel: number; // Nombre de paliers complétés (infini)
+  pendingRewards: BoostType[]; // Boosts en attente
+  lastCheckedGames: number; // Dernier nombre de parties vérifié
 }
 
 interface ChallengesProps {
@@ -22,6 +29,7 @@ interface ChallengesProps {
   directionChanges: number;
   totalGamesPlayed: number;
   onReward: (coins: number) => void;
+  onBoostReward: (boost: BoostType) => void;
 }
 
 const MODE_INFO = {
@@ -73,6 +81,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   directionChanges,
   totalGamesPlayed,
   onReward,
+  onBoostReward,
 }) => {
   const [, forceUpdate] = useState(0);
 
@@ -110,6 +119,30 @@ export const Challenges: React.FC<ChallengesProps> = ({
     if (!saved) return 0;
     const data = JSON.parse(saved);
     return data[`bestScore_${mode}`] || 0;
+  };
+
+  // Récupérer/sauvegarder la progression du défi "Parties jouées"
+  const getGamesPlayedProgress = (): GamesPlayedProgress => {
+    const saved = localStorage.getItem('gamesPlayedProgress');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed.pendingRewards) {
+        parsed.pendingRewards = [];
+        parsed.lastCheckedGames = 0;
+      }
+      return parsed;
+    }
+    return { currentLevel: 0, pendingRewards: [], lastCheckedGames: 0 };
+  };
+
+  const saveGamesPlayedProgress = (progress: GamesPlayedProgress) => {
+    localStorage.setItem('gamesPlayedProgress', JSON.stringify(progress));
+  };
+
+  // Obtenir un boost aléatoire
+  const getRandomBoost = (): BoostType => {
+    const boostTypes: BoostType[] = ['shield', 'bigger_zone', 'start_20'];
+    return boostTypes[Math.floor(Math.random() * boostTypes.length)];
   };
 
   // Vérifier et mettre à jour les défis (UN SEUL palier par partie max)
@@ -151,6 +184,34 @@ export const Challenges: React.FC<ChallengesProps> = ({
     }
   };
 
+  // Vérifier et mettre à jour le défi "Parties jouées"
+  const checkGamesPlayedChallenge = () => {
+    const gamesProgress = getGamesPlayedProgress();
+    
+    // Si le nombre de parties n'a pas changé, ne rien faire
+    if (totalGamesPlayed === gamesProgress.lastCheckedGames) {
+      return;
+    }
+
+    // Calculer le prochain palier (multiples de 50)
+    const nextTarget = (gamesProgress.currentLevel + 1) * 50;
+    
+    if (totalGamesPlayed >= nextTarget && totalGamesPlayed > gamesProgress.lastCheckedGames) {
+      // Palier atteint ! Donner un boost aléatoire
+      const randomBoost = getRandomBoost();
+      gamesProgress.pendingRewards.push(randomBoost);
+      gamesProgress.currentLevel++;
+      gamesProgress.lastCheckedGames = totalGamesPlayed;
+      
+      saveGamesPlayedProgress(gamesProgress);
+      forceUpdate(prev => prev + 1);
+
+      toast.success('🎮 Défi Parties complété !', {
+        description: `${nextTarget} parties jouées ! Réclamez votre boost dans les Défis.`,
+      });
+    }
+  };
+
   // Réclamer une récompense
   const claimReward = (mode: string) => {
     const progress = getChallengeProgress();
@@ -169,12 +230,34 @@ export const Challenges: React.FC<ChallengesProps> = ({
     }
   };
 
+  // Réclamer les boosts du défi "Parties jouées"
+  const claimGamesPlayedReward = () => {
+    const gamesProgress = getGamesPlayedProgress();
+    
+    if (gamesProgress.pendingRewards.length > 0) {
+      gamesProgress.pendingRewards.forEach(boost => {
+        onBoostReward(boost);
+      });
+      
+      const boostNames = gamesProgress.pendingRewards.map(b => BOOSTS[b].name).join(', ');
+      gamesProgress.pendingRewards = [];
+      saveGamesPlayedProgress(gamesProgress);
+      forceUpdate(prev => prev + 1);
+      
+      toast.success('🎁 Boost(s) réclamé(s) !', {
+        description: `${boostNames} ajouté(s) à votre inventaire`,
+      });
+    }
+  };
+
   // Vérifier au montage et quand les scores changent
   useEffect(() => {
     checkAndUpdateChallenges();
-  }, [bestScore]);
+    checkGamesPlayedChallenge();
+  }, [bestScore, totalGamesPlayed]);
 
   const progress = getChallengeProgress();
+  const gamesProgress = getGamesPlayedProgress();
 
   // Calculer les statistiques globales
   const totalLevelsCompleted = Object.values(progress).reduce(
@@ -222,6 +305,74 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
       {/* Challenges Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full">
+        {/* Défi Parties Jouées - Toujours en premier */}
+        <Card 
+          className="relative overflow-hidden border-2 transition-all duration-300 p-6 border-amber-400/30 bg-amber-400/10 hover:scale-105"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 rounded-lg bg-amber-400/10 text-amber-400">
+              <Gamepad2 className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-text-primary">
+                Parties jouées
+              </h3>
+              <p className="text-text-muted text-sm">
+                Défi infini - Palier {gamesProgress.currentLevel + 1}
+              </p>
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-text-muted text-sm">Progression</span>
+              <span className="text-text-primary font-bold">
+                {totalGamesPlayed} / {(gamesProgress.currentLevel + 1) * 50}
+              </span>
+            </div>
+            <Progress 
+              value={(totalGamesPlayed / ((gamesProgress.currentLevel + 1) * 50)) * 100} 
+              className="h-2 mb-1"
+            />
+            <div className="text-right">
+              <span className="text-xs text-text-muted">
+                {Math.round((totalGamesPlayed / ((gamesProgress.currentLevel + 1) * 50)) * 100)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="flex items-center justify-between pt-4 border-t border-wheel-border">
+            <div className="flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-amber-400" />
+              <span className="text-sm font-medium">
+                Paliers: <span className="font-bold text-amber-400">{gamesProgress.currentLevel}</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Pending Rewards / Next Reward */}
+          {gamesProgress.pendingRewards.length > 0 ? (
+            <div className="mt-3">
+              <Button
+                onClick={claimGamesPlayedReward}
+                className="w-full bg-secondary hover:bg-secondary/80 text-white font-bold"
+              >
+                🎁 Réclamer {gamesProgress.pendingRewards.length} boost(s)
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-3 text-center">
+              <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30">
+                <span className="text-xs text-text-muted">Récompense:</span>
+                <span className="text-sm font-bold text-secondary">1 boost aléatoire</span>
+              </div>
+            </div>
+          )}
+        </Card>
+
+        {/* Défis par mode */}
         {allModes.map((mode) => {
           const modeProgress = progress[mode];
           const modeBestScore = getBestScoreForMode(mode);
@@ -333,6 +484,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
                 <li>• Atteignez le score demandé dans le mode pour valider un palier</li>
                 <li>• Gagnez des coins égaux au score atteint (10 points = 10 coins, 100 points = 100 coins)</li>
                 <li>• Les paliers se débloquent automatiquement dès que vous atteignez le score requis</li>
+                <li>• Le défi "Parties jouées" est infini : tous les 50 parties, gagnez un boost aléatoire</li>
+                <li>• Réclamez vos récompenses en revenant sur cette page après avoir complété un défi</li>
               </ul>
             </div>
           </div>

@@ -48,7 +48,7 @@ const Index = () => {
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
-  const { removeBoost } = useBoosts();
+  const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
   
   // Force refresh des coins depuis localStorage
@@ -172,6 +172,10 @@ const Index = () => {
     }
   };
 
+  const handleBoostReward = (boost: BoostType) => {
+    addBoost(boost);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'menu':
@@ -233,6 +237,7 @@ const Index = () => {
             directionChanges={gameState.directionChanges}
             totalGamesPlayed={gameState.totalGamesPlayed}
             onReward={addCoins}
+            onBoostReward={handleBoostReward}
           />
         );
 

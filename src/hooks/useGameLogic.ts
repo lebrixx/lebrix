@@ -503,7 +503,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         zoneEnd: newZoneStart + newZoneArc,
         zoneArc: newZoneArc,
         zoneDriftSpeed: newZoneDriftSpeed,
-        coins: prev.coins + Math.floor(newScore / 6), // Gain de coins réduit
+        coins: prev.coins + (newScore % 2 === 0 ? 1 : 0), // +1 coin toutes les 2 zones vertes réussies
         level: prev.level + 1,
         lastResult: 'success',
         showResult: false,
