@@ -64,6 +64,8 @@ export const usePlayerLevel = () => {
 
   // Add XP function
   const addXp = async (xpAmount: number) => {
+    console.log('📊 Adding XP:', xpAmount, 'Current level:', playerLevel);
+    
     let newLevel = playerLevel.level;
     let newCurrentXp = playerLevel.current_xp + xpAmount;
     let newTotalXp = playerLevel.total_xp + xpAmount;
@@ -77,6 +79,7 @@ export const usePlayerLevel = () => {
         newCurrentXp -= xpNeeded;
         newLevel += 1;
         leveledUp = true;
+        console.log('🎉 Level up!', newLevel);
       } else {
         break;
       }
@@ -94,6 +97,8 @@ export const usePlayerLevel = () => {
       total_xp: newTotalXp
     };
 
+    console.log('💾 Saving level:', updatedLevel);
+
     // Update local state and storage
     setPlayerLevel(updatedLevel);
     saveLocalLevel(updatedLevel);
@@ -105,6 +110,7 @@ export const usePlayerLevel = () => {
           p_user_id: user.id,
           xp_gained: xpAmount
         });
+        console.log('☁️ XP synced to database');
       } catch (error) {
         console.error('Error syncing XP to database:', error);
       }

@@ -53,22 +53,29 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
       if (error) throw error;
 
-      // Fetch levels separately
-      const userIds = data?.map(entry => entry.user_id) || [];
-      const { data: levelsData } = await supabase
-        .from('player_levels')
-        .select('user_id, level')
-        .in('user_id', userIds);
+      // Fetch levels separately if there's data
+      if (data && data.length > 0) {
+        const userIds = data.map(entry => entry.user_id);
+        const { data: levelsData } = await supabase
+          .from('player_levels')
+          .select('user_id, level')
+          .in('user_id', userIds);
 
-      const levelsMap = new Map(levelsData?.map(l => [l.user_id, l.level]) || []);
+        console.log('📊 Fetched levels:', levelsData);
 
-      const formattedData = data?.map(entry => ({
-        ...entry,
-        username: entry.profiles?.username || 'Anonyme',
-        level: levelsMap.get(entry.user_id) || 1
-      })) || [];
+        const levelsMap = new Map(levelsData?.map(l => [l.user_id, l.level]) || []);
 
-      setLeaderboard(formattedData);
+        const formattedData = data.map(entry => ({
+          ...entry,
+          username: entry.profiles?.username || 'Anonyme',
+          level: levelsMap.get(entry.user_id) || 1
+        }));
+
+        console.log('✅ Formatted leaderboard with levels:', formattedData);
+        setLeaderboard(formattedData);
+      } else {
+        setLeaderboard([]);
+      }
     } catch (error: any) {
       toast({
         title: "Erreur",

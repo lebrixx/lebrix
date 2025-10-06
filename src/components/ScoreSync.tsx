@@ -20,6 +20,12 @@ export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) 
     ) {
       const syncScore = async () => {
         try {
+          console.log('🎮 Game over! Adding XP:', gameState.currentScore);
+          
+          // Add XP based on score (1 point = 1 XP) - works for all users
+          const result = await addXp(gameState.currentScore);
+          console.log('✅ XP added successfully:', result);
+
           // Update leaderboard if authenticated
           if (isAuthenticated) {
             await updateLeaderboard({
@@ -31,30 +37,15 @@ export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) 
               direction_changes: gameState.directionChanges,
             });
           }
-
-          // Add XP based on score (1 point = 1 XP) - works for all users
-          await addXp(gameState.currentScore);
         } catch (error) {
-          console.error('Error syncing score:', error);
+          console.error('❌ Error syncing score:', error);
         }
       };
       
-      // Delay sync slightly to avoid race conditions
-      setTimeout(syncScore, 1000);
+      // Execute immediately
+      syncScore();
     }
-  }, [
-    gameState.gameStatus, 
-    gameState.currentScore, 
-    gameState.bestScore,
-    gameState.coins,
-    gameState.totalGamesPlayed,
-    gameState.maxSpeedReached,
-    gameState.directionChanges,
-    currentMode, 
-    isAuthenticated, 
-    updateLeaderboard,
-    addXp
-  ]);
+  }, [gameState.gameStatus]);
 
   return null; // This is a utility component with no UI
 };
