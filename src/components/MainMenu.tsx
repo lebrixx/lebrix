@@ -48,9 +48,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       <div className="text-center animate-fade-in mt-16">
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1 flex justify-start pl-2">
-            {isAuthenticated && (
-              <ProfileButton level={playerLevel.level} onClick={onOpenProfile} />
-            )}
+            <ProfileButton 
+              level={isAuthenticated ? playerLevel.level : 1} 
+              onClick={onOpenProfile} 
+            />
           </div>
           <div className="flex-1">
             <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">

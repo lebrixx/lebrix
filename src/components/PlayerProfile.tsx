@@ -19,13 +19,14 @@ interface LeaderboardEntry {
 }
 
 export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
-  const { profile } = useAuth();
+  const { profile, isAuthenticated } = useAuth();
   const [level, setLevel] = useState(1);
   const [currentXp, setCurrentXp] = useState(0);
   const [totalXp, setTotalXp] = useState(0);
   const [xpNeeded, setXpNeeded] = useState(100);
   const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAuthMessage, setShowAuthMessage] = useState(false);
 
   // Calculate XP needed for next level using same formula as backend
   const calculateXpForLevel = (level: number): number => {
@@ -34,7 +35,11 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
 
   useEffect(() => {
     const fetchPlayerData = async () => {
-      if (!profile?.id) return;
+      if (!isAuthenticated || !profile?.id) {
+        setShowAuthMessage(true);
+        setLoading(false);
+        return;
+      }
 
       setLoading(true);
 
@@ -90,7 +95,7 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
     };
 
     fetchPlayerData();
-  }, [profile]);
+  }, [profile, isAuthenticated]);
 
   const xpProgress = level >= 100 ? 100 : (currentXp / xpNeeded) * 100;
 
@@ -104,6 +109,41 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
     if (rank <= 10) return 'outline';
     return 'outline';
   };
+
+  // If not authenticated, show auth message
+  if (showAuthMessage) {
+    return (
+      <div className="min-h-screen bg-gradient-game flex flex-col p-4">
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            size="sm"
+            className="hover:bg-primary/20"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour
+          </Button>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center">
+          <Card className="bg-button-bg border-wheel-border p-8 text-center max-w-md">
+            <Award className="w-16 h-16 text-primary mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-primary mb-4">Profil de Joueur</h2>
+            <p className="text-text-secondary mb-6">
+              Connectez-vous pour débloquer le système de niveau, suivre votre progression et apparaître dans les classements !
+            </p>
+            <Button
+              onClick={() => window.location.href = '/auth'}
+              className="bg-gradient-primary hover:scale-105 transition-all w-full"
+            >
+              Se connecter / S'inscrire
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col p-4 overflow-y-auto">
