@@ -5,13 +5,10 @@ import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
-import { PlayerProfile } from '@/components/PlayerProfile';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { PreGameMenu } from '@/components/PreGameMenu';
-
-import { usePlayerLevel } from '@/hooks/usePlayerLevel';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +18,7 @@ import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { BoostType } from '@/types/boosts';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'profile';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -53,7 +50,6 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
-  const { addXp, playerLevel } = usePlayerLevel();
   
   // Force refresh des coins depuis localStorage
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
@@ -94,14 +90,6 @@ const Index = () => {
   const handleGameOver = (finalScore: number) => {
     setLastGameScore(finalScore);
 
-    // Ajouter l'XP immédiatement (1 point = 1 XP)
-    try {
-      console.log('🎮 Fin de partie, ajout XP:', finalScore);
-      addXp(finalScore);
-    } catch (e) {
-      console.error('Erreur ajout XP:', e);
-    }
-
     // Consommer les boosts utilisés
     selectedBoostsForGame.forEach(boostId => {
       removeBoost(boostId);
@@ -112,7 +100,7 @@ const Index = () => {
 
     if (identity.username) {
       import('@/utils/scoresApi').then(({ submitScore }) => {
-        submitScore({ score: finalScore, mode: currentMode, level: playerLevel.level })
+        submitScore({ score: finalScore, mode: currentMode })
           .then(success => {
             // Soumission silencieuse - pas de notifications
           })
@@ -207,7 +195,6 @@ const Index = () => {
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
             onOpenDailyRewards={() => setShowDailyRewards(true)}
-            onOpenProfile={() => setCurrentScreen('profile')}
             hasAvailableReward={hasAvailableReward}
           />
         );
@@ -281,13 +268,6 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
             />
           );
-
-        case 'profile':
-          return (
-            <PlayerProfile
-              onBack={() => setCurrentScreen('menu')}
-            />
-          );
         
         default:
           return null;
@@ -328,7 +308,6 @@ const Index = () => {
         onClose={() => setShowDailyRewards(false)}
         onRewardClaimed={handleDailyRewardClaimed}
       />
-
     </div>
   );
 };

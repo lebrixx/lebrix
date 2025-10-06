@@ -17,7 +17,6 @@ interface LeaderboardEntry {
   max_speed_reached: number;
   direction_changes: number;
   created_at: string;
-  level?: number;
 }
 
 interface LeaderboardProps {
@@ -53,29 +52,12 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
       if (error) throw error;
 
-      // Fetch levels separately if there's data
-      if (data && data.length > 0) {
-        const userIds = data.map(entry => entry.user_id);
-        const { data: levelsData } = await supabase
-          .from('player_levels')
-          .select('user_id, level')
-          .in('user_id', userIds);
+      const formattedData = data?.map(entry => ({
+        ...entry,
+        username: entry.profiles?.username || 'Anonyme'
+      })) || [];
 
-        console.log('📊 Fetched levels:', levelsData);
-
-        const levelsMap = new Map(levelsData?.map(l => [l.user_id, l.level]) || []);
-
-        const formattedData = data.map(entry => ({
-          ...entry,
-          username: entry.profiles?.username || 'Anonyme',
-          level: levelsMap.get(entry.user_id) || 1
-        }));
-
-        console.log('✅ Formatted leaderboard with levels:', formattedData);
-        setLeaderboard(formattedData);
-      } else {
-        setLeaderboard([]);
-      }
+      setLeaderboard(formattedData);
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -182,14 +164,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
                     {/* Username */}
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-text-primary text-lg">
-                          {entry.username}
-                        </h3>
-                        <Badge variant="secondary" className="text-xs">
-                          Niv. {entry.level}
-                        </Badge>
-                      </div>
+                      <h3 className="font-bold text-text-primary text-lg">
+                        {entry.username}
+                      </h3>
                       <p className="text-text-muted text-sm">
                         {entry.games_played} partie{entry.games_played > 1 ? 's' : ''}
                       </p>

@@ -9,17 +9,10 @@ export interface UserProfile {
   updated_at: string;
 }
 
-interface PlayerLevel {
-  level: number;
-  current_xp: number;
-  total_xp: number;
-}
-
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [playerLevel, setPlayerLevel] = useState<PlayerLevel>({ level: 1, current_xp: 0, total_xp: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +23,7 @@ export const useAuth = () => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile and level
+          // Fetch user profile
           setTimeout(async () => {
             try {
               const { data: profileData, error } = await supabase
@@ -44,28 +37,12 @@ export const useAuth = () => {
               } else if (profileData) {
                 setProfile(profileData);
               }
-
-              // Fetch player level
-              const { data: levelData } = await supabase
-                .from('player_levels')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .maybeSingle();
-
-              if (levelData) {
-                setPlayerLevel({
-                  level: levelData.level,
-                  current_xp: Number(levelData.current_xp),
-                  total_xp: Number(levelData.total_xp)
-                });
-              }
             } catch (err) {
               console.error('Error in profile fetch:', err);
             }
           }, 0);
         } else {
           setProfile(null);
-          setPlayerLevel({ level: 1, current_xp: 0, total_xp: 0 });
         }
         
         setLoading(false);
@@ -91,21 +68,6 @@ export const useAuth = () => {
               console.error('Error fetching profile:', error);
             } else if (profileData) {
               setProfile(profileData);
-            }
-
-            // Fetch player level
-            const { data: levelData } = await supabase
-              .from('player_levels')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .maybeSingle();
-
-            if (levelData) {
-              setPlayerLevel({
-                level: levelData.level,
-                current_xp: Number(levelData.current_xp),
-                total_xp: Number(levelData.total_xp)
-              });
             }
           } catch (err) {
             console.error('Error in profile fetch:', err);
@@ -161,43 +123,13 @@ export const useAuth = () => {
     }
   };
 
-  const addXp = async (xpAmount: number) => {
-    if (!user?.id) return;
-
-    try {
-      const { data } = await supabase.rpc('add_player_xp', {
-        p_user_id: user.id,
-        xp_gained: xpAmount
-      });
-
-      if (data && data.length > 0) {
-        const result = data[0];
-        setPlayerLevel({
-          level: result.new_level,
-          current_xp: Number(result.new_current_xp),
-          total_xp: playerLevel.total_xp + xpAmount
-        });
-
-        // Return level up status
-        return {
-          leveled_up: result.leveled_up,
-          new_level: result.new_level
-        };
-      }
-    } catch (error) {
-      console.error('Error adding XP:', error);
-    }
-  };
-
   return {
     user,
     session,
     profile,
-    playerLevel,
     loading,
     signOut,
     updateLeaderboard,
-    addXp,
     isAuthenticated: !!user
   };
 };

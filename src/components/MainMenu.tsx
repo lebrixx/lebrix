@@ -6,8 +6,6 @@ import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Language
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { ProfileButton } from '@/components/ProfileButton';
-import { usePlayerLevel } from '@/hooks/usePlayerLevel';
 
 interface MainMenuProps {
   bestScore: number;
@@ -20,7 +18,6 @@ interface MainMenuProps {
   onOpenModes: () => void;
   onOpenLeaderboard: () => void;
   onOpenDailyRewards: () => void;
-  onOpenProfile: () => void;
   hasAvailableReward: boolean;
 }
 
@@ -35,11 +32,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenModes,
   onOpenLeaderboard,
   onOpenDailyRewards,
-  onOpenProfile,
   hasAvailableReward
 }) => {
   const { language, setLanguage } = useLanguage();
-  const { playerLevel } = usePlayerLevel();
   const t = translations[language];
   const [showComingSoon, setShowComingSoon] = useState(false);
   return (
@@ -47,12 +42,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       {/* Logo/Title */}
       <div className="text-center animate-fade-in mt-16">
         <div className="flex justify-between items-start mb-4">
-          <div className="flex-1 flex justify-start pl-2">
-            <ProfileButton 
-              level={playerLevel.level} 
-              onClick={onOpenProfile} 
-            />
-          </div>
+          <div className="flex-1"></div>
           <div className="flex-1">
             <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
               LUCKY STOP

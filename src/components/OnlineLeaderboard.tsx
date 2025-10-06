@@ -262,13 +262,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className="font-bold text-text-primary text-lg flex items-center gap-1.5">
+                          <h3 className="font-bold text-text-primary text-lg">
                             {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                            {entry.level && entry.level > 1 && (
-                              <span className="text-[10px] text-text-muted font-normal">
-                                Niv.{entry.level}
-                              </span>
-                            )}
                           </h3>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
@@ -312,13 +307,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className="font-bold text-text-primary text-lg flex items-center gap-1.5">
+                          <h3 className="font-bold text-text-primary text-lg">
                             {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                            {entry.level && entry.level > 1 && (
-                              <span className="text-[10px] text-text-muted font-normal">
-                                Niv.{entry.level}
-                              </span>
-                            )}
                           </h3>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
