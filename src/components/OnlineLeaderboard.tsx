@@ -262,16 +262,14 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-text-primary text-lg">
-                              {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                            </h3>
-                            {entry.level && (
-                              <Badge variant="secondary" className="text-xs">
-                                Niv. {entry.level}
-                              </Badge>
+                          <h3 className="font-bold text-text-primary text-lg flex items-center gap-1.5">
+                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                            {entry.level && entry.level > 1 && (
+                              <span className="text-[10px] text-text-muted font-normal">
+                                Niv.{entry.level}
+                              </span>
                             )}
-                          </div>
+                          </h3>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
                           </p>
@@ -314,16 +312,14 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-text-primary text-lg">
-                              {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                            </h3>
-                            {entry.level && (
-                              <Badge variant="secondary" className="text-xs">
-                                Niv. {entry.level}
-                              </Badge>
+                          <h3 className="font-bold text-text-primary text-lg flex items-center gap-1.5">
+                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                            {entry.level && entry.level > 1 && (
+                              <span className="text-[10px] text-text-muted font-normal">
+                                Niv.{entry.level}
+                              </span>
                             )}
-                          </div>
+                          </h3>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
                           </p>

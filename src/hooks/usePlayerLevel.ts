@@ -11,9 +11,9 @@ interface PlayerLevel {
 const STORAGE_KEY = 'lucky_stop_player_level';
 const EVENT_NAME = 'player-level-updated';
 
-// Calculate XP needed for next level using same formula as backend
+// Calculate XP needed for next level using same formula as backend (50x more difficult)
 const calculateXpForLevel = (level: number): number => {
-  return Math.floor(100 * Math.pow(level, 1.8));
+  return Math.floor(5000 * Math.pow(level, 1.8));
 };
 
 // Load level from localStorage
