@@ -8,10 +8,10 @@ interface ScoreSyncProps {
 }
 
 export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) => {
-  const { isAuthenticated, updateLeaderboard } = useAuth();
+  const { isAuthenticated, updateLeaderboard, addXp } = useAuth();
 
   useEffect(() => {
-    // Sync scores when game ends and user is authenticated
+    // Sync scores and XP when game ends and user is authenticated
     if (
       isAuthenticated && 
       gameState.gameStatus === 'gameover' && 
@@ -19,6 +19,7 @@ export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) 
     ) {
       const syncScore = async () => {
         try {
+          // Update leaderboard
           await updateLeaderboard({
             mode: currentMode,
             score: gameState.bestScore,
@@ -27,6 +28,11 @@ export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) 
             max_speed_reached: gameState.maxSpeedReached,
             direction_changes: gameState.directionChanges,
           });
+
+          // Add XP based on score (1 point = 1 XP)
+          if (addXp) {
+            await addXp(gameState.currentScore);
+          }
         } catch (error) {
           console.error('Error syncing score to leaderboard:', error);
         }
@@ -45,7 +51,8 @@ export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) 
     gameState.directionChanges,
     currentMode, 
     isAuthenticated, 
-    updateLeaderboard
+    updateLeaderboard,
+    addXp
   ]);
 
   return null; // This is a utility component with no UI

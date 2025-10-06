@@ -5,6 +5,7 @@ import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
+import { PlayerProfile } from '@/components/PlayerProfile';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
@@ -18,7 +19,7 @@ import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { BoostType } from '@/types/boosts';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'profile';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -195,6 +196,7 @@ const Index = () => {
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
             onOpenDailyRewards={() => setShowDailyRewards(true)}
+            onOpenProfile={() => setCurrentScreen('profile')}
             hasAvailableReward={hasAvailableReward}
           />
         );
@@ -265,6 +267,13 @@ const Index = () => {
         case 'leaderboard':
           return (
             <OnlineLeaderboard
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
+
+        case 'profile':
+          return (
+            <PlayerProfile
               onBack={() => setCurrentScreen('menu')}
             />
           );
