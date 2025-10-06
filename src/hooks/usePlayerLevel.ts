@@ -9,6 +9,7 @@ interface PlayerLevel {
 }
 
 const STORAGE_KEY = 'lucky_stop_player_level';
+const EVENT_NAME = 'player-level-updated';
 
 // Calculate XP needed for next level using same formula as backend
 const calculateXpForLevel = (level: number): number => {
@@ -28,14 +29,41 @@ const loadLocalLevel = (): PlayerLevel => {
   return { level: 1, current_xp: 0, total_xp: 0 };
 };
 
-// Save level to localStorage
+// Save level to localStorage and notify listeners
 const saveLocalLevel = (level: PlayerLevel) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(level));
+  // Notify other hook instances in this tab
+  window.dispatchEvent(new CustomEvent<PlayerLevel>(EVENT_NAME, { detail: level }));
 };
 
 export const usePlayerLevel = () => {
   const { isAuthenticated, user } = useAuth();
   const [playerLevel, setPlayerLevel] = useState<PlayerLevel>(loadLocalLevel());
+
+  // Listen for cross-instance updates (same tab + other tabs)
+  useEffect(() => {
+    const handleLevelUpdate = (e: Event) => {
+      const detail = (e as CustomEvent<PlayerLevel>).detail;
+      if (detail) {
+        setPlayerLevel(detail);
+      }
+    };
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          setPlayerLevel(parsed);
+        } catch {}
+      }
+    };
+
+    window.addEventListener(EVENT_NAME, handleLevelUpdate as EventListener);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener(EVENT_NAME, handleLevelUpdate as EventListener);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
 
   // Load level from DB if authenticated
   useEffect(() => {

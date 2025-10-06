@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
 import { WeeklyTimer } from '@/components/WeeklyTimer';
+import { usePlayerLevel } from '@/hooks/usePlayerLevel';
 
 interface OnlineLeaderboardProps {
   onBack: () => void;
@@ -32,6 +33,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const { toast } = useToast();
+  const { playerLevel } = usePlayerLevel();
 
   // Load current username on mount
   useEffect(() => {
@@ -262,9 +264,14 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className="font-bold text-text-primary text-lg">
-                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-text-primary text-lg">
+                              {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                            </h3>
+                            {entry.username === currentUsername && (
+                              <Badge variant="secondary" className="text-xs">Niv. {playerLevel.level}</Badge>
+                            )}
+                          </div>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
                           </p>
@@ -307,9 +314,14 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className="font-bold text-text-primary text-lg">
-                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-text-primary text-lg">
+                              {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                            </h3>
+                            {entry.username === currentUsername && (
+                              <Badge variant="secondary" className="text-xs">Niv. {playerLevel.level}</Badge>
+                            )}
+                          </div>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
                           </p>

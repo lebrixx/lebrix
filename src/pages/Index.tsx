@@ -10,7 +10,8 @@ import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { PreGameMenu } from '@/components/PreGameMenu';
-import { ScoreSync } from '@/components/ScoreSync';
+
+import { usePlayerLevel } from '@/hooks/usePlayerLevel';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
@@ -52,6 +53,7 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
+  const { addXp } = usePlayerLevel();
   
   // Force refresh des coins depuis localStorage
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
@@ -91,6 +93,14 @@ const Index = () => {
   // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
   const handleGameOver = (finalScore: number) => {
     setLastGameScore(finalScore);
+
+    // Ajouter l'XP immédiatement (1 point = 1 XP)
+    try {
+      console.log('🎮 Fin de partie, ajout XP:', finalScore);
+      addXp(finalScore);
+    } catch (e) {
+      console.error('Erreur ajout XP:', e);
+    }
 
     // Consommer les boosts utilisés
     selectedBoostsForGame.forEach(boostId => {
@@ -319,8 +329,6 @@ const Index = () => {
         onRewardClaimed={handleDailyRewardClaimed}
       />
 
-      {/* Score sync for XP tracking */}
-      <ScoreSync gameState={gameState} currentMode={currentMode} />
     </div>
   );
 };
