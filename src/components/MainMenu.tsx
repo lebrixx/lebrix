@@ -80,17 +80,27 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 <span className="text-xs text-text-muted">{t.language}</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-32 p-2 bg-button-bg border-wheel-border z-50">
+            <PopoverContent className="w-40 p-2 bg-button-bg border-wheel-border z-50 max-h-72 overflow-y-auto">
               <div className="flex flex-col gap-1">
-                {(['fr', 'en', 'es'] as Language[]).map((lang) => (
+                {[
+                  { code: 'fr', label: '🇫🇷 Français' },
+                  { code: 'en', label: '🇬🇧 English' },
+                  { code: 'es', label: '🇪🇸 Español' },
+                  { code: 'de', label: '🇩🇪 Deutsch' },
+                  { code: 'it', label: '🇮🇹 Italiano' },
+                  { code: 'pt', label: '🇵🇹 Português' },
+                  { code: 'ar', label: '🇸🇦 العربية' },
+                  { code: 'ja', label: '🇯🇵 日本語' },
+                  { code: 'zh', label: '🇨🇳 中文' },
+                ].map(({ code, label }) => (
                   <Button
-                    key={lang}
-                    onClick={() => setLanguage(lang)}
-                    variant={language === lang ? 'default' : 'ghost'}
+                    key={code}
+                    onClick={() => setLanguage(code as Language)}
+                    variant={language === code ? 'default' : 'ghost'}
                     size="sm"
                     className="justify-start text-xs"
                   >
-                    {lang === 'fr' ? '🇫🇷 Français' : lang === 'en' ? '🇬🇧 English' : '🇪🇸 Español'}
+                    {label}
                   </Button>
                 ))}
               </div>
