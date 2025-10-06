@@ -17,6 +17,7 @@ export interface Score {
   username: string;
   score: number;
   created_at: string;
+  weekly_updated_at?: string;
 }
 
 export interface SubmitScoreParams {
@@ -100,13 +101,13 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    // Use Supabase client to fetch from scores table
+    // Use Supabase client to fetch from scores table (best_score for global)
     // RLS policies ensure device_id is not exposed to public
     const { data, error } = await supabase
       .from('scores')
-      .select('username,score,created_at')
+      .select('username,best_score,created_at')
       .eq('mode', mode)
-      .order('score', { ascending: false })
+      .order('best_score', { ascending: false })
       .limit(limit);
 
     if (error) {
@@ -114,7 +115,11 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    return data || [];
+    return (data || []).map(entry => ({
+      username: entry.username,
+      score: entry.best_score,
+      created_at: entry.created_at
+    }));
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement:', error);
@@ -138,10 +143,10 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
 
     const { data, error } = await supabase
       .from('scores')
-      .select('username,score,created_at')
+      .select('username,weekly_score,weekly_updated_at')
       .eq('mode', mode)
-      .gte('created_at', monday.toISOString())
-      .order('score', { ascending: false })
+      .gte('weekly_updated_at', monday.toISOString())
+      .order('weekly_score', { ascending: false })
       .limit(limit);
 
     if (error) {
@@ -149,7 +154,11 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       return [];
     }
 
-    return data || [];
+    return (data || []).map(entry => ({
+      username: entry.username,
+      score: entry.weekly_score,
+      created_at: entry.weekly_updated_at || entry.weekly_updated_at
+    }));
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement hebdomadaire:', error);

@@ -108,28 +108,34 @@ export type Database = {
       }
       scores: {
         Row: {
+          best_score: number
           created_at: string | null
           device_id: string
           id: string
           mode: string
-          score: number
           username: string
+          weekly_score: number
+          weekly_updated_at: string | null
         }
         Insert: {
+          best_score: number
           created_at?: string | null
           device_id: string
           id?: string
           mode: string
-          score: number
           username: string
+          weekly_score?: number
+          weekly_updated_at?: string | null
         }
         Update: {
+          best_score?: number
           created_at?: string | null
           device_id?: string
           id?: string
           mode?: string
-          score?: number
           username?: string
+          weekly_score?: number
+          weekly_updated_at?: string | null
         }
         Relationships: []
       }

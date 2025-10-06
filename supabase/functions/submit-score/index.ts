@@ -121,29 +121,44 @@ serve(async (req) => {
     // Check if there's an existing score for this device_id and mode
     const { data: existingScore } = await supabase
       .from('scores')
-      .select('score')
+      .select('best_score, weekly_score')
       .eq('device_id', device_id)
       .eq('mode', mode)
       .single();
 
-    // Only submit if no existing score or new score is better
-    if (existingScore && score <= existingScore.score) {
-      console.log(`Score not better than existing: ${score} <= ${existingScore.score}`);
+    // Determine best_score and weekly_score
+    let best_score = score;
+    let should_update = true;
+
+    if (existingScore) {
+      // Keep the best score for global leaderboard
+      best_score = Math.max(score, existingScore.best_score);
+      
+      // Don't update if weekly score hasn't improved
+      if (score <= existingScore.weekly_score) {
+        console.log(`Weekly score not improved: ${score} <= ${existingScore.weekly_score}`);
+        should_update = false;
+      }
+    }
+
+    if (!should_update) {
       return new Response(
         JSON.stringify({ success: false, error: 'Score not improved' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Upsert the score (insert or update if better)
+    // Upsert the score with separate best_score and weekly_score
     const { data, error } = await supabase
       .from('scores')
       .upsert({
         device_id,
         username,
-        score,
+        best_score,
+        weekly_score: score,
+        weekly_updated_at: new Date().toISOString(),
         mode,
-        created_at: new Date().toISOString()
+        created_at: existingScore ? undefined : new Date().toISOString()
       }, {
         onConflict: 'device_id,mode'
       })
