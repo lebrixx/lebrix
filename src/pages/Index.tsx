@@ -53,7 +53,7 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
-  const { addXp } = usePlayerLevel();
+  const { addXp, playerLevel } = usePlayerLevel();
   
   // Force refresh des coins depuis localStorage
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
@@ -112,7 +112,7 @@ const Index = () => {
 
     if (identity.username) {
       import('@/utils/scoresApi').then(({ submitScore }) => {
-        submitScore({ score: finalScore, mode: currentMode })
+        submitScore({ score: finalScore, mode: currentMode, level: playerLevel.level })
           .then(success => {
             // Soumission silencieuse - pas de notifications
           })

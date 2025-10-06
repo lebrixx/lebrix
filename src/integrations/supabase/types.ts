@@ -138,6 +138,7 @@ export type Database = {
           created_at: string | null
           device_id: string
           id: string
+          level: number
           mode: string
           score: number
           username: string
@@ -146,6 +147,7 @@ export type Database = {
           created_at?: string | null
           device_id: string
           id?: string
+          level?: number
           mode: string
           score: number
           username: string
@@ -154,6 +156,7 @@ export type Database = {
           created_at?: string | null
           device_id?: string
           id?: string
+          level?: number
           mode?: string
           score?: number
           username?: string

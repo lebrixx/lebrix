@@ -34,7 +34,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, username, score, mode, session_start_time, client_fingerprint } = await req.json();
+    const { device_id, username, score, mode, session_start_time, client_fingerprint, level } = await req.json();
 
     console.log('Score submission attempt:', { device_id, username, score, mode });
 
@@ -143,6 +143,7 @@ serve(async (req) => {
         username,
         score,
         mode,
+        level: level || 1,
         created_at: new Date().toISOString()
       }, {
         onConflict: 'device_id,mode'

@@ -17,16 +17,18 @@ export interface Score {
   username: string;
   score: number;
   created_at: string;
+  level?: number;
 }
 
 export interface SubmitScoreParams {
   score: number;
   mode: string;
+  level?: number;
 }
 
 const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse'];
 
-export async function submitScore({ score, mode }: SubmitScoreParams): Promise<boolean> {
+export async function submitScore({ score, mode, level = 1 }: SubmitScoreParams): Promise<boolean> {
   try {
     // Basic client-side validation
     if (typeof score !== 'number' || score < 2) {
@@ -59,13 +61,14 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     const clientFingerprint = generateDeviceFingerprint();
 
     // Call the secure Edge Function instead of direct database access
-    console.log('Appel Edge Function avec:', { deviceId, username, score, mode });
+    console.log('Appel Edge Function avec:', { deviceId, username, score, mode, level });
     const { data, error } = await supabase.functions.invoke('submit-score', {
       body: {
         device_id: deviceId,
         username,
         score,
         mode,
+        level,
         session_start_time: gameSessionStart || now - 10000, // Fallback if not set
         client_fingerprint: clientFingerprint
       }
@@ -104,7 +107,7 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
     // RLS policies ensure device_id is not exposed to public
     const { data, error } = await supabase
       .from('scores')
-      .select('username,score,created_at')
+      .select('username,score,created_at,level')
       .eq('mode', mode)
       .order('score', { ascending: false })
       .limit(limit);
@@ -138,7 +141,7 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
 
     const { data, error } = await supabase
       .from('scores')
-      .select('username,score,created_at')
+      .select('username,score,created_at,level')
       .eq('mode', mode)
       .gte('created_at', monday.toISOString())
       .order('score', { ascending: false })
