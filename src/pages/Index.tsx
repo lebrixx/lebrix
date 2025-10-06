@@ -10,6 +10,7 @@ import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { PreGameMenu } from '@/components/PreGameMenu';
+import { ScoreSync } from '@/components/ScoreSync';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
@@ -317,6 +318,9 @@ const Index = () => {
         onClose={() => setShowDailyRewards(false)}
         onRewardClaimed={handleDailyRewardClaimed}
       />
+
+      {/* Score sync for XP tracking */}
+      <ScoreSync gameState={gameState} currentMode={currentMode} />
     </div>
   );
 };
