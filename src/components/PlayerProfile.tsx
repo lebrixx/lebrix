@@ -21,10 +21,19 @@ interface LeaderboardEntry {
   total_players: number;
 }
 
+interface LocalLeaderboardEntry {
+  mode: string;
+  rank: number;
+  score: number;
+  total_players: number;
+  type: 'global' | 'weekly';
+}
+
 export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
   const { profile, isAuthenticated } = useAuth();
   const { playerLevel, calculateXpForLevel } = usePlayerLevel();
   const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([]);
+  const [localLeaderboardEntries, setLocalLeaderboardEntries] = useState<LocalLeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -34,48 +43,87 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
     const fetchPlayerData = async () => {
       setLoading(true);
 
-      // Get username from profile or localStorage
-      if (isAuthenticated && profile?.username) {
-        setUsername(profile.username);
-      } else {
-        const localIdentity = getLocalIdentity();
-        setUsername(localIdentity.username || 'Joueur');
-      }
+      // Get username from localStorage
+      const localIdentity = getLocalIdentity();
+      setUsername(localIdentity.username || 'Joueur');
 
-      // Fetch leaderboard rankings only if authenticated
-      if (isAuthenticated && profile?.id) {
-        const { data: leaderboardData } = await supabase
-          .from('leaderboard')
-          .select('mode, score')
-          .eq('user_id', profile.id);
+      // Fetch leaderboard rankings from scores table (local)
+      const localDeviceId = localIdentity.deviceId;
+      
+      // Get player's scores from scores table
+      const { data: scoresData } = await supabase
+        .from('scores')
+        .select('mode, score, created_at')
+        .eq('device_id', localDeviceId)
+        .order('score', { ascending: false });
 
-        if (leaderboardData) {
-          // For each mode, get player's rank by counting higher scores
-          const entriesPromises = leaderboardData.map(async (entry) => {
-            const { count: higherScoresCount } = await supabase
-              .from('leaderboard')
-              .select('*', { count: 'exact', head: true })
-              .eq('mode', entry.mode)
-              .gt('score', entry.score);
+      if (scoresData && scoresData.length > 0) {
+        const modes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse'];
+        const allEntries: LocalLeaderboardEntry[] = [];
 
-            const rank = (higherScoresCount || 0) + 1;
+        for (const mode of modes) {
+          const modeScores = scoresData.filter(s => s.mode === mode);
+          if (modeScores.length === 0) continue;
 
-            const { count } = await supabase
-              .from('leaderboard')
-              .select('*', { count: 'exact', head: true })
-              .eq('mode', entry.mode);
+          const bestScore = Math.max(...modeScores.map(s => s.score));
 
-            return {
-              mode: entry.mode,
-              rank: rank,
-              score: entry.score,
-              total_players: count || 0
-            };
-          });
+          // Get global rank
+          const { count: higherScoresCount } = await supabase
+            .from('scores')
+            .select('*', { count: 'exact', head: true })
+            .eq('mode', mode)
+            .gt('score', bestScore);
 
-          const entries = await Promise.all(entriesPromises);
-          setLeaderboardEntries(entries.filter(e => e.rank > 0));
+          const globalRank = (higherScoresCount || 0) + 1;
+
+          const { count: totalPlayers } = await supabase
+            .from('scores')
+            .select('*', { count: 'exact', head: true })
+            .eq('mode', mode);
+
+          // Only show if in top 100
+          if (globalRank <= 100) {
+            allEntries.push({
+              mode,
+              rank: globalRank,
+              score: bestScore,
+              total_players: totalPlayers || 0,
+              type: 'global'
+            });
+          }
+
+          // Get weekly rank
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+          const { count: higherWeeklyScoresCount } = await supabase
+            .from('scores')
+            .select('*', { count: 'exact', head: true })
+            .eq('mode', mode)
+            .gt('score', bestScore)
+            .gte('created_at', oneWeekAgo.toISOString());
+
+          const weeklyRank = (higherWeeklyScoresCount || 0) + 1;
+
+          const { count: totalWeeklyPlayers } = await supabase
+            .from('scores')
+            .select('*', { count: 'exact', head: true })
+            .eq('mode', mode)
+            .gte('created_at', oneWeekAgo.toISOString());
+
+          // Only show if in top 50 weekly
+          if (weeklyRank <= 50) {
+            allEntries.push({
+              mode,
+              rank: weeklyRank,
+              score: bestScore,
+              total_players: totalWeeklyPlayers || 0,
+              type: 'weekly'
+            });
+          }
         }
+
+        setLocalLeaderboardEntries(allEntries);
       }
 
       setLoading(false);
@@ -218,74 +266,62 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
           </div>
           <div className="text-center p-3 bg-game-dark rounded-lg">
             <Trophy className="w-6 h-6 text-success mx-auto mb-2" />
-            <div className="text-2xl font-bold text-primary">{isAuthenticated ? leaderboardEntries.length : '-'}</div>
-            <div className="text-xs text-text-muted">Classements</div>
+            <div className="text-2xl font-bold text-primary">{localLeaderboardEntries.length}</div>
+            <div className="text-xs text-text-muted">Tops</div>
           </div>
         </div>
       </Card>
 
       {/* Leaderboard Rankings */}
-      {isAuthenticated && (
-        <Card className="bg-button-bg border-wheel-border p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Trophy className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-bold text-text-primary">Classements</h3>
-          </div>
+      <Card className="bg-button-bg border-wheel-border p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Trophy className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-bold text-text-primary">Mes Classements</h3>
+        </div>
 
-          {loading ? (
-            <div className="text-center py-8 text-text-muted">Chargement...</div>
-          ) : leaderboardEntries.length === 0 ? (
-            <div className="text-center py-8 text-text-muted">
-              Aucun classement pour le moment. Jouez pour apparaître dans le top!
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {leaderboardEntries.map((entry) => (
-                <div
-                  key={entry.mode}
-                  className="flex items-center justify-between p-3 bg-game-dark rounded-lg hover:bg-game-dark/80 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="font-bold text-text-primary mb-1">
+        {loading ? (
+          <div className="text-center py-8 text-text-muted">Chargement...</div>
+        ) : localLeaderboardEntries.length === 0 ? (
+          <div className="text-center py-8">
+            <Trophy className="w-12 h-12 mx-auto mb-3 text-text-muted opacity-50" />
+            <p className="text-primary font-medium mb-2">Continue de jouer !</p>
+            <p className="text-text-muted text-sm">
+              Entre dans le top 100 global ou le top 50 hebdomadaire pour apparaître ici
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {localLeaderboardEntries.map((entry, idx) => (
+              <div
+                key={`${entry.mode}-${entry.type}-${idx}`}
+                className="flex items-center justify-between p-3 bg-game-dark rounded-lg hover:bg-game-dark/80 transition-colors"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-bold text-text-primary">
                       {getModeDisplayName(entry.mode)}
-                    </div>
-                    <div className="text-sm text-text-muted">
-                      Score: {entry.score.toLocaleString()}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <Badge variant={getRankBadgeVariant(entry.rank)} className="mb-1">
-                      #{entry.rank}
+                    </span>
+                    <Badge variant={entry.type === 'weekly' ? 'secondary' : 'outline'} className="text-xs">
+                      {entry.type === 'weekly' ? 'Hebdo' : 'Global'}
                     </Badge>
-                    <div className="text-xs text-text-muted">
-                      sur {entry.total_players}
-                    </div>
+                  </div>
+                  <div className="text-sm text-text-muted">
+                    Score: {entry.score.toLocaleString()}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      )}
-
-      {/* Login prompt for non-authenticated users */}
-      {!isAuthenticated && (
-        <Card className="bg-button-bg border-wheel-border p-6">
-          <div className="text-center">
-            <Crown className="w-12 h-12 text-primary mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-primary mb-2">Débloquer plus de fonctionnalités</h3>
-            <p className="text-sm text-text-muted mb-4">
-              Créez un compte pour sauvegarder votre progression, apparaître dans les classements mondiaux et synchroniser vos données sur tous vos appareils !
-            </p>
-            <Button
-              onClick={() => window.location.href = '/auth'}
-              className="bg-gradient-primary hover:scale-105 transition-all w-full"
-            >
-              Se connecter / S'inscrire
-            </Button>
+                <div className="text-right">
+                  <Badge variant={getRankBadgeVariant(entry.rank)} className="mb-1">
+                    #{entry.rank}
+                  </Badge>
+                  <div className="text-xs text-text-muted">
+                    sur {entry.total_players}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
 
       {/* Level milestones info */}
       <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
