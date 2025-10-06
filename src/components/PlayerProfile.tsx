@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Trophy, Star, TrendingUp, Award } from 'lucide-react';
+import { ArrowLeft, Trophy, Star, TrendingUp, Award, Edit2, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { usePlayerLevel } from '@/hooks/usePlayerLevel';
+import { getLocalIdentity } from '@/utils/localIdentity';
 
 interface PlayerProfileProps {
   onBack: () => void;
@@ -20,75 +23,59 @@ interface LeaderboardEntry {
 
 export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
   const { profile, isAuthenticated } = useAuth();
-  const [level, setLevel] = useState(1);
-  const [currentXp, setCurrentXp] = useState(0);
-  const [totalXp, setTotalXp] = useState(0);
-  const [xpNeeded, setXpNeeded] = useState(100);
+  const { playerLevel, calculateXpForLevel } = usePlayerLevel();
   const [leaderboardEntries, setLeaderboardEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAuthMessage, setShowAuthMessage] = useState(false);
-
-  // Calculate XP needed for next level using same formula as backend
-  const calculateXpForLevel = (level: number): number => {
-    return Math.floor(100 * Math.pow(level, 1.8));
-  };
+  const [username, setUsername] = useState('');
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [tempUsername, setTempUsername] = useState('');
 
   useEffect(() => {
     const fetchPlayerData = async () => {
-      if (!isAuthenticated || !profile?.id) {
-        setShowAuthMessage(true);
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
 
-      // Fetch player level
-      const { data: levelData } = await supabase
-        .from('player_levels')
-        .select('*')
-        .eq('user_id', profile.id)
-        .maybeSingle();
-
-      if (levelData) {
-        setLevel(levelData.level);
-        setCurrentXp(Number(levelData.current_xp));
-        setTotalXp(Number(levelData.total_xp));
-        setXpNeeded(calculateXpForLevel(levelData.level));
+      // Get username from profile or localStorage
+      if (isAuthenticated && profile?.username) {
+        setUsername(profile.username);
+      } else {
+        const localIdentity = getLocalIdentity();
+        setUsername(localIdentity.username || 'Joueur');
       }
 
-      // Fetch leaderboard rankings
-      const { data: leaderboardData } = await supabase
-        .from('leaderboard')
-        .select('mode, score')
-        .eq('user_id', profile.id);
+      // Fetch leaderboard rankings only if authenticated
+      if (isAuthenticated && profile?.id) {
+        const { data: leaderboardData } = await supabase
+          .from('leaderboard')
+          .select('mode, score')
+          .eq('user_id', profile.id);
 
-      if (leaderboardData) {
-        // For each mode, get player's rank by counting higher scores
-        const entriesPromises = leaderboardData.map(async (entry) => {
-          const { data: higherScores, error } = await supabase
-            .from('leaderboard')
-            .select('score', { count: 'exact', head: true })
-            .eq('mode', entry.mode)
-            .gt('score', entry.score);
+        if (leaderboardData) {
+          // For each mode, get player's rank by counting higher scores
+          const entriesPromises = leaderboardData.map(async (entry) => {
+            const { count: higherScoresCount } = await supabase
+              .from('leaderboard')
+              .select('*', { count: 'exact', head: true })
+              .eq('mode', entry.mode)
+              .gt('score', entry.score);
 
-          const rank = (higherScores?.length || 0) + 1;
+            const rank = (higherScoresCount || 0) + 1;
 
-          const { count } = await supabase
-            .from('leaderboard')
-            .select('*', { count: 'exact', head: true })
-            .eq('mode', entry.mode);
+            const { count } = await supabase
+              .from('leaderboard')
+              .select('*', { count: 'exact', head: true })
+              .eq('mode', entry.mode);
 
-          return {
-            mode: entry.mode,
-            rank: rank,
-            score: entry.score,
-            total_players: count || 0
-          };
-        });
+            return {
+              mode: entry.mode,
+              rank: rank,
+              score: entry.score,
+              total_players: count || 0
+            };
+          });
 
-        const entries = await Promise.all(entriesPromises);
-        setLeaderboardEntries(entries.filter(e => e.rank > 0));
+          const entries = await Promise.all(entriesPromises);
+          setLeaderboardEntries(entries.filter(e => e.rank > 0));
+        }
       }
 
       setLoading(false);
@@ -97,7 +84,18 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
     fetchPlayerData();
   }, [profile, isAuthenticated]);
 
-  const xpProgress = level >= 100 ? 100 : (currentXp / xpNeeded) * 100;
+  const handleUsernameChange = () => {
+    if (tempUsername.trim()) {
+      const localIdentity = getLocalIdentity();
+      localIdentity.username = tempUsername.trim();
+      localStorage.setItem('localIdentity', JSON.stringify(localIdentity));
+      setUsername(tempUsername.trim());
+      setIsEditingUsername(false);
+    }
+  };
+
+  const xpNeeded = calculateXpForLevel(playerLevel.level);
+  const xpProgress = playerLevel.level >= 100 ? 100 : (playerLevel.current_xp / xpNeeded) * 100;
 
   const getModeDisplayName = (mode: string): string => {
     return mode.replace(/_/g, ' ').toUpperCase();
@@ -109,41 +107,6 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
     if (rank <= 10) return 'outline';
     return 'outline';
   };
-
-  // If not authenticated, show auth message
-  if (showAuthMessage) {
-    return (
-      <div className="min-h-screen bg-gradient-game flex flex-col p-4">
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            size="sm"
-            className="hover:bg-primary/20"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour
-          </Button>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <Card className="bg-button-bg border-wheel-border p-8 text-center max-w-md">
-            <Award className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-primary mb-4">Profil de Joueur</h2>
-            <p className="text-text-secondary mb-6">
-              Connectez-vous pour débloquer le système de niveau, suivre votre progression et apparaître dans les classements !
-            </p>
-            <Button
-              onClick={() => window.location.href = '/auth'}
-              className="bg-gradient-primary hover:scale-105 transition-all w-full"
-            >
-              Se connecter / S'inscrire
-            </Button>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col p-4 overflow-y-auto">
@@ -167,40 +130,75 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
         
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-primary">{profile?.username || 'Joueur'}</h2>
-              <p className="text-sm text-text-muted">Joueur depuis {new Date().toLocaleDateString()}</p>
+            <div className="flex-1">
+              {isEditingUsername ? (
+                <div className="flex gap-2 items-center">
+                  <Input
+                    value={tempUsername}
+                    onChange={(e) => setTempUsername(e.target.value)}
+                    placeholder="Votre pseudo"
+                    className="max-w-[200px]"
+                    maxLength={20}
+                  />
+                  <Button size="sm" onClick={handleUsernameChange}>
+                    OK
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setIsEditingUsername(false)}>
+                    ✕
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-primary">{username}</h2>
+                  {!isAuthenticated && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="w-8 h-8 p-0"
+                      onClick={() => {
+                        setTempUsername(username);
+                        setIsEditingUsername(true);
+                      }}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
+              <p className="text-sm text-text-muted">
+                {isAuthenticated ? 'Compte connecté' : 'Profil local'}
+              </p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-1">{level}</div>
+              <div className="text-4xl font-bold text-primary mb-1">{playerLevel.level}</div>
               <Badge variant="secondary" className="bg-secondary text-game-dark">
-                {level >= 100 ? 'MAX' : 'NIVEAU'}
+                {playerLevel.level >= 100 ? 'MAX' : 'NIVEAU'}
               </Badge>
             </div>
           </div>
 
           {/* XP Progress */}
-          {level < 100 && (
+          {playerLevel.level < 100 && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-text-muted">Progression</span>
                 <span className="text-primary font-bold">
-                  {currentXp.toLocaleString()} / {xpNeeded.toLocaleString()} XP
+                  {playerLevel.current_xp.toLocaleString()} / {xpNeeded.toLocaleString()} XP
                 </span>
               </div>
               <Progress value={xpProgress} className="h-3" />
               <div className="flex justify-between text-xs text-text-muted">
-                <span>Niveau {level}</span>
-                <span>Niveau {level + 1}</span>
+                <span>Niveau {playerLevel.level}</span>
+                <span>Niveau {playerLevel.level + 1}</span>
               </div>
             </div>
           )}
 
-          {level >= 100 && (
+          {playerLevel.level >= 100 && (
             <div className="text-center py-4">
               <Award className="w-12 h-12 text-secondary mx-auto mb-2" />
               <p className="text-primary font-bold">NIVEAU MAXIMUM ATTEINT!</p>
-              <p className="text-text-muted text-sm">XP Total: {totalXp.toLocaleString()}</p>
+              <p className="text-text-muted text-sm">XP Total: {playerLevel.total_xp.toLocaleString()}</p>
             </div>
           )}
         </div>
@@ -215,58 +213,79 @@ export const PlayerProfile: React.FC<PlayerProfileProps> = ({ onBack }) => {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-game-dark rounded-lg">
             <Star className="w-6 h-6 text-secondary mx-auto mb-2" />
-            <div className="text-2xl font-bold text-primary">{totalXp.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-primary">{playerLevel.total_xp.toLocaleString()}</div>
             <div className="text-xs text-text-muted">XP Total</div>
           </div>
           <div className="text-center p-3 bg-game-dark rounded-lg">
             <Trophy className="w-6 h-6 text-success mx-auto mb-2" />
-            <div className="text-2xl font-bold text-primary">{leaderboardEntries.length}</div>
-            <div className="text-xs text-text-muted">Modes Joués</div>
+            <div className="text-2xl font-bold text-primary">{isAuthenticated ? leaderboardEntries.length : '-'}</div>
+            <div className="text-xs text-text-muted">Classements</div>
           </div>
         </div>
       </Card>
 
       {/* Leaderboard Rankings */}
-      <Card className="bg-button-bg border-wheel-border p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-bold text-text-primary">Classements</h3>
-        </div>
+      {isAuthenticated && (
+        <Card className="bg-button-bg border-wheel-border p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-bold text-text-primary">Classements</h3>
+          </div>
 
-        {loading ? (
-          <div className="text-center py-8 text-text-muted">Chargement...</div>
-        ) : leaderboardEntries.length === 0 ? (
-          <div className="text-center py-8 text-text-muted">
-            Aucun classement pour le moment. Jouez pour apparaître dans le top!
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {leaderboardEntries.map((entry) => (
-              <div
-                key={entry.mode}
-                className="flex items-center justify-between p-3 bg-game-dark rounded-lg hover:bg-game-dark/80 transition-colors"
-              >
-                <div className="flex-1">
-                  <div className="font-bold text-text-primary mb-1">
-                    {getModeDisplayName(entry.mode)}
+          {loading ? (
+            <div className="text-center py-8 text-text-muted">Chargement...</div>
+          ) : leaderboardEntries.length === 0 ? (
+            <div className="text-center py-8 text-text-muted">
+              Aucun classement pour le moment. Jouez pour apparaître dans le top!
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {leaderboardEntries.map((entry) => (
+                <div
+                  key={entry.mode}
+                  className="flex items-center justify-between p-3 bg-game-dark rounded-lg hover:bg-game-dark/80 transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="font-bold text-text-primary mb-1">
+                      {getModeDisplayName(entry.mode)}
+                    </div>
+                    <div className="text-sm text-text-muted">
+                      Score: {entry.score.toLocaleString()}
+                    </div>
                   </div>
-                  <div className="text-sm text-text-muted">
-                    Score: {entry.score.toLocaleString()}
+                  <div className="text-right">
+                    <Badge variant={getRankBadgeVariant(entry.rank)} className="mb-1">
+                      #{entry.rank}
+                    </Badge>
+                    <div className="text-xs text-text-muted">
+                      sur {entry.total_players}
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <Badge variant={getRankBadgeVariant(entry.rank)} className="mb-1">
-                    #{entry.rank}
-                  </Badge>
-                  <div className="text-xs text-text-muted">
-                    sur {entry.total_players}
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* Login prompt for non-authenticated users */}
+      {!isAuthenticated && (
+        <Card className="bg-button-bg border-wheel-border p-6">
+          <div className="text-center">
+            <Crown className="w-12 h-12 text-primary mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-primary mb-2">Débloquer plus de fonctionnalités</h3>
+            <p className="text-sm text-text-muted mb-4">
+              Créez un compte pour sauvegarder votre progression, apparaître dans les classements mondiaux et synchroniser vos données sur tous vos appareils !
+            </p>
+            <Button
+              onClick={() => window.location.href = '/auth'}
+              className="bg-gradient-primary hover:scale-105 transition-all w-full"
+            >
+              Se connecter / S'inscrire
+            </Button>
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {/* Level milestones info */}
       <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">

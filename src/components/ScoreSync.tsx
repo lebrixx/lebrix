@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePlayerLevel } from '@/hooks/usePlayerLevel';
 import { GameState } from '@/hooks/useGameLogic';
 
 interface ScoreSyncProps {
@@ -8,33 +9,33 @@ interface ScoreSyncProps {
 }
 
 export const ScoreSync: React.FC<ScoreSyncProps> = ({ gameState, currentMode }) => {
-  const { isAuthenticated, updateLeaderboard, addXp } = useAuth();
+  const { isAuthenticated, updateLeaderboard } = useAuth();
+  const { addXp } = usePlayerLevel();
 
   useEffect(() => {
-    // Sync scores and XP when game ends and user is authenticated
+    // Add XP after game over - for ALL users (authenticated or not)
     if (
-      isAuthenticated && 
       gameState.gameStatus === 'gameover' && 
       gameState.currentScore > 0
     ) {
       const syncScore = async () => {
         try {
-          // Update leaderboard
-          await updateLeaderboard({
-            mode: currentMode,
-            score: gameState.bestScore,
-            coins: gameState.coins,
-            games_played: gameState.totalGamesPlayed,
-            max_speed_reached: gameState.maxSpeedReached,
-            direction_changes: gameState.directionChanges,
-          });
-
-          // Add XP based on score (1 point = 1 XP)
-          if (addXp) {
-            await addXp(gameState.currentScore);
+          // Update leaderboard if authenticated
+          if (isAuthenticated) {
+            await updateLeaderboard({
+              mode: currentMode,
+              score: gameState.bestScore,
+              coins: gameState.coins,
+              games_played: gameState.totalGamesPlayed,
+              max_speed_reached: gameState.maxSpeedReached,
+              direction_changes: gameState.directionChanges,
+            });
           }
+
+          // Add XP based on score (1 point = 1 XP) - works for all users
+          await addXp(gameState.currentScore);
         } catch (error) {
-          console.error('Error syncing score to leaderboard:', error);
+          console.error('Error syncing score:', error);
         }
       };
       

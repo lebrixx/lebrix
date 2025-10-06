@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileButton } from '@/components/ProfileButton';
-import { useAuth } from '@/hooks/useAuth';
+import { usePlayerLevel } from '@/hooks/usePlayerLevel';
 
 interface MainMenuProps {
   bestScore: number;
@@ -39,7 +39,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   hasAvailableReward
 }) => {
   const { language, setLanguage } = useLanguage();
-  const { playerLevel, isAuthenticated } = useAuth();
+  const { playerLevel } = usePlayerLevel();
   const t = translations[language];
   const [showComingSoon, setShowComingSoon] = useState(false);
   return (
@@ -49,7 +49,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1 flex justify-start pl-2">
             <ProfileButton 
-              level={isAuthenticated ? playerLevel.level : 1} 
+              level={playerLevel.level} 
               onClick={onOpenProfile} 
             />
           </div>
