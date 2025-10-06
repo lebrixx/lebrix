@@ -61,6 +61,33 @@ export type Database = {
           },
         ]
       }
+      player_levels: {
+        Row: {
+          created_at: string
+          current_xp: number
+          level: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_xp?: number
+          level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_xp?: number
+          level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -138,6 +165,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_player_xp: {
+        Args: { p_user_id: string; xp_gained: number }
+        Returns: {
+          leveled_up: boolean
+          new_current_xp: number
+          new_level: number
+        }[]
+      }
+      calculate_xp_for_level: {
+        Args: { level_num: number }
+        Returns: number
+      }
       cleanup_old_scores: {
         Args: Record<PropertyKey, never>
         Returns: undefined
