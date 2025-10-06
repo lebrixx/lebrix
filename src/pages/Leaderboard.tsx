@@ -41,30 +41,38 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('leaderboard')
-        .select(`
-          *,
-          profiles(username)
-        `)
+        .from('scores')
+        .select('id, device_id, username, mode, best_score, created_at')
         .eq('mode', mode)
-        .order('score', { ascending: false })
+        .order('best_score', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Leaderboard fetch error:', error);
+        throw error;
+      }
 
-      const formattedData = data?.map(entry => ({
-        ...entry,
-        username: entry.profiles?.username || 'Anonyme'
-      })) || [];
+      const formattedData = (data || []).map(entry => ({
+        id: entry.id,
+        user_id: entry.device_id,
+        username: entry.username || 'Anonyme',
+        mode: entry.mode,
+        score: entry.best_score,
+        coins: 0,
+        games_played: 0,
+        max_speed_reached: 0,
+        direction_changes: 0,
+        created_at: entry.created_at
+      }));
 
       setLeaderboard(formattedData);
     } catch (error: any) {
+      console.error('Error fetching leaderboard:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger le classement",
+        title: "Erreur de connexion",
+        description: error.message || "Impossible de charger le classement. Vérifiez votre connexion.",
         variant: "destructive"
       });
-      console.error('Error fetching leaderboard:', error);
     }
     setLoading(false);
   };
