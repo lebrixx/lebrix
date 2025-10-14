@@ -29,7 +29,7 @@ const GAME_MODES_SHOP = [
     id: ModeID.ZONE_TRAITRESSE,
     name: cfgModes[ModeID.ZONE_TRAITRESSE].name,
     description: cfgModes[ModeID.ZONE_TRAITRESSE].desc,
-    price: 20,
+    price: 1000,
     icon: AlertTriangle,
   }
 ];

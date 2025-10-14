@@ -14,21 +14,21 @@ export const BOOSTS: Record<BoostType, Boost> = {
     name: 'Bouclier',
     icon: '🛡️',
     description: 'Protège automatiquement d\'une erreur',
-    coinPrice: 100,
+    coinPrice: 150,
   },
   bigger_zone: {
     id: 'bigger_zone',
     name: 'Zone verte plus grande',
     icon: '🎯',
     description: 'Agrandit temporairement la zone verte',
-    coinPrice: 100,
+    coinPrice: 150,
   },
   start_20: {
     id: 'start_20',
     name: 'Démarrage à 20',
     icon: '🚀',
     description: 'Commence la partie avec 20 points',
-    coinPrice: 100,
+    coinPrice: 150,
   },
 };
 
