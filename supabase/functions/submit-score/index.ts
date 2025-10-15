@@ -128,15 +128,22 @@ serve(async (req) => {
 
     // Determine best_score and weekly_score
     let best_score = score;
+    let weekly_score = score;
     let should_update = true;
 
     if (existingScore) {
       // Keep the best score for global leaderboard
       best_score = Math.max(score, existingScore.best_score);
       
-      // Don't update if weekly score hasn't improved
-      if (score <= existingScore.weekly_score) {
-        console.log(`Weekly score not improved: ${score} <= ${existingScore.weekly_score}`);
+      // Keep the best weekly score
+      weekly_score = Math.max(score, existingScore.weekly_score || 0);
+      
+      // Only update if either best_score OR weekly_score improved
+      const best_score_improved = score > existingScore.best_score;
+      const weekly_score_improved = score > (existingScore.weekly_score || 0);
+      
+      if (!best_score_improved && !weekly_score_improved) {
+        console.log(`No improvement: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}`);
         should_update = false;
       }
     }
@@ -155,7 +162,7 @@ serve(async (req) => {
         device_id,
         username,
         best_score,
-        weekly_score: score,
+        weekly_score,
         weekly_updated_at: new Date().toISOString(),
         mode,
         created_at: existingScore ? undefined : new Date().toISOString()
