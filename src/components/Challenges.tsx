@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2 } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain } from 'lucide-react';
 import { ModeID } from '@/constants/modes';
 import { toast } from 'sonner';
 import { BOOSTS, BoostType } from '@/types/boosts';
@@ -67,6 +67,13 @@ const MODE_INFO = {
     color: 'text-red-400',
     bgColor: 'bg-red-400/10',
     borderColor: 'border-red-400/30'
+  },
+  [ModeID.MEMOIRE_EXPERT]: {
+    name: 'Mémoire (Expert)',
+    icon: Brain,
+    color: 'text-cyan-400',
+    bgColor: 'bg-cyan-400/10',
+    borderColor: 'border-cyan-400/30'
   }
 };
 
