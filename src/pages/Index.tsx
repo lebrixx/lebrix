@@ -217,6 +217,7 @@ const Index = () => {
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
             onOpenDailyRewards={() => setShowDailyRewards(true)}
             hasAvailableReward={hasAvailableReward}
+            onAdRewardClaimed={addCoins}
           />
         );
         

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Tv } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AdRewardDialog } from '@/components/AdRewardDialog';
 
 interface MainMenuProps {
   bestScore: number;
@@ -19,6 +20,7 @@ interface MainMenuProps {
   onOpenLeaderboard: () => void;
   onOpenDailyRewards: () => void;
   hasAvailableReward: boolean;
+  onAdRewardClaimed: (coins: number) => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -32,17 +34,32 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenModes,
   onOpenLeaderboard,
   onOpenDailyRewards,
-  hasAvailableReward
+  hasAvailableReward,
+  onAdRewardClaimed
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
   const [showComingSoon, setShowComingSoon] = useState(false);
+  const [showAdReward, setShowAdReward] = useState(false);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
       {/* Logo/Title */}
       <div className="text-center animate-fade-in mt-16">
         <div className="flex justify-between items-start mb-4">
-          <div className="flex-1"></div>
+          <div className="flex-1 flex justify-start pl-4">
+            {/* Free Coins Button */}
+            <Button
+              onClick={() => setShowAdReward(true)}
+              variant="outline"
+              size="sm"
+              className="border-secondary/50 bg-secondary/10 hover:bg-secondary/20 hover:scale-105 transition-all duration-300 gap-1.5 group animate-pulse-glow"
+            >
+              <Tv className="w-4 h-4 text-secondary group-hover:animate-bounce" />
+              <span className="text-xs font-semibold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                Free Coins
+              </span>
+            </Button>
+          </div>
           <div className="flex-1">
             <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
               LUCKY STOP
@@ -256,6 +273,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </Button>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Ad Reward Dialog */}
+      <AdRewardDialog
+        isOpen={showAdReward}
+        onClose={() => setShowAdReward(false)}
+        onRewardClaimed={onAdRewardClaimed}
+      />
     </div>
   );
 };
