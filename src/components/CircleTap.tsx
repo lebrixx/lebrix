@@ -163,20 +163,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           )}
         </div>
         
-        {/* Message pour mode mémoire */}
-        {gameState.currentMode === 'memoire_expert' && (
-          <div className="mt-4">
-            {gameState.memoryZoneVisible ? (
-              <div className="text-2xl font-bold text-primary animate-pulse">
-                🧠 Clique sur la zone verte !
-              </div>
-            ) : (
-              <div className="text-xl font-bold text-secondary">
-                ⏳ Attends la prochaine zone...
-              </div>
-            )}
-          </div>
-        )}
         
         {/* Boosts actifs */}
         {gameState.activeBoosts.length > 0 && (

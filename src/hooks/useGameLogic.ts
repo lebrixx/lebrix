@@ -467,7 +467,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         
         return;
       } else {
-        // Échec - clic en dehors de la zone
+        // Échec - clic en dehors de la zone, afficher la zone pendant 2 secondes
         setGameState(prev => ({
           ...prev,
           gameStatus: 'gameover',
@@ -475,7 +475,14 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           coins: prev.coins + Math.floor(prev.currentScore / 10),
           showResult: true,
           lastResult: 'failure',
+          memoryZoneVisible: true, // Montrer où était la zone
         }));
+        
+        // Cacher la zone après 2 secondes
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, memoryZoneVisible: false }));
+        }, 2000);
+        
         return;
       }
     }
