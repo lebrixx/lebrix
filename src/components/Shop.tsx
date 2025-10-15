@@ -41,8 +41,8 @@ const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
     name: 'Pack de Tickets Expert',
-    description: '10 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
-    price: 150,
+    description: '5 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
+    price: 110,
     icon: Star,
     isTicketPack: true,
   }
@@ -125,11 +125,11 @@ export const Shop: React.FC<ShopProps> = ({
       }
       
       if (onSpendCoins(price)) {
-        addTickets(10);
+        addTickets(5);
         setCurrentTickets(getTickets());
         toast({
           title: "Pack acheté !",
-          description: "Tu as reçu 10 tickets pour le mode Expert !",
+          description: "Tu as reçu 5 tickets pour le mode Expert !",
         });
       }
       return;
@@ -414,16 +414,25 @@ export const Shop: React.FC<ShopProps> = ({
                       </div>
                     </div>
 
-                    {/* Action Button */}
+                    {/* Action Buttons */}
                     {isTicketPack ? (
-                      <Button 
-                        onClick={() => handleModeUnlock(mode.id, mode.price)}
-                        className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
-                        disabled={coins < mode.price}
-                      >
-                        <Ticket className="w-4 h-4 mr-2" />
-                        Acheter 10 tickets ({mode.price} coins)
-                      </Button>
+                      <div className="space-y-2">
+                        <Button 
+                          onClick={() => handleModeUnlock(mode.id, mode.price)}
+                          className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
+                          disabled={coins < mode.price}
+                        >
+                          <Ticket className="w-4 h-4 mr-2" />
+                          Acheter 5 tickets ({mode.price} coins)
+                        </Button>
+                        <Button 
+                          className="w-full bg-purple-500/20 border border-purple-500 text-purple-400 hover:bg-purple-500/30"
+                          disabled
+                        >
+                          <Video className="w-4 h-4 mr-2" />
+                          Obtenir 5 via pub
+                        </Button>
+                      </div>
                     ) : isUnlocked ? (
                       <Button 
                         className="w-full bg-success hover:bg-success/90" 
