@@ -44,7 +44,7 @@ const Index = () => {
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
     const saved = localStorage.getItem('unlockedModes');
-    return saved ? JSON.parse(saved) : ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile']; // Modes de base débloqués
+    return saved ? JSON.parse(saved) : ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes de base débloqués
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
