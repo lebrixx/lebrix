@@ -52,12 +52,8 @@ export interface GameState {
   // Pour mode zone traîtresse
   multipleZones?: Array<{ start: number; end: number; arc: number }>;
   trapZoneIndex?: number; // Index de la zone piégée
-  // Pour mode mémoire expert
-  memoryZones?: Array<{ start: number; end: number; arc: number }>;
-  memoryPhase?: 'showing' | 'memorizing' | 'completed';
-  memoryClickOrder?: number[];
-  memoryExpectedOrder?: number[];
-  memoryLevel?: number; // Nombre de zones à mémoriser
+  // Pour mode mémoire expert - une seule zone à la fois
+  memoryZoneVisible?: boolean; // La zone est-elle visible?
   // Boosts actifs
   activeBoosts: BoostType[];
   hasShield: boolean;
@@ -250,11 +246,9 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     saveProgress();
   }, [gameState.coins, gameState.bestScore, saveProgress]);
 
-  // Animation de la bille (60 FPS) + Zone mobile - Skip en mode mémoire
+  // Animation de la bille (60 FPS) + Zone mobile
   const animateBall = useCallback(() => {
     if (gameState.gameStatus !== 'running') return;
-    // Pas d'animation en mode mémoire
-    if (gameState.currentMode === ModeID.MEMOIRE_EXPERT) return;
 
     const animate = (currentTime: number) => {
       if (!lastTimeRef.current) {
@@ -313,7 +307,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
   }, [gameState.gameStatus, gameState.currentMode]);
 
   useEffect(() => {
-    if (gameState.gameStatus === 'running' && gameState.currentMode !== ModeID.MEMOIRE_EXPERT) {
+    if (gameState.gameStatus === 'running') {
       lastTimeRef.current = undefined;
       animateBall();
     } else if (animationFrameRef.current) {
@@ -359,52 +353,17 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       trapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
     }
     
-    // Mode Mémoire Expert
-    let memoryZones: Array<{ start: number; end: number; arc: number }> | undefined;
-    let memoryPhase: 'showing' | 'memorizing' | 'completed' | undefined;
-    let memoryClickOrder: number[] | undefined;
-    let memoryExpectedOrder: number[] | undefined;
-    let memoryLevel: number | undefined;
+    // Mode Mémoire Expert - une seule zone à la fois
+    let memoryZoneVisible = false;
     
     if (currentMode === ModeID.MEMOIRE_EXPERT) {
-      memoryLevel = 2; // Commencer avec 2 zones
-      memoryZones = [];
-      memoryExpectedOrder = [];
-      memoryClickOrder = [];
-      memoryPhase = 'showing';
+      memoryZoneVisible = true;
       
-      const fixedArc = modeConfig.zoneArc || cfgBase.zoneArc;
-      const usedAngles: number[] = [];
-      
-      // Générer des zones aléatoires non-chevauchantes
-      for (let i = 0; i < memoryLevel; i++) {
-        let start;
-        let attempts = 0;
-        do {
-          start = Math.random() * 2 * Math.PI;
-          // Vérifier qu'il n'y a pas de chevauchement avec les zones existantes
-          const tooClose = usedAngles.some(angle => {
-            const diff = Math.abs(start - angle);
-            return diff < fixedArc * 2 || (2 * Math.PI - diff) < fixedArc * 2;
-          });
-          if (!tooClose) break;
-          attempts++;
-        } while (attempts < 50);
-        
-        usedAngles.push(start);
-        memoryZones.push({ 
-          start, 
-          end: start + fixedArc, 
-          arc: fixedArc 
-        });
-        memoryExpectedOrder.push(i);
-      }
-      
-      // Timer pour cacher les zones après 1 seconde
+      // Timer pour cacher la zone après 1 seconde
       setTimeout(() => {
         setGameState(prev => ({
           ...prev,
-          memoryPhase: 'memorizing',
+          memoryZoneVisible: false,
         }));
       }, 1000);
     }
@@ -445,11 +404,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
       multipleZones,
       trapZoneIndex,
-      memoryZones,
-      memoryPhase,
-      memoryClickOrder,
-      memoryExpectedOrder,
-      memoryLevel,
+      memoryZoneVisible,
       activeBoosts: boosts,
       hasShield: boosts.includes('shield'),
     }));
@@ -473,123 +428,56 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
     if (gameState.gameStatus !== 'running') return;
 
-    // Mode Mémoire Expert : gestion spéciale des clics
-    if (gameState.currentMode === ModeID.MEMOIRE_EXPERT && gameState.memoryPhase === 'memorizing') {
-      if (!gameState.memoryZones || !gameState.memoryExpectedOrder || !gameState.memoryClickOrder) return;
+    // Mode Mémoire Expert : clic sur la zone visible
+    if (gameState.currentMode === ModeID.MEMOIRE_EXPERT) {
+      // Vérifier si le clic est dans la zone
+      const isInZone = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
       
-      // Trouver quelle zone a été cliquée
-      let clickedZoneIndex = -1;
-      for (let i = 0; i < gameState.memoryZones.length; i++) {
-        const zone = gameState.memoryZones[i];
-        if (inArc(gameState.ballAngle, zone.start, zone.end)) {
-          clickedZoneIndex = i;
-          break;
-        }
-      }
-      
-      // Si aucune zone cliquée
-      if (clickedZoneIndex === -1) {
-        // Game over - clic en dehors des zones
-        setGameState(prev => ({
-          ...prev,
-          gameStatus: 'gameover',
-          bestScore: Math.max(prev.currentScore, prev.bestScore),
-          coins: prev.coins + prev.currentScore, // 10 points = 1 coin
-          showResult: true,
-          lastResult: 'failure',
-        }));
-        return;
-      }
-      
-      // Vérifier si c'est la bonne zone dans le bon ordre
-      const expectedIndex = gameState.memoryExpectedOrder[gameState.memoryClickOrder.length];
-      
-      if (clickedZoneIndex !== expectedIndex) {
-        // Mauvaise zone ou mauvais ordre - Game over
-        setGameState(prev => ({
-          ...prev,
-          gameStatus: 'gameover',
-          bestScore: Math.max(prev.currentScore, prev.bestScore),
-          coins: prev.coins + prev.currentScore, // 10 points = 1 coin
-          showResult: true,
-          lastResult: 'failure',
-        }));
-        return;
-      }
-      
-      // Bonne zone ! Ajouter à l'ordre des clics
-      const newClickOrder = [...gameState.memoryClickOrder, clickedZoneIndex];
-      
-      // Toutes les zones ont été cliquées correctement
-      if (newClickOrder.length === gameState.memoryZones.length) {
-        const newScore = gameState.currentScore + (gameState.memoryZones.length * 10); // 10 points par zone
-        const newMemoryLevel = (gameState.memoryLevel || 2) + 1; // +1 zone au niveau suivant
+      if (isInZone) {
+        // Succès ! +10 points
+        const newScore = gameState.currentScore + 10;
         
-        // Générer le prochain niveau
-        const modeConfig = cfgModes[gameState.currentMode];
-        const fixedArc = modeConfig.zoneArc || cfgBase.zoneArc;
-        const newMemoryZones: Array<{ start: number; end: number; arc: number }> = [];
-        const usedAngles: number[] = [];
-        
-        for (let i = 0; i < newMemoryLevel; i++) {
-          let start;
-          let attempts = 0;
-          do {
-            start = Math.random() * 2 * Math.PI;
-            const tooClose = usedAngles.some(angle => {
-              const diff = Math.abs(start - angle);
-              return diff < fixedArc * 2 || (2 * Math.PI - diff) < fixedArc * 2;
-            });
-            if (!tooClose) break;
-            attempts++;
-          } while (attempts < 50);
-          
-          usedAngles.push(start);
-          newMemoryZones.push({ start, end: start + fixedArc, arc: fixedArc });
-        }
+        // Générer une nouvelle position pour la zone
+        const newZoneStart = Math.random() * 2 * Math.PI;
         
         setGameState(prev => ({
           ...prev,
           currentScore: newScore,
           bestScore: Math.max(prev.bestScore, newScore),
-          memoryZones: newMemoryZones,
-          memoryExpectedOrder: Array.from({ length: newMemoryLevel }, (_, i) => i),
-          memoryClickOrder: [],
-          memoryPhase: 'showing',
-          memoryLevel: newMemoryLevel,
+          zoneStart: newZoneStart,
+          zoneEnd: newZoneStart + prev.zoneArc,
+          memoryZoneVisible: true,
           successFlash: true,
           successParticles: true,
           comboCount: prev.comboCount + 1,
         }));
         
-        // Masquer les flashs après animation
+        // Masquer les effets
         setTimeout(() => {
           setGameState(prev => ({ ...prev, successFlash: false, successParticles: false }));
         }, 300);
         
-        // Passer en phase de mémorisation après 1 seconde
+        // Cacher la zone après 1 seconde
         setTimeout(() => {
           setGameState(prev => ({
             ...prev,
-            memoryPhase: 'memorizing',
+            memoryZoneVisible: false,
           }));
         }, 1000);
         
         return;
+      } else {
+        // Échec - clic en dehors de la zone
+        setGameState(prev => ({
+          ...prev,
+          gameStatus: 'gameover',
+          bestScore: Math.max(prev.currentScore, prev.bestScore),
+          coins: prev.coins + Math.floor(prev.currentScore / 10),
+          showResult: true,
+          lastResult: 'failure',
+        }));
+        return;
       }
-      
-      // Continuer à cliquer sur les zones suivantes
-      setGameState(prev => ({
-        ...prev,
-        memoryClickOrder: newClickOrder,
-        successFlash: true,
-      }));
-      
-      setTimeout(() => {
-        setGameState(prev => ({ ...prev, successFlash: false }));
-      }, 200);
-      
-      return;
     }
 
     // Vérifier si la bille est dans la zone verte

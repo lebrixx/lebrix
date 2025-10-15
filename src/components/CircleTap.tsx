@@ -161,20 +161,20 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           {gameState.currentMode === 'survie_60s' && gameState.timeLeft && (
             <span className="ml-2 text-red-400 font-bold">⏱ {Math.ceil(gameState.timeLeft)}s</span>
           )}
-          {gameState.currentMode === 'memoire_expert' && gameState.memoryLevel && (
-            <span className="ml-2 text-purple-400 font-bold">🧠 Zones: {gameState.memoryLevel}</span>
-          )}
         </div>
         
         {/* Message pour mode mémoire */}
-        {gameState.currentMode === 'memoire_expert' && gameState.memoryPhase === 'showing' && (
-          <div className="mt-4 text-2xl font-bold text-primary animate-pulse">
-            🧠 Mémorise les zones !
-          </div>
-        )}
-        {gameState.currentMode === 'memoire_expert' && gameState.memoryPhase === 'memorizing' && (
-          <div className="mt-4 text-xl font-bold text-secondary">
-            Clique dans le bon ordre ! ({gameState.memoryClickOrder?.length || 0}/{gameState.memoryLevel})
+        {gameState.currentMode === 'memoire_expert' && (
+          <div className="mt-4">
+            {gameState.memoryZoneVisible ? (
+              <div className="text-2xl font-bold text-primary animate-pulse">
+                🧠 Clique sur la zone verte !
+              </div>
+            ) : (
+              <div className="text-xl font-bold text-secondary">
+                ⏳ Attends la prochaine zone...
+              </div>
+            )}
           </div>
         )}
         
@@ -221,8 +221,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
             }}
           />
 
-          {/* Zone verte (arc de succès) - Seulement pour les modes non-traîtresse et non-mémoire */}
-          {gameState.currentMode !== 'zone_traitresse' && gameState.currentMode !== 'memoire_expert' && (
+          {/* Zone verte (arc de succès) - Seulement pour les modes non-traîtresse */}
+          {gameState.currentMode !== 'zone_traitresse' && (
             <path
               d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
                   A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
@@ -230,7 +230,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               fill="none"
               stroke={getCircleColor()}
               strokeWidth="20"
-              className="drop-shadow-lg"
+              className={`drop-shadow-lg ${gameState.currentMode === 'memoire_expert' && !gameState.memoryZoneVisible ? 'opacity-0' : ''}`}
               style={{
                 filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
               }}
@@ -292,38 +292,9 @@ export const CircleTap: React.FC<CircleTapProps> = ({
             </>
           )}
 
-          {/* Zones mémoire - visibles seulement pendant la phase showing */}
-          {gameState.currentMode === 'memoire_expert' && gameState.memoryZones && gameState.memoryPhase === 'showing' && (
-            <>
-              {gameState.memoryZones.map((zone, index) => {
-                const startDeg = (zone.start * 180) / Math.PI;
-                const arcDeg = (zone.arc * 180) / Math.PI;
-                const startX = cfg.radius + 40 + Math.cos((startDeg - 90) * Math.PI / 180) * cfg.radius;
-                const startY = cfg.radius + 40 + Math.sin((startDeg - 90) * Math.PI / 180) * cfg.radius;
-                const endX = cfg.radius + 40 + Math.cos((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius;
-                const endY = cfg.radius + 40 + Math.sin((startDeg + arcDeg - 90) * Math.PI / 180) * cfg.radius;
-                const largeArcFlag = arcDeg > 180 ? 1 : 0;
-                
-                return (
-                  <path
-                    key={index}
-                    d={`M ${startX} ${startY} A ${cfg.radius} ${cfg.radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`}
-                    fill="none"
-                    stroke={getCircleColor()}
-                    strokeWidth="20"
-                    className="drop-shadow-lg animate-pulse"
-                    style={{
-                      filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
-                    }}
-                  />
-                );
-              })}
-            </>
-          )}
 
-          {/* Bille - Barre rouge qui dépasse - Cachée en mode mémoire */}
-          {gameState.currentMode !== 'memoire_expert' && (
-            <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
+          {/* Bille - Barre rouge qui dépasse */}
+          <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
             {/* Barre rouge principale qui dépasse */}
             <rect
               x={cfg.radius - 15}
@@ -349,10 +320,9 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               }}
             />
           </g>
-          )}
 
           {/* Trail dynamique de la bille */}
-          {gameState.gameStatus === 'running' && gameState.currentMode !== 'memoire_expert' && (
+          {gameState.gameStatus === 'running' && (
             <>
               {/* Trail principal */}
               <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
