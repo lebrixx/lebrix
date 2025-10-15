@@ -96,6 +96,17 @@ const Index = () => {
     });
     setSelectedBoostsForGame([]);
 
+    // Recharger les coins depuis localStorage (mis à jour par useGameLogic dans CircleTap)
+    const saved = localStorage.getItem('luckyStopGame');
+    if (saved) {
+      try {
+        const parsedState = JSON.parse(saved);
+        setCurrentCoins(parsedState.coins || 0);
+      } catch (e) {
+        console.error('Error loading coins after game:', e);
+      }
+    }
+
     const identity = getLocalIdentity();
 
     if (identity.username) {
