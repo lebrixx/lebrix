@@ -43,30 +43,24 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showAdReward, setShowAdReward] = useState(false);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme}`}>
+      {/* Free Coins Button - Discret */}
+      <Button
+        onClick={() => setShowAdReward(true)}
+        variant="ghost"
+        size="sm"
+        className="absolute top-4 left-4 hover:bg-primary/10 transition-all duration-300 gap-1 opacity-60 hover:opacity-100"
+      >
+        <Tv className="w-3 h-3 text-text-muted" />
+        <span className="text-xs text-text-muted">
+          Free Coins
+        </span>
+      </Button>
+
       {/* Logo/Title */}
       <div className="text-center animate-fade-in mt-16">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1 flex justify-start pl-4">
-            {/* Free Coins Button */}
-            <Button
-              onClick={() => setShowAdReward(true)}
-              variant="outline"
-              size="sm"
-              className="border-secondary/50 bg-secondary/10 hover:bg-secondary/20 hover:scale-105 transition-all duration-300 gap-1.5 group animate-pulse-glow"
-            >
-              <Tv className="w-4 h-4 text-secondary group-hover:animate-bounce" />
-              <span className="text-xs font-semibold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                Free Coins
-              </span>
-            </Button>
-          </div>
-          <div className="flex-1">
-            <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
-              LUCKY STOP
-            </h1>
-          </div>
-          <div className="flex-1"></div>
-        </div>
+        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
+          LUCKY STOP
+        </h1>
         
         {/* Boutons cadeau, langue et nouveautés */}
         <div className="flex justify-center gap-2 mb-2">
