@@ -16,8 +16,8 @@ const SCORE_LIMITS = {
   zone_traitresse: 8000
 };
 
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_SUBMISSIONS_PER_WINDOW = 3;
+const RATE_LIMIT_WINDOW = 15000; // 15 seconds
+const MAX_SUBMISSIONS_PER_WINDOW = 100;
 const MIN_GAME_DURATION = 5000; // 5 seconds minimum
 
 // Simple in-memory rate limiting (in production, use Redis or similar)
