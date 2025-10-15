@@ -9,8 +9,13 @@ import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
+import { getDailyRewardState } from '@/utils/dailyRewards';
 
-const availableThemes = THEMES;
+// Réorganiser les thèmes pour mettre theme-royal en premier
+const availableThemes = [
+  THEMES.find(t => t.id === 'theme-royal')!,
+  ...THEMES.filter(t => t.id !== 'theme-royal')
+];
 
 interface ShopProps {
   coins: number;
@@ -46,9 +51,25 @@ export const Shop: React.FC<ShopProps> = ({
   onSpendCoins,
 }) => {
   const [activeTab, setActiveTab] = useState('themes');
+  const { toast } = useToast();
+  
+  // Vérifier si l'utilisateur a atteint 7 jours de récompenses
+  const dailyRewardState = getDailyRewardState();
+  const hasReached7Days = dailyRewardState.currentStreak >= 7 || dailyRewardState.totalClaimed >= 7;
+  
   const handlePurchase = (theme: any) => {
     if (ownedThemes.includes(theme.id)) {
       onEquipTheme(theme.id);
+      return;
+    }
+
+    // Vérifier si c'est le thème royal
+    if (theme.id === 'theme-royal' && !hasReached7Days) {
+      toast({
+        title: "Thème verrouillé",
+        description: "Complétez 7 jours de récompenses quotidiennes pour débloquer ce thème exclusif !",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -132,17 +153,21 @@ export const Shop: React.FC<ShopProps> = ({
             {availableThemes.map((theme) => {
               const owned = isOwned(theme.id);
               const equipped = isEquipped(theme.id);
+              const isRoyalTheme = theme.id === 'theme-royal';
+              const isRoyalLocked = isRoyalTheme && !hasReached7Days;
               
               return (
                 <Card 
                   key={theme.id}
                   className={`
                     relative overflow-hidden border-2 transition-all duration-300 hover:scale-105
-                    ${equipped 
-                      ? 'border-primary bg-primary/5 shadow-glow-primary' 
-                      : owned 
-                        ? 'border-success bg-success/5' 
-                        : 'border-wheel-border bg-button-bg hover:border-primary/50'
+                    ${isRoyalLocked
+                      ? 'border-yellow-400/50 bg-yellow-400/5 opacity-90'
+                      : equipped 
+                        ? 'border-primary bg-primary/5 shadow-glow-primary' 
+                        : owned 
+                          ? 'border-success bg-success/5' 
+                          : 'border-wheel-border bg-button-bg hover:border-primary/50'
                     }
                   `}
                 >
@@ -153,7 +178,16 @@ export const Shop: React.FC<ShopProps> = ({
                       background: theme.preview.background,
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/30" />
+                    <div className={`absolute inset-0 ${isRoyalLocked ? 'bg-black/60' : 'bg-gradient-to-br from-transparent to-black/30'}`} />
+                    
+                    {/* Locked Badge pour thème royal */}
+                    {isRoyalLocked && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-yellow-400/20 backdrop-blur-sm border-2 border-yellow-400 rounded-full p-4">
+                          <Lock className="w-10 h-10 text-yellow-400" />
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Equipped Badge */}
                     {equipped && (
@@ -166,7 +200,7 @@ export const Shop: React.FC<ShopProps> = ({
                     )}
                     
                     {/* Owned Badge */}
-                    {owned && !equipped && (
+                    {owned && !equipped && !isRoyalLocked && (
                       <div className="absolute top-2 right-2">
                         <Badge className="bg-success text-game-dark">
                           <Check className="w-3 h-3 mr-1" />
@@ -206,19 +240,39 @@ export const Shop: React.FC<ShopProps> = ({
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xl font-bold text-text-primary">{theme.name}</h3>
-                      <div className="flex items-center gap-1 text-secondary">
-                        <Coins className="w-4 h-4" />
-                        <span className="font-bold">{theme.price}</span>
-                      </div>
+                      {!isRoyalLocked && theme.price > 0 && (
+                        <div className="flex items-center gap-1 text-secondary">
+                          <Coins className="w-4 h-4" />
+                          <span className="font-bold">{theme.price}</span>
+                        </div>
+                      )}
                     </div>
                     
                     <p className="text-text-secondary text-sm mb-4 line-clamp-2">
                       {theme.description}
                     </p>
 
+                    {/* Message de déblocage pour thème royal */}
+                    {isRoyalLocked && (
+                      <div className="mb-4 p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-lg">
+                        <p className="text-xs text-yellow-400 flex items-center gap-2">
+                          <Crown className="w-4 h-4" />
+                          <span>Complétez 7 jours de récompenses quotidiennes pour débloquer ce thème légendaire !</span>
+                        </p>
+                      </div>
+                    )}
+
                     {/* Action Button */}
                     <div className="space-y-2">
-                      {equipped ? (
+                      {isRoyalLocked ? (
+                        <Button 
+                          className="w-full bg-yellow-400/20 border border-yellow-400 text-yellow-400 hover:bg-yellow-400/30" 
+                          disabled
+                        >
+                          <Lock className="w-4 h-4 mr-2" />
+                          Verrouillé - 7 jours requis
+                        </Button>
+                      ) : equipped ? (
                         <Button 
                           className="w-full bg-primary hover:bg-primary/90" 
                           disabled
@@ -233,6 +287,14 @@ export const Shop: React.FC<ShopProps> = ({
                         >
                           <Zap className="w-4 h-4 mr-2" />
                           Équiper
+                        </Button>
+                      ) : theme.price <= 0 ? (
+                        <Button 
+                          onClick={() => handlePurchase(theme)}
+                          className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
+                        >
+                          <Crown className="w-4 h-4 mr-2" />
+                          Débloquer
                         </Button>
                       ) : (
                         <Button 
