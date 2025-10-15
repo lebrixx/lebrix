@@ -64,8 +64,18 @@ const Index = () => {
     setHasAvailableReward(canClaimReward());
   }, []);
 
-  const handleDailyRewardClaimed = (coins: number, theme?: string) => {
-    addCoins(coins);
+  const handleDailyRewardClaimed = (coins: number, theme?: string, boostId?: string) => {
+    if (coins > 0) {
+      addCoins(coins);
+    }
+    
+    if (boostId) {
+      addBoost(boostId as BoostType);
+      toast({
+        title: "🎁 Boost reçu !",
+        description: `Tu as obtenu un boost gratuit !`,
+      });
+    }
     
     if (theme) {
       // Ajouter le thème aux possédés

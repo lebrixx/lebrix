@@ -1,8 +1,11 @@
+import { BoostType } from '@/types/boosts';
+
 // Système de récompenses journalières
 export interface DailyReward {
   day: number;
   coins: number;
   theme?: string;
+  boostId?: BoostType;
 }
 
 export interface DailyRewardState {
@@ -45,6 +48,13 @@ export function canClaimReward(): boolean {
   return !state.claimedToday && isNewDay(state.lastClaimDate);
 }
 
+// Liste des boosts disponibles pour les récompenses aléatoires
+const BOOST_OPTIONS: BoostType[] = ['shield', 'bigger_zone', 'start_20'];
+
+function getRandomBoost(): BoostType {
+  return BOOST_OPTIONS[Math.floor(Math.random() * BOOST_OPTIONS.length)];
+}
+
 export function getNextReward(): DailyReward {
   const state = getDailyRewardState();
   const nextDay = Math.min(state.currentStreak + 1, 7);
@@ -54,6 +64,15 @@ export function getNextReward(): DailyReward {
       day: 7,
       coins: 10,
       theme: 'theme-royal'
+    };
+  }
+  
+  // Jours 2 et 5: boost aléatoire au lieu de coins
+  if (nextDay === 2 || nextDay === 5) {
+    return {
+      day: nextDay,
+      coins: 0,
+      boostId: getRandomBoost()
     };
   }
   
@@ -75,11 +94,27 @@ export function claimDailyReward(): { reward: DailyReward; newState: DailyReward
     new Date(today).getTime() - new Date(state.lastClaimDate).getTime() <= 2 * 24 * 60 * 60 * 1000;
   
   const newStreak = isConsecutive ? Math.min(state.currentStreak + 1, 7) : 1;
-  const reward = {
-    day: newStreak,
-    coins: 10,
-    ...(newStreak === 7 ? { theme: 'theme-royal' } : {})
-  };
+  
+  // Déterminer la récompense selon le jour
+  let reward: DailyReward;
+  if (newStreak === 7) {
+    reward = {
+      day: newStreak,
+      coins: 10,
+      theme: 'theme-royal'
+    };
+  } else if (newStreak === 2 || newStreak === 5) {
+    reward = {
+      day: newStreak,
+      coins: 0,
+      boostId: getRandomBoost()
+    };
+  } else {
+    reward = {
+      day: newStreak,
+      coins: 10
+    };
+  }
   
   const newState: DailyRewardState = {
     lastClaimDate: today,
