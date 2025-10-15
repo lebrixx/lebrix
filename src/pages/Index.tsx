@@ -43,8 +43,17 @@ const Index = () => {
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
+    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
-    return saved ? JSON.parse(saved) : ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes de base débloqués
+    
+    if (saved) {
+      const savedModes = JSON.parse(saved);
+      // Fusionner les modes sauvegardés avec les modes gratuits (pour les utilisateurs existants)
+      const allUnlocked = [...new Set([...freeModes, ...savedModes])];
+      return allUnlocked;
+    }
+    
+    return freeModes;
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
