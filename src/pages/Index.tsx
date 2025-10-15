@@ -9,6 +9,7 @@ import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { PreGameMenu } from '@/components/PreGameMenu';
+import { ScoreSync } from '@/components/ScoreSync';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
@@ -277,6 +278,9 @@ const Index = () => {
   return (
     <div className="overflow-hidden">
       {renderScreen()}
+      
+      {/* Score synchronization for authenticated users */}
+      <ScoreSync gameState={gameState} currentMode={currentMode} />
       
       {/* Modals */}
       <UsernameModal
