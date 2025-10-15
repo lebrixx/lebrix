@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 
 interface ModeSelectionProps {
@@ -27,6 +27,8 @@ const getModeIcon = (modeId: ModeType) => {
       return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.ZONE_TRAITRESSE:
       return <AlertTriangle className="w-8 h-8" />;
+    case ModeID.MEMOIRE_EXPERT:
+      return <Brain className="w-8 h-8" />;
     default:
       return <Target className="w-8 h-8" />;
   }

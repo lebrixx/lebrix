@@ -6,6 +6,7 @@ export const ModeID = {
   SURVIE_60S: "survie_60s",
   ZONE_MOBILE: "zone_mobile",
   ZONE_TRAITRESSE: "zone_traitresse",
+  MEMOIRE_EXPERT: "memoire_expert",
 } as const;
 
 export type ModeType = typeof ModeID[keyof typeof ModeID];
@@ -88,6 +89,15 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     multipleZones: true,
     numberOfZones: 4,         // 4 zones vertes au total
     trapZone: true            // Une des zones est piégée
+  },
+  [ModeID.MEMOIRE_EXPERT]: {
+    name: "Mémoire (Expert)",
+    desc: "Mémorise les zones pendant 1 seconde, puis clique dans le bon ordre. +1 zone par niveau !",
+    zoneArc: Math.PI / 5,
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
   }
 };
 
