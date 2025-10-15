@@ -434,8 +434,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       const isInZone = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
       
       if (isInZone) {
-        // Succès ! +10 points
-        const newScore = gameState.currentScore + 10;
+        // Succès ! +1 point
+        const newScore = gameState.currentScore + 1;
         
         // Générer une nouvelle position pour la zone
         const newZoneStart = Math.random() * 2 * Math.PI;
