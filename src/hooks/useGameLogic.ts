@@ -3,6 +3,7 @@ import * as React from 'react';
 import { ModeType, ModeID, cfgModes, cfgBase, inArc } from '@/constants/modes';
 import { startGameSession } from '@/utils/scoresApi';
 import { BoostType } from '@/types/boosts';
+import { consumeTicket } from '@/utils/ticketSystem';
 
 interface CustomizationItem {
   id: string;
@@ -323,6 +324,16 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Démarrer le jeu avec boosts sélectionnés
   const startGame = useCallback((boosts: BoostType[] = []) => {
+    // Mode Expert : vérifier et consommer un ticket
+    if (currentMode === ModeID.MEMOIRE_EXPERT) {
+      const hasTicket = consumeTicket();
+      if (!hasTicket) {
+        // Pas de ticket disponible, ne pas démarrer
+        console.warn('Pas de ticket disponible pour le mode expert');
+        return;
+      }
+    }
+    
     // Mark the start of game session for security tracking
     startGameSession();
     

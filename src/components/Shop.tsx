@@ -3,13 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { getDailyRewardState } from '@/utils/dailyRewards';
+import { getTickets, addTickets } from '@/utils/ticketSystem';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -36,6 +37,14 @@ const GAME_MODES_SHOP = [
     description: cfgModes[ModeID.ZONE_TRAITRESSE].desc,
     price: 1000,
     icon: AlertTriangle,
+  },
+  {
+    id: 'expert_tickets',
+    name: 'Pack de Tickets Expert',
+    description: '10 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
+    price: 150,
+    icon: Star,
+    isTicketPack: true,
   }
 ];
 
@@ -51,6 +60,7 @@ export const Shop: React.FC<ShopProps> = ({
   onSpendCoins,
 }) => {
   const [activeTab, setActiveTab] = useState('themes');
+  const [currentTickets, setCurrentTickets] = useState(getTickets());
   const { toast } = useToast();
   
   // Vérifier si l'utilisateur a atteint 7 jours de récompenses
@@ -103,6 +113,28 @@ export const Shop: React.FC<ShopProps> = ({
   const isEquipped = (themeId: string) => currentTheme === themeId;
 
   const handleModeUnlock = (modeId: string, price: number) => {
+    // Cas spécial pour l'achat de tickets
+    if (modeId === 'expert_tickets') {
+      if (coins < price) {
+        toast({
+          title: "Coins insuffisants",
+          description: `Il te faut ${price} coins pour acheter ce pack.`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (onSpendCoins(price)) {
+        addTickets(10);
+        setCurrentTickets(getTickets());
+        toast({
+          title: "Pack acheté !",
+          description: "Tu as reçu 10 tickets pour le mode Expert !",
+        });
+      }
+      return;
+    }
+    
     const success = onPurchaseMode(modeId, price);
     if (success) {
       // Mode débloqué avec succès
@@ -318,7 +350,8 @@ export const Shop: React.FC<ShopProps> = ({
         <TabsContent value="modes">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {GAME_MODES_SHOP.map((mode) => {
-              const isUnlocked = unlockedModes.includes(mode.id);
+              const isTicketPack = (mode as any).isTicketPack;
+              const isUnlocked = !isTicketPack && unlockedModes.includes(mode.id);
               const IconComponent = mode.icon;
               
               return (
@@ -359,6 +392,19 @@ export const Shop: React.FC<ShopProps> = ({
                       {mode.description}
                     </p>
 
+                    {/* Tickets disponibles pour le pack de tickets */}
+                    {isTicketPack && (
+                      <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-text-muted">Tickets actuels:</span>
+                          <div className="flex items-center gap-1 text-primary">
+                            <Ticket className="w-4 h-4" />
+                            <span className="font-bold">{currentTickets}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Price */}
                     <div className="flex items-center justify-between mb-4 p-3 bg-wheel-segment/20 rounded-lg border border-wheel-border">
                       <span className="text-sm text-text-muted">Prix:</span>
@@ -369,7 +415,16 @@ export const Shop: React.FC<ShopProps> = ({
                     </div>
 
                     {/* Action Button */}
-                    {isUnlocked ? (
+                    {isTicketPack ? (
+                      <Button 
+                        onClick={() => handleModeUnlock(mode.id, mode.price)}
+                        className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
+                        disabled={coins < mode.price}
+                      >
+                        <Ticket className="w-4 h-4 mr-2" />
+                        Acheter 10 tickets ({mode.price} coins)
+                      </Button>
+                    ) : isUnlocked ? (
                       <Button 
                         className="w-full bg-success hover:bg-success/90" 
                         disabled

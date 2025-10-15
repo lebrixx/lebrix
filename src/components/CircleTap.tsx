@@ -4,11 +4,14 @@ import { useSound } from '@/hooks/useSound';
 import { useBoosts } from '@/hooks/useBoosts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video, Zap } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video, Zap, Ticket } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { ModeType } from '@/constants/modes';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { PostGameBoostMenu } from './PostGameBoostMenu';
+import { getTickets } from '@/utils/ticketSystem';
+import { ModeID } from '@/constants/modes';
+import { useToast } from '@/hooks/use-toast';
 
 interface CircleTapProps {
   theme: string;
@@ -37,6 +40,13 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
   const [showBoostMenu, setShowBoostMenu] = useState(false);
   const { inventory, getBoostCount } = useBoosts();
+  const [currentTickets, setCurrentTickets] = useState(getTickets());
+  const { toast } = useToast();
+  
+  // Mettre à jour les tickets quand le gameState change
+  useEffect(() => {
+    setCurrentTickets(getTickets());
+  }, [gameState.gameStatus]);
 
   // Resolve current theme definition for visuals (background, bar, success zone)
   const themeDef = THEMES.find((t) => t.id === theme) || THEMES[0];
@@ -80,6 +90,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const handleTap = () => {
     playClick();
     if (gameState.gameStatus === 'idle') {
+      // Mode expert : vérifier les tickets avant de démarrer
+      if (currentMode === ModeID.MEMOIRE_EXPERT && currentTickets <= 0) {
+        toast({
+          title: "Pas de ticket !",
+          description: "Achète des tickets dans la boutique pour jouer au mode Expert.",
+          variant: "destructive",
+        });
+        return;
+      }
       startGame([]);
     } else {
       onTap();
@@ -107,6 +126,17 @@ export const CircleTap: React.FC<CircleTapProps> = ({
 
   const handleRestartWithBoosts = (boosts: BoostType[]) => {
     setShowBoostMenu(false);
+    
+    // Mode expert : vérifier les tickets avant de démarrer
+    if (currentMode === ModeID.MEMOIRE_EXPERT && currentTickets <= 0) {
+      toast({
+        title: "Pas de ticket !",
+        description: "Achète des tickets dans la boutique pour jouer au mode Expert.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (gameState.gameStatus === 'gameover') {
       resetGame();
       // Petit délai pour laisser l'animation de reset se faire
@@ -385,14 +415,23 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       {gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover' ? (
           <div className="text-center w-full">
             <div className="flex flex-col gap-3 mb-3">
-              <Button
-                onClick={handleBoostMenuOpen}
-                variant="outline"
-                className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
-              >
-                <Zap className="w-5 h-5 mr-2" />
-                Boosts
-              </Button>
+              {/* En mode expert, afficher les tickets au lieu du bouton boost */}
+              {currentMode === ModeID.MEMOIRE_EXPERT ? (
+                <div className="flex items-center justify-center gap-2 bg-button-bg border-2 border-primary rounded-lg px-6 py-3">
+                  <Ticket className="w-6 h-6 text-primary" />
+                  <span className="text-primary font-bold text-xl">{currentTickets}</span>
+                  <span className="text-text-muted text-sm">ticket{currentTickets > 1 ? 's' : ''}</span>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleBoostMenuOpen}
+                  variant="outline"
+                  className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Boosts
+                </Button>
+              )}
               {gameState.gameStatus === 'gameover' && (
                 <Button
                   onClick={handleRevive}
