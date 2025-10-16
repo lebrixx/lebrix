@@ -57,13 +57,17 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       </Button>
 
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-12">
-        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
-          LUCKY STOP
+      <div className="text-center animate-fade-in pt-12 mb-6">
+        <h1 className="font-bold bg-gradient-primary bg-clip-text text-transparent drop-shadow-2xl animate-float leading-tight">
+          <div className="text-6xl md:text-7xl">LUCKY</div>
+          <div className="text-6xl md:text-7xl">STOP</div>
         </h1>
-        
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col justify-center items-center min-h-0">
         {/* Boutons cadeau, langue et nouveautés */}
-        <div className="flex justify-center gap-2 mb-2">
+        <div className="flex justify-center gap-2 mb-3">
           <Button
             onClick={onOpenDailyRewards}
             variant="ghost"
@@ -128,11 +132,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <span className="text-xs text-text-muted">{t.new}</span>
           </Button>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center min-h-0">
-        {/* Subtitle closer to cards */}
+        {/* Subtitle */}
         <div className="text-center mb-3">
           <p className="text-text-secondary text-base">
             {t.subtitle}
