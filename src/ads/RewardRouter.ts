@@ -97,8 +97,8 @@ export async function showRewardedFor(
 
         case 'ticket':
           if (onTicket) {
-            onTicket(1);
-            showToast("Ticket reçu !", "Tu as reçu 1 ticket pour le mode Expert ! 🎫");
+            onTicket(5);
+            showToast("Tickets reçus !", "Tu as reçu 5 tickets pour le mode Expert ! 🎫");
           }
           break;
       }

@@ -43,8 +43,8 @@ const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
     name: 'Pack de Tickets Expert',
-    description: '5 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
-    price: 110,
+    description: '4 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
+    price: 100,
     icon: Star,
     isTicketPack: true,
   }
@@ -132,11 +132,11 @@ export const Shop: React.FC<ShopProps> = ({
       }
       
       if (onSpendCoins(price)) {
-        addTickets(5);
+        addTickets(4);
         setCurrentTickets(getTickets());
         toast({
           title: "Pack acheté !",
-          description: "Tu as reçu 5 tickets pour le mode Expert !",
+          description: "Tu as reçu 4 tickets pour le mode Expert !",
         });
       }
       return;
@@ -430,7 +430,7 @@ export const Shop: React.FC<ShopProps> = ({
                           disabled={coins < mode.price}
                         >
                           <Ticket className="w-4 h-4 mr-2" />
-                          Acheter 5 tickets ({mode.price} coins)
+                          Acheter 4 tickets ({mode.price} coins)
                         </Button>
                         <Button 
                           onClick={async () => {
@@ -448,7 +448,7 @@ export const Shop: React.FC<ShopProps> = ({
                           disabled={!Ads.isReady()}
                         >
                           <Video className="w-4 h-4 mr-2" />
-                          Obtenir 1 via pub
+                          Obtenir 5 via pub
                           {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
                             <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
                           )}
