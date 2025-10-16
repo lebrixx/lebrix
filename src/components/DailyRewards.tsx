@@ -239,7 +239,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             </Card>
           )}
 
-          {/* Bouton pour gagner 80 coins via pub */}
+          {/* Bouton pour gagner 100 coins via pub */}
           <Card className="bg-gradient-to-br from-green-500/20 to-primary/20 border-2 border-green-500/50 p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -247,11 +247,11 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 <span className="text-text-primary font-bold">Bonus Publicité</span>
               </div>
               <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                +80 coins
+                +100 coins
               </Badge>
             </div>
             <p className="text-text-secondary text-sm mb-3">
-              Regarde une pub et gagne 80 coins !
+              Regarde une pub et gagne 100 coins !
             </p>
             <Button
               onClick={handleClaimCoinsWithAd}

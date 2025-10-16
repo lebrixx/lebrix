@@ -90,8 +90,8 @@ export async function showRewardedFor(
 
         case 'coins80':
           if (onCoins) {
-            onCoins(80);
-            showToast("Coins reçus !", "Tu as reçu 80 coins ! 🪙");
+            onCoins(100);
+            showToast("Coins reçus !", "Tu as reçu 100 coins ! 🪙");
           }
           break;
 
