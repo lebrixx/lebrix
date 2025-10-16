@@ -58,7 +58,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
       {/* Logo/Title */}
       <div className="text-center animate-fade-in pt-12">
-        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl">
+        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 drop-shadow-2xl animate-float">
           LUCKY STOP
         </h1>
         
