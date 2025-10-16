@@ -34,12 +34,30 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
   const [canClaim, setCanClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [claimedReward, setClaimedReward] = useState<DailyReward | null>(null);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { addBoost } = useBoosts();
 
   // Initialiser AdMob
   useEffect(() => {
     Ads.init();
   }, []);
+
+  // Mettre à jour le chrono chaque seconde
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateCooldown = () => {
+      setCooldownRemaining(Ads.getCooldownRemaining());
+    };
+
+    // Mise à jour initiale
+    updateCooldown();
+
+    // Mettre à jour chaque seconde
+    const interval = setInterval(updateCooldown, 1000);
+
+    return () => clearInterval(interval);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -260,8 +278,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             >
               <Video className="w-4 h-4 mr-2" />
               Regarder une pub
-              {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
-                <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+              {!Ads.isReady() && cooldownRemaining > 0 && (
+                <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
               )}
             </Button>
           </Card>

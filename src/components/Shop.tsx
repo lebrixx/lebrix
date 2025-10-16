@@ -63,11 +63,27 @@ export const Shop: React.FC<ShopProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('themes');
   const [currentTickets, setCurrentTickets] = useState(getTickets());
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
 
   // Initialiser AdMob
   useEffect(() => {
     Ads.init();
+  }, []);
+
+  // Mettre à jour le chrono chaque seconde
+  useEffect(() => {
+    const updateCooldown = () => {
+      setCooldownRemaining(Ads.getCooldownRemaining());
+    };
+
+    // Mise à jour initiale
+    updateCooldown();
+
+    // Mettre à jour chaque seconde
+    const interval = setInterval(updateCooldown, 1000);
+
+    return () => clearInterval(interval);
   }, []);
   
   // Vérifier si l'utilisateur a atteint 7 jours de récompenses
@@ -449,8 +465,8 @@ export const Shop: React.FC<ShopProps> = ({
                         >
                           <Video className="w-4 h-4 mr-2" />
                           Obtenir 5 via pub
-                          {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
-                            <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+                          {!Ads.isReady() && cooldownRemaining > 0 && (
+                            <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                           )}
                         </Button>
                       </div>
@@ -502,6 +518,22 @@ interface BoostsSectionProps {
 const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) => {
   const { addBoost, getBoostCount } = useBoosts();
   const { toast } = useToast();
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+
+  // Mettre à jour le chrono chaque seconde
+  useEffect(() => {
+    const updateCooldown = () => {
+      setCooldownRemaining(Ads.getCooldownRemaining());
+    };
+
+    // Mise à jour initiale
+    updateCooldown();
+
+    // Mettre à jour chaque seconde
+    const interval = setInterval(updateCooldown, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const canAfford = (price: number) => coins >= price;
 
@@ -599,8 +631,8 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Obtenir via pub
-                  {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
-                    <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+                  {!Ads.isReady() && cooldownRemaining > 0 && (
+                    <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                   )}
                 </Button>
               </div>

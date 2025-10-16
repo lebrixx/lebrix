@@ -43,11 +43,27 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const [showBoostMenu, setShowBoostMenu] = useState(false);
   const { inventory, getBoostCount } = useBoosts();
   const [currentTickets, setCurrentTickets] = useState(getTickets());
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
   
   // Initialiser AdMob au montage du composant
   useEffect(() => {
     Ads.init();
+  }, []);
+
+  // Mettre à jour le chrono chaque seconde
+  useEffect(() => {
+    const updateCooldown = () => {
+      setCooldownRemaining(Ads.getCooldownRemaining());
+    };
+
+    // Mise à jour initiale
+    updateCooldown();
+
+    // Mettre à jour chaque seconde
+    const interval = setInterval(updateCooldown, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Mettre à jour les tickets quand le gameState change
@@ -460,8 +476,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Revivre via pub
-                  {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
-                    <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+                  {!Ads.isReady() && cooldownRemaining > 0 && (
+                    <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                   )}
                 </Button>
               )}
