@@ -210,6 +210,15 @@
     left: 0;
     right: 0;
     bottom: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Stabiliser le titre - empêcher le déplacement */
+  .main-menu-container h1 {
+    position: relative;
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
   /* Désactiver les interactions seulement sur les éléments de jeu */
