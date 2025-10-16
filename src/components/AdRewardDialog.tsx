@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Coins, Play, Sparkles, Gift } from 'lucide-react';
+import { Coins, Play, Sparkles, Gift, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Ads } from '@/ads/AdService';
+import { showRewardedFor } from '@/ads/RewardRouter';
 
 interface AdRewardDialogProps {
   isOpen: boolean;
@@ -18,19 +20,25 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
   const [isWatching, setIsWatching] = useState(false);
   const { toast } = useToast();
 
-  const handleWatchAd = () => {
+  // Initialiser AdMob
+  useEffect(() => {
+    Ads.init();
+  }, []);
+
+  const handleWatchAd = async () => {
     setIsWatching(true);
     
-    // Simuler le visionnage d'une pub (3 secondes)
-    setTimeout(() => {
-      onRewardClaimed(80);
-      setIsWatching(false);
-      toast({
-        title: "🎉 Récompense gagnée !",
-        description: "Tu as reçu 80 coins !",
-      });
-      onClose();
-    }, 3000);
+    const success = await showRewardedFor('coins80', {
+      onCoins: (amount) => {
+        onRewardClaimed(amount);
+        onClose();
+      },
+      showToast: (title, description, variant) => {
+        toast({ title, description, variant });
+      },
+    });
+
+    setIsWatching(false);
   };
 
   return (
@@ -55,7 +63,7 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
             <div className="flex items-center justify-center gap-2 relative z-10">
               <Coins className="w-10 h-10 text-secondary animate-bounce" />
               <span className="text-5xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                +80
+                +100
               </span>
             </div>
             <p className="text-text-muted text-sm mt-2 relative z-10">
@@ -69,9 +77,13 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
               onClick={handleWatchAd}
               className="w-full bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6 text-lg font-bold group"
               size="lg"
+              disabled={!Ads.isReady()}
             >
-              <Play className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+              <Video className="w-5 h-5 mr-2 group-hover:animate-pulse" />
               Regarder la pub
+              {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
+                <span className="ml-2 text-sm">({Ads.getCooldownRemaining()}s)</span>
+              )}
             </Button>
           ) : (
             <div className="space-y-3">
