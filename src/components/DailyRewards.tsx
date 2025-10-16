@@ -3,7 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Gift, Coins, Crown, Star, Sparkles, Zap } from 'lucide-react';
+import { Gift, Coins, Crown, Star, Sparkles, Zap, Video } from 'lucide-react';
+import { Ads } from '@/ads/AdService';
+import { showRewardedFor } from '@/ads/RewardRouter';
 import { 
   getDailyRewardState, 
   canClaimReward, 
@@ -19,18 +21,25 @@ interface DailyRewardsProps {
   isOpen: boolean;
   onClose: () => void;
   onRewardClaimed: (coins: number, theme?: string, boostId?: string) => void;
+  currentCoins?: number;
 }
 
 export const DailyRewards: React.FC<DailyRewardsProps> = ({
   isOpen,
   onClose,
-  onRewardClaimed
+  onRewardClaimed,
+  currentCoins = 0,
 }) => {
   const [rewardState, setRewardState] = useState(getDailyRewardState());
   const [canClaim, setCanClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [claimedReward, setClaimedReward] = useState<DailyReward | null>(null);
   const { addBoost } = useBoosts();
+
+  // Initialiser AdMob
+  useEffect(() => {
+    Ads.init();
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,6 +49,15 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
       setCanClaim(canClaimReward());
     }
   }, [isOpen]);
+
+  const handleClaimCoinsWithAd = async () => {
+    const success = await showRewardedFor('coins80', {
+      onCoins: (amount) => {
+        onRewardClaimed(amount);
+      },
+      showToast: () => {}, // Toast déjà géré par RewardRouter
+    });
+  };
 
   const handleClaimReward = async () => {
     setClaiming(true);
@@ -220,6 +238,33 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
               </div>
             </Card>
           )}
+
+          {/* Bouton pour gagner 80 coins via pub */}
+          <Card className="bg-gradient-to-br from-green-500/20 to-primary/20 border-2 border-green-500/50 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Coins className="w-6 h-6 text-green-400" />
+                <span className="text-text-primary font-bold">Bonus Publicité</span>
+              </div>
+              <Badge variant="secondary" className="bg-green-500/20 text-green-400">
+                +80 coins
+              </Badge>
+            </div>
+            <p className="text-text-secondary text-sm mb-3">
+              Regarde une pub et gagne 80 coins !
+            </p>
+            <Button
+              onClick={handleClaimCoinsWithAd}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:scale-105 transition-all duration-300"
+              disabled={!Ads.isReady()}
+            >
+              <Video className="w-4 h-4 mr-2" />
+              Regarder une pub
+              {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
+                <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+              )}
+            </Button>
+          </Card>
         </div>
       </DialogContent>
     </Dialog>

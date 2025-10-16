@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,8 @@ import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
+import { Ads } from '@/ads/AdService';
+import { showRewardedFor } from '@/ads/RewardRouter';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -62,6 +64,11 @@ export const Shop: React.FC<ShopProps> = ({
   const [activeTab, setActiveTab] = useState('themes');
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   const { toast } = useToast();
+
+  // Initialiser AdMob
+  useEffect(() => {
+    Ads.init();
+  }, []);
   
   // Vérifier si l'utilisateur a atteint 7 jours de récompenses
   const dailyRewardState = getDailyRewardState();
@@ -426,11 +433,25 @@ export const Shop: React.FC<ShopProps> = ({
                           Acheter 5 tickets ({mode.price} coins)
                         </Button>
                         <Button 
+                          onClick={async () => {
+                            const success = await showRewardedFor('ticket', {
+                              onTicket: (amount) => {
+                                addTickets(amount);
+                                setCurrentTickets(getTickets());
+                              },
+                              showToast: (title, description, variant) => {
+                                toast({ title, description, variant });
+                              },
+                            });
+                          }}
                           className="w-full bg-purple-500/20 border border-purple-500 text-purple-400 hover:bg-purple-500/30"
-                          disabled
+                          disabled={!Ads.isReady()}
                         >
                           <Video className="w-4 h-4 mr-2" />
-                          Obtenir 5 via pub
+                          Obtenir 1 via pub
+                          {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
+                            <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+                          )}
                         </Button>
                       </div>
                     ) : isUnlocked ? (
@@ -505,12 +526,24 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
     }
   };
 
-  const handlePurchaseWithAd = (boostId: any) => {
-    // TODO: Intégrer AdMob ici
-    toast({
-      title: "Pub non disponible",
-      description: "La fonctionnalité sera disponible prochainement.",
-      variant: "destructive"
+  const handlePurchaseWithAd = async (boostId: any) => {
+    // Mapper les boosts à leurs kinds
+    const boostKindMap: Record<string, 'boost1' | 'boost2' | 'boost3'> = {
+      'shield': 'boost1',
+      'bigger_zone': 'boost2',
+      'start_20': 'boost3',
+    };
+
+    const kind = boostKindMap[boostId];
+    if (!kind) return;
+
+    const success = await showRewardedFor(kind, {
+      onBoost: (receivedBoostId) => {
+        addBoost(receivedBoostId);
+      },
+      showToast: (title, description, variant) => {
+        toast({ title, description, variant });
+      },
     });
   };
 
@@ -562,10 +595,13 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
                   onClick={() => handlePurchaseWithAd(boost.id)}
                   variant="outline"
                   className="w-full border-wheel-border hover:bg-button-hover"
-                  disabled={true} // Désactivé pour l'instant
+                  disabled={!Ads.isReady()}
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Obtenir via pub
+                  {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
+                    <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+                  )}
                 </Button>
               </div>
             </div>

@@ -12,6 +12,8 @@ import { PostGameBoostMenu } from './PostGameBoostMenu';
 import { getTickets } from '@/utils/ticketSystem';
 import { ModeID } from '@/constants/modes';
 import { useToast } from '@/hooks/use-toast';
+import { Ads } from '@/ads/AdService';
+import { showRewardedFor, resetReviveFlag } from '@/ads/RewardRouter';
 
 interface CircleTapProps {
   theme: string;
@@ -43,9 +45,21 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   const { toast } = useToast();
   
+  // Initialiser AdMob au montage du composant
+  useEffect(() => {
+    Ads.init();
+  }, []);
+
   // Mettre à jour les tickets quand le gameState change
   useEffect(() => {
     setCurrentTickets(getTickets());
+  }, [gameState.gameStatus]);
+
+  // Réinitialiser le flag revive quand une nouvelle partie commence
+  useEffect(() => {
+    if (gameState.gameStatus === 'running') {
+      resetReviveFlag();
+    }
   }, [gameState.gameStatus]);
 
   // Resolve current theme definition for visuals (background, bar, success zone)
@@ -110,10 +124,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     resetGame();
   };
   
-  const handleRevive = () => {
-    // TODO: Intégrer AdMob ici
-    // Pour l'instant, on fait juste revive sans pub
-    reviveGame();
+  const handleRevive = async () => {
+    const success = await showRewardedFor('revive', {
+      onRevive: () => {
+        reviveGame();
+      },
+      showToast: (title, description, variant) => {
+        toast({ title, description, variant });
+      },
+    });
   };
 
   const handleBoostMenuOpen = () => {
@@ -437,10 +456,13 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                   onClick={handleRevive}
                   variant="outline"
                   className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 text-sm"
-                  disabled={true} // Désactivé pour l'instant (pas de pub)
+                  disabled={!Ads.isReady()}
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Revivre via pub
+                  {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
+                    <span className="ml-1 text-xs">({Ads.getCooldownRemaining()}s)</span>
+                  )}
                 </Button>
               )}
             </div>
