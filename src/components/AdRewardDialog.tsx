@@ -18,12 +18,30 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
   onRewardClaimed
 }) => {
   const [isWatching, setIsWatching] = useState(false);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
 
   // Initialiser AdMob
   useEffect(() => {
     Ads.init();
   }, []);
+
+  // Mettre à jour le chrono chaque seconde
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateCooldown = () => {
+      setCooldownRemaining(Ads.getCooldownRemaining());
+    };
+
+    // Mise à jour initiale
+    updateCooldown();
+
+    // Mettre à jour chaque seconde
+    const interval = setInterval(updateCooldown, 1000);
+
+    return () => clearInterval(interval);
+  }, [isOpen]);
 
   const handleWatchAd = async () => {
     setIsWatching(true);
@@ -81,8 +99,8 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
             >
               <Video className="w-5 h-5 mr-2 group-hover:animate-pulse" />
               Regarder la pub
-              {!Ads.isReady() && Ads.getCooldownRemaining() > 0 && (
-                <span className="ml-2 text-sm">({Ads.getCooldownRemaining()}s)</span>
+              {!Ads.isReady() && cooldownRemaining > 0 && (
+                <span className="ml-2 text-sm">({cooldownRemaining}s)</span>
               )}
             </Button>
           ) : (
