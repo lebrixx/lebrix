@@ -455,6 +455,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           ...prev,
           currentScore: newScore,
           bestScore: Math.max(prev.bestScore, newScore),
+          coins: prev.coins + (newScore % 2 === 0 ? 1 : 0), // +1 coin toutes les 2 zones réussies (comme les autres modes)
           zoneStart: newZoneStart,
           zoneEnd: newZoneStart + prev.zoneArc,
           memoryZoneVisible: true,
