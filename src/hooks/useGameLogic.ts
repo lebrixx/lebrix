@@ -91,6 +91,28 @@ const defaultItems: CustomizationItem[] = [
 export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
   const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
   
+  // Refs pour les timeouts à nettoyer
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  
+  // Fonction helper pour ajouter un timeout qui sera auto-nettoyé
+  const addTimeout = useCallback((callback: () => void, delay: number) => {
+    const timeoutId = setTimeout(() => {
+      callback();
+      // Retirer ce timeout de la liste après son exécution
+      timeoutsRef.current = timeoutsRef.current.filter(id => id !== timeoutId);
+    }, delay);
+    timeoutsRef.current.push(timeoutId);
+    return timeoutId;
+  }, []);
+  
+  // Nettoyer tous les timeouts au démontage
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach(id => clearTimeout(id));
+      timeoutsRef.current = [];
+    };
+  }, []);
+  
   // Réinitialiser le jeu quand le mode change
   const [gameState, setGameState] = useState<GameState>(() => {
     return createInitialState(currentMode);
@@ -467,12 +489,12 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         }));
         
         // Masquer les effets
-        setTimeout(() => {
+        addTimeout(() => {
           setGameState(prev => ({ ...prev, successFlash: false, successParticles: false }));
         }, 300);
         
         // Cacher la zone après 1 seconde
-        setTimeout(() => {
+        addTimeout(() => {
           setGameState(prev => ({
             ...prev,
             memoryZoneVisible: false,
@@ -493,7 +515,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         }));
         
         // Cacher la zone après 2 secondes
-        setTimeout(() => {
+        addTimeout(() => {
           setGameState(prev => ({ ...prev, memoryZoneVisible: false }));
         }, 2000);
         
@@ -627,7 +649,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         }));
         
         // Masquer immédiatement
-        setTimeout(() => {
+        addTimeout(() => {
           setGameState(prev => ({ ...prev, showResult: false }));
         }, 100);
         return;
@@ -646,7 +668,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       // Masquer le message de game over immédiatement
       setGameState(prev => ({ ...prev, showResult: false }));
     }
-  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode]);
+  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode, addTimeout]);
 
   // Réinitialiser le jeu
   const resetGame = useCallback(() => {
