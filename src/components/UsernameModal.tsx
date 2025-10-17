@@ -67,6 +67,11 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             <p className="text-xs text-text-muted">
               Lettres, chiffres et underscore uniquement
             </p>
+            <div className="mt-3 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+              <p className="text-xs text-text-secondary text-center leading-relaxed">
+                💡 Mettez votre pseudo Instagram, qui sait peut-être que des concours arrivent bientôt ! 🎁
+              </p>
+            </div>
           </div>
 
           <div className="flex gap-2">
