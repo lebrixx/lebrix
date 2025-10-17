@@ -92,7 +92,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.MEMOIRE_EXPERT]: {
     name: "Mémoire (Expert)",
-    desc: "Mémorise les zones pendant 1 seconde, puis clique dans le bon ordre. +1 zone par niveau !",
+    desc: "Une zone verte apparaît 1 seconde, mémorise sa position et clique au bon endroit ! La difficulté augmente à chaque niveau.",
     zoneArc: Math.PI / 5,
     keepMovingZone: false,
     survival: false,
