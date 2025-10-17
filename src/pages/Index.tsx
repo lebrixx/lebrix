@@ -106,7 +106,7 @@ const Index = () => {
   };
 
   // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
-  const handleGameOver = (finalScore: number) => {
+  const handleGameOver = async (finalScore: number) => {
     setLastGameScore(finalScore);
 
     // Consommer les boosts utilisés
@@ -141,6 +141,13 @@ const Index = () => {
     } else {
       setShowUsernameModal(true);
     }
+
+    // Afficher une interstitielle si toutes les conditions sont remplies
+    import('@/ads/AdService').then(({ Ads }) => {
+      Ads.showInterstitialIfReady().catch(error => {
+        console.log('Interstitial not shown:', error);
+      });
+    });
   };
 
   const handleThemeChange = (theme: string) => {
