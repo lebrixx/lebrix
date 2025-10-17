@@ -56,7 +56,7 @@ const Index = () => {
     return freeModes;
   });
 
-  const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins } = useGameLogic(currentMode);
+  const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins, purchaseTheme } = useGameLogic(currentMode);
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
   
@@ -257,7 +257,7 @@ const Index = () => {
             currentTheme={currentTheme}
             unlockedModes={unlockedModes}
             onBack={() => setCurrentScreen('menu')}
-            onPurchaseTheme={(theme) => spendCoins(theme.price)}
+            onPurchaseTheme={(theme) => purchaseTheme(theme.id, theme.price)}
             onEquipTheme={handleThemeChange}
             onPurchaseMode={handlePurchaseMode}
             onSpendCoins={spendCoins}

@@ -134,7 +134,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       currentScore: 0,
       bestScore: 0,
       coins: 100, // Starting coins
-      ownedThemes: [],
+      ownedThemes: ['theme-neon'], // Thème de base toujours débloqué
       ownedItems: [...defaultItems],
       currentCustomization: {
         background: 'palette-neon',
@@ -175,7 +175,9 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           ...defaultState,
           bestScore: parsedState[`bestScore_${mode}`] || 0,
           coins: parsedState.coins || 100,
-          ownedThemes: parsedState.ownedThemes || [],
+          ownedThemes: parsedState.ownedThemes && parsedState.ownedThemes.length > 0 
+            ? [...new Set([...parsedState.ownedThemes, 'theme-neon'])] // Toujours inclure theme-neon
+            : ['theme-neon'],
           ownedItems: parsedState.ownedItems || [...defaultItems],
           currentCustomization: parsedState.currentCustomization || {
             background: 'palette-neon',
