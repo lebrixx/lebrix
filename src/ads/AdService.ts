@@ -9,6 +9,7 @@ const MAX_INTERSTITIALS_PER_SESSION = 3;
 
 class AdService {
   private isInitialized = false;
+  private appLaunchTime = Date.now(); // Timestamp du lancement de l'app
   
   // Rewarded ads
   private rewardedAdLoaded = false;
@@ -104,6 +105,9 @@ class AdService {
   isInterstitialReady(): boolean {
     const now = Date.now();
     
+    // Vérifier que 6 minutes se sont écoulées depuis le lancement de l'app
+    const appRunningTimeCheck = now - this.appLaunchTime >= 360000; // 6 minutes
+    
     // Vérifier le cooldown de 7 minutes entre interstitielles
     const interstitialCooldownPassed = now - this.lastInterstitialShown >= INTERSTITIAL_COOLDOWN_MS;
     
@@ -114,6 +118,7 @@ class AdService {
     const underSessionLimit = this.interstitialsShownThisSession < MAX_INTERSTITIALS_PER_SESSION;
     
     return this.interstitialAdLoaded 
+      && appRunningTimeCheck
       && interstitialCooldownPassed 
       && noRecentRewarded 
       && underSessionLimit 

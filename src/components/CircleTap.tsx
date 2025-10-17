@@ -530,7 +530,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           {gameState.gameStatus === 'running' 
             ? gameState.currentMode === 'zone_traitresse'
               ? 'Évite la zone piégée !'
-              : 'Tapez quand la barre rouge est dans la zone verte!'
+              : 'Tapez quand la barre est dans la zone verte!'
             : gameState.gameStatus === 'idle'
             ? 'Tapez sur l\'écran pour commencer ou appuyez sur ESPACE/ENTRÉE'
             : ''
