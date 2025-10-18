@@ -733,7 +733,12 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
   // Ajouter des coins (récompenses, défis)
   const addCoins = useCallback((amount: number) => {
     if (amount <= 0) return;
-    setGameState(prev => ({ ...prev, coins: prev.coins + amount }));
+    console.log('[useGameLogic] addCoins called:', { amount });
+    setGameState(prev => {
+      const next = { ...prev, coins: prev.coins + amount };
+      console.log('[useGameLogic] coins updated:', { before: prev.coins, after: next.coins });
+      return next;
+    });
   }, []);
 
   // Sauvegarde automatique

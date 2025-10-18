@@ -56,11 +56,14 @@ export async function showRewardedFor(
   try {
     const success = await Ads.showRewarded(kind);
 
+    console.log('[RewardRouter] Ads.showRewarded resolved:', { kind, success });
+
     if (success) {
       // Appliquer la récompense selon le type
       switch (kind) {
         case 'revive':
           if (onRevive) {
+            console.log('[RewardRouter] Granting revive');
             onRevive();
             reviveUsedThisRun = true;
             showToast("Revive activé !", "Tu as été ramené à la vie !");
@@ -69,6 +72,7 @@ export async function showRewardedFor(
 
         case 'boost1':
           if (onBoost) {
+            console.log('[RewardRouter] Granting boost: shield');
             onBoost('shield');
             showToast("Boost reçu !", "Tu as reçu un Bouclier 🛡️");
           }
@@ -76,6 +80,7 @@ export async function showRewardedFor(
 
         case 'boost2':
           if (onBoost) {
+            console.log('[RewardRouter] Granting boost: bigger_zone');
             onBoost('bigger_zone');
             showToast("Boost reçu !", "Tu as reçu une Zone plus grande 🎯");
           }
@@ -83,6 +88,7 @@ export async function showRewardedFor(
 
         case 'boost3':
           if (onBoost) {
+            console.log('[RewardRouter] Granting boost: start_20');
             onBoost('start_20');
             showToast("Boost reçu !", "Tu as reçu un Démarrage à 20 🚀");
           }
@@ -90,6 +96,7 @@ export async function showRewardedFor(
 
         case 'coins80':
           if (onCoins) {
+            console.log('[RewardRouter] Granting coins: 100');
             onCoins(100);
             showToast("Coins reçus !", "Tu as reçu 100 coins ! 🪙");
           }
@@ -97,6 +104,7 @@ export async function showRewardedFor(
 
         case 'ticket':
           if (onTicket) {
+            console.log('[RewardRouter] Granting tickets: 5');
             onTicket(5);
             showToast("Tickets reçus !", "Tu as reçu 5 tickets pour le mode Expert ! 🎫");
           }
