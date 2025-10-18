@@ -241,11 +241,17 @@ class AdService {
   private async setupRewardedListeners(): Promise<void> {
     try {
       let rewardGranted = false;
+      let dismissedTimeout: NodeJS.Timeout | null = null;
       
-      // Listener pour la récompense (doit arriver avant Dismissed)
+      // Listener pour la récompense (peut parfois arriver après Dismissed sur certains devices)
       const rewardedHandle = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
         console.log('🎁 Ad reward received:', reward);
         rewardGranted = true;
+        // Si on avait planifié un "échec" côté Dismissed, on l'annule
+        if (dismissedTimeout) {
+          clearTimeout(dismissedTimeout);
+          dismissedTimeout = null;
+        }
         if (this.rewardCallback) {
           console.log('✅ Calling reward callback with success=true');
           this.rewardCallback(true);
@@ -254,20 +260,30 @@ class AdService {
       });
       this.rewardedListeners.push(rewardedHandle);
 
-      // Listener pour la fermeture (arrive après Rewarded si complété)
+      // Listener pour la fermeture (sur certains SDK, il peut arriver avant Rewarded)
       const dismissedHandle = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
         console.log('👋 Ad dismissed, rewardGranted:', rewardGranted);
-        if (this.rewardCallback && !rewardGranted) {
-          // Pub fermée avant la fin sans récompense
-          console.log('❌ Calling reward callback with success=false (dismissed early)');
-          this.rewardCallback(false);
-          this.rewardCallback = null;
+        // Petite fenêtre de grâce pour laisser le temps à l'événement Rewarded d'arriver
+        if (!rewardGranted && this.rewardCallback) {
+          if (dismissedTimeout) clearTimeout(dismissedTimeout);
+          dismissedTimeout = setTimeout(() => {
+            // Si après ce délai aucune récompense n'a été reçue, on considère l'échec
+            if (this.rewardCallback && !rewardGranted) {
+              console.log('❌ No reward after grace period -> calling success=false');
+              this.rewardCallback(false);
+              this.rewardCallback = null;
+            }
+          }, 1500);
         }
       });
       this.rewardedListeners.push(dismissedHandle);
 
       const failedToLoadHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error: any) => {
         console.error('💥 Ad failed to load:', error);
+        if (dismissedTimeout) {
+          clearTimeout(dismissedTimeout);
+          dismissedTimeout = null;
+        }
         if (this.rewardCallback) {
           this.rewardCallback(false);
           this.rewardCallback = null;
@@ -277,6 +293,10 @@ class AdService {
 
       const failedToShowHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error: any) => {
         console.error('💥 Ad failed to show:', error);
+        if (dismissedTimeout) {
+          clearTimeout(dismissedTimeout);
+          dismissedTimeout = null;
+        }
         if (this.rewardCallback) {
           this.rewardCallback(false);
           this.rewardCallback = null;
