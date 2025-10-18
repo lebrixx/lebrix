@@ -151,7 +151,7 @@ class AdService {
         resolve(success);
       };
 
-      // Timeout de sécurité de 30 secondes
+      // Timeout de sécurité de 60 secondes
       timeoutId = setTimeout(() => {
         console.warn('Rewarded ad timeout - forcing cleanup');
         if (this.rewardCallback) {
@@ -159,7 +159,7 @@ class AdService {
           this.rewardCallback = null;
           callback(false);
         }
-      }, 30000);
+      }, 60000);
 
       await this.setupRewardedListeners();
       
@@ -273,7 +273,7 @@ class AdService {
               this.rewardCallback(false);
               this.rewardCallback = null;
             }
-          }, 1500);
+          }, 4000);
         }
       });
       this.rewardedListeners.push(dismissedHandle);
