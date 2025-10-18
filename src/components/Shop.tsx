@@ -448,20 +448,20 @@ export const Shop: React.FC<ShopProps> = ({
                           <Ticket className="w-4 h-4 mr-2" />
                           Acheter 4 tickets ({mode.price} coins)
                         </Button>
-                        <Button 
-                          onClick={async () => {
-                            const success = await showRewardedFor('ticket', {
-                              onTicket: (amount) => {
-                                addTickets(amount);
-                                setCurrentTickets(getTickets());
-                              },
-                              showToast: (title, description, variant) => {
-                                toast({ title, description, variant });
-                              },
-                            });
-                          }}
-                          className="w-full bg-purple-500/20 border border-purple-500 text-purple-400 hover:bg-purple-500/30"
-                          disabled={!Ads.isReady()}
+                          <Button 
+                            onClick={async () => {
+                              const success = await showRewardedFor('ticket', {
+                                onTicket: (amount) => {
+                                  addTickets(amount);
+                                  setCurrentTickets(getTickets());
+                                },
+                                showToast: (title, description, variant) => {
+                                  toast({ title, description, variant });
+                                },
+                              });
+                            }}
+                            className="w-full bg-purple-500/20 border border-purple-500 text-purple-400 hover:bg-purple-500/30"
+                            disabled={false}
                         >
                           <Video className="w-4 h-4 mr-2" />
                           Obtenir 5 via pub
@@ -627,7 +627,7 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
                   onClick={() => handlePurchaseWithAd(boost.id)}
                   variant="outline"
                   className="w-full border-wheel-border hover:bg-button-hover"
-                  disabled={!Ads.isReady()}
+                  disabled={false}
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Obtenir via pub

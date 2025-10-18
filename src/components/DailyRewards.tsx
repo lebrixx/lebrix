@@ -274,7 +274,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             <Button
               onClick={handleClaimCoinsWithAd}
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:scale-105 transition-all duration-300"
-              disabled={!Ads.isReady()}
+              disabled={false}
             >
               <Video className="w-4 h-4 mr-2" />
               Regarder une pub
