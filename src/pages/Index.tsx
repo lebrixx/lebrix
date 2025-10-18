@@ -143,8 +143,8 @@ const Index = () => {
     }
 
     // Afficher une interstitielle si toutes les conditions sont remplies
-    import('@/ads/AdService').then(({ Ads }) => {
-      Ads.showInterstitialIfReady().catch(error => {
+    import('@/ads/InterstitialService').then(({ Interstitials }) => {
+      Interstitials.showInterstitialIfReady().catch(error => {
         console.log('Interstitial not shown:', error);
       });
     });

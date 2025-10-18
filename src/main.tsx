@@ -4,6 +4,7 @@ import "./index.css";
 import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
 import { Rewarded } from '@/ads/RewardedService';
+import { Interstitials } from '@/ads/InterstitialService';
 
 // Configuration pour iOS - seulement sur les plateformes mobiles
 if (Capacitor.isNativePlatform()) {
@@ -12,7 +13,8 @@ if (Capacitor.isNativePlatform()) {
   });
 }
 
-// Initialize Rewarded AdMob early
+// Initialize AdMob services early
 Rewarded.init();
+Interstitials.init();
 
 createRoot(document.getElementById("root")!).render(<App />);
