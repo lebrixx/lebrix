@@ -241,92 +241,80 @@ class AdService {
   private async setupRewardedListeners(): Promise<void> {
     try {
       let rewardGranted = false;
+      let dismissedReceived = false;
       let dismissedTimeout: NodeJS.Timeout | null = null;
       const startTime = Date.now();
-      
-      // Listener pour la récompense (peut parfois arriver après Dismissed sur certains devices)
-      const rewardedHandle = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
-        const elapsed = Date.now() - startTime;
-        console.log(`🎁 [${elapsed}ms] Ad reward received:`, reward);
-        rewardGranted = true;
-        // Si on avait planifié un "échec" côté Dismissed, on l'annule
+
+      const resolve = (success: boolean) => {
         if (dismissedTimeout) {
           clearTimeout(dismissedTimeout);
           dismissedTimeout = null;
         }
-        // Ne pas appeler immédiatement - attendre le Dismissed pour être sûr que tout est OK
-        console.log('✅ Reward granted - waiting for dismiss');
+        if (this.rewardCallback) {
+          console.log('🔔 Resolving rewarded promise:', { success, rewardGranted, dismissedReceived });
+          const cb = this.rewardCallback;
+          this.rewardCallback = null;
+          cb(success);
+        }
+      };
+      
+      // Reward event (sometimes can arrive before/after Dismissed depending on network)
+      const rewardedHandle = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
+        const elapsed = Date.now() - startTime;
+        console.log(`🎁 [${elapsed}ms] Ad reward received:`, reward);
+        rewardGranted = true;
+        // If ad already dismissed (e.g., user closed the store sheet), resolve immediately
+        if (dismissedReceived) {
+          console.log('✅ Dismiss already received -> resolving success now');
+          resolve(true);
+          return;
+        }
+        // Otherwise, wait for dismiss to avoid UI glitches
+        console.log('✅ Reward granted - waiting for dismiss event to resolve');
       });
       this.rewardedListeners.push(rewardedHandle);
 
-      // Listener pour la fermeture (sur certains SDK, il peut arriver avant Rewarded)
+      // Dismiss event (can come before or after Rewarded)
       const dismissedHandle = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
         const elapsed = Date.now() - startTime;
+        dismissedReceived = true;
         console.log(`👋 [${elapsed}ms] Ad dismissed, rewardGranted:`, rewardGranted);
-        
-        // Si la récompense a été accordée, on l'attribue immédiatement
+
         if (rewardGranted) {
-          if (dismissedTimeout) clearTimeout(dismissedTimeout);
-          if (this.rewardCallback) {
-            console.log('✅ Reward was granted before dismiss -> calling success=true');
-            this.rewardCallback(true);
-            this.rewardCallback = null;
-          }
+          // We already have the reward -> resolve success now
+          resolve(true);
         } else {
-          // Sinon, on attend un peu au cas où l'événement Rewarded arrive en retard
-          if (this.rewardCallback) {
-            if (dismissedTimeout) clearTimeout(dismissedTimeout);
-            dismissedTimeout = setTimeout(() => {
-              // Si après ce délai aucune récompense n'a été reçue, on considère l'échec
-              if (this.rewardCallback && !rewardGranted) {
-                const finalElapsed = Date.now() - startTime;
-                console.log(`❌ [${finalElapsed}ms] No reward after grace period -> calling success=false`);
-                this.rewardCallback(false);
-                this.rewardCallback = null;
-              } else if (rewardGranted && this.rewardCallback) {
-                // La récompense est arrivée pendant le délai de grâce
-                console.log(`✅ Reward arrived during grace period -> calling success=true`);
-                this.rewardCallback(true);
-                this.rewardCallback = null;
-              }
-            }, 2000); // Réduit à 2 secondes pour une réponse plus rapide
-          }
+          // Sometimes Rewarded fires a bit later (2-step ads "1/2" then store sheet)
+          // Give it a longer grace period to arrive
+          if (dismissedTimeout) clearTimeout(dismissedTimeout);
+          dismissedTimeout = setTimeout(() => {
+            const finalElapsed = Date.now() - startTime;
+            console.log(`⏳ [${finalElapsed}ms] Grace period over. rewardGranted=${rewardGranted}`);
+            resolve(rewardGranted);
+          }, 7000); // 7s grace to cover slow networks / SKStore sheet timing
         }
       });
       this.rewardedListeners.push(dismissedHandle);
 
       const failedToLoadHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error: any) => {
         console.error('💥 Ad failed to load:', error);
-        if (dismissedTimeout) {
-          clearTimeout(dismissedTimeout);
-          dismissedTimeout = null;
-        }
-        if (this.rewardCallback) {
-          this.rewardCallback(false);
-          this.rewardCallback = null;
-        }
+        resolve(false);
       });
       this.rewardedListeners.push(failedToLoadHandle);
 
       const failedToShowHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error: any) => {
         console.error('💥 Ad failed to show:', error);
-        if (dismissedTimeout) {
-          clearTimeout(dismissedTimeout);
-          dismissedTimeout = null;
-        }
-        if (this.rewardCallback) {
-          this.rewardCallback(false);
-          this.rewardCallback = null;
-        }
+        resolve(false);
       });
       this.rewardedListeners.push(failedToShowHandle);
 
-      console.log('✅ Rewarded listeners setup complete (4 listeners)');
+      console.log('✅ Rewarded listeners setup complete (robust ordering handling)');
     } catch (error) {
       console.error('💥 Error setting up rewarded listeners:', error);
       if (this.rewardCallback) {
-        this.rewardCallback(false);
+        const cb = this.rewardCallback;
         this.rewardCallback = null;
+        cb(false);
       }
     }
   }
