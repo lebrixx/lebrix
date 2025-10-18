@@ -10,6 +10,7 @@ const MAX_INTERSTITIALS_PER_SESSION = 3;
 class AdService {
   private isInitialized = false;
   private appLaunchTime = Date.now(); // Timestamp du lancement de l'app
+  private initPromise: Promise<void> | null = null;
   
   // Rewarded ads
   private rewardedAdLoaded = false;
@@ -27,23 +28,33 @@ class AdService {
 
   async init(): Promise<void> {
     if (this.isInitialized) return;
+    if (this.initPromise) {
+      await this.initPromise;
+      return;
+    }
+
+    this.initPromise = (async () => {
+      try {
+        await AdMob.initialize({
+          initializeForTesting: false, // Mode production pour l'App Store
+        });
+
+        this.isInitialized = true;
+        console.log('AdMob initialized successfully (production mode)');
+
+        // Précharger les pubs (une seule fois après init)
+        this.preloadRewarded();
+        this.preloadInterstitial();
+      } catch (error) {
+        console.error('AdMob initialization failed:', error);
+        // Ne pas crasher l'app si AdMob échoue
+      }
+    })();
 
     try {
-      await AdMob.initialize({
-        initializeForTesting: false, // Mode production pour l'App Store
-      });
-
-      this.isInitialized = true;
-      console.log('AdMob initialized successfully (production mode)');
-      
-      // Précharger la première pub rewarded
-      this.preloadRewarded();
-      
-      // Précharger la première interstitielle
-      this.preloadInterstitial();
-    } catch (error) {
-      console.error('AdMob initialization failed:', error);
-      // Ne pas crasher l'app si AdMob échoue
+      await this.initPromise;
+    } finally {
+      this.initPromise = null;
     }
   }
 
