@@ -10,7 +10,6 @@ const MAX_INTERSTITIALS_PER_SESSION = 3;
 class AdService {
   private isInitialized = false;
   private appLaunchTime = Date.now(); // Timestamp du lancement de l'app
-  private initPromise: Promise<void> | null = null;
   
   // Rewarded ads
   private rewardedAdLoaded = false;
@@ -28,33 +27,23 @@ class AdService {
 
   async init(): Promise<void> {
     if (this.isInitialized) return;
-    if (this.initPromise) {
-      await this.initPromise;
-      return;
-    }
-
-    this.initPromise = (async () => {
-      try {
-        await AdMob.initialize({
-          initializeForTesting: false, // Mode production pour l'App Store
-        });
-
-        this.isInitialized = true;
-        console.log('AdMob initialized successfully (production mode)');
-
-        // Précharger les pubs (une seule fois après init)
-        this.preloadRewarded();
-        this.preloadInterstitial();
-      } catch (error) {
-        console.error('AdMob initialization failed:', error);
-        // Ne pas crasher l'app si AdMob échoue
-      }
-    })();
 
     try {
-      await this.initPromise;
-    } finally {
-      this.initPromise = null;
+      await AdMob.initialize({
+        initializeForTesting: false, // Mode production pour l'App Store
+      });
+
+      this.isInitialized = true;
+      console.log('AdMob initialized successfully (production mode)');
+      
+      // Précharger la première pub rewarded
+      this.preloadRewarded();
+      
+      // Précharger la première interstitielle
+      this.preloadInterstitial();
+    } catch (error) {
+      console.error('AdMob initialization failed:', error);
+      // Ne pas crasher l'app si AdMob échoue
     }
   }
 
@@ -142,10 +131,16 @@ class AdService {
       return false;
     }
 
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      let timeoutId: NodeJS.Timeout;
+      let rewardReceived = false;
+
       this.rewardCallback = (success: boolean) => {
+        if (timeoutId) clearTimeout(timeoutId);
         this.lastRewardedShown = Date.now();
         this.rewardedAdLoaded = false;
+        
+        console.log(`Rewarded ad callback called with success: ${success}`);
         
         // Nettoyer les listeners
         this.removeRewardedListeners();
@@ -156,8 +151,29 @@ class AdService {
         resolve(success);
       };
 
-      this.setupRewardedListeners();
-      this.showRewardedAd();
+      // Timeout de sécurité de 60 secondes
+      timeoutId = setTimeout(() => {
+        console.warn('Rewarded ad timeout - forcing cleanup');
+        if (this.rewardCallback) {
+          const callback = this.rewardCallback;
+          this.rewardCallback = null;
+          callback(false);
+        }
+      }, 60000);
+
+      await this.setupRewardedListeners();
+      
+      try {
+        await this.showRewardedAd();
+        console.log('Rewarded ad display initiated successfully');
+      } catch (error) {
+        console.error('Failed to initiate rewarded ad display:', error);
+        if (this.rewardCallback) {
+          const callback = this.rewardCallback;
+          this.rewardCallback = null;
+          callback(false);
+        }
+      }
     });
   }
 
@@ -175,10 +191,12 @@ class AdService {
     // Délai de 1 seconde avant affichage
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       let dismissed = false;
+      let timeoutId: NodeJS.Timeout;
 
       const cleanup = () => {
+        if (timeoutId) clearTimeout(timeoutId);
         this.removeInterstitialListeners();
         this.lastInterstitialShown = Date.now();
         this.interstitialsShownThisSession++;
@@ -188,94 +206,170 @@ class AdService {
         setTimeout(() => this.preloadInterstitial(), 2000);
       };
 
-      this.setupInterstitialListeners(() => {
+      const finalize = (success: boolean) => {
         if (!dismissed) {
           dismissed = true;
           cleanup();
-          resolve(true);
+          console.log(`Interstitial ${success ? 'completed' : 'failed/dismissed'}`);
+          resolve(success);
         }
-      }, () => {
-        if (!dismissed) {
-          dismissed = true;
-          cleanup();
-          resolve(false);
-        }
-      });
+      };
 
-      this.showInterstitialAd().catch(() => {
-        if (!dismissed) {
-          dismissed = true;
-          cleanup();
-          resolve(false);
-        }
-      });
+      // Timeout de sécurité de 30 secondes
+      timeoutId = setTimeout(() => {
+        console.warn('Interstitial timeout - forcing cleanup');
+        finalize(false);
+      }, 30000);
+
+      // Attendre que les listeners soient configurés AVANT d'afficher la pub
+      await this.setupInterstitialListeners(
+        () => finalize(true), 
+        () => finalize(false)
+      );
+
+      // Afficher la pub seulement après que les listeners soient prêts
+      try {
+        await this.showInterstitialAd();
+        console.log('Interstitial displayed successfully');
+      } catch (error) {
+        console.error('Failed to show interstitial:', error);
+        finalize(false);
+      }
     });
   }
 
-  private setupRewardedListeners(): void {
-    // Écouter la récompense
-    AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
-      console.log('Ad reward received:', reward);
-      if (this.rewardCallback) {
-        this.rewardCallback(true);
-        this.rewardCallback = null;
-      }
-    }).then(handle => this.rewardedListeners.push(handle));
+  private async setupRewardedListeners(): Promise<void> {
+    try {
+      let rewardGranted = false;
+      let dismissedTimeout: NodeJS.Timeout | null = null;
+      
+      // Listener pour la récompense (peut parfois arriver après Dismissed sur certains devices)
+      const rewardedHandle = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
+        console.log('🎁 Ad reward received:', reward);
+        rewardGranted = true;
+        // Si on avait planifié un "échec" côté Dismissed, on l'annule
+        if (dismissedTimeout) {
+          clearTimeout(dismissedTimeout);
+          dismissedTimeout = null;
+        }
+        if (this.rewardCallback) {
+          console.log('✅ Calling reward callback with success=true');
+          this.rewardCallback(true);
+          this.rewardCallback = null;
+        }
+      });
+      this.rewardedListeners.push(rewardedHandle);
 
-    // Écouter la fermeture de la pub
-    AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-      console.log('Ad dismissed');
+      // Listener pour la fermeture (sur certains SDK, il peut arriver avant Rewarded)
+      const dismissedHandle = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+        console.log('👋 Ad dismissed, rewardGranted:', rewardGranted);
+        // Petite fenêtre de grâce pour laisser le temps à l'événement Rewarded d'arriver
+        if (!rewardGranted && this.rewardCallback) {
+          if (dismissedTimeout) clearTimeout(dismissedTimeout);
+          dismissedTimeout = setTimeout(() => {
+            // Si après ce délai aucune récompense n'a été reçue, on considère l'échec
+            if (this.rewardCallback && !rewardGranted) {
+              console.log('❌ No reward after grace period -> calling success=false');
+              this.rewardCallback(false);
+              this.rewardCallback = null;
+            }
+          }, 4000);
+        }
+      });
+      this.rewardedListeners.push(dismissedHandle);
+
+      const failedToLoadHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error: any) => {
+        console.error('💥 Ad failed to load:', error);
+        if (dismissedTimeout) {
+          clearTimeout(dismissedTimeout);
+          dismissedTimeout = null;
+        }
+        if (this.rewardCallback) {
+          this.rewardCallback(false);
+          this.rewardCallback = null;
+        }
+      });
+      this.rewardedListeners.push(failedToLoadHandle);
+
+      const failedToShowHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error: any) => {
+        console.error('💥 Ad failed to show:', error);
+        if (dismissedTimeout) {
+          clearTimeout(dismissedTimeout);
+          dismissedTimeout = null;
+        }
+        if (this.rewardCallback) {
+          this.rewardCallback(false);
+          this.rewardCallback = null;
+        }
+      });
+      this.rewardedListeners.push(failedToShowHandle);
+
+      console.log('✅ Rewarded listeners setup complete (4 listeners)');
+    } catch (error) {
+      console.error('💥 Error setting up rewarded listeners:', error);
       if (this.rewardCallback) {
-        // Pub fermée sans récompense
         this.rewardCallback(false);
         this.rewardCallback = null;
       }
-    }).then(handle => this.rewardedListeners.push(handle));
-
-    // Écouter les erreurs de chargement
-    AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error: any) => {
-      console.error('Ad failed to load:', error);
-      if (this.rewardCallback) {
-        this.rewardCallback(false);
-        this.rewardCallback = null;
-      }
-    }).then(handle => this.rewardedListeners.push(handle));
-
-    // Écouter les erreurs d'affichage
-    AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error: any) => {
-      console.error('Ad failed to show:', error);
-      if (this.rewardCallback) {
-        this.rewardCallback(false);
-        this.rewardCallback = null;
-      }
-    }).then(handle => this.rewardedListeners.push(handle));
+    }
   }
 
-  private setupInterstitialListeners(onSuccess: () => void, onFailure: () => void): void {
-    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
-      console.log('Interstitial dismissed');
-      onSuccess();
-    }).then(handle => this.interstitialListeners.push(handle));
+  private async setupInterstitialListeners(onSuccess: () => void, onFailure: () => void): Promise<void> {
+    try {
+      // Ajouter tous les listeners et attendre qu'ils soient prêts
+      const dismissedHandle = await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+        console.log('Interstitial dismissed');
+        onSuccess();
+      });
+      this.interstitialListeners.push(dismissedHandle);
 
-    AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, (error: any) => {
-      console.error('Interstitial failed to load:', error);
-      onFailure();
-    }).then(handle => this.interstitialListeners.push(handle));
+      const failedToLoadHandle = await AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, (error: any) => {
+        console.error('Interstitial failed to load:', error);
+        onFailure();
+      });
+      this.interstitialListeners.push(failedToLoadHandle);
 
-    AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, (error: any) => {
-      console.error('Interstitial failed to show:', error);
+      const failedToShowHandle = await AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, (error: any) => {
+        console.error('Interstitial failed to show:', error);
+        onFailure();
+      });
+      this.interstitialListeners.push(failedToShowHandle);
+
+      console.log('Interstitial listeners setup complete');
+    } catch (error) {
+      console.error('Error setting up interstitial listeners:', error);
       onFailure();
-    }).then(handle => this.interstitialListeners.push(handle));
+    }
   }
 
   private removeRewardedListeners(): void {
-    this.rewardedListeners.forEach(handle => handle.remove());
-    this.rewardedListeners = [];
+    try {
+      this.rewardedListeners.forEach(handle => {
+        if (handle && handle.remove) {
+          handle.remove();
+        }
+      });
+      this.rewardedListeners = [];
+      console.log('Rewarded listeners removed');
+    } catch (error) {
+      console.error('Error removing rewarded listeners:', error);
+      this.rewardedListeners = [];
+    }
   }
 
   private removeInterstitialListeners(): void {
-    this.interstitialListeners.forEach(handle => handle.remove());
-    this.interstitialListeners = [];
+    try {
+      this.interstitialListeners.forEach(handle => {
+        if (handle && handle.remove) {
+          handle.remove();
+        }
+      });
+      this.interstitialListeners = [];
+      console.log('Interstitial listeners removed');
+    } catch (error) {
+      console.error('Error removing interstitial listeners:', error);
+      this.interstitialListeners = [];
+    }
   }
 
   private async showRewardedAd(): Promise<void> {
