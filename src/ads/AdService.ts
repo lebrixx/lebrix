@@ -242,38 +242,55 @@ class AdService {
     try {
       let rewardGranted = false;
       let dismissedTimeout: NodeJS.Timeout | null = null;
+      const startTime = Date.now();
       
       // Listener pour la récompense (peut parfois arriver après Dismissed sur certains devices)
       const rewardedHandle = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
-        console.log('🎁 Ad reward received:', reward);
+        const elapsed = Date.now() - startTime;
+        console.log(`🎁 [${elapsed}ms] Ad reward received:`, reward);
         rewardGranted = true;
         // Si on avait planifié un "échec" côté Dismissed, on l'annule
         if (dismissedTimeout) {
           clearTimeout(dismissedTimeout);
           dismissedTimeout = null;
         }
-        if (this.rewardCallback) {
-          console.log('✅ Calling reward callback with success=true');
-          this.rewardCallback(true);
-          this.rewardCallback = null;
-        }
+        // Ne pas appeler immédiatement - attendre le Dismissed pour être sûr que tout est OK
+        console.log('✅ Reward granted - waiting for dismiss');
       });
       this.rewardedListeners.push(rewardedHandle);
 
       // Listener pour la fermeture (sur certains SDK, il peut arriver avant Rewarded)
       const dismissedHandle = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-        console.log('👋 Ad dismissed, rewardGranted:', rewardGranted);
-        // Petite fenêtre de grâce pour laisser le temps à l'événement Rewarded d'arriver
-        if (!rewardGranted && this.rewardCallback) {
+        const elapsed = Date.now() - startTime;
+        console.log(`👋 [${elapsed}ms] Ad dismissed, rewardGranted:`, rewardGranted);
+        
+        // Si la récompense a été accordée, on l'attribue immédiatement
+        if (rewardGranted) {
           if (dismissedTimeout) clearTimeout(dismissedTimeout);
-          dismissedTimeout = setTimeout(() => {
-            // Si après ce délai aucune récompense n'a été reçue, on considère l'échec
-            if (this.rewardCallback && !rewardGranted) {
-              console.log('❌ No reward after grace period -> calling success=false');
-              this.rewardCallback(false);
-              this.rewardCallback = null;
-            }
-          }, 4000);
+          if (this.rewardCallback) {
+            console.log('✅ Reward was granted before dismiss -> calling success=true');
+            this.rewardCallback(true);
+            this.rewardCallback = null;
+          }
+        } else {
+          // Sinon, on attend un peu au cas où l'événement Rewarded arrive en retard
+          if (this.rewardCallback) {
+            if (dismissedTimeout) clearTimeout(dismissedTimeout);
+            dismissedTimeout = setTimeout(() => {
+              // Si après ce délai aucune récompense n'a été reçue, on considère l'échec
+              if (this.rewardCallback && !rewardGranted) {
+                const finalElapsed = Date.now() - startTime;
+                console.log(`❌ [${finalElapsed}ms] No reward after grace period -> calling success=false`);
+                this.rewardCallback(false);
+                this.rewardCallback = null;
+              } else if (rewardGranted && this.rewardCallback) {
+                // La récompense est arrivée pendant le délai de grâce
+                console.log(`✅ Reward arrived during grace period -> calling success=true`);
+                this.rewardCallback(true);
+                this.rewardCallback = null;
+              }
+            }, 2000); // Réduit à 2 secondes pour une réponse plus rapide
+          }
         }
       });
       this.rewardedListeners.push(dismissedHandle);
