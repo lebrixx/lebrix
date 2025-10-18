@@ -12,8 +12,7 @@ import { PostGameBoostMenu } from './PostGameBoostMenu';
 import { getTickets } from '@/utils/ticketSystem';
 import { ModeID } from '@/constants/modes';
 import { useToast } from '@/hooks/use-toast';
-import { Ads } from '@/ads/AdService';
-import { showRewardedFor, resetReviveFlag } from '@/ads/RewardRouter';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 
 interface CircleTapProps {
   theme: string;
@@ -43,18 +42,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const [showBoostMenu, setShowBoostMenu] = useState(false);
   const { inventory, getBoostCount } = useBoosts();
   const [currentTickets, setCurrentTickets] = useState(getTickets());
+  const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
-  
-  // Initialiser AdMob au montage du composant
-  useEffect(() => {
-    Ads.init();
-  }, []);
+  const [reviveUsed, setReviveUsed] = useState(false);
 
   // Mettre à jour le chrono chaque seconde
   useEffect(() => {
     const updateCooldown = () => {
-      setCooldownRemaining(Ads.getCooldownRemaining());
+      setCooldownRemaining(getCooldown());
     };
 
     // Mise à jour initiale
@@ -64,7 +60,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     const interval = setInterval(updateCooldown, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [getCooldown]);
 
   // Mettre à jour les tickets quand le gameState change
   useEffect(() => {
@@ -74,7 +70,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   // Réinitialiser le flag revive quand une nouvelle partie commence
   useEffect(() => {
     if (gameState.gameStatus === 'running') {
-      resetReviveFlag();
+      setReviveUsed(false);
     }
   }, [gameState.gameStatus]);
 
@@ -141,14 +137,25 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   };
   
   const handleRevive = async () => {
-    const success = await showRewardedFor('revive', {
-      onRevive: () => {
-        reviveGame();
-      },
-      showToast: (title, description, variant) => {
-        toast({ title, description, variant });
-      },
-    });
+    if (reviveUsed) {
+      toast({
+        title: "Revive déjà utilisé",
+        description: "Tu ne peux revivre qu'une seule fois par partie.",
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const success = await showRewardedAd('revive');
+    
+    if (success) {
+      toast({
+        title: "Revive activé !",
+        description: "Tu as été ramené à la vie !",
+      });
+      setReviveUsed(true);
+      reviveGame();
+    }
   };
 
   const handleBoostMenuOpen = () => {
@@ -472,11 +479,11 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                   onClick={handleRevive}
                   variant="outline"
                   className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 text-sm"
-                  disabled={!Ads.isReady()}
+                  disabled={!isReady() || isShowing || cooldownRemaining > 0 || reviveUsed}
                 >
                   <Video className="w-4 h-4 mr-2" />
-                  Revivre via pub
-                  {!Ads.isReady() && cooldownRemaining > 0 && (
+                  {reviveUsed ? 'Revive utilisé' : 'Revivre via pub'}
+                  {cooldownRemaining > 0 && !reviveUsed && (
                     <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                   )}
                 </Button>

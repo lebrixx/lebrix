@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
-import { Ads } from '@/ads/AdService';
+import { Rewarded } from '@/ads/RewardedService';
 
 // Configuration pour iOS - seulement sur les plateformes mobiles
 if (Capacitor.isNativePlatform()) {
@@ -12,7 +12,7 @@ if (Capacitor.isNativePlatform()) {
   });
 }
 
-// Initialize AdMob early
-Ads.init();
+// Initialize Rewarded AdMob early
+Rewarded.init();
 
 createRoot(document.getElementById("root")!).render(<App />);

@@ -11,8 +11,7 @@ import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
-import { Ads } from '@/ads/AdService';
-import { showRewardedFor } from '@/ads/RewardRouter';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -63,28 +62,18 @@ export const Shop: React.FC<ShopProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('themes');
   const [currentTickets, setCurrentTickets] = useState(getTickets());
+  const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
 
-  // Initialiser AdMob
-  useEffect(() => {
-    Ads.init();
-  }, []);
-
-  // Mettre à jour le chrono chaque seconde
   useEffect(() => {
     const updateCooldown = () => {
-      setCooldownRemaining(Ads.getCooldownRemaining());
+      setCooldownRemaining(getAdCooldown());
     };
-
-    // Mise à jour initiale
     updateCooldown();
-
-    // Mettre à jour chaque seconde
     const interval = setInterval(updateCooldown, 1000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [getAdCooldown]);
   
   // Vérifier si l'utilisateur a atteint 7 jours de récompenses
   const dailyRewardState = getDailyRewardState();
@@ -450,22 +439,19 @@ export const Shop: React.FC<ShopProps> = ({
                         </Button>
                           <Button 
                             onClick={async () => {
-                              const success = await showRewardedFor('ticket', {
-                                onTicket: (amount) => {
-                                  addTickets(amount);
-                                  setCurrentTickets(getTickets());
-                                },
-                                showToast: (title, description, variant) => {
-                                  toast({ title, description, variant });
-                                },
-                              });
+                              const success = await showRewardedAd('ticket');
+                              if (success) {
+                                toast({ title: "Tickets reçus !", description: "Tu as reçu 5 tickets ! 🎫" });
+                                addTickets(5);
+                                setCurrentTickets(getTickets());
+                              }
                             }}
                             className="w-full bg-purple-500/20 border border-purple-500 text-purple-400 hover:bg-purple-500/30"
-                            disabled={false}
+                            disabled={isAdShowing || !isAdReady() || cooldownRemaining > 0}
                         >
                           <Video className="w-4 h-4 mr-2" />
                           Obtenir 5 via pub
-                          {!Ads.isReady() && cooldownRemaining > 0 && (
+                          {cooldownRemaining > 0 && (
                             <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                           )}
                         </Button>
@@ -518,22 +504,15 @@ interface BoostsSectionProps {
 const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) => {
   const { addBoost, getBoostCount } = useBoosts();
   const { toast } = useToast();
+  const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
-  // Mettre à jour le chrono chaque seconde
   useEffect(() => {
-    const updateCooldown = () => {
-      setCooldownRemaining(Ads.getCooldownRemaining());
-    };
-
-    // Mise à jour initiale
+    const updateCooldown = () => setCooldownRemaining(getCooldown());
     updateCooldown();
-
-    // Mettre à jour chaque seconde
     const interval = setInterval(updateCooldown, 1000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [getCooldown]);
 
   const canAfford = (price: number) => coins >= price;
 
@@ -559,24 +538,20 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
   };
 
   const handlePurchaseWithAd = async (boostId: any) => {
-    // Mapper les boosts à leurs kinds
     const boostKindMap: Record<string, 'boost1' | 'boost2' | 'boost3'> = {
       'shield': 'boost1',
       'bigger_zone': 'boost2',
       'start_20': 'boost3',
     };
-
     const kind = boostKindMap[boostId];
     if (!kind) return;
-
-    const success = await showRewardedFor(kind, {
-      onBoost: (receivedBoostId) => {
-        addBoost(receivedBoostId);
-      },
-      showToast: (title, description, variant) => {
-        toast({ title, description, variant });
-      },
-    });
+    
+    const success = await showRewardedAd(kind);
+    if (success) {
+      const boostMap = { boost1: 'shield', boost2: 'bigger_zone', boost3: 'start_20' };
+      addBoost(boostMap[kind] as any);
+      toast({ title: "Boost reçu !", description: `Tu as reçu ${BOOSTS[boostId].name} ${BOOSTS[boostId].icon}` });
+    }
   };
 
   return (
@@ -627,11 +602,11 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
                   onClick={() => handlePurchaseWithAd(boost.id)}
                   variant="outline"
                   className="w-full border-wheel-border hover:bg-button-hover"
-                  disabled={false}
+                  disabled={isShowing || !isReady() || cooldownRemaining > 0}
                 >
                   <Video className="w-4 h-4 mr-2" />
                   Obtenir via pub
-                  {!Ads.isReady() && cooldownRemaining > 0 && (
+                  {cooldownRemaining > 0 && (
                     <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                   )}
                 </Button>

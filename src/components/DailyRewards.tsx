@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Gift, Coins, Crown, Star, Sparkles, Zap, Video } from 'lucide-react';
-import { Ads } from '@/ads/AdService';
-import { showRewardedFor } from '@/ads/RewardRouter';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { useToast } from '@/hooks/use-toast';
 import { 
   getDailyRewardState, 
   canClaimReward, 
@@ -30,6 +30,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
   onRewardClaimed,
   currentCoins = 0,
 }) => {
+  const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
+  const { toast } = useToast();
   const [rewardState, setRewardState] = useState(getDailyRewardState());
   const [canClaim, setCanClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
@@ -37,17 +39,12 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { addBoost } = useBoosts();
 
-  // Initialiser AdMob
-  useEffect(() => {
-    Ads.init();
-  }, []);
-
   // Mettre à jour le chrono chaque seconde
   useEffect(() => {
     if (!isOpen) return;
 
     const updateCooldown = () => {
-      setCooldownRemaining(Ads.getCooldownRemaining());
+      setCooldownRemaining(getCooldown());
     };
 
     // Mise à jour initiale
@@ -57,7 +54,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
     const interval = setInterval(updateCooldown, 1000);
 
     return () => clearInterval(interval);
-  }, [isOpen]);
+  }, [isOpen, getCooldown]);
 
   useEffect(() => {
     if (isOpen) {
@@ -69,12 +66,15 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
   }, [isOpen]);
 
   const handleClaimCoinsWithAd = async () => {
-    const success = await showRewardedFor('coins80', {
-      onCoins: (amount) => {
-        onRewardClaimed(amount);
-      },
-      showToast: () => {}, // Toast déjà géré par RewardRouter
-    });
+    const success = await showRewardedAd('coins80');
+    
+    if (success) {
+      toast({
+        title: "Coins reçus !",
+        description: "Tu as reçu 100 coins ! 🪙",
+      });
+      onRewardClaimed(100);
+    }
   };
 
   const handleClaimReward = async () => {
@@ -274,11 +274,11 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             <Button
               onClick={handleClaimCoinsWithAd}
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:scale-105 transition-all duration-300"
-              disabled={false}
+              disabled={isShowing || !isReady() || cooldownRemaining > 0}
             >
               <Video className="w-4 h-4 mr-2" />
               Regarder une pub
-              {!Ads.isReady() && cooldownRemaining > 0 && (
+              {cooldownRemaining > 0 && (
                 <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
               )}
             </Button>

@@ -3,8 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Coins, Play, Sparkles, Gift, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Ads } from '@/ads/AdService';
-import { showRewardedFor } from '@/ads/RewardRouter';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 
 interface AdRewardDialogProps {
   isOpen: boolean;
@@ -17,21 +16,16 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
   onClose,
   onRewardClaimed
 }) => {
-  const [isWatching, setIsWatching] = useState(false);
-  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const { toast } = useToast();
-
-  // Initialiser AdMob
-  useEffect(() => {
-    Ads.init();
-  }, []);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   // Mettre à jour le chrono chaque seconde
   useEffect(() => {
     if (!isOpen) return;
 
     const updateCooldown = () => {
-      setCooldownRemaining(Ads.getCooldownRemaining());
+      setCooldownRemaining(getCooldown());
     };
 
     // Mise à jour initiale
@@ -41,22 +35,19 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
     const interval = setInterval(updateCooldown, 1000);
 
     return () => clearInterval(interval);
-  }, [isOpen]);
+  }, [isOpen, getCooldown]);
 
   const handleWatchAd = async () => {
-    setIsWatching(true);
+    const success = await showRewardedAd('coins80');
     
-    const success = await showRewardedFor('coins80', {
-      onCoins: (amount) => {
-        onRewardClaimed(amount);
-        onClose();
-      },
-      showToast: (title, description, variant) => {
-        toast({ title, description, variant });
-      },
-    });
-
-    setIsWatching(false);
+    if (success) {
+      toast({
+        title: "Coins reçus !",
+        description: "Tu as reçu 100 coins ! 🪙",
+      });
+      onRewardClaimed(100);
+      onClose();
+    }
   };
 
   return (
@@ -90,16 +81,16 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
           </div>
 
           {/* Watch Button */}
-          {!isWatching ? (
+          {!isShowing ? (
             <Button
               onClick={handleWatchAd}
               className="w-full bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6 text-lg font-bold group"
               size="lg"
-              disabled={isWatching}
+              disabled={isShowing || !isReady() || cooldownRemaining > 0}
             >
               <Video className="w-5 h-5 mr-2 group-hover:animate-pulse" />
               Regarder la pub
-              {!Ads.isReady() && cooldownRemaining > 0 && (
+              {cooldownRemaining > 0 && (
                 <span className="ml-2 text-sm">({cooldownRemaining}s)</span>
               )}
             </Button>
