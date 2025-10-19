@@ -273,7 +273,13 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Animation de la bille (60 FPS) + Zone mobile
   const animateBall = useCallback(() => {
-    if (gameState.gameStatus !== 'running') return;
+    if (gameState.gameStatus !== 'running') {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = undefined;
+      }
+      return;
+    }
 
     const animate = (currentTime: number) => {
       if (!lastTimeRef.current) {
@@ -284,6 +290,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       lastTimeRef.current = currentTime;
 
       setGameState(prev => {
+        if (prev.gameStatus !== 'running') return prev;
+        
         let newAngle = prev.ballAngle + prev.ballSpeed * prev.ballDirection * deltaTime;
         // Normaliser l'angle entre 0 et 2π (gérer les angles négatifs)
         newAngle = ((newAngle % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
@@ -337,11 +345,13 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       animateBall();
     } else if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = undefined;
     }
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = undefined;
       }
     };
   }, [gameState.gameStatus, animateBall]);
@@ -395,7 +405,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       memoryZoneVisible = true;
       
       // Timer pour cacher la zone après 1 seconde
-      setTimeout(() => {
+      addTimeout(() => {
         setGameState(prev => ({
           ...prev,
           memoryZoneVisible: false,
@@ -556,12 +566,9 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         gameStatus: 'gameover',
         bestScore: Math.max(prev.currentScore, prev.bestScore),
         coins: prev.coins + Math.floor(prev.currentScore / 20),
-        showResult: true,
+        showResult: false, // Ne pas afficher le message
         lastResult: 'failure',
       }));
-
-      // Masquer le message de game over immédiatement
-      setGameState(prev => ({ ...prev, showResult: false }));
       return;
     }
 
@@ -629,12 +636,14 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         trapZoneIndex: newTrapZoneIndex,
       }));
 
-      // Effacer les effets visuels immédiatement
-      setGameState(prev => ({
-        ...prev,
-        successFlash: false,
-        successParticles: false,
-      }));
+      // Effacer les effets visuels après un court délai
+      addTimeout(() => {
+        setGameState(prev => ({
+          ...prev,
+          successFlash: false,
+          successParticles: false,
+        }));
+      }, 50);
 
     } else {
       // ÉCHEC - Vérifier d'abord si le bouclier est actif
@@ -661,12 +670,9 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         gameStatus: 'gameover',
         bestScore: Math.max(prev.currentScore, prev.bestScore),
         coins: prev.coins + Math.floor(prev.currentScore / 20), // Réduction drastique des coins
-        showResult: true,
+        showResult: false, // Ne pas afficher le message
         lastResult: 'failure',
       }));
-
-      // Masquer le message de game over immédiatement
-      setGameState(prev => ({ ...prev, showResult: false }));
     }
   }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode, addTimeout]);
 

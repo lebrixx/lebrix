@@ -181,8 +181,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     
     if (gameState.gameStatus === 'gameover') {
       resetGame();
-      // Petit délai pour laisser l'animation de reset se faire
-      setTimeout(() => startGame(boosts), 100);
+      startGame(boosts);
     } else {
       // En idle, on démarre directement
       startGame(boosts);
