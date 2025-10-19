@@ -28,6 +28,12 @@ export const useSound = (): SoundHook => {
 
     try {
       const audioContext = getAudioContext();
+      
+      // Reprendre l'AudioContext s'il est suspendu (après une pub par exemple)
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
