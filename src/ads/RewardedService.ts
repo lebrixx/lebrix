@@ -22,7 +22,9 @@ class RewardedService {
   private listeners: any[] = [];
   private retryTimeout: NodeJS.Timeout | null = null;
   private retryCount = 0;
-  private cooldownTimeout: NodeJS.Timeout | null = null;
+private cooldownTimeout: NodeJS.Timeout | null = null;
+private preloaded = false; // ad prepared in cache
+private currentKind: RewardKind | null = null;
 
   async init(): Promise<void> {
     if (this.state !== 'idle') {
@@ -44,56 +46,62 @@ class RewardedService {
     }
   }
 
-  private async preload(): Promise<void> {
-    if (this.state === 'showing' || this.state === 'ready' || this.inFlight) {
-      console.log('[Rewarded] Preload skipped, state:', this.state, 'inFlight:', this.inFlight);
-      return;
-    }
+private async preload(): Promise<void> {
+  // Avoid overlapping
+  if (this.inFlight || this.state === 'showing') {
+    console.log('[Rewarded] Preload skipped, state:', this.state, 'inFlight:', this.inFlight);
+    return;
+  }
 
+  const wasCooldown = this.state === 'cooldown';
+  if (!wasCooldown) {
     this.state = 'loading';
-    console.log('[Rewarded] Starting preload...');
+  }
+  console.log('[Rewarded] Starting preload...');
 
-    try {
-      const options: RewardAdOptions = {
-        adId: REWARDED_AD_UNIT_ID,
-      };
-
-      await AdMob.prepareRewardVideoAd(options);
+  try {
+    const options: RewardAdOptions = { adId: REWARDED_AD_UNIT_ID };
+    await AdMob.prepareRewardVideoAd(options);
+    this.preloaded = true;
+    this.retryCount = 0;
+    // Keep visual FSM in cooldown if we are cooling down, otherwise mark ready
+    if (!wasCooldown) {
       this.state = 'ready';
-      this.retryCount = 0;
-      console.log('[Rewarded] Ad preloaded successfully, state: ready');
-    } catch (error) {
-      console.error('[Rewarded] Failed to preload ad:', error);
-      this.state = 'idle';
-      
-      // Retry avec backoff exponentiel: 1s, 2s, 4s, 8s, max 30s
-      const backoff = Math.min(1000 * Math.pow(2, this.retryCount), 30000);
-      this.retryCount++;
-      
-      console.log(`[Rewarded] Retrying preload in ${backoff}ms (attempt ${this.retryCount})`);
-      
-      if (this.retryTimeout) clearTimeout(this.retryTimeout);
-      this.retryTimeout = setTimeout(() => {
-        this.preload();
-      }, backoff);
     }
+    console.log('[Rewarded] Ad preloaded successfully', { state: this.state, preloaded: this.preloaded });
+  } catch (error) {
+    console.error('[Rewarded] Failed to preload ad:', error);
+    this.preloaded = false;
+    if (!wasCooldown) {
+      this.state = 'idle';
+    }
+    // Retry avec backoff exponentiel: 1s, 2s, 4s, 8s, max 30s
+    const backoff = Math.min(1000 * Math.pow(2, this.retryCount), 30000);
+    this.retryCount++;
+    console.log(`[Rewarded] Retrying preload in ${backoff}ms (attempt ${this.retryCount})`);
+    if (this.retryTimeout) clearTimeout(this.retryTimeout);
+    this.retryTimeout = setTimeout(() => {
+      this.preload();
+    }, backoff);
+  }
+}
+
+isReady(): boolean {
+  const now = Date.now();
+  const cooldownPassed = now - this.lastShown >= COOLDOWN_MS;
+  const ready = this.preloaded && !this.inFlight && cooldownPassed;
+
+  if (!ready) {
+    console.log('[Rewarded] Not ready:', {
+      state: this.state,
+      inFlight: this.inFlight,
+      preloaded: this.preloaded,
+      cooldownRemaining: Math.max(0, COOLDOWN_MS - (now - this.lastShown)),
+    });
   }
 
-  isReady(): boolean {
-    const now = Date.now();
-    const cooldownPassed = now - this.lastShown >= COOLDOWN_MS;
-    const ready = this.state === 'ready' && !this.inFlight && cooldownPassed;
-    
-    if (!ready) {
-      console.log('[Rewarded] Not ready:', {
-        state: this.state,
-        inFlight: this.inFlight,
-        cooldownRemaining: Math.max(0, COOLDOWN_MS - (now - this.lastShown)),
-      });
-    }
-    
-    return ready;
-  }
+  return ready;
+}
 
   getCooldownRemaining(): number {
     const now = Date.now();
@@ -119,13 +127,14 @@ class RewardedService {
       return { status: 'failed', kind };
     }
 
-    // Verrouiller
-    this.inFlight = true;
-    this.earned = false;
-    this.state = 'showing';
-    this.showStartTime = Date.now();
+// Verrouiller
+this.inFlight = true;
+this.earned = false;
+this.state = 'showing';
+this.showStartTime = Date.now();
+this.currentKind = kind;
 
-    console.log(`[Rewarded] Showing ad for kind: ${kind}`);
+console.log(`[Rewarded] Showing ad for kind: ${kind}`);
 
     return new Promise(async (resolve) => {
       let resolved = false;
@@ -148,28 +157,39 @@ class RewardedService {
         this.lastShown = Date.now();
 
         if (finalResult.status === 'rewarded' || finalResult.status === 'closed') {
-          // Entrer en cooldown
-          this.state = 'cooldown';
-          
-          if (this.cooldownTimeout) clearTimeout(this.cooldownTimeout);
-          this.cooldownTimeout = setTimeout(() => {
-            console.log('[Rewarded] Cooldown finished, preloading next ad');
-            this.preload();
-          }, COOLDOWN_MS);
+// Entrer en cooldown
+this.state = 'cooldown';
+
+// Préparer la prochaine pub dès maintenant (cache), sans sortir du cooldown
+this.preload();
+
+if (this.cooldownTimeout) clearTimeout(this.cooldownTimeout);
+this.cooldownTimeout = setTimeout(() => {
+  console.log('[Rewarded] Cooldown finished');
+  // À la fin du cooldown, si une pub est déjà préchargée, passer en ready
+  this.state = this.preloaded ? 'ready' : 'idle';
+  if (!this.preloaded) {
+    // tenter un preload si pas déjà fait
+    this.preload();
+  }
+}, COOLDOWN_MS);
         } else {
           // Échec, retenter de précharger immédiatement
           this.state = 'idle';
           setTimeout(() => this.preload(), 1000);
         }
 
+        // Reset current kind for next run
+        this.currentKind = null;
+
         resolve(finalResult);
       };
 
-      // Timeout de sécurité de 60 secondes
-      safetyTimeout = setTimeout(() => {
-        console.warn('[Rewarded] Safety timeout reached (60s)');
-        cleanup({ status: this.earned ? 'rewarded' : 'closed' });
-      }, 60000);
+// Timeout de sécurité de 90 secondes
+safetyTimeout = setTimeout(() => {
+  console.warn('[Rewarded] Safety timeout reached (90s)');
+  cleanup({ status: this.earned ? 'rewarded' : 'closed' });
+}, 90000);
 
       // Configurer les listeners
       await this.setupListeners(cleanup);
@@ -220,14 +240,14 @@ class RewardedService {
           if (dismissTimeout) clearTimeout(dismissTimeout);
           onComplete({ status: 'rewarded' });
         } else {
-          // Pas encore de reward, attendre une période de grâce de 7s
+          // Pas encore de reward, attendre une période de grâce de 20s
           // (pour les pubs en 2 étapes avec App Store sheet)
           if (dismissTimeout) clearTimeout(dismissTimeout);
           dismissTimeout = setTimeout(() => {
             const finalElapsed = Date.now() - startTime;
             console.log(`⏳ [${finalElapsed}ms] Grace period over. earned=${this.earned}`);
             onComplete({ status: this.earned ? 'rewarded' : 'closed' });
-          }, 7000);
+          }, 20000);
         }
       });
       this.listeners.push(dismissedHandle);
