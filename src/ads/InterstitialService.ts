@@ -1,4 +1,6 @@
 import { AdMob, InterstitialAdPluginEvents, AdOptions } from '@capacitor-community/admob';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar } from '@capacitor/status-bar';
 
 const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
 const INTERSTITIAL_COOLDOWN_MS = 420000; // 7 minutes entre chaque interstitielle
@@ -133,6 +135,14 @@ class InterstitialService {
     try {
       const dismissedHandle = await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
         console.log('[Interstitial] dismissed');
+        
+        // Restaurer la StatusBar et la safe area
+        if (Capacitor.isNativePlatform()) {
+          StatusBar.setOverlaysWebView({ overlay: false }).catch(err => 
+            console.log('[Interstitial] StatusBar reset error (ignored):', err)
+          );
+        }
+        
         onSuccess();
       });
       this.interstitialListeners.push(dismissedHandle);
