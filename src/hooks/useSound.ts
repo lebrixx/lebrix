@@ -16,43 +16,54 @@ export const useSound = (): SoundHook => {
 
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const getAudioContext = useCallback((): AudioContext => {
+    const Ctor = (window.AudioContext || (window as any).webkitAudioContext);
+    if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+      audioContextRef.current = new Ctor();
     }
     return audioContextRef.current;
   }, []);
 
+  const ensureAudioRunning = useCallback(async (): Promise<AudioContext> => {
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch {
+        // Resume may fail without a user gesture; will retry on next interaction
+      }
+    }
+    return ctx;
+  }, [getAudioContext]);
+
   const createTone = useCallback((frequency: number, duration: number, type: OscillatorType = 'sine') => {
     if (isMuted) return;
 
-    try {
-      const audioContext = getAudioContext();
-      
-      // Reprendre l'AudioContext s'il est suspendu (après une pub par exemple)
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
+    (async () => {
+      try {
+        const audioContext = await ensureAudioRunning();
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.type = type;
+
+        const now = audioContext.currentTime;
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0, now + duration);
+
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+      } catch (error) {
+        console.warn('Audio not supported:', error);
       }
-      
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-      oscillator.type = type;
-
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + duration);
-    } catch (error) {
-      console.warn('Audio not supported:', error);
-    }
-  }, [isMuted, getAudioContext]);
+    })();
+  }, [isMuted, ensureAudioRunning]);
 
   const playClick = useCallback(() => {
     // Clic court et net
