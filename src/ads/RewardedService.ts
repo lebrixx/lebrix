@@ -1,6 +1,7 @@
 import { AdMob, RewardAdOptions, RewardAdPluginEvents } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
+import { Interstitials } from '@/ads/InterstitialService';
 
 const REWARDED_AD_UNIT_ID = 'ca-app-pub-6790106624716732/4113445950';
 const COOLDOWN_MS = 60000; // 60 secondes entre chaque rewarded
@@ -136,7 +137,16 @@ this.state = 'showing';
 this.showStartTime = Date.now();
 this.currentKind = kind;
 
+// Inform interstitial scheduler to avoid chaining ads
+try { Interstitials.notifyRewardedShown(); } catch {}
+
+// Ensure ad overlays the status bar on iOS to avoid touch issues
+if (Capacitor.isNativePlatform()) {
+  StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+}
+
 console.log(`[Rewarded] Showing ad for kind: ${kind}`);
+
 
     return new Promise(async (resolve) => {
       let resolved = false;
@@ -187,11 +197,11 @@ this.cooldownTimeout = setTimeout(() => {
         resolve(finalResult);
       };
 
-// Timeout de sécurité de 90 secondes
+// Timeout de sécurité de 60 secondes
 safetyTimeout = setTimeout(() => {
-  console.warn('[Rewarded] Safety timeout reached (90s)');
+  console.warn('[Rewarded] Safety timeout reached (60s)');
   cleanup({ status: this.earned ? 'rewarded' : 'closed' });
-}, 90000);
+}, 60000);
 
       // Configurer les listeners
       await this.setupListeners(cleanup);
@@ -210,61 +220,83 @@ safetyTimeout = setTimeout(() => {
   private async setupListeners(onComplete: (result: RewardedResult) => void): Promise<void> {
     try {
       let dismissedReceived = false;
+      let shownReceived = false;
       let dismissTimeout: NodeJS.Timeout | null = null;
+      let postRewardTimeout: NodeJS.Timeout | null = null;
       const startTime = Date.now();
+      let shownAt = startTime;
 
-      // Événement Rewarded : l'utilisateur a vraiment gagné la récompense
+      // Ad showed
+      const showedHandle = await AdMob.addListener(RewardAdPluginEvents.Showed, () => {
+        shownReceived = true;
+        shownAt = Date.now();
+        console.log(`👀 [${shownAt - startTime}ms] Ad showed`);
+      });
+      this.listeners.push(showedHandle);
+
+      // User earned reward
       const rewardedHandle = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: any) => {
         const elapsed = Date.now() - startTime;
         console.log(`🎁 [${elapsed}ms] Reward earned:`, reward);
         this.earned = true;
 
-        // Si dismissed déjà reçu, résoudre immédiatement
         if (dismissedReceived) {
+          if (postRewardTimeout) clearTimeout(postRewardTimeout);
           console.log('✅ Dismiss already received -> resolving rewarded now');
           onComplete({ status: 'rewarded' });
-        }
-        // Sinon, attendre dismiss
-        else {
+        } else {
           console.log('✅ Reward earned - waiting for dismiss');
+          // Fallback if Dismissed never arrives on iOS for some creatives
+          if (postRewardTimeout) clearTimeout(postRewardTimeout);
+          postRewardTimeout = setTimeout(() => {
+            console.warn('⌛ Reward earned but no Dismissed -> forcing resolve');
+            onComplete({ status: 'rewarded' });
+          }, 12000);
         }
       });
       this.listeners.push(rewardedHandle);
 
-      // Événement Dismissed : la pub est fermée
+      // Ad dismissed
       const dismissedHandle = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
         const elapsed = Date.now() - startTime;
         dismissedReceived = true;
-        console.log(`👋 [${elapsed}ms] Ad dismissed, earned=${this.earned}`);
+        console.log(`👋 [${elapsed}ms] Ad dismissed, earned=${this.earned}, shown=${shownReceived}`);
 
-        // Restaurer la StatusBar et la safe area
+        // Restore StatusBar overlay behavior
         if (Capacitor.isNativePlatform()) {
           StatusBar.setOverlaysWebView({ overlay: false }).catch(err => 
             console.log('[Rewarded] StatusBar reset error (ignored):', err)
           );
         }
 
+        if (postRewardTimeout) clearTimeout(postRewardTimeout);
+
         if (this.earned) {
-          // Récompense déjà reçue -> succès
           if (dismissTimeout) clearTimeout(dismissTimeout);
           onComplete({ status: 'rewarded' });
         } else {
-          // Pas encore de reward, attendre une période de grâce de 20s
-          // (pour les pubs en 2 étapes avec App Store sheet)
+          // If dismissed too fast or before 'Showed', treat as failure
+          if (!shownReceived || (Date.now() - shownAt) < 800) {
+            console.warn('⚠️ Dismissed before shown or too fast, treating as failed');
+            onComplete({ status: 'failed' });
+            return;
+          }
           if (dismissTimeout) clearTimeout(dismissTimeout);
+          // Grace window for delayed reward callback (App Store sheet step)
           dismissTimeout = setTimeout(() => {
             const finalElapsed = Date.now() - startTime;
             console.log(`⏳ [${finalElapsed}ms] Grace period over. earned=${this.earned}`);
             onComplete({ status: this.earned ? 'rewarded' : 'closed' });
-          }, 20000);
+          }, 5000);
         }
       });
       this.listeners.push(dismissedHandle);
 
-      // Événements d'erreur
+      // Error events
       const failedToLoadHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error: any) => {
         console.error('💥 Ad failed to load:', error);
         if (dismissTimeout) clearTimeout(dismissTimeout);
+        if (postRewardTimeout) clearTimeout(postRewardTimeout);
         onComplete({ status: 'failed' });
       });
       this.listeners.push(failedToLoadHandle);
@@ -272,6 +304,7 @@ safetyTimeout = setTimeout(() => {
       const failedToShowHandle = await AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error: any) => {
         console.error('💥 Ad failed to show:', error);
         if (dismissTimeout) clearTimeout(dismissTimeout);
+        if (postRewardTimeout) clearTimeout(postRewardTimeout);
         onComplete({ status: 'failed' });
       });
       this.listeners.push(failedToShowHandle);
