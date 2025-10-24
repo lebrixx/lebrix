@@ -33,6 +33,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   const { toast } = useToast();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -125,10 +126,11 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
     });
   };
 
-  const scrollToBottom = () => {
+  const handleScrollButton = () => {
     if (scrollContainerRef.current) {
+      const scrollTarget = isAtTop ? scrollContainerRef.current.scrollHeight : 0;
       scrollContainerRef.current.scrollTo({
-        top: scrollContainerRef.current.scrollHeight,
+        top: scrollTarget,
         behavior: 'smooth'
       });
     }
@@ -138,8 +140,12 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
     const handleScroll = () => {
       if (scrollContainerRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-        // Afficher le bouton si on n'est pas en bas
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 100);
+        const isTop = scrollTop < 100;
+        const isBottom = scrollHeight - scrollTop - clientHeight < 100;
+        
+        setIsAtTop(isTop);
+        // Afficher le bouton si on n'est ni tout en haut ni tout en bas
+        setShowScrollButton(!isTop && !isBottom);
       }
     };
 
@@ -355,14 +361,14 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           </TabsContent>
         </Tabs>
 
-        {/* Scroll to Bottom Button */}
+        {/* Scroll Button - Dynamic direction */}
         {showScrollButton && (
           <Button
-            onClick={scrollToBottom}
+            onClick={handleScrollButton}
             size="icon"
-            className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-button-bg/80 border border-wheel-border hover:bg-button-hover shadow-lg backdrop-blur-sm"
+            className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/40 border border-wheel-border/50 hover:bg-button-bg/60 shadow-lg backdrop-blur-sm transition-all hover:scale-110"
           >
-            <ChevronsDown className="w-5 h-5 text-primary" />
+            <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${!isAtTop ? '' : 'rotate-180'}`} />
           </Button>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 
 interface SoundHook {
   playClick: () => void;
@@ -13,6 +13,17 @@ export const useSound = (): SoundHook => {
     const saved = localStorage.getItem('luckyStopMuted');
     return saved === 'true';
   });
+
+  // Synchroniser avec localStorage en cas de changement externe
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('luckyStopMuted');
+      setIsMuted(saved === 'true');
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const audioContextRef = useRef<AudioContext | null>(null);
 
