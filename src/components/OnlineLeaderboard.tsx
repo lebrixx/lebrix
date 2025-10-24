@@ -128,11 +128,16 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
 
   const handleScrollButton = () => {
     if (scrollContainerRef.current) {
-      const scrollTarget = isAtTop ? scrollContainerRef.current.scrollHeight : 0;
-      scrollContainerRef.current.scrollTo({
-        top: scrollTarget,
-        behavior: 'smooth'
-      });
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
+      
+      if (isAtBottom) {
+        // Si on est en bas, remonter en haut
+        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Sinon, descendre en bas
+        scrollContainerRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+      }
     }
   };
 
@@ -140,12 +145,12 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
     const handleScroll = () => {
       if (scrollContainerRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-        const isTop = scrollTop < 100;
-        const isBottom = scrollHeight - scrollTop - clientHeight < 100;
+        const isBottom = scrollHeight - scrollTop <= clientHeight + 50;
+        const canScroll = scrollHeight > clientHeight;
         
-        setIsAtTop(isTop);
-        // Afficher le bouton si on n'est ni tout en haut ni tout en bas
-        setShowScrollButton(!isTop && !isBottom);
+        setIsAtTop(scrollTop < 50);
+        // Afficher le bouton uniquement si on peut scroller
+        setShowScrollButton(canScroll);
       }
     };
 
@@ -363,15 +368,17 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
 
       </div>
 
-      {/* Scroll Button - Always visible overlay */}
-      <Button
-        onClick={handleScrollButton}
-        size="icon"
-        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/30 border border-wheel-border/40 hover:bg-button-bg/50 shadow-lg backdrop-blur-sm transition-all hover:scale-110 z-50"
-        aria-label={isAtTop ? 'Aller en bas du classement' : 'Revenir en haut du classement'}
-      >
-        <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${!isAtTop ? '' : 'rotate-180'}`} />
-      </Button>
+      {/* Scroll Button - Visible when scrollable */}
+      {showScrollButton && (
+        <Button
+          onClick={handleScrollButton}
+          size="icon"
+          className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/40 border border-wheel-border/50 hover:bg-button-bg/60 shadow-lg backdrop-blur-sm transition-all hover:scale-110 z-50"
+          aria-label={isAtTop ? 'Aller en bas du classement' : 'Revenir en haut du classement'}
+        >
+          <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${isAtTop ? '' : 'rotate-180'}`} />
+        </Button>
+      )}
       
       {/* Username Modal */}
       <UsernameModal 

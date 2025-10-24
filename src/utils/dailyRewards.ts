@@ -57,13 +57,13 @@ function getRandomBoost(): BoostType {
 
 export function getNextReward(): DailyReward {
   const state = getDailyRewardState();
-  const nextDay = Math.min(state.currentStreak + 1, 7);
+  const nextDay = state.currentStreak >= 7 ? 1 : state.currentStreak + 1;
   
   if (nextDay === 7) {
     return {
       day: 7,
-      coins: 10,
-      theme: 'theme-royal'
+      coins: 0,
+      boostId: getRandomBoost()
     };
   }
   
@@ -93,15 +93,16 @@ export function claimDailyReward(): { reward: DailyReward; newState: DailyReward
   const isConsecutive = state.lastClaimDate && 
     new Date(today).getTime() - new Date(state.lastClaimDate).getTime() <= 2 * 24 * 60 * 60 * 1000;
   
-  const newStreak = isConsecutive ? Math.min(state.currentStreak + 1, 7) : 1;
+  // Si la semaine est complétée (streak = 7), on recommence à 1
+  const newStreak = isConsecutive ? (state.currentStreak >= 7 ? 1 : state.currentStreak + 1) : 1;
   
   // Déterminer la récompense selon le jour
   let reward: DailyReward;
   if (newStreak === 7) {
     reward = {
       day: newStreak,
-      coins: 10,
-      theme: 'theme-royal'
+      coins: 0,
+      boostId: getRandomBoost()
     };
   } else if (newStreak === 2 || newStreak === 5) {
     reward = {
