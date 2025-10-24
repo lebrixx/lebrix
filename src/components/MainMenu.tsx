@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Tv, Settings as SettingsIcon } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Tv, Settings as SettingsIcon, Instagram } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -263,24 +263,52 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <div className="absolute inset-2 rounded-full bg-primary opacity-30"></div>
       </div>
 
-      {/* Coming Soon Dialog */}
+      {/* Social Media Dialog */}
       <AlertDialog open={showComingSoon} onOpenChange={setShowComingSoon}>
         <AlertDialogContent className="bg-button-bg border-wheel-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-primary text-center flex items-center justify-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              {t.comingSoon}
-              <Sparkles className="w-5 h-5" />
+            <AlertDialogTitle className="text-primary text-center flex flex-col items-center gap-3">
+              <Sparkles className="w-6 h-6 text-secondary" />
+              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Rejoins-nous !
+              </span>
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-text-secondary">
-              {t.comingSoonDesc}
+            <AlertDialogDescription className="text-center text-text-secondary pt-2 pb-4 text-sm leading-relaxed">
+              Suis l'actualité et participe au prochain concours pour gagner des récompenses exclusives ! 🎁
             </AlertDialogDescription>
           </AlertDialogHeader>
+          
+          <div className="flex flex-col gap-3 pb-2">
+            <Button 
+              onClick={() => {
+                window.open('https://www.instagram.com/luckystop_?igsh=a3lmanFkeWdwc3F2', '_blank');
+              }}
+              className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-2 py-6"
+            >
+              <Instagram className="w-5 h-5" />
+              <span className="font-semibold">Instagram</span>
+            </Button>
+            
+            <Button 
+              onClick={() => {
+                // TikTok link will be added later
+                setShowComingSoon(false);
+              }}
+              className="bg-gradient-to-r from-black via-gray-900 to-teal-500 hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-2 py-6"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+              </svg>
+              <span className="font-semibold">TikTok</span>
+            </Button>
+          </div>
+          
           <Button 
             onClick={() => setShowComingSoon(false)}
-            className="bg-gradient-primary hover:scale-105 transition-all"
+            variant="ghost"
+            className="mt-2 hover:bg-primary/10"
           >
-            OK
+            Fermer
           </Button>
         </AlertDialogContent>
       </AlertDialog>
