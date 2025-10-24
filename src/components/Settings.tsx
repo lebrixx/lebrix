@@ -20,7 +20,7 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     const saved = localStorage.getItem('notificationsEnabled');
-    return saved === 'true';
+    return saved !== null ? saved === 'true' : true;
   });
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
 
           <div className="text-xs text-text-muted text-center pt-2">
-            Les notifications t'encouragent à jouer chaque jour entre 10h et 20h
+            Une notification par jour car le classement n'attend que toi 🎮
           </div>
         </div>
 

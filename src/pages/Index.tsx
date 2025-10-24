@@ -74,7 +74,13 @@ const Index = () => {
   useEffect(() => {
     resetDayIfNeeded();
     setHasAvailableReward(canClaimReward());
-    initNotifications();
+    
+    // Demander la permission de notification au lancement
+    import('@/utils/notifications').then(({ requestNotificationPermission, initNotifications }) => {
+      requestNotificationPermission().then(() => {
+        initNotifications();
+      });
+    });
   }, []);
 
   const handleDailyRewardClaimed = (coins: number, theme?: string, boostId?: string) => {

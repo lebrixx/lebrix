@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit, Calendar, Globe } from 'lucide-react';
+import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit, Calendar, Globe, ChevronsDown } from 'lucide-react';
 import { fetchTop, fetchWeeklyTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
@@ -32,7 +32,9 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const { toast } = useToast();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Load current username on mount
   useEffect(() => {
@@ -122,6 +124,32 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
       minute: '2-digit'
     });
   };
+
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+        // Afficher le bouton si on n'est pas en bas
+        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 100);
+      }
+    };
+
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      handleScroll(); // Check initial state
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, [scores, weeklyScores]);
 
   return (
     <div className="min-h-screen bg-gradient-game theme-neon flex flex-col">
@@ -225,7 +253,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
       </div>
 
       {/* Leaderboard */}
-      <div className="flex-1 px-4 pb-4">
+      <div ref={scrollContainerRef} className="flex-1 px-4 pb-4 overflow-y-auto relative">
         {!isOnline && (
           <Card className="p-4 mb-4 bg-button-bg border-wheel-border border-red-400/30">
             <div className="flex items-center gap-2 text-red-400">
@@ -326,6 +354,17 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Scroll to Bottom Button */}
+        {showScrollButton && (
+          <Button
+            onClick={scrollToBottom}
+            size="icon"
+            className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-button-bg/80 border border-wheel-border hover:bg-button-hover shadow-lg backdrop-blur-sm"
+          >
+            <ChevronsDown className="w-5 h-5 text-primary" />
+          </Button>
+        )}
       </div>
       
       {/* Username Modal */}
