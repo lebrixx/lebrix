@@ -361,17 +361,17 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           </TabsContent>
         </Tabs>
 
-        {/* Scroll Button - Dynamic direction */}
-        {showScrollButton && (
-          <Button
-            onClick={handleScrollButton}
-            size="icon"
-            className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/40 border border-wheel-border/50 hover:bg-button-bg/60 shadow-lg backdrop-blur-sm transition-all hover:scale-110"
-          >
-            <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${!isAtTop ? '' : 'rotate-180'}`} />
-          </Button>
-        )}
       </div>
+
+      {/* Scroll Button - Always visible overlay */}
+      <Button
+        onClick={handleScrollButton}
+        size="icon"
+        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/30 border border-wheel-border/40 hover:bg-button-bg/50 shadow-lg backdrop-blur-sm transition-all hover:scale-110 z-50"
+        aria-label={isAtTop ? 'Aller en bas du classement' : 'Revenir en haut du classement'}
+      >
+        <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${!isAtTop ? '' : 'rotate-180'}`} />
+      </Button>
       
       {/* Username Modal */}
       <UsernameModal 

@@ -2,10 +2,8 @@
 import { Capacitor } from '@capacitor/core';
 
 const NOTIFICATION_MESSAGES = [
-  "🎮 Prêt à battre ton record aujourd'hui ?",
-  "🏆 Ta zone verte t'attend ! Viens jouer !",
+  "🎮 Prêt à battre ton score aujourd'hui ?",
   "⚡ C'est l'heure de tester tes réflexes !",
-  "🎯 Ton meilleur score t'attend !",
   "🔥 N'oublie pas ta partie quotidienne !",
   "💎 Des coins gratuits t'attendent dans le jeu !",
   "🌟 Tes adversaires progressent... et toi ?",
