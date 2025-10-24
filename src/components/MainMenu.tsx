@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Tv } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Tv, Settings as SettingsIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { AdRewardDialog } from '@/components/AdRewardDialog';
+import { Settings } from '@/components/Settings';
 
 interface MainMenuProps {
   bestScore: number;
@@ -21,6 +22,8 @@ interface MainMenuProps {
   onOpenDailyRewards: () => void;
   hasAvailableReward: boolean;
   onAdRewardClaimed: (coins: number) => void;
+  isSoundMuted?: boolean;
+  onToggleSound?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -35,12 +38,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenLeaderboard,
   onOpenDailyRewards,
   hasAvailableReward,
-  onAdRewardClaimed
+  onAdRewardClaimed,
+  isSoundMuted = false,
+  onToggleSound = () => {}
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showAdReward, setShowAdReward] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
       {/* Free Coins Button - Discret */}
@@ -54,6 +60,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <span className="text-xs text-text-muted">
           Free Coins
         </span>
+      </Button>
+
+      {/* Settings Button - Top Right */}
+      <Button
+        onClick={() => setShowSettings(true)}
+        variant="ghost"
+        size="icon"
+        className="absolute top-16 right-4 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
+      >
+        <SettingsIcon className="w-5 h-5 text-text-muted" />
       </Button>
 
       {/* Logo/Title */}
@@ -274,6 +290,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         isOpen={showAdReward}
         onClose={() => setShowAdReward(false)}
         onRewardClaimed={onAdRewardClaimed}
+      />
+
+      {/* Settings Dialog */}
+      <Settings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        isSoundMuted={isSoundMuted}
+        onToggleSound={onToggleSound}
       />
     </div>
   );

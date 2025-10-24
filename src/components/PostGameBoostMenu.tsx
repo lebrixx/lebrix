@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Play, X, Lock } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
-import { ModeType } from '@/constants/modes';
+import { ModeType, ModeID } from '@/constants/modes';
 
 interface PostGameBoostMenuProps {
   onStartGame: (selectedBoosts: BoostType[]) => void;
@@ -17,11 +17,30 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
   const { getBoostCount } = useBoosts();
   const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
 
+  // Fonction pour vérifier si un boost est disponible pour ce mode
+  const isBoostAvailable = (boostId: BoostType): boolean => {
+    // Mode Mémoire Expert : aucun boost autorisé
+    if (currentMode === ModeID.MEMOIRE_EXPERT) {
+      return false;
+    }
+    
+    // Boost "bigger_zone" interdit dans certains modes
+    if (boostId === 'bigger_zone') {
+      if (currentMode === 'arc_changeant' || currentMode === 'zone_traitresse' || currentMode === 'survie_60s') {
+        return false;
+      }
+    }
+    
+    return true;
+  };
+
   const availableBoosts = Object.values(BOOSTS).filter(boost => 
     getBoostCount(boost.id) > 0
   );
 
   const toggleBoost = (boostId: BoostType) => {
+    if (!isBoostAvailable(boostId)) return;
+    
     setSelectedBoosts(prev => 
       prev.includes(boostId)
         ? prev.filter(id => id !== boostId)
@@ -68,14 +87,14 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
               {availableBoosts.map(boost => {
                 const isSelected = selectedBoosts.includes(boost.id);
                 const count = getBoostCount(boost.id);
-                const isLocked = boost.id === 'bigger_zone' && currentMode === 'arc_changeant';
+                const isLocked = !isBoostAvailable(boost.id);
                 
                 return (
                   <Card
                     key={boost.id}
                     onClick={() => !isLocked && toggleBoost(boost.id)}
                     className={`
-                      p-4 transition-all duration-300
+                      p-4 transition-all duration-300 relative
                       ${isLocked 
                         ? 'opacity-50 cursor-not-allowed' 
                         : 'cursor-pointer hover:scale-105'
@@ -86,15 +105,14 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
                       }
                     `}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl relative">
-                        {boost.icon}
-                        {isLocked && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-game-dark/80 rounded">
-                            <Lock className="w-4 h-4 text-text-muted" />
-                          </div>
-                        )}
+                    {isLocked && (
+                      <div className="absolute top-2 right-2 bg-red-500/80 rounded-full p-1.5">
+                        <Lock className="w-4 h-4 text-white" />
                       </div>
+                    )}
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">{boost.icon}</div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-text-primary font-bold">
@@ -103,18 +121,15 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
                           <Badge variant="secondary" className="text-xs">
                             x{count}
                           </Badge>
-                          {isLocked && (
-                            <Badge variant="destructive" className="text-xs">
-                              Indisponible
-                            </Badge>
-                          )}
                         </div>
                         <p className="text-text-secondary text-sm">
-                          {isLocked 
-                            ? "Non compatible avec le mode Arc changeant" 
-                            : boost.description
-                          }
+                          {boost.description}
                         </p>
+                        {isLocked && (
+                          <p className="text-xs text-red-400 mt-1">
+                            Indisponible pour ce mode
+                          </p>
+                        )}
                       </div>
                       {isSelected && !isLocked && (
                         <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">

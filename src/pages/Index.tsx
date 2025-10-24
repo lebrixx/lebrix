@@ -17,6 +17,8 @@ import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { BoostType } from '@/types/boosts';
+import { useSound } from '@/hooks/useSound';
+import { initNotifications } from '@/utils/notifications';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
@@ -59,6 +61,7 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins, purchaseTheme } = useGameLogic(currentMode);
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
+  const { isMuted, toggleMute } = useSound();
   
   // Force refresh des coins depuis localStorage
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
@@ -67,10 +70,11 @@ const Index = () => {
     setCurrentCoins(gameState.coins);
   }, [gameState.coins]);
 
-  // Vérifier les récompenses disponibles au montage
+  // Vérifier les récompenses disponibles au montage et initialiser les notifications
   useEffect(() => {
     resetDayIfNeeded();
     setHasAvailableReward(canClaimReward());
+    initNotifications();
   }, []);
 
   const handleDailyRewardClaimed = (coins: number, theme?: string, boostId?: string) => {
@@ -234,6 +238,8 @@ const Index = () => {
             onOpenDailyRewards={() => setShowDailyRewards(true)}
             hasAvailableReward={hasAvailableReward}
             onAdRewardClaimed={addCoins}
+            isSoundMuted={isMuted}
+            onToggleSound={toggleMute}
           />
         );
         

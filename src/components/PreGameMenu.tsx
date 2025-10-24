@@ -2,24 +2,45 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, X } from 'lucide-react';
+import { Play, X, Lock } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
+import { ModeType, ModeID } from '@/constants/modes';
 
 interface PreGameMenuProps {
   onStartGame: (selectedBoosts: BoostType[]) => void;
   onCancel: () => void;
+  currentMode?: ModeType;
 }
 
-export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel }) => {
+export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel, currentMode }) => {
   const { inventory, getBoostCount } = useBoosts();
   const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
+
+  // Fonction pour vérifier si un boost est disponible pour ce mode
+  const isBoostAvailable = (boostId: BoostType): boolean => {
+    // Mode Mémoire Expert : aucun boost autorisé
+    if (currentMode === ModeID.MEMOIRE_EXPERT) {
+      return false;
+    }
+    
+    // Boost "bigger_zone" interdit dans zone traitresse et survie 60s
+    if (boostId === 'bigger_zone') {
+      if (currentMode === 'zone_traitresse' || currentMode === 'survie_60s') {
+        return false;
+      }
+    }
+    
+    return true;
+  };
 
   const availableBoosts = Object.values(BOOSTS).filter(boost => 
     getBoostCount(boost.id) > 0
   );
 
   const toggleBoost = (boostId: BoostType) => {
+    if (!isBoostAvailable(boostId)) return;
+    
     setSelectedBoosts(prev => 
       prev.includes(boostId)
         ? prev.filter(id => id !== boostId)
@@ -70,19 +91,28 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel 
               {availableBoosts.map(boost => {
                 const isSelected = selectedBoosts.includes(boost.id);
                 const count = getBoostCount(boost.id);
+                const isLocked = !isBoostAvailable(boost.id);
                 
                 return (
                   <Card
                     key={boost.id}
                     onClick={() => toggleBoost(boost.id)}
                     className={`
-                      p-4 cursor-pointer transition-all duration-300 hover:scale-105
-                      ${isSelected 
-                        ? 'bg-primary/20 border-primary border-2' 
-                        : 'bg-wheel-segment/20 border-wheel-border hover:border-primary/50'
+                      p-4 transition-all duration-300 relative
+                      ${isLocked 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : isSelected 
+                          ? 'bg-primary/20 border-primary border-2 cursor-pointer hover:scale-105' 
+                          : 'bg-wheel-segment/20 border-wheel-border hover:border-primary/50 cursor-pointer hover:scale-105'
                       }
                     `}
                   >
+                    {isLocked && (
+                      <div className="absolute top-2 right-2 bg-red-500/80 rounded-full p-1.5">
+                        <Lock className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    
                     <div className="flex items-center gap-3">
                       <div className="text-3xl">{boost.icon}</div>
                       <div className="flex-1">
@@ -97,8 +127,13 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel 
                         <p className="text-text-secondary text-sm">
                           {boost.description}
                         </p>
+                        {isLocked && (
+                          <p className="text-xs text-red-400 mt-1">
+                            Indisponible pour ce mode
+                          </p>
+                        )}
                       </div>
-                      {isSelected && (
+                      {isSelected && !isLocked && (
                         <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-game-dark" />
                         </div>
