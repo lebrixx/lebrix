@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
 import { WeeklyTimer } from '@/components/WeeklyTimer';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface OnlineLeaderboardProps {
   onBack: () => void;
@@ -24,6 +25,9 @@ const modeNames = {
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   const [selectedMode, setSelectedMode] = useState<string>('classic');
   const [selectedTab, setSelectedTab] = useState<string>('global');
   const [scores, setScores] = useState<Score[]>([]);
@@ -40,18 +44,18 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   // Load current username on mount
   useEffect(() => {
     const identity = getLocalIdentity();
-    setCurrentUsername(identity.username || 'Aucun pseudo');
-  }, []);
+    setCurrentUsername(identity.username || t.noUsername);
+  }, [t.noUsername]);
 
   const handleUsernameChange = () => {
     const identity = getLocalIdentity();
-    setCurrentUsername(identity.username || 'Aucun pseudo');
+    setCurrentUsername(identity.username || t.noUsername);
     setShowUsernameModal(false);
     // Recharger le classement pour voir les nouveaux scores
     loadScores(selectedMode);
     toast({
-      title: "Pseudo modifié",
-      description: "Votre nouveau pseudo a été sauvegardé",
+      title: t.usernameChanged,
+      description: t.usernameChangedDesc,
       duration: 2000
     });
   };
@@ -67,8 +71,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
       setWeeklyScores(weeklyData);
     } catch (error) {
       toast({
-        title: "Erreur réseau",
-        description: "Impossible de charger le classement",
+        title: t.networkError,
+        description: t.networkErrorDesc,
         variant: "destructive",
         duration: 3000
       });
@@ -173,13 +177,13 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           className="mb-4 border-wheel-border hover:bg-button-hover"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
+          {t.back}
         </Button>
 
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
             <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              CLASSEMENT EN LIGNE
+              {t.onlineLeaderboard.toUpperCase()}
             </h1>
             {isOnline ? (
               <Wifi className="w-5 h-5 text-green-400" />
@@ -190,7 +194,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           
           {/* Current Username - Plus discret */}
           <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="text-text-secondary text-sm">Pseudo: </span>
+            <span className="text-text-secondary text-sm">{t.username}: </span>
             <span className="text-text-primary font-medium">{currentUsername}</span>
             <Button
               onClick={() => setShowUsernameModal(true)}
@@ -211,14 +215,14 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
             >
               <Globe className="w-4 h-4" />
-              Global
+              {t.global}
             </TabsTrigger>
             <TabsTrigger 
               value="weekly"
               className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
             >
               <Calendar className="w-4 h-4" />
-              Hebdomadaire
+              {t.weekly}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -258,7 +262,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             className="border-wheel-border hover:bg-button-hover"
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Actualiser
+            {t.refresh}
           </Button>
         </div>
       </div>
@@ -269,7 +273,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           <Card className="p-4 mb-4 bg-button-bg border-wheel-border border-red-400/30">
             <div className="flex items-center gap-2 text-red-400">
               <WifiOff className="w-4 h-4" />
-              <span className="text-sm">Mode hors ligne - Reconnectez-vous pour voir le classement</span>
+              <span className="text-sm">{t.offlineMode}</span>
             </div>
           </Card>
         )}
@@ -283,8 +287,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             ) : scores.length === 0 ? (
               <Card className="p-8 text-center bg-button-bg border-wheel-border">
                 <Trophy className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
-                <p className="text-text-muted">Aucun score enregistré pour ce mode</p>
-                <p className="text-text-muted text-sm">Sois le premier à jouer !</p>
+                <p className="text-text-muted">{t.noScores}</p>
+                <p className="text-text-muted text-sm">{t.beFirst}</p>
               </Card>
             ) : (
               <div className="space-y-2">
@@ -328,8 +332,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             ) : weeklyScores.length === 0 ? (
               <Card className="p-8 text-center bg-button-bg border-wheel-border">
                 <Calendar className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
-                <p className="text-text-muted">Aucun score cette semaine pour ce mode</p>
-                <p className="text-text-muted text-sm">Sois le premier à jouer cette semaine !</p>
+                <p className="text-text-muted">{t.noWeeklyScores}</p>
+                <p className="text-text-muted text-sm">{t.beFirstWeek}</p>
               </Card>
             ) : (
               <div className="space-y-2">

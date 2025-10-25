@@ -270,11 +270,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <AlertDialogTitle className="text-primary text-center flex flex-col items-center gap-3">
               <Sparkles className="w-6 h-6 text-secondary" />
               <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Rejoins-nous !
+                {t.joinUs}
               </span>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-text-secondary pt-2 pb-4 text-sm leading-relaxed">
-              Suis l'actualité et participe au prochain concours pour gagner des récompenses exclusives ! 🎁
+              {t.socialDesc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           
@@ -308,7 +308,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             variant="ghost"
             className="mt-2 hover:bg-primary/10"
           >
-            Fermer
+            {t.close}
           </Button>
         </AlertDialogContent>
       </AlertDialog>

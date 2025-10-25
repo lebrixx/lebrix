@@ -1,5 +1,6 @@
 // Service de notifications push
 import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 const NOTIFICATION_MESSAGES = [
   "🎮 Prêt à battre ton score aujourd'hui ?",
@@ -11,6 +12,13 @@ const NOTIFICATION_MESSAGES = [
 ];
 
 export async function requestNotificationPermission(): Promise<boolean> {
+  // Si on est sur mobile natif, utiliser les notifications locales Capacitor
+  if (Capacitor.isNativePlatform()) {
+    const permission = await LocalNotifications.requestPermissions();
+    return permission.display === 'granted';
+  }
+
+  // Sinon utiliser les notifications web
   if (!('Notification' in window)) {
     console.log('Les notifications ne sont pas supportées');
     return false;
@@ -80,18 +88,39 @@ async function showNotification() {
 
   const message = NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)];
 
-  // Sur les appareils natifs (Capacitor), utiliser l'API native si disponible
+  // Sur mobile natif, utiliser les notifications locales Capacitor
   if (Capacitor.isNativePlatform()) {
-    // TODO: Implémenter avec @capacitor/local-notifications si nécessaire
-    console.log('Notification native:', message);
-  } else {
-    // Navigateur web
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Lucky Stop',
+            body: message,
+            id: Math.floor(Math.random() * 1000000),
+            schedule: { at: new Date(Date.now() + 1000) }, // Dans 1 seconde
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Erreur notification native:', error);
+    }
+    return;
+  }
+
+  // Sur web, utiliser l'API Notification standard
+  try {
     new Notification('Lucky Stop', {
       body: message,
       icon: '/icon-512.png',
       badge: '/icon-512.png',
       tag: 'daily-reminder',
     });
+  } catch (error) {
+    console.error('Erreur notification:', error);
   }
 }
 

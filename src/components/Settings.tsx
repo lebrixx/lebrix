@@ -3,7 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Volume2, VolumeX, Bell, BellOff } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 
 interface SettingsProps {
   isOpen: boolean;
@@ -18,6 +20,9 @@ export const Settings: React.FC<SettingsProps> = ({
   isSoundMuted,
   onToggleSound
 }) => {
+  const { language, setLanguage } = useLanguage();
+  const t = translations[language];
+  
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     const saved = localStorage.getItem('notificationsEnabled');
     return saved !== null ? saved === 'true' : true;
@@ -43,7 +48,7 @@ export const Settings: React.FC<SettingsProps> = ({
       <DialogContent className="sm:max-w-md bg-button-bg border-wheel-border">
         <DialogHeader>
           <DialogTitle className="text-text-primary text-center text-xl">
-            Réglages
+            {t.settings}
           </DialogTitle>
         </DialogHeader>
 
@@ -57,7 +62,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 <Volume2 className="w-5 h-5 text-primary" />
               )}
               <Label htmlFor="sound" className="text-text-primary text-base">
-                Son
+                {t.sound}
               </Label>
             </div>
             <Switch
@@ -76,7 +81,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 <BellOff className="w-5 h-5 text-text-muted" />
               )}
               <Label htmlFor="notifications" className="text-text-primary text-base">
-                Notifications quotidiennes
+                {t.dailyNotifications}
               </Label>
             </div>
             <Switch
@@ -86,8 +91,54 @@ export const Settings: React.FC<SettingsProps> = ({
             />
           </div>
 
+          {/* Langue */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Languages className="w-5 h-5 text-primary" />
+              <Label className="text-text-primary text-base">
+                {t.language}
+              </Label>
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-wheel-border hover:bg-button-hover text-text-primary"
+                >
+                  {language.toUpperCase()}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40 p-2 bg-button-bg border-wheel-border z-50 max-h-72 overflow-y-auto">
+                <div className="flex flex-col gap-1">
+                  {[
+                    { code: 'fr', label: '🇫🇷 Français' },
+                    { code: 'en', label: '🇬🇧 English' },
+                    { code: 'es', label: '🇪🇸 Español' },
+                    { code: 'de', label: '🇩🇪 Deutsch' },
+                    { code: 'it', label: '🇮🇹 Italiano' },
+                    { code: 'pt', label: '🇵🇹 Português' },
+                    { code: 'ar', label: '🇸🇦 العربية' },
+                    { code: 'ja', label: '🇯🇵 日本語' },
+                    { code: 'zh', label: '🇨🇳 中文' },
+                  ].map(({ code, label }) => (
+                    <Button
+                      key={code}
+                      onClick={() => setLanguage(code as Language)}
+                      variant={language === code ? 'default' : 'ghost'}
+                      size="sm"
+                      className="justify-start text-xs"
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <div className="text-xs text-text-muted text-center pt-2">
-            Une notification par jour car le classement n'attend que toi 🎮
+            {t.notificationDesc}
           </div>
         </div>
 
@@ -95,7 +146,7 @@ export const Settings: React.FC<SettingsProps> = ({
           onClick={onClose}
           className="w-full bg-gradient-primary hover:opacity-90"
         >
-          Fermer
+          {t.close}
         </Button>
       </DialogContent>
     </Dialog>
