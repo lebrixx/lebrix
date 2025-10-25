@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Check } from 'lucide-react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface CustomizationItem {
   id: string;

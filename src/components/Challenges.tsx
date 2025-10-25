@@ -6,6 +6,7 @@ import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Game
 import { ModeID } from '@/constants/modes';
 import { toast } from 'sonner';
 import { BOOSTS, BoostType } from '@/types/boosts';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface ChallengeProgress {
   mode: string;

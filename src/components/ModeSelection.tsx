@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface ModeSelectionProps {
   currentMode: ModeType;

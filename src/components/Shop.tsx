@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -60,6 +61,9 @@ export const Shop: React.FC<ShopProps> = ({
   onPurchaseMode,
   onSpendCoins,
 }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   const [activeTab, setActiveTab] = useState('themes');
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
@@ -88,8 +92,8 @@ export const Shop: React.FC<ShopProps> = ({
     // Vérifier si c'est le thème royal
     if (theme.id === 'theme-royal' && !hasReached7Days) {
       toast({
-        title: "Thème verrouillé",
-        description: "Complétez 7 jours de récompenses quotidiennes pour débloquer ce thème exclusif !",
+        title: t.themeLocked,
+        description: t.themeLockedDesc,
         variant: "destructive"
       });
       return;
@@ -129,8 +133,8 @@ export const Shop: React.FC<ShopProps> = ({
     if (modeId === 'expert_tickets') {
       if (coins < price) {
         toast({
-          title: "Coins insuffisants",
-          description: `Il te faut ${price} coins pour acheter ce pack.`,
+          title: t.insufficientCoins,
+          description: t.insufficientCoinsDesc.replace('{amount}', String(price)),
           variant: "destructive"
         });
         return;
@@ -140,8 +144,8 @@ export const Shop: React.FC<ShopProps> = ({
         addTickets(4);
         setCurrentTickets(getTickets());
         toast({
-          title: "Pack acheté !",
-          description: "Tu as reçu 4 tickets pour le mode Expert !",
+          title: t.packBought,
+          description: t.packBoughtDesc,
         });
       }
       return;
@@ -163,32 +167,32 @@ export const Shop: React.FC<ShopProps> = ({
           className="border-wheel-border hover:bg-button-hover"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour au Menu
+          {t.backToMenu}
         </Button>
         
         <div className="flex items-center gap-2 bg-button-bg border border-wheel-border rounded-lg px-4 py-2">
           <Coins className="w-5 h-5 text-secondary" />
           <span className="text-secondary font-bold text-lg">{coins}</span>
-          <span className="text-text-muted">coins</span>
+          <span className="text-text-muted">{t.coins}</span>
         </div>
       </div>
 
       {/* Title */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-          BOUTIQUE
+          {t.shopTitle}
         </h1>
         <p className="text-text-secondary text-lg">
-          Débloquez des thèmes, modes de jeux et boosts
+          {t.shopDesc}
         </p>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
         <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="themes">Thèmes</TabsTrigger>
-          <TabsTrigger value="modes">Modes de jeux</TabsTrigger>
-          <TabsTrigger value="boosts">Boosts</TabsTrigger>
+          <TabsTrigger value="themes">{t.themes}</TabsTrigger>
+          <TabsTrigger value="modes">{t.modes}</TabsTrigger>
+          <TabsTrigger value="boosts">{t.boosts}</TabsTrigger>
         </TabsList>
 
         {/* Themes Tab */}
@@ -238,7 +242,7 @@ export const Shop: React.FC<ShopProps> = ({
                       <div className="absolute top-2 right-2">
                         <Badge className="bg-primary text-game-dark">
                           <Check className="w-3 h-3 mr-1" />
-                          Équipé
+                          {t.equipped}
                         </Badge>
                       </div>
                     )}
@@ -248,7 +252,7 @@ export const Shop: React.FC<ShopProps> = ({
                       <div className="absolute top-2 right-2">
                         <Badge className="bg-success text-game-dark">
                           <Check className="w-3 h-3 mr-1" />
-                          Possédé
+                          {t.owned}
                         </Badge>
                       </div>
                     )}

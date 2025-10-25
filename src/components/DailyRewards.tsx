@@ -16,6 +16,7 @@ import {
 } from '@/utils/dailyRewards';
 import { BOOSTS } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface DailyRewardsProps {
   isOpen: boolean;
