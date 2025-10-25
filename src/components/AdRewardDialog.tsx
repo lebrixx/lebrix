@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Coins, Play, Sparkles, Gift, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface AdRewardDialogProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const { toast } = useToast();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   // Mettre à jour le chrono chaque seconde
   useEffect(() => {
@@ -42,8 +45,8 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
     
     if (success) {
       toast({
-        title: "Coins reçus !",
-        description: "Tu as reçu 100 coins ! 🪙",
+        title: t.coinsReceivedAd,
+        description: t.coinsReceivedAdDesc,
       });
       onRewardClaimed(100);
       onClose();
@@ -56,11 +59,11 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent flex items-center justify-center gap-2">
             <Gift className="w-6 h-6 text-primary animate-bounce" />
-            Coins Gratuits
+            {t.freeCoins}
             <Gift className="w-6 h-6 text-primary animate-bounce" />
           </DialogTitle>
           <DialogDescription className="text-center text-text-secondary pt-2">
-            Regarde une courte publicité et gagne des coins gratuitement !
+            {t.watchAdDialogDesc}
           </DialogDescription>
         </DialogHeader>
 
@@ -76,7 +79,7 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
               </span>
             </div>
             <p className="text-text-muted text-sm mt-2 relative z-10">
-              Coins à gagner
+              {t.coinsToWin}
             </p>
           </div>
 
@@ -89,7 +92,7 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
               disabled={isShowing || !isReady() || cooldownRemaining > 0}
             >
               <Video className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-              Regarder la pub
+              {t.watchAd}
               {cooldownRemaining > 0 && (
                 <span className="ml-2 text-sm">({cooldownRemaining}s)</span>
               )}
@@ -103,10 +106,10 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                 </div>
                 <p className="text-text-primary font-medium">
-                  Publicité en cours...
+                  {t.adPlaying}
                 </p>
                 <p className="text-text-muted text-sm mt-1">
-                  Merci de patienter quelques secondes
+                  {t.pleaseWait}
                 </p>
               </div>
             </div>
@@ -114,7 +117,7 @@ export const AdRewardDialog: React.FC<AdRewardDialogProps> = ({
 
           {/* Info */}
           <p className="text-center text-text-muted text-xs">
-            💡 Astuce : Regarde des pubs régulièrement pour maximiser tes gains !
+            {t.adTip}
           </p>
         </div>
       </DialogContent>
