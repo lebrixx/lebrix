@@ -6,6 +6,7 @@ import { Play, X, Lock } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { ModeType, ModeID } from '@/constants/modes';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface PreGameMenuProps {
   onStartGame: (selectedBoosts: BoostType[]) => void;
@@ -16,6 +17,8 @@ interface PreGameMenuProps {
 export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel, currentMode }) => {
   const { inventory, getBoostCount } = useBoosts();
   const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   // Fonction pour vérifier si un boost est disponible pour ce mode
   const isBoostAvailable = (boostId: BoostType): boolean => {
@@ -57,7 +60,7 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel,
       <Card className="w-full max-w-md bg-button-bg border-wheel-border p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-text-primary">
-            Prépare ta partie
+            {t.prepareGame}
           </h2>
           <Button
             onClick={onCancel}
@@ -72,21 +75,21 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel,
         {availableBoosts.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-text-secondary mb-4">
-              Tu n'as pas de boosts disponibles
+              {t.noBoostsAvailable}
             </p>
             <Button
               onClick={handleStart}
               className="bg-gradient-primary hover:scale-105 transition-all duration-300"
             >
               <Play className="w-4 h-4 mr-2" />
-              Commencer sans boost
+              {t.startWithoutBoost}
             </Button>
           </div>
         ) : (
           <>
             <div className="space-y-3 mb-6">
               <p className="text-text-secondary text-sm mb-4">
-                Sélectionne les boosts que tu veux utiliser :
+                {t.selectBoostsUse}
               </p>
               {availableBoosts.map(boost => {
                 const isSelected = selectedBoosts.includes(boost.id);
@@ -129,7 +132,7 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel,
                         </p>
                         {isLocked && (
                           <p className="text-xs text-red-400 mt-1">
-                            Indisponible pour ce mode
+                            {t.unavailableMode}
                           </p>
                         )}
                       </div>
@@ -149,7 +152,7 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel,
               className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300 py-6 text-lg font-bold"
             >
               <Play className="w-5 h-5 mr-2" />
-              COMMENCER LA PARTIE
+              {t.startGameLabel}
             </Button>
           </>
         )}

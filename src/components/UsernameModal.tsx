@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogFooter
 } from '@/components/ui/alert-dialog';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface UsernameModalProps {
   isOpen: boolean;
@@ -26,12 +27,14 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
   const [error, setError] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isValidUsername(username)) {
-      setError('Le pseudo doit contenir entre 3 et 16 caractères (lettres, chiffres, underscore)');
+      setError(t.usernameError);
       return;
     }
 
@@ -44,12 +47,12 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
       setUsernameForScores(username);
       setShowConfirmation(false);
       toast({
-        title: "✅ Pseudo enregistré",
-        description: "Ton pseudo a été enregistré avec succès !",
+        title: t.usernameRegistered,
+        description: t.usernameRegisteredDesc,
       });
       onUsernameSet();
     } catch (err) {
-      setError('Erreur lors de la sauvegarde du pseudo');
+      setError(t.usernameSaveError);
       setShowConfirmation(false);
     }
   };
@@ -65,7 +68,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-text-primary">
             <User className="w-5 h-5 text-primary" />
-            Choisir un pseudo
+            {t.chooseUsername}
           </DialogTitle>
         </DialogHeader>
 
@@ -73,21 +76,21 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
         <div className="space-y-2">
           <div className="text-center mb-3">
             <p className="text-sm text-primary font-medium">
-              📸 Utilise ton pseudo Instagram !
+              {t.useInstagram}
             </p>
             <p className="text-xs text-text-muted mt-1">
-              Des concours et récompenses arrivent bientôt 🎁
+              {t.contestsSoon}
             </p>
           </div>
           
           <Label htmlFor="username" className="text-text-primary">
-            Pseudo (3-16 caractères)
+            {t.usernameLabel}
           </Label>
           <Input
             id="username"
             value={username}
             onChange={(e) => handleUsernameChange(e.target.value)}
-            placeholder="ton_pseudo_insta"
+            placeholder={t.usernamePlaceholder}
             className="bg-background border-wheel-border text-text-primary"
             maxLength={16}
             autoFocus
@@ -96,7 +99,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             <p className="text-sm text-red-400">{error}</p>
           )}
           <p className="text-xs text-text-muted">
-            Lettres, chiffres et underscore uniquement
+            {t.usernameRules}
           </p>
         </div>
 
@@ -107,13 +110,13 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               onClick={() => handleUsernameChange(generateDefaultUsername())}
               className="flex-1 border-wheel-border hover:bg-button-hover"
             >
-              Aléatoire
+              {t.random}
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-gradient-primary hover:opacity-90"
             >
-              Valider
+              {t.validateLabel}
             </Button>
           </div>
         </form>
@@ -124,17 +127,17 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
         <AlertDialogContent className="bg-button-bg border-wheel-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-primary">
-              ⚠️ Confirmation importante
+              {t.importantConfirmation}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-text-secondary space-y-3">
               <p>
-                Tu es sur le point d'enregistrer le pseudo : <span className="font-bold text-primary">{username}</span>
+                {t.aboutToRegister} <span className="font-bold text-primary">{username}</span>
               </p>
               <p className="text-sm">
-                <strong className="text-text-primary">Important :</strong> Il est fortement recommandé de ne plus changer ton pseudo après validation pour éviter tout problème de synchronisation dans le classement.
+                <strong className="text-text-primary">{t.importantNote}</strong> {t.dontChangeUsername}
               </p>
               <p className="text-xs text-text-muted">
-                Assure-toi que c'est bien ton pseudo Instagram si tu veux participer aux futurs concours !
+                {t.ensureInstagram}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -144,13 +147,13 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               onClick={() => setShowConfirmation(false)}
               className="border-wheel-border hover:bg-button-hover"
             >
-              Modifier
+              {t.modify}
             </Button>
             <Button
               onClick={confirmUsername}
               className="bg-gradient-primary hover:opacity-90"
             >
-              Confirmer
+              {t.confirmLabel}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

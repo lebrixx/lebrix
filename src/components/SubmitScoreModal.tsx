@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Trophy, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { submitScore } from '@/utils/scoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface SubmitScoreModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const handleSubmit = async () => {
     const identity = getLocalIdentity();
@@ -49,7 +52,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
         }, 2000);
       } else {
         setSubmitStatus('error');
-        setErrorMessage('Erreur lors de la soumission');
+        setErrorMessage(t.submitError);
       }
     } catch (error) {
       if (error instanceof Error && error.message === 'USERNAME_REQUIRED') {
@@ -59,7 +62,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
       }
       
       setSubmitStatus('error');
-      setErrorMessage('Serveur indisponible, réessaie plus tard');
+      setErrorMessage(t.serverUnavailable);
     }
     
     setIsSubmitting(false);
@@ -67,10 +70,10 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
 
   const getModeDisplayName = (mode: string) => {
     const names = {
-      classic: 'Classique',
-      arc_changeant: 'Arc Changeant',
-      survie_60s: 'Survie 30s',
-      zone_mobile: 'Zone Mobile'
+      classic: t.classic,
+      arc_changeant: t.arcChangeant,
+      survie_60s: t.survie60s,
+      zone_mobile: t.zoneMobile
     };
     return names[mode as keyof typeof names] || mode;
   };
@@ -81,7 +84,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-text-primary">
             <Trophy className="w-5 h-5 text-primary" />
-            Soumettre ton score
+            {t.submitScoreLabel}
           </DialogTitle>
         </DialogHeader>
 
@@ -89,14 +92,14 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
           {/* Score Display */}
           <div className="text-center p-6 bg-background rounded-lg border border-wheel-border">
             <div className="text-4xl font-bold text-primary mb-2">{score}</div>
-            <div className="text-text-muted">Mode: {getModeDisplayName(mode)}</div>
+            <div className="text-text-muted">{t.mode}: {getModeDisplayName(mode)}</div>
           </div>
 
           {/* Submit Status */}
           {submitStatus === 'success' && (
             <div className="flex items-center gap-2 text-green-400 justify-center">
               <CheckCircle className="w-5 h-5" />
-              <span>Score soumis avec succès ✅</span>
+              <span>{t.scoreSubmitted}</span>
             </div>
           )}
 
@@ -116,7 +119,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
               disabled={isSubmitting}
             >
               <X className="w-4 h-4 mr-2" />
-              Annuler
+              {t.cancel}
             </Button>
             
             <Button
@@ -129,7 +132,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
               ) : (
                 <Upload className="w-4 h-4 mr-2" />
               )}
-              {isSubmitting ? 'Envoi...' : 'Soumettre'}
+              {isSubmitting ? t.sending : t.submitBtn}
             </Button>
           </div>
         </div>

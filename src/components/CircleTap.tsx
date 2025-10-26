@@ -13,6 +13,7 @@ import { getTickets } from '@/utils/ticketSystem';
 import { ModeID } from '@/constants/modes';
 import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface CircleTapProps {
   theme: string;
@@ -46,6 +47,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
   const [reviveUsed, setReviveUsed] = useState(false);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   // Mettre à jour le chrono chaque seconde
   useEffect(() => {
@@ -119,8 +122,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       // Mode expert : vérifier les tickets avant de démarrer
       if (currentMode === ModeID.MEMOIRE_EXPERT && currentTickets <= 0) {
         toast({
-          title: "Pas de ticket !",
-          description: "Achète des tickets dans la boutique pour jouer au mode Expert.",
+          title: t.noTicket,
+          description: t.noTicketDesc,
           variant: "destructive",
         });
         return;
@@ -139,8 +142,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const handleRevive = async () => {
     if (reviveUsed) {
       toast({
-        title: "Revive déjà utilisé",
-        description: "Tu ne peux revivre qu'une seule fois par partie.",
+        title: t.reviveUsed,
+        description: t.reviveUsedDesc,
         variant: 'destructive',
       });
       return;
@@ -150,8 +153,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     
     if (success) {
       toast({
-        title: "Revive activé !",
-        description: "Tu as été ramené à la vie !",
+        title: t.reviveActivated,
+        description: t.reviveActivatedDesc,
       });
       setReviveUsed(true);
       reviveGame();
@@ -172,8 +175,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     // Mode expert : vérifier les tickets avant de démarrer
     if (currentMode === ModeID.MEMOIRE_EXPERT && currentTickets <= 0) {
       toast({
-        title: "Pas de ticket !",
-        description: "Achète des tickets dans la boutique pour jouer au mode Expert.",
+        title: t.noTicket,
+        description: t.noTicketDesc,
         variant: "destructive",
       });
       return;
@@ -215,7 +218,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           className="absolute top-32 left-4 border-wheel-border hover:bg-button-hover z-10"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Menu
+          {t.backToMenu}
         </Button>
       )}
 
@@ -225,10 +228,10 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           {gameState.currentScore}
         </div>
         <div className="text-text-secondary text-lg font-semibold">
-          Meilleur: {gameState.bestScore}
+          {t.bestScore}: {gameState.bestScore}
         </div>
         <div className="text-text-muted text-sm mt-2">
-          Coins: {gameState.coins} • Niveau: {gameState.level}
+          {t.coins}: {gameState.coins} • {t.level}: {gameState.level}
           {gameState.currentMode === 'survie_60s' && gameState.timeLeft && (
             <span className="ml-2 text-red-400 font-bold">⏱ {Math.ceil(gameState.timeLeft)}s</span>
           )}
@@ -445,7 +448,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         {gameState.showResult && gameState.lastResult === 'failure' && (
           <div className="absolute inset-0 flex items-center justify-center z-30">
             <div className="px-6 py-3 rounded-full text-white font-bold text-xl animate-scale-in bg-gradient-danger shadow-glow-danger">
-              PARTIE TERMINÉE
+              {t.gameOver}
             </div>
           </div>
         )}
@@ -461,7 +464,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                 <div className="flex items-center justify-center gap-2 bg-button-bg border-2 border-primary rounded-lg px-6 py-3">
                   <Ticket className="w-6 h-6 text-primary" />
                   <span className="text-primary font-bold text-xl">{currentTickets}</span>
-                  <span className="text-text-muted text-sm">ticket{currentTickets > 1 ? 's' : ''}</span>
+                  <span className="text-text-muted text-sm">{currentTickets > 1 ? t.tickets : t.ticket}</span>
                 </div>
               ) : (
                 <Button
@@ -470,7 +473,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                   className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
                 >
                   <Zap className="w-5 h-5 mr-2" />
-                  Boosts
+                  {t.boosts}
                 </Button>
               )}
               {gameState.gameStatus === 'gameover' && (
@@ -481,7 +484,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                   disabled={!isReady() || isShowing || cooldownRemaining > 0 || reviveUsed}
                 >
                   <Video className="w-4 h-4 mr-2" />
-                  {reviveUsed ? 'Revive utilisé' : 'Revivre via pub'}
+                  {reviveUsed ? t.reviveUsed : t.reviveByAd}
                   {cooldownRemaining > 0 && !reviveUsed && (
                     <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                   )}
@@ -492,7 +495,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               className="text-2xl font-bold text-primary mb-2 cursor-pointer select-none animate-pulse"
               onClick={handleTap}
             >
-              🎯 Tape sur l'écran
+              🎯 {t.tapOnScreen}
             </div>
           </div>
         ) : null}
@@ -529,21 +532,21 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       <div className="text-center mt-8 text-text-muted animate-fade-in">
         {gameState.currentMode === 'zone_traitresse' && gameState.gameStatus === 'idle' && (
           <p className="text-sm font-bold text-red-400 mb-2 animate-pulse">
-            ⚠️ Attention : une des zones est un piège. Choisis bien…
+            {t.trapWarning}
           </p>
         )}
         <p className="text-sm">
           {gameState.gameStatus === 'running' 
             ? gameState.currentMode === 'zone_traitresse'
-              ? 'Évite la zone piégée !'
-              : 'Tapez quand la barre est dans la zone verte!'
+              ? t.avoidTrap
+              : t.tapInGreenZone
             : gameState.gameStatus === 'idle'
-            ? 'Tapez sur l\'écran pour commencer ou appuyez sur ESPACE/ENTRÉE'
+            ? t.tapToStartGame
             : ''
           }
         </p>
         <p className="text-xs mt-2">
-          Vitesse: {gameState.ballSpeed.toFixed(1)} rad/s • Zone: {Math.round((gameState.zoneArc * 180) / Math.PI)}°
+          {t.speedLabel}: {gameState.ballSpeed.toFixed(1)} rad/s • {t.zoneLabel}: {Math.round((gameState.zoneArc * 180) / Math.PI)}°
         </p>
       </div>
     </div>

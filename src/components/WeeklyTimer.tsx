@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 import { getTimeUntilNextWeek } from '@/utils/weeklyUtils';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 export const WeeklyTimer: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(getTimeUntilNextWeek());
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,9 +20,9 @@ export const WeeklyTimer: React.FC = () => {
     <div className="flex items-center justify-center gap-2 px-3 py-2 bg-button-bg border border-wheel-border rounded-lg">
       <Clock className="w-4 h-4 text-secondary" />
       <span className="text-text-secondary text-sm font-medium">
-        Nouveau classement dans: 
+        {t.newLeaderboard} 
         <span className="text-secondary ml-1">
-          {timeLeft.days > 0 && `${timeLeft.days}j `}
+          {timeLeft.days > 0 && `${timeLeft.days}${t.daysShort} `}
           {String(timeLeft.hours).padStart(2, '0')}:
           {String(timeLeft.minutes).padStart(2, '0')}:
           {String(timeLeft.seconds).padStart(2, '0')}
