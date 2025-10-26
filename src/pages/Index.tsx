@@ -61,10 +61,8 @@ const Index = () => {
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins, purchaseTheme } = useGameLogic(currentMode);
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
-  const { isMuted, toggleMute } = useSound();
-  
-  // Force refresh des coins depuis localStorage
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
+  const { playClick, playSuccess, playFailure, isMuted, toggleMute } = useSound();
   
   useEffect(() => {
     setCurrentCoins(gameState.coins);
@@ -258,6 +256,11 @@ const Index = () => {
               onGameOver={handleGameOver}
               selectedBoosts={selectedBoostsForGame}
               totalGamesPlayed={gameState.totalGamesPlayed}
+              isSoundMuted={isMuted}
+              onToggleSound={toggleMute}
+              playClick={playClick}
+              playSuccess={playSuccess}
+              playFailure={playFailure}
             />
           );
         

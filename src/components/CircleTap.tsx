@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
-import { useSound } from '@/hooks/useSound';
 import { useBoosts } from '@/hooks/useBoosts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +26,11 @@ interface CircleTapProps {
   onGameOver?: (score: number) => void;
   selectedBoosts?: BoostType[];
   totalGamesPlayed?: number;
+  isSoundMuted?: boolean;
+  onToggleSound?: () => void;
+  playClick?: () => void;
+  playSuccess?: (comboCount?: number) => void;
+  playFailure?: () => void;
 }
 
 export const CircleTap: React.FC<CircleTapProps> = ({ 
@@ -36,10 +40,14 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   currentMode, 
   onGameOver,
   selectedBoosts = [],
-  totalGamesPlayed = 0 
+  totalGamesPlayed = 0,
+  isSoundMuted = false,
+  onToggleSound = () => {},
+  playClick = () => {},
+  playSuccess = () => {},
+  playFailure = () => {}
 }) => {
   const { gameState, startGame, onTap, resetGame, reviveGame, cfg } = useGameLogic(currentMode);
-  const { playClick, playSuccess, playFailure, toggleMute, isMuted } = useSound();
   const [showBoostMenu, setShowBoostMenu] = useState(false);
   const { inventory, getBoostCount } = useBoosts();
   const [currentTickets, setCurrentTickets] = useState(getTickets());
@@ -510,12 +518,12 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         </Button>
 
         <Button
-          onClick={toggleMute}
+          onClick={onToggleSound}
           variant="outline"
           size="lg"
           className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
         >
-          {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          {isSoundMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
         </Button>
       </div>
 
