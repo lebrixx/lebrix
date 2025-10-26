@@ -218,12 +218,12 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
       style={getBackgroundStyle()}
     >
-      {/* Bouton retour au menu */}
-      {onBack && (
+      {/* Bouton retour au menu - visible uniquement hors partie */}
+      {onBack && (gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover') && (
         <Button
           onClick={onBack}
           variant="outline"
-          className="absolute top-32 left-4 border-wheel-border hover:bg-button-hover z-10"
+          className="absolute top-4 left-4 border-wheel-border hover:bg-button-hover z-10"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t.backToMenu}
