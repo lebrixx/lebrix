@@ -5,6 +5,7 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
 import { Rewarded } from '@/ads/RewardedService';
 import { Interstitials } from '@/ads/InterstitialService';
+import { initNotifications } from '@/utils/notifications';
 
 // Configuration pour iOS - seulement sur les plateformes mobiles
 if (Capacitor.isNativePlatform()) {
@@ -16,5 +17,8 @@ if (Capacitor.isNativePlatform()) {
 // Initialize AdMob services early
 Rewarded.init();
 Interstitials.init();
+
+// Initialize notifications on app start
+initNotifications();
 
 createRoot(document.getElementById("root")!).render(<App />);
