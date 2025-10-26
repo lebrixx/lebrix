@@ -99,7 +99,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
           {submitStatus === 'success' && (
             <div className="flex items-center gap-2 text-green-400 justify-center">
               <CheckCircle className="w-5 h-5" />
-              <span>{t.submitSuccess}</span>
+              <span>{t.scoreSubmitted}</span>
             </div>
           )}
 
@@ -119,7 +119,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
               disabled={isSubmitting}
             >
               <X className="w-4 h-4 mr-2" />
-              {t.cancelLabel}
+              {t.cancel}
             </Button>
             
             <Button
@@ -132,7 +132,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
               ) : (
                 <Upload className="w-4 h-4 mr-2" />
               )}
-              {isSubmitting ? t.submitting : t.submitLabel}
+              {isSubmitting ? t.sending : t.submitBtn}
             </Button>
           </div>
         </div>
