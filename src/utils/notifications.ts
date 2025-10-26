@@ -36,26 +36,70 @@ export async function requestNotificationPermission(): Promise<boolean> {
   return false;
 }
 
-export function scheduleDailyNotification() {
+export async function scheduleDailyNotification() {
   // Vérifier que les notifications sont activées
   const enabled = localStorage.getItem('notificationsEnabled') === 'true';
   if (!enabled) return;
 
   // Annuler les notifications précédentes
-  cancelScheduledNotification();
+  await cancelScheduledNotification();
 
-  // Calculer le prochain moment entre 10h et 20h
+  // Sur mobile natif, utiliser le scheduling natif
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const message = NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)];
+      
+      // Calculer le prochain moment entre 10h et 20h
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      // Heure aléatoire entre 10h et 20h
+      const randomHour = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
+      const randomMinute = Math.floor(Math.random() * 60);
+      
+      const nextNotification = new Date(today.getFullYear(), today.getMonth(), today.getDate(), randomHour, randomMinute);
+      
+      // Si l'heure est déjà passée aujourd'hui, programmer pour demain
+      if (nextNotification <= now) {
+        nextNotification.setDate(nextNotification.getDate() + 1);
+      }
+
+      // Programmer la notification avec le système natif
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Lucky Stop',
+            body: message,
+            id: 1, // ID fixe pour pouvoir l'annuler
+            schedule: { 
+              at: nextNotification,
+              allowWhileIdle: true
+            },
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+
+      console.log('Notification native programmée pour:', nextNotification.toLocaleString());
+    } catch (error) {
+      console.error('Erreur scheduling notification native:', error);
+    }
+    return;
+  }
+
+  // Sur web, utiliser setTimeout (fonctionne seulement si l'app reste ouverte)
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   
-  // Heure aléatoire entre 10h et 20h (en millisecondes)
-  const minHour = 10 * 60 * 60 * 1000; // 10h
-  const maxHour = 20 * 60 * 60 * 1000; // 20h
+  const minHour = 10 * 60 * 60 * 1000;
+  const maxHour = 20 * 60 * 60 * 1000;
   const randomTime = Math.random() * (maxHour - minHour) + minHour;
   
   const nextNotification = new Date(today.getTime() + randomTime);
   
-  // Si l'heure est déjà passée aujourd'hui, programmer pour demain
   if (nextNotification <= now) {
     nextNotification.setDate(nextNotification.getDate() + 1);
   }
@@ -64,17 +108,24 @@ export function scheduleDailyNotification() {
   
   const timeoutId = setTimeout(() => {
     showNotification();
-    // Reprogrammer pour le lendemain
     scheduleDailyNotification();
   }, delay);
 
-  // Sauvegarder l'ID du timeout pour pouvoir l'annuler
   localStorage.setItem('notificationTimeoutId', String(timeoutId));
-  
-  console.log('Prochaine notification programmée pour:', nextNotification.toLocaleString());
+  console.log('Notification web programmée pour:', nextNotification.toLocaleString());
 }
 
-export function cancelScheduledNotification() {
+export async function cancelScheduledNotification() {
+  // Annuler les notifications natives
+  if (Capacitor.isNativePlatform()) {
+    try {
+      await LocalNotifications.cancel({ notifications: [{ id: 1 }] });
+    } catch (error) {
+      console.error('Erreur annulation notification native:', error);
+    }
+  }
+
+  // Annuler les timeouts web
   const timeoutId = localStorage.getItem('notificationTimeoutId');
   if (timeoutId) {
     clearTimeout(Number(timeoutId));
@@ -96,8 +147,11 @@ async function showNotification() {
           {
             title: 'Lucky Stop',
             body: message,
-            id: Math.floor(Math.random() * 1000000),
-            schedule: { at: new Date(Date.now() + 1000) }, // Dans 1 seconde
+            id: 2, // ID différent du scheduling quotidien
+            schedule: { 
+              at: new Date(Date.now() + 1000),
+              allowWhileIdle: true
+            },
             sound: undefined,
             attachments: undefined,
             actionTypeId: '',
