@@ -70,10 +70,10 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
 
   const getModeDisplayName = (mode: string) => {
     const names = {
-      classic: t.classic,
-      arc_changeant: t.arcChangeant,
-      survie_60s: t.survie60s,
-      zone_mobile: t.zoneMobile
+      classic: 'Classique',
+      arc_changeant: 'Arc Changeant',
+      survie_60s: 'Survie 30s',
+      zone_mobile: 'Zone Mobile'
     };
     return names[mode as keyof typeof names] || mode;
   };
@@ -99,7 +99,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
           {submitStatus === 'success' && (
             <div className="flex items-center gap-2 text-green-400 justify-center">
               <CheckCircle className="w-5 h-5" />
-              <span>{t.scoreSubmitted}</span>
+              <span>{t.submitSuccess}</span>
             </div>
           )}
 
@@ -119,7 +119,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
               disabled={isSubmitting}
             >
               <X className="w-4 h-4 mr-2" />
-              {t.cancel}
+              {t.cancelLabel}
             </Button>
             
             <Button
@@ -132,7 +132,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
               ) : (
                 <Upload className="w-4 h-4 mr-2" />
               )}
-              {isSubmitting ? t.sending : t.submitBtn}
+              {isSubmitting ? t.submitting : t.submitLabel}
             </Button>
           </div>
         </div>

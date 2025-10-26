@@ -52,7 +52,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
       });
       onUsernameSet();
     } catch (err) {
-      setError(t.usernameSaveError);
+      setError(t.saveError);
       setShowConfirmation(false);
     }
   };

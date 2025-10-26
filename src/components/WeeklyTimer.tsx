@@ -20,9 +20,9 @@ export const WeeklyTimer: React.FC = () => {
     <div className="flex items-center justify-center gap-2 px-3 py-2 bg-button-bg border border-wheel-border rounded-lg">
       <Clock className="w-4 h-4 text-secondary" />
       <span className="text-text-secondary text-sm font-medium">
-        {t.newLeaderboard} 
+        {t.newRankingIn} 
         <span className="text-secondary ml-1">
-          {timeLeft.days > 0 && `${timeLeft.days}${t.daysShort} `}
+          {timeLeft.days > 0 && `${timeLeft.days}j `}
           {String(timeLeft.hours).padStart(2, '0')}:
           {String(timeLeft.minutes).padStart(2, '0')}:
           {String(timeLeft.seconds).padStart(2, '0')}
