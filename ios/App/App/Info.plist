@@ -49,5 +49,8 @@
 	<string>ca-app-pub-6790106624716732~9273155360</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Nous utilisons vos données pour vous proposer des publicités pertinentes et soutenir la gratuité du jeu.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Nous aimerions vous envoyer des rappels quotidiens pour ne pas manquer vos sessions de jeu et vos récompenses !</string>
+
 </dict>
 </plist>
