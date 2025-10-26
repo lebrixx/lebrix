@@ -47,43 +47,38 @@ export async function scheduleDailyNotification() {
   // Sur mobile natif, utiliser le scheduling natif
   if (Capacitor.isNativePlatform()) {
     try {
-      const message = NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)];
-      
-      // Calculer le prochain moment entre 10h et 20h
       const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      
-      // Heure aléatoire entre 10h et 20h
-      const randomHour = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
-      const randomMinute = Math.floor(Math.random() * 60);
-      
-      const nextNotification = new Date(today.getFullYear(), today.getMonth(), today.getDate(), randomHour, randomMinute);
-      
-      // Si l'heure est déjà passée aujourd'hui, programmer pour demain
-      if (nextNotification <= now) {
-        nextNotification.setDate(nextNotification.getDate() + 1);
+      const daysToSchedule = 14; // Programmer 14 jours à l'avance (limite iOS = 64)
+      const notifications = [] as any[];
+
+      for (let i = 0; i < daysToSchedule; i++) {
+        const baseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+        const randomHour = Math.floor(Math.random() * (20 - 10 + 1)) + 10; // 10h-20h
+        const randomMinute = Math.floor(Math.random() * 60);
+        const at = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), randomHour, randomMinute);
+
+        // Ne pas programmer dans le passé pour aujourd'hui
+        if (i === 0 && at <= now) {
+          at.setDate(at.getDate() + 1);
+        }
+
+        notifications.push({
+          title: 'Lucky Stop',
+          body: NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)],
+          id: 1001 + i, // Réservons une plage d'IDs
+          schedule: { 
+            at,
+            allowWhileIdle: true
+          },
+          sound: undefined,
+          attachments: undefined,
+          actionTypeId: '',
+          extra: null
+        });
       }
 
-      // Programmer la notification avec le système natif
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            title: 'Lucky Stop',
-            body: message,
-            id: 1, // ID fixe pour pouvoir l'annuler
-            schedule: { 
-              at: nextNotification,
-              allowWhileIdle: true
-            },
-            sound: undefined,
-            attachments: undefined,
-            actionTypeId: '',
-            extra: null
-          }
-        ]
-      });
-
-      console.log('Notification native programmée pour:', nextNotification.toLocaleString());
+      await LocalNotifications.schedule({ notifications });
+      console.log('Notifications natives programmées:', notifications.map(n => n.schedule?.at?.toString()));
     } catch (error) {
       console.error('Erreur scheduling notification native:', error);
     }
@@ -119,7 +114,10 @@ export async function cancelScheduledNotification() {
   // Annuler les notifications natives
   if (Capacitor.isNativePlatform()) {
     try {
-      await LocalNotifications.cancel({ notifications: [{ id: 1 }] });
+      const range = 20; // Annuler jusqu'à 20 notifs planifiées
+      const ids = Array.from({ length: range }, (_, i) => ({ id: 1001 + i }))
+        .concat([{ id: 1 }, { id: 2 }]);
+      await LocalNotifications.cancel({ notifications: ids });
     } catch (error) {
       console.error('Erreur annulation notification native:', error);
     }

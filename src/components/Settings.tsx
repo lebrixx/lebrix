@@ -30,15 +30,17 @@ export const Settings: React.FC<SettingsProps> = ({
 
   useEffect(() => {
     localStorage.setItem('notificationsEnabled', String(notificationsEnabled));
-    
     if (notificationsEnabled) {
-      // Importer et activer les notifications
       import('@/utils/notifications').then(({ requestNotificationPermission, scheduleDailyNotification }) => {
         requestNotificationPermission().then(granted => {
           if (granted) {
             scheduleDailyNotification();
           }
         });
+      });
+    } else {
+      import('@/utils/notifications').then(({ cancelScheduledNotification }) => {
+        cancelScheduledNotification();
       });
     }
   }, [notificationsEnabled]);
