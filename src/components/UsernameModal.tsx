@@ -129,15 +129,12 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             <AlertDialogTitle className="text-primary">
               {t.importantConfirmation}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-text-secondary space-y-3">
+            <AlertDialogDescription className="text-text-secondary space-y-2">
               <p>
                 {t.aboutToRegister} <span className="font-bold text-primary">{username}</span>
               </p>
-              <p className="text-sm">
-                <strong className="text-text-primary">{t.importantNote}</strong> {t.dontChangeUsername}
-              </p>
-              <p className="text-xs text-text-muted">
-                {t.ensureInstagram}
+              <p className="text-sm text-text-primary">
+                {t.dontChangeUsername}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
