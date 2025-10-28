@@ -1,3 +1,13 @@
+// Désactive tout service worker résiduel pour forcer la prise en compte des mises à jour
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister();
+      console.log("🧹 Service Worker désactivé");
+    }
+  });
+}
+
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
