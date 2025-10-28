@@ -145,7 +145,17 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
           >
             <Sparkles className="w-4 h-4 text-text-muted" />
-            <span className="text-xs text-text-muted">{t.new}</span>
+            <span className="text-xs text-text-muted">{t.news}</span>
+          </Button>
+
+          <Button
+            onClick={() => window.open('https://luckystop.fr', '_blank')}
+            variant="ghost"
+            size="sm"
+            className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
+          >
+            <Trophy className="w-4 h-4 text-text-muted" />
+            <span className="text-xs text-text-muted">{t.contest}</span>
           </Button>
         </div>
 
