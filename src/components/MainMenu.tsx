@@ -292,8 +292,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             
             <Button 
               onClick={() => {
-                // TikTok link will be added later
-                setShowComingSoon(false);
+                window.open('https://www.tiktok.com/@luckystop_?is_from_webapp=1&sender_device=pc', '_blank');
               }}
               className="flex-1 bg-button-bg border border-button-border hover:bg-button-hover hover:border-secondary/50 transition-all duration-300 flex items-center justify-center gap-2 py-6"
             >
