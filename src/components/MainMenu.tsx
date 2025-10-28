@@ -305,8 +305,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </div>
 
           <div className="mt-4 pt-4 border-t border-wheel-border">
-            <p className="text-center text-text-primary font-semibold mb-3">
-              {t.contest}
+            <p className="text-center mb-4">
+              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                {t.newsAndContest}
+              </span>
             </p>
             <Button 
               onClick={() => {
