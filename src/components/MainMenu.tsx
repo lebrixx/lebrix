@@ -78,9 +78,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <div className="text-6xl md:text-7xl">LUCKY</div>
           <div className="text-6xl md:text-7xl">STOP</div>
         </h1>
-        <Badge className="mt-3 bg-secondary text-game-dark animate-pulse">
-          🔄 UPDATE TEST
-        </Badge>
       </div>
 
       {/* Main Content */}
