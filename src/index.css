@@ -228,8 +228,8 @@
     touch-action: manipulation;
   }
 
-  /* Optimisations Tablettes (iPad, Android tablets) */
-  @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  /* Optimisations Tablettes (iPad, Android tablets) - Portrait uniquement */
+  @media (min-width: 768px) and (max-width: 1024px) {
     .main-menu-container {
       padding: 3rem 2rem;
       gap: 1.5rem;
@@ -241,19 +241,7 @@
     }
   }
 
-  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-    .main-menu-container {
-      padding: 2rem 4rem;
-      gap: 1rem;
-    }
-    
-    .main-menu-container > div:first-child h1 > div {
-      font-size: 4rem !important;
-      line-height: 1 !important;
-    }
-  }
-
-  /* Optimisations Grands Écrans Desktop */
+  /* Optimisations Grands Écrans Desktop - Portrait */
   @media (min-width: 1025px) {
     .main-menu-container {
       max-width: 1200px;
@@ -262,7 +250,7 @@
     }
   }
 
-  /* Optimisations pour très grands écrans */
+  /* Optimisations pour très grands écrans - Portrait */
   @media (min-width: 1440px) {
     .main-menu-container {
       max-width: 1400px;
