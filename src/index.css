@@ -235,9 +235,22 @@
       gap: 1.5rem;
     }
     
-    .main-menu-container > div:first-child h1 > div {
-      font-size: 5rem !important;
+    /* Titre LUCKY STOP agrandi pour iPad */
+    .main-menu-container h1 > div {
+      font-size: 7rem !important;
       line-height: 1.1 !important;
+    }
+    
+    /* Espacement accru pour la section bottom pour éviter chevauchement */
+    .main-menu-container > div:last-child {
+      gap: 1rem !important;
+      padding-top: 1.5rem !important;
+    }
+    
+    /* Espacement supplémentaire pour badges thème/mode */
+    .main-menu-container .flex.justify-center.gap-4 {
+      gap: 2rem !important;
+      margin-bottom: 1rem !important;
     }
   }
 
