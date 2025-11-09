@@ -48,7 +48,7 @@ serve(async (req) => {
     }
 
     // Validate username format
-    const usernameRegex = /^[a-zA-Z0-9_]{3,16}$/;
+    const usernameRegex = /^[a-zA-Z0-9._-]{3,16}$/;
     if (!usernameRegex.test(username)) {
       return new Response(
         JSON.stringify({ error: 'Invalid username format' }),

@@ -24,7 +24,7 @@ export function getUsername(): string | null {
 
 export function setUsername(username: string): void {
   if (!isValidUsername(username)) {
-    throw new Error('Pseudo invalide. Doit contenir entre 3 et 16 caractères alphanumériques ou underscore.');
+    throw new Error('Pseudo invalide. Doit contenir entre 3 et 16 caractères alphanumériques, points, tirets ou underscores.');
   }
   localStorage.setItem(USERNAME_KEY, username);
 }
@@ -37,7 +37,7 @@ export function getLocalIdentity(): LocalIdentity {
 }
 
 export function isValidUsername(username: string): boolean {
-  return /^[a-zA-Z0-9_]{3,16}$/.test(username);
+  return /^[a-zA-Z0-9._-]{3,16}$/.test(username);
 }
 
 export function generateDefaultUsername(): string {
