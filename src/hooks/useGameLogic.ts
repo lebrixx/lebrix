@@ -45,6 +45,7 @@ export interface GameState {
   maxSpeedReached: number;
   directionChanges: number;
   totalGamesPlayed: number;
+  gameStartTime: number; // Timestamp du début de partie pour validation durée minimale
   // Mode-specific
   currentMode: ModeType;
   timeLeft?: number; // Pour mode survie
@@ -179,6 +180,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       maxSpeedReached: cfg.baseSpeed,
       directionChanges: 0,
       totalGamesPlayed: 0,
+      gameStartTime: 0,
       currentMode: mode,
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
@@ -312,12 +314,17 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           
           // Fin du temps en mode survie
           if (newTimeLeft <= 0 && prev.timeLeft > 0) {
+            // Vérifier si la partie a duré au moins 5 secondes
+            const gameDuration = (Date.now() - prev.gameStartTime) / 1000;
+            const shouldCount = gameDuration >= 5;
+            
             return {
               ...prev,
               gameStatus: 'gameover',
               timeLeft: 0,
               showResult: true,
               lastResult: 'failure',
+              totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
             };
           }
         }
@@ -443,7 +450,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       comboCount: 0,
       maxSpeedReached: baseSpeed,
       directionChanges: 0,
-      totalGamesPlayed: prev.totalGamesPlayed + 1,
+      gameStartTime: Date.now(), // Enregistrer le temps de début
       timeLeft: modeConfig.survival ? modeConfig.survivalTime : undefined,
       zoneDrift: modeConfig.keepMovingZone ? 0 : undefined,
       zoneDriftSpeed: modeConfig.keepMovingZone ? -modeConfig.zoneDriftSpeed : undefined, // Négatif pour aller dans le sens opposé de la balle
@@ -514,6 +521,10 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         return;
       } else {
         // Échec - clic en dehors de la zone, afficher la zone pendant 2 secondes
+        // Vérifier si la partie a duré au moins 5 secondes
+        const gameDuration = (Date.now() - gameState.gameStartTime) / 1000;
+        const shouldCount = gameDuration >= 5;
+        
         setGameState(prev => ({
           ...prev,
           gameStatus: 'gameover',
@@ -522,6 +533,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           showResult: true,
           lastResult: 'failure',
           memoryZoneVisible: true, // Montrer où était la zone
+          totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
         }));
         
         // Cacher la zone après 2 secondes
@@ -561,6 +573,10 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     
     // Si le joueur a touché la zone piégée, c'est game over
     if (hitTrapZone) {
+      // Vérifier si la partie a duré au moins 5 secondes
+      const gameDuration = (Date.now() - gameState.gameStartTime) / 1000;
+      const shouldCount = gameDuration >= 5;
+      
       setGameState(prev => ({
         ...prev,
         gameStatus: 'gameover',
@@ -568,6 +584,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         coins: prev.coins + Math.floor(prev.currentScore / 20),
         showResult: false, // Ne pas afficher le message
         lastResult: 'failure',
+        totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
       }));
       return;
     }
@@ -665,6 +682,10 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       }
       
       // ÉCHEC - Fin de partie pour tous les modes
+      // Vérifier si la partie a duré au moins 5 secondes
+      const gameDuration = (Date.now() - gameState.gameStartTime) / 1000;
+      const shouldCount = gameDuration >= 5;
+      
       setGameState(prev => ({
         ...prev,
         gameStatus: 'gameover',
@@ -672,6 +693,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         coins: prev.coins + Math.floor(prev.currentScore / 20), // Réduction drastique des coins
         showResult: false, // Ne pas afficher le message
         lastResult: 'failure',
+        totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
       }));
     }
   }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode, addTimeout]);

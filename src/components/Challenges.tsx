@@ -92,6 +92,23 @@ export const Challenges: React.FC<ChallengesProps> = ({
   onBoostReward,
 }) => {
   const [, forceUpdate] = useState(0);
+  
+  // Charger totalGamesPlayed depuis localStorage pour avoir la valeur la plus récente
+  const [actualGamesPlayed, setActualGamesPlayed] = useState(totalGamesPlayed);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('luckyStopGame');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setActualGamesPlayed(data.totalGamesPlayed || 0);
+      } catch (e) {
+        setActualGamesPlayed(totalGamesPlayed);
+      }
+    } else {
+      setActualGamesPlayed(totalGamesPlayed);
+    }
+  }, [totalGamesPlayed]);
 
   // Récupérer la progression depuis localStorage
   const getChallengeProgress = (): Record<string, ChallengeProgress> => {
@@ -197,19 +214,19 @@ export const Challenges: React.FC<ChallengesProps> = ({
     const gamesProgress = getGamesPlayedProgress();
     
     // Si le nombre de parties n'a pas changé, ne rien faire
-    if (totalGamesPlayed === gamesProgress.lastCheckedGames) {
+    if (actualGamesPlayed === gamesProgress.lastCheckedGames) {
       return;
     }
 
     // Calculer le prochain palier (multiples de 50)
     const nextTarget = (gamesProgress.currentLevel + 1) * 50;
     
-    if (totalGamesPlayed >= nextTarget && totalGamesPlayed > gamesProgress.lastCheckedGames) {
+    if (actualGamesPlayed >= nextTarget && actualGamesPlayed > gamesProgress.lastCheckedGames) {
       // Palier atteint ! Donner un boost aléatoire
       const randomBoost = getRandomBoost();
       gamesProgress.pendingRewards.push(randomBoost);
       gamesProgress.currentLevel++;
-      gamesProgress.lastCheckedGames = totalGamesPlayed;
+      gamesProgress.lastCheckedGames = actualGamesPlayed;
       
       saveGamesPlayedProgress(gamesProgress);
       forceUpdate(prev => prev + 1);
@@ -262,7 +279,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   useEffect(() => {
     checkAndUpdateChallenges();
     checkGamesPlayedChallenge();
-  }, [bestScore, totalGamesPlayed]);
+  }, [bestScore, actualGamesPlayed]);
 
   const progress = getChallengeProgress();
   const gamesProgress = getGamesPlayedProgress();
@@ -336,16 +353,16 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <div className="flex justify-between items-center mb-2">
               <span className="text-text-muted text-sm">Progression</span>
               <span className="text-text-primary font-bold">
-                {totalGamesPlayed} / {(gamesProgress.currentLevel + 1) * 50}
+                {actualGamesPlayed} / {(gamesProgress.currentLevel + 1) * 50}
               </span>
             </div>
             <Progress 
-              value={(totalGamesPlayed / ((gamesProgress.currentLevel + 1) * 50)) * 100} 
+              value={(actualGamesPlayed / ((gamesProgress.currentLevel + 1) * 50)) * 100} 
               className="h-2 mb-1"
             />
             <div className="text-right">
               <span className="text-xs text-text-muted">
-                {Math.round((totalGamesPlayed / ((gamesProgress.currentLevel + 1) * 50)) * 100)}%
+                {Math.round((actualGamesPlayed / ((gamesProgress.currentLevel + 1) * 50)) * 100)}%
               </span>
             </div>
           </div>
