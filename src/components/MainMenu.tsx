@@ -229,7 +229,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       </div>
 
       {/* Bottom Section */}
-      <div className="flex flex-col items-center space-y-2 mt-auto">
+      <div className="main-menu-bottom flex flex-col items-center space-y-2 mt-auto pb-4">
         {/* Current Theme & Mode */}
         <div className="flex justify-center gap-4 animate-fade-in">
           <div className="text-center">
