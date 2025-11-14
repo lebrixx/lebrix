@@ -230,7 +230,7 @@
 
   /* Optimisations iPad et tablettes tactiles - Portrait */
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
-    .main-menu-container {
+    body:not(.force-mobile) .main-menu-container {
       position: relative;      /* override mobile fixed */
       height: auto;            /* allow content height */
       min-height: 100dvh;      /* still fill the screen */
@@ -243,23 +243,23 @@
       padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
     }
     
-    .main-menu-container h1 > div {
+    body:not(.force-mobile) .main-menu-container h1 > div {
       font-size: clamp(4.5rem, 8vw, 6.5rem) !important;
       line-height: 1.05 !important;
     }
 
-    .main-menu-container .mb-6 {
+    body:not(.force-mobile) .main-menu-container .mb-6 {
       margin-bottom: 0.5rem !important;
     }
     
     /* Section du bas: espacement et wrap pour éviter tout chevauchement */
-    .main-menu-container > div:last-child {
+    body:not(.force-mobile) .main-menu-container > div:last-child {
       gap: 0.75rem !important;
       padding-top: 1rem !important;
       margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
     }
     
-    .main-menu-container .flex.justify-center.gap-4 {
+    body:not(.force-mobile) .main-menu-container .flex.justify-center.gap-4 {
       flex-wrap: wrap;
       gap: 1rem !important;
       margin-bottom: 0.5rem !important;
@@ -268,7 +268,7 @@
 
   /* Optimisations iPad et tablettes tactiles - Paysage */
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
-    .main-menu-container {
+    body:not(.force-mobile) .main-menu-container {
       position: relative;      /* override mobile fixed */
       height: auto;
       min-height: 100dvh;
@@ -281,28 +281,28 @@
       padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
     }
 
-    .main-menu-container h1 > div {
+    body:not(.force-mobile) .main-menu-container h1 > div {
       font-size: clamp(3.25rem, 6.5vw, 5.5rem) !important;
       line-height: 1.05 !important;
     }
 
     /* Réduire légèrement les espacements des sections centrales */
-    .main-menu-container .grid.grid-cols-2.gap-3 {
+    body:not(.force-mobile) .main-menu-container .grid.grid-cols-2.gap-3 {
       gap: 0.5rem !important;
       margin-bottom: 0.5rem !important;
     }
 
-    .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
+    body:not(.force-mobile) .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
       gap: 0.5rem !important;
     }
 
-    .main-menu-container > div:last-child {
+    body:not(.force-mobile) .main-menu-container > div:last-child {
       gap: 0.5rem !important;
       padding-top: 0.75rem !important;
       margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
     }
 
-    .main-menu-container .flex.justify-center.gap-4 {
+    body:not(.force-mobile) .main-menu-container .flex.justify-center.gap-4 {
       flex-wrap: wrap;
       gap: 0.75rem !important;
       margin-bottom: 0.5rem !important;
