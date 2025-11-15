@@ -104,12 +104,17 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
 // Utilitaire pour vérifier si l'angle est dans la zone (gère le wrap 2π→0)
 export function inArc(angle: number, start: number, end: number): boolean {
   const TAU = Math.PI * 2;
+  
+  // Normaliser tous les angles entre 0 et 2π
   const normalizedAngle = ((angle % TAU) + TAU) % TAU;
   const normalizedStart = ((start % TAU) + TAU) % TAU;
   const normalizedEnd = ((end % TAU) + TAU) % TAU;
   
+  // Si la zone ne traverse pas 0
   if (normalizedStart <= normalizedEnd) {
     return normalizedAngle >= normalizedStart && normalizedAngle <= normalizedEnd;
   }
+  
+  // Si la zone traverse 0 (par exemple de 5.5 à 0.5)
   return normalizedAngle >= normalizedStart || normalizedAngle <= normalizedEnd;
 }
