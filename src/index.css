@@ -241,6 +241,9 @@
       padding: 2rem 2rem;
       gap: 2rem;
       padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
+      width: 100%;
+      max-width: 100% !important;
+      margin: 0 !important;
     }
     
     body:not(.force-mobile) .main-menu-container h1 > div {
@@ -281,6 +284,12 @@
       gap: 2rem !important;
       margin-bottom: 1rem !important;
     }
+
+    /* Widen central columns on iPad portrait */
+    body:not(.force-mobile) .main-menu-container .w-full.max-w-sm,
+    body:not(.force-mobile) .main-menu-container .w-full.max-w-md {
+      max-width: 40rem !important;
+    }
   }
 
   /* Optimisations iPad et tablettes tactiles - Paysage */
@@ -296,6 +305,9 @@
       padding: 1.5rem 2rem;
       gap: 1.5rem;
       padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+      width: 100%;
+      max-width: 100% !important;
+      margin: 0 !important;
     }
 
     body:not(.force-mobile) .main-menu-container h1 > div {
@@ -337,7 +349,7 @@
   }
 
   /* Optimisations Grands Écrans Desktop - Portrait */
-  @media (min-width: 1025px) {
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .main-menu-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -346,7 +358,7 @@
   }
 
   /* Optimisations pour très grands écrans - Portrait */
-  @media (min-width: 1440px) {
+  @media (min-width: 1440px) and (hover: hover) and (pointer: fine) {
     .main-menu-container {
       max-width: 1400px;
       padding: 4rem 6rem;
