@@ -286,9 +286,20 @@
     }
 
     /* Widen central columns on iPad portrait */
+    /* Widen central columns on iPad portrait */
     body:not(.force-mobile) .main-menu-container .w-full.max-w-sm,
     body:not(.force-mobile) .main-menu-container .w-full.max-w-md {
-      max-width: 40rem !important;
+      max-width: 48rem !important;
+    }
+
+    /* Make two-column grids single column to reduce tightness */
+    body:not(.force-mobile) .main-menu-container .grid.grid-cols-2 {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Increase vertical spacing in stacked column lists */
+    body:not(.force-mobile) .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
+      gap: 1.25rem !important;
     }
   }
 
@@ -328,11 +339,11 @@
     }
 
     body:not(.force-mobile) .main-menu-container .grid.grid-cols-2 {
-      gap: 1.75rem !important;
+      gap: 2rem !important;
     }
 
     body:not(.force-mobile) .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
-      gap: 1rem !important;
+      gap: 1.25rem !important;
     }
 
     body:not(.force-mobile) .main-menu-container > div:last-child {
@@ -345,6 +356,12 @@
       flex-wrap: wrap;
       gap: 1.25rem !important;
       margin-bottom: 1rem !important;
+    }
+
+    /* Widen central columns on iPad landscape */
+    body:not(.force-mobile) .main-menu-container .w-full.max-w-sm,
+    body:not(.force-mobile) .main-menu-container .w-full.max-w-md {
+      max-width: 48rem !important;
     }
   }
 
