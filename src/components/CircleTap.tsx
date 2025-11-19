@@ -363,7 +363,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
 
           {/* Curseur - Barre rouge qui tourne */}
           <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
-            {/* Barre rouge principale */}
             <rect
               x={cfg.radius - 15}
               y={-3}
@@ -377,34 +376,6 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               }}
             />
           </g>
-
-          {/* Trail dynamique de la bille */}
-          {gameState.gameStatus === 'running' && (
-            <>
-              {/* Trail principal */}
-              <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
-                <rect
-                  x={cfg.radius - 20}
-                  y={-2}
-                  width={25}
-                  height={4}
-                  fill={barColor}
-                  className="opacity-40"
-                />
-              </g>
-              {/* Trail secondaire (retardé) */}
-              <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 100})`}>
-                <rect
-                  x={cfg.radius - 15}
-                  y={-1}
-                  width={15}
-                  height={2}
-                  fill={barColor}
-                  className="opacity-20"
-                />
-              </g>
-            </>
-          )}
 
           {/* Effet de particules au succès */}
           {gameState.successParticles && (
