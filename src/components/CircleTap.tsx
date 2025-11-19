@@ -361,30 +361,19 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           )}
 
 
-          {/* Bille - Barre rouge qui dépasse */}
+          {/* Curseur - Barre rouge qui tourne */}
           <g transform={`translate(${cfg.radius + 40}, ${cfg.radius + 40}) rotate(${(gameState.ballAngle * 180) / Math.PI - 90})`}>
-            {/* Barre rouge principale qui dépasse */}
+            {/* Barre rouge principale */}
             <rect
               x={cfg.radius - 15}
               y={-3}
               width={30}
               height={6}
               fill={barColor}
+              rx={3}
               className="drop-shadow-lg"
               style={{
                 filter: `drop-shadow(0 0 10px ${barColor}) drop-shadow(0 0 20px ${barColor})`,
-              }}
-            />
-            
-            {/* Centre de la bille pour l'animation */}
-            <circle
-              cx={cfg.radius}
-              cy={0}
-              r={8}
-              fill={barColor}
-              className=""
-              style={{
-                filter: `drop-shadow(0 0 8px ${barColor})`,
               }}
             />
           </g>
