@@ -8,7 +8,6 @@ import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { AdRewardDialog } from '@/components/AdRewardDialog';
 import { Settings } from '@/components/Settings';
-import { useIsTablet } from '@/hooks/use-tablet';
 
 interface MainMenuProps {
   bestScore: number;
@@ -48,7 +47,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showAdReward, setShowAdReward] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const isTablet = useIsTablet();
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
       {/* Free Coins Button - Discret */}
@@ -232,29 +230,27 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
       {/* Bottom Section */}
       <div className="flex flex-col items-center space-y-2 mt-auto">
-        {/* Current Theme & Mode - Caché sur iPad */}
-        {!isTablet && (
-          <div className="flex justify-center gap-4 animate-fade-in">
-            <div className="text-center">
-              <div className="text-xs text-text-muted mb-0.5">{t.theme}</div>
-              <Badge 
-                variant="outline" 
-                className="border-primary text-primary text-xs px-2 py-0.5 animate-pulse-glow"
-              >
-                {theme.replace('theme-', '').toUpperCase() || 'NEON'}
-              </Badge>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-text-muted mb-0.5">{t.mode}</div>
-              <Badge 
-                variant="outline" 
-                className="border-secondary text-secondary text-xs px-2 py-0.5"
-              >
-                {currentMode.replace('_', ' ').toUpperCase()}
-              </Badge>
-            </div>
+        {/* Current Theme & Mode */}
+        <div className="flex justify-center gap-4 animate-fade-in">
+          <div className="text-center">
+            <div className="text-xs text-text-muted mb-0.5">{t.theme}</div>
+            <Badge 
+              variant="outline" 
+              className="border-primary text-primary text-xs px-2 py-0.5 animate-pulse-glow"
+            >
+              {theme.replace('theme-', '').toUpperCase() || 'NEON'}
+            </Badge>
           </div>
-        )}
+          <div className="text-center">
+            <div className="text-xs text-text-muted mb-0.5">{t.mode}</div>
+            <Badge 
+              variant="outline" 
+              className="border-secondary text-secondary text-xs px-2 py-0.5"
+            >
+              {currentMode.replace('_', ' ').toUpperCase()}
+            </Badge>
+          </div>
+        </div>
 
         {/* Version Info */}
         <div className="text-text-muted text-xs animate-fade-in">
