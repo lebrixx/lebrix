@@ -228,70 +228,67 @@
     touch-action: manipulation;
   }
 
-  /* Optimisations iPad et tablettes tactiles - Portrait */
+  /* Optimisations iPad - Portrait uniquement */
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
     .main-menu-container {
-      padding: 2.5rem 2rem;
-      gap: 1.25rem;
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+      height: 100vh;
+      height: 100dvh;
+      padding: 2rem 1.5rem;
+      gap: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       overflow-y: auto;
     }
     
+    /* Titre - taille optimale pour iPad */
     .main-menu-container h1 > div {
-      font-size: clamp(4.5rem, 8vw, 6.5rem) !important;
-      line-height: 1.05 !important;
+      font-size: 5rem !important;
+      line-height: 1 !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* Réduire tous les espacements pour éviter chevauchement */
+    .main-menu-container .mb-12 {
+      margin-bottom: 1rem !important;
+    }
+
+    .main-menu-container .mb-8 {
+      margin-bottom: 0.75rem !important;
     }
 
     .main-menu-container .mb-6 {
       margin-bottom: 0.5rem !important;
     }
+
+    .main-menu-container .mb-4 {
+      margin-bottom: 0.5rem !important;
+    }
     
-    /* Section du bas: espacement et wrap pour éviter tout chevauchement */
+    /* Boutons grille - espacement réduit */
+    .main-menu-container .grid.grid-cols-2 {
+      gap: 0.75rem !important;
+    }
+
+    /* Section inférieure - compact */
     .main-menu-container > div:last-child {
       gap: 0.75rem !important;
-      padding-top: 1rem !important;
+      padding-top: 0 !important;
     }
     
-    .main-menu-container .flex.justify-center.gap-4 {
-      flex-wrap: wrap;
-      gap: 1rem !important;
-      margin-bottom: 0.5rem !important;
-    }
-  }
-
-  /* Optimisations iPad et tablettes tactiles - Paysage */
-  @media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
-    .main-menu-container {
-      padding: 1.5rem;
-      gap: 0.75rem;
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
-      overflow-y: auto;
-    }
-
-    .main-menu-container h1 > div {
-      font-size: clamp(3.25rem, 6.5vw, 5.5rem) !important;
-      line-height: 1.05 !important;
-    }
-
-    /* Réduire légèrement les espacements des sections centrales */
-    .main-menu-container .grid.grid-cols-2.gap-3 {
-      gap: 0.5rem !important;
-      margin-bottom: 0.5rem !important;
-    }
-
-    .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
-      gap: 0.5rem !important;
-    }
-
-    .main-menu-container > div:last-child {
-      gap: 0.5rem !important;
-      padding-top: 0.75rem !important;
-    }
-
+    /* Boutons action du bas */
     .main-menu-container .flex.justify-center.gap-4 {
       flex-wrap: wrap;
       gap: 0.75rem !important;
-      margin-bottom: 0.5rem !important;
+    }
+
+    /* Statistiques et infos */
+    .main-menu-container .text-xl {
+      font-size: 1.125rem !important;
+    }
+
+    .main-menu-container .text-2xl {
+      font-size: 1.5rem !important;
     }
   }
 
