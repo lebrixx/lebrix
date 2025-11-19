@@ -144,10 +144,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_old_scores: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_old_scores: { Args: never; Returns: undefined }
       update_leaderboard_secure: {
         Args: {
           p_coins: number
