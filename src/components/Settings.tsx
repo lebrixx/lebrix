@@ -28,10 +28,6 @@ export const Settings: React.FC<SettingsProps> = ({
     return saved !== null ? saved === 'true' : true;
   });
 
-  const [forceMobile, setForceMobile] = useState(() => {
-    return localStorage.getItem('forceMobileLayout') === 'true';
-  });
-
   useEffect(() => {
     localStorage.setItem('notificationsEnabled', String(notificationsEnabled));
     if (notificationsEnabled) {
@@ -48,11 +44,6 @@ export const Settings: React.FC<SettingsProps> = ({
       });
     }
   }, [notificationsEnabled]);
-
-  useEffect(() => {
-    document.body.classList.toggle('force-mobile', forceMobile);
-    localStorage.setItem('forceMobileLayout', String(forceMobile));
-  }, [forceMobile]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -99,20 +90,6 @@ export const Settings: React.FC<SettingsProps> = ({
               id="notifications"
               checked={notificationsEnabled}
               onCheckedChange={setNotificationsEnabled}
-            />
-          </div>
-
-          {/* Forcer rendu mobile (tablette) */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Label htmlFor="force-mobile" className="text-text-primary text-base">
-                Forcer rendu mobile (tablette)
-              </Label>
-            </div>
-            <Switch
-              id="force-mobile"
-              checked={forceMobile}
-              onCheckedChange={setForceMobile}
             />
           </div>
 

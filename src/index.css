@@ -230,143 +230,73 @@
 
   /* Optimisations iPad et tablettes tactiles - Portrait */
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
-    body:not(.force-mobile) .main-menu-container {
-      position: relative;
-      height: auto;
-      min-height: 100dvh;
-      justify-content: space-between;
-      overflow-x: hidden;
+    .main-menu-container {
+      padding: 2.5rem 2rem;
+      gap: 1.25rem;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
       overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 2rem 2rem;
-      gap: 2rem;
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
-      width: 100%;
-      max-width: 100% !important;
-      margin: 0 !important;
     }
     
-    body:not(.force-mobile) .main-menu-container h1 > div {
-      font-size: clamp(6rem, 12vw, 9rem) !important;
+    .main-menu-container h1 > div {
+      font-size: clamp(4.5rem, 8vw, 6.5rem) !important;
       line-height: 1.05 !important;
-      margin-bottom: 1rem !important;
     }
 
-    body:not(.force-mobile) .main-menu-container .mb-6 {
-      margin-bottom: 1.5rem !important;
-    }
-
-    body:not(.force-mobile) .main-menu-container .text-xl {
-      font-size: 2rem !important;
-      line-height: 2.25rem !important;
-    }
-
-    body:not(.force-mobile) .main-menu-container button,
-    body:not(.force-mobile) .main-menu-container .py-6 {
-      padding-top: 2rem !important;
-      padding-bottom: 2rem !important;
-      font-size: 1.75rem !important;
-    }
-
-    body:not(.force-mobile) .main-menu-container .grid.grid-cols-2 {
-      gap: 2rem !important;
+    .main-menu-container .mb-6 {
+      margin-bottom: 0.5rem !important;
     }
     
-    /* Section du bas: espacement généreux */
-    body:not(.force-mobile) .main-menu-container > div:last-child {
-      gap: 2rem !important;
-      padding-top: 1.5rem !important;
-      margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+    /* Section du bas: espacement et wrap pour éviter tout chevauchement */
+    .main-menu-container > div:last-child {
+      gap: 0.75rem !important;
+      padding-top: 1rem !important;
     }
     
-    body:not(.force-mobile) .main-menu-container .flex.justify-center.gap-4 {
+    .main-menu-container .flex.justify-center.gap-4 {
       flex-wrap: wrap;
-      gap: 2rem !important;
-      margin-bottom: 1rem !important;
-    }
-
-    /* Widen central columns on iPad portrait */
-    /* Widen central columns on iPad portrait */
-    body:not(.force-mobile) .main-menu-container .w-full.max-w-sm,
-    body:not(.force-mobile) .main-menu-container .w-full.max-w-md {
-      max-width: 48rem !important;
-    }
-
-    /* Make two-column grids single column to reduce tightness */
-    body:not(.force-mobile) .main-menu-container .grid.grid-cols-2 {
-      grid-template-columns: 1fr !important;
-    }
-
-    /* Increase vertical spacing in stacked column lists */
-    body:not(.force-mobile) .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
-      gap: 1.25rem !important;
+      gap: 1rem !important;
+      margin-bottom: 0.5rem !important;
     }
   }
 
   /* Optimisations iPad et tablettes tactiles - Paysage */
   @media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
-    body:not(.force-mobile) .main-menu-container {
-      position: relative;
-      height: auto;
-      min-height: 100dvh;
-      justify-content: space-between;
-      overflow-x: hidden;
+    .main-menu-container {
+      padding: 1.5rem;
+      gap: 0.75rem;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
       overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 1.5rem 2rem;
-      gap: 1.5rem;
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
-      width: 100%;
-      max-width: 100% !important;
-      margin: 0 !important;
     }
 
-    body:not(.force-mobile) .main-menu-container h1 > div {
-      font-size: clamp(5rem, 9vw, 7rem) !important;
+    .main-menu-container h1 > div {
+      font-size: clamp(3.25rem, 6.5vw, 5.5rem) !important;
       line-height: 1.05 !important;
     }
 
-    body:not(.force-mobile) .main-menu-container .text-xl {
-      font-size: 1.75rem !important;
-      line-height: 2rem !important;
+    /* Réduire légèrement les espacements des sections centrales */
+    .main-menu-container .grid.grid-cols-2.gap-3 {
+      gap: 0.5rem !important;
+      margin-bottom: 0.5rem !important;
     }
 
-    body:not(.force-mobile) .main-menu-container button,
-    body:not(.force-mobile) .main-menu-container .py-6 {
-      padding-top: 1.75rem !important;
-      padding-bottom: 1.75rem !important;
-      font-size: 1.5rem !important;
+    .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
+      gap: 0.5rem !important;
     }
 
-    body:not(.force-mobile) .main-menu-container .grid.grid-cols-2 {
-      gap: 2rem !important;
+    .main-menu-container > div:last-child {
+      gap: 0.5rem !important;
+      padding-top: 0.75rem !important;
     }
 
-    body:not(.force-mobile) .main-menu-container .flex.flex-col.gap-2.w-full.max-w-sm {
-      gap: 1.25rem !important;
-    }
-
-    body:not(.force-mobile) .main-menu-container > div:last-child {
-      gap: 1.25rem !important;
-      padding-top: 1.5rem !important;
-      margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
-    }
-
-    body:not(.force-mobile) .main-menu-container .flex.justify-center.gap-4 {
+    .main-menu-container .flex.justify-center.gap-4 {
       flex-wrap: wrap;
-      gap: 1.25rem !important;
-      margin-bottom: 1rem !important;
-    }
-
-    /* Widen central columns on iPad landscape */
-    body:not(.force-mobile) .main-menu-container .w-full.max-w-sm,
-    body:not(.force-mobile) .main-menu-container .w-full.max-w-md {
-      max-width: 48rem !important;
+      gap: 0.75rem !important;
+      margin-bottom: 0.5rem !important;
     }
   }
 
   /* Optimisations Grands Écrans Desktop - Portrait */
-  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1025px) {
     .main-menu-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -375,7 +305,7 @@
   }
 
   /* Optimisations pour très grands écrans - Portrait */
-  @media (min-width: 1440px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1440px) {
     .main-menu-container {
       max-width: 1400px;
       padding: 4rem 6rem;
