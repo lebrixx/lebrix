@@ -233,8 +233,8 @@
     .main-menu-container {
       height: 100vh;
       height: 100dvh;
-      padding: 2rem 1.5rem;
-      gap: 1rem;
+      padding: 3rem 2rem;
+      gap: 2rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -243,52 +243,58 @@
     
     /* Titre - taille optimale pour iPad */
     .main-menu-container h1 > div {
-      font-size: 5rem !important;
+      font-size: 6rem !important;
       line-height: 1 !important;
-      margin-bottom: 0.5rem !important;
+      margin-bottom: 1.5rem !important;
     }
 
-    /* Réduire tous les espacements pour éviter chevauchement */
+    /* Espacements généreux pour utiliser toute la hauteur */
     .main-menu-container .mb-12 {
-      margin-bottom: 1rem !important;
+      margin-bottom: 2.5rem !important;
     }
 
     .main-menu-container .mb-8 {
-      margin-bottom: 0.75rem !important;
+      margin-bottom: 2rem !important;
     }
 
     .main-menu-container .mb-6 {
-      margin-bottom: 0.5rem !important;
+      margin-bottom: 1.5rem !important;
     }
 
     .main-menu-container .mb-4 {
-      margin-bottom: 0.5rem !important;
+      margin-bottom: 1rem !important;
     }
     
-    /* Boutons grille - espacement réduit */
+    /* Boutons grille - espacement confortable */
     .main-menu-container .grid.grid-cols-2 {
-      gap: 0.75rem !important;
+      gap: 1.5rem !important;
     }
 
-    /* Section inférieure - compact */
+    /* Section inférieure - bien espacée */
     .main-menu-container > div:last-child {
-      gap: 0.75rem !important;
+      gap: 1.5rem !important;
       padding-top: 0 !important;
     }
     
     /* Boutons action du bas */
     .main-menu-container .flex.justify-center.gap-4 {
       flex-wrap: wrap;
-      gap: 0.75rem !important;
+      gap: 1.25rem !important;
     }
 
-    /* Statistiques et infos */
+    /* Statistiques et infos - tailles adaptées */
     .main-menu-container .text-xl {
-      font-size: 1.125rem !important;
+      font-size: 1.5rem !important;
     }
 
     .main-menu-container .text-2xl {
-      font-size: 1.5rem !important;
+      font-size: 2rem !important;
+    }
+
+    /* Boutons - taille confortable */
+    .main-menu-container button {
+      padding: 1rem 1.5rem !important;
+      font-size: 1.125rem !important;
     }
   }
 
