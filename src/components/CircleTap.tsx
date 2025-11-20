@@ -215,7 +215,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
 
   return (
     <div 
-      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
+      className={`circle-tap-game min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
       style={getBackgroundStyle()}
     >
       {/* Bouton retour au menu - visible uniquement hors partie */}
@@ -266,12 +266,12 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       </div>
 
       {/* Conteneur du jeu */}
-      <div className="relative mb-8">
+      <div className="game-circle relative mb-8">
         {/* Cercle principal (anneau) */}
         <svg
           width={cfg.radius * 2 + 80}
           height={cfg.radius * 2 + 80}
-          className="drop-shadow-2xl"
+          className="drop-shadow-2xl max-w-full h-auto"
           onClick={handleTap}
           style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
         >

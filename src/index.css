@@ -228,73 +228,290 @@
     touch-action: manipulation;
   }
 
-  /* Optimisations iPad - Portrait uniquement */
-  @media (min-width: 768px) and (max-width: 1366px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
+  /* ========================================
+     RESPONSIVE DESIGN - IPAD
+     ======================================== */
+
+  /* iPad Portrait - All sizes (768px to 1024px) */
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    /* Main Menu Container */
     .main-menu-container {
       height: 100vh;
       height: 100dvh;
-      padding: 3rem 2rem;
-      gap: 2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow-y: auto;
+      padding: 3rem 2.5rem;
+      gap: 2.5rem;
     }
     
-    /* Titre - taille optimale pour iPad */
+    /* Title scaling */
     .main-menu-container h1 > div {
-      font-size: 6rem !important;
-      line-height: 1 !important;
-      margin-bottom: 1.5rem !important;
-    }
-
-    /* Espacements généreux pour utiliser toute la hauteur */
-    .main-menu-container .mb-12 {
-      margin-bottom: 2.5rem !important;
-    }
-
-    .main-menu-container .mb-8 {
+      font-size: 7rem !important;
+      line-height: 0.95 !important;
       margin-bottom: 2rem !important;
     }
 
+    /* Spacing adjustments */
+    .main-menu-container .mb-12 {
+      margin-bottom: 3rem !important;
+    }
+    
+    .main-menu-container .mb-8 {
+      margin-bottom: 2.5rem !important;
+    }
+    
     .main-menu-container .mb-6 {
+      margin-bottom: 2rem !important;
+    }
+    
+    .main-menu-container .mb-4 {
       margin-bottom: 1.5rem !important;
     }
 
-    .main-menu-container .mb-4 {
-      margin-bottom: 1rem !important;
-    }
-    
-    /* Boutons grille - espacement confortable */
+    /* Grid buttons scaling */
     .main-menu-container .grid.grid-cols-2 {
-      gap: 1.5rem !important;
+      gap: 2rem !important;
     }
 
-    /* Section inférieure - bien espacée */
+    /* Bottom section spacing */
     .main-menu-container > div:last-child {
-      gap: 1.5rem !important;
-      padding-top: 0 !important;
-    }
-    
-    /* Boutons action du bas */
-    .main-menu-container .flex.justify-center.gap-4 {
-      flex-wrap: wrap;
-      gap: 1.25rem !important;
+      gap: 2rem !important;
     }
 
-    /* Statistiques et infos - tailles adaptées */
+    /* Action buttons */
+    .main-menu-container .flex.justify-center.gap-4 {
+      gap: 1.5rem !important;
+    }
+
+    /* Text scaling */
     .main-menu-container .text-xl {
-      font-size: 1.5rem !important;
+      font-size: 1.75rem !important;
+      line-height: 1.3 !important;
     }
 
     .main-menu-container .text-2xl {
+      font-size: 2.25rem !important;
+      line-height: 1.3 !important;
+    }
+
+    .main-menu-container .text-xs {
+      font-size: 1rem !important;
+    }
+
+    .main-menu-container .text-sm {
+      font-size: 1.125rem !important;
+    }
+
+    /* Buttons scaling */
+    .main-menu-container button {
+      padding: 1.25rem 2rem !important;
+      font-size: 1.25rem !important;
+      min-height: 3.5rem !important;
+    }
+
+    .main-menu-container button.absolute {
+      padding: 0.75rem 1rem !important;
+      font-size: 1rem !important;
+      min-height: auto !important;
+    }
+
+    /* Icons scaling */
+    .main-menu-container svg {
+      width: 1.75rem !important;
+      height: 1.75rem !important;
+    }
+
+    /* Cards scaling */
+    .main-menu-container .border-2 {
+      padding: 1.75rem !important;
+    }
+
+    /* Game Circle/Tap Area - Full screen utilization */
+    .circle-tap-game {
+      padding: 2rem !important;
+    }
+
+    .circle-tap-game .game-circle {
+      max-width: 85vmin !important;
+      max-height: 85vmin !important;
+    }
+
+    .circle-tap-game .game-circle svg {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 85vmin !important;
+    }
+
+    /* HUD text scaling for game */
+    .circle-tap-game .text-6xl {
+      font-size: 5rem !important;
+    }
+
+    .circle-tap-game .text-lg {
+      font-size: 1.5rem !important;
+    }
+
+    .circle-tap-game .text-sm {
+      font-size: 1.125rem !important;
+    }
+
+    /* Shop, Challenges, Modes, Leaderboard - Grid adjustments */
+    .grid.grid-cols-1.md\\:grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 2rem !important;
+    }
+
+    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 2rem !important;
+    }
+
+    /* Universal container widths */
+    .max-w-4xl {
+      max-width: 90vw !important;
+    }
+
+    .max-w-2xl {
+      max-width: 85vw !important;
+    }
+
+    /* Universal text scaling for all pages */
+    .text-4xl {
+      font-size: 3.5rem !important;
+    }
+
+    .text-3xl {
+      font-size: 2.75rem !important;
+    }
+
+    .text-2xl {
       font-size: 2rem !important;
     }
 
-    /* Boutons - taille confortable */
-    .main-menu-container button {
-      padding: 1rem 1.5rem !important;
+    .text-xl {
+      font-size: 1.5rem !important;
+    }
+
+    .text-lg {
+      font-size: 1.25rem !important;
+    }
+
+    /* Universal button scaling */
+    button:not(.main-menu-container button) {
+      padding: 1rem 1.75rem !important;
       font-size: 1.125rem !important;
+      min-height: 3rem !important;
+    }
+
+    /* Card scaling */
+    .border {
+      padding: 1.5rem !important;
+    }
+
+    /* Badge scaling */
+    .inline-flex.items-center {
+      padding: 0.5rem 1rem !important;
+      font-size: 1rem !important;
+    }
+
+    /* Icon scaling for all pages */
+    svg:not(.main-menu-container svg):not(.circle-tap-game svg) {
+      width: 1.5rem !important;
+      height: 1.5rem !important;
+    }
+
+    /* Progress bars */
+    [role="progressbar"] {
+      height: 1rem !important;
+    }
+
+    /* Input fields */
+    input, textarea {
+      padding: 1rem !important;
+      font-size: 1.125rem !important;
+    }
+  }
+
+  /* iPad Pro 11" Portrait (834px x 1194px) */
+  @media (min-width: 768px) and (max-width: 834px) and (orientation: portrait) {
+    .main-menu-container h1 > div {
+      font-size: 6.5rem !important;
+    }
+  }
+
+  /* iPad Pro 12.9" Portrait (1024px x 1366px) */
+  @media (min-width: 1025px) and (max-width: 1366px) and (orientation: portrait) {
+    .main-menu-container {
+      padding: 4rem 3rem;
+      gap: 3rem;
+    }
+
+    .main-menu-container h1 > div {
+      font-size: 8rem !important;
+      margin-bottom: 2.5rem !important;
+    }
+
+    .main-menu-container .mb-12 {
+      margin-bottom: 4rem !important;
+    }
+
+    .main-menu-container .mb-8 {
+      margin-bottom: 3rem !important;
+    }
+
+    .main-menu-container button {
+      padding: 1.5rem 2.5rem !important;
+      font-size: 1.5rem !important;
+      min-height: 4rem !important;
+    }
+
+    .main-menu-container .text-xl {
+      font-size: 2rem !important;
+    }
+
+    .main-menu-container .text-2xl {
+      font-size: 2.5rem !important;
+    }
+
+    button:not(.main-menu-container button) {
+      padding: 1.25rem 2rem !important;
+      font-size: 1.375rem !important;
+      min-height: 3.5rem !important;
+    }
+
+    .text-4xl {
+      font-size: 4rem !important;
+    }
+
+    .text-3xl {
+      font-size: 3.25rem !important;
+    }
+
+    .circle-tap-game .game-circle {
+      max-width: 80vmin !important;
+      max-height: 80vmin !important;
+    }
+
+    .circle-tap-game .game-circle svg {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 80vmin !important;
+    }
+
+    .circle-tap-game .text-6xl {
+      font-size: 6rem !important;
+    }
+  }
+
+  /* Background fullscreen fix for all iPads */
+  @media (min-width: 768px) and (orientation: portrait) {
+    .bg-gradient-game {
+      width: 100vw !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+    }
+
+    body {
+      width: 100vw;
+      overflow-x: hidden;
     }
   }
 
