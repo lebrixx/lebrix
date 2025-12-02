@@ -18,6 +18,7 @@ import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 import { initNotifications } from '@/utils/notifications';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
@@ -63,6 +64,7 @@ const Index = () => {
   const { toast } = useToast();
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
   const { playClick, playSuccess, playFailure, isMuted, toggleMute } = useSound();
+  const { isMusicEnabled } = useBackgroundMusic(); // Initialise la musique de fond
   
   useEffect(() => {
     setCurrentCoins(gameState.coins);

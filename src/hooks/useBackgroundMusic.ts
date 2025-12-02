@@ -24,9 +24,14 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
     const savedEnabled = localStorage.getItem('luckyStopMusicEnabled');
     const savedVolume = localStorage.getItem('luckyStopMusicVolume');
     
-    if (savedEnabled !== null) {
+    // Si jamais sauvegardé, activer par défaut
+    if (savedEnabled === null) {
+      setIsMusicEnabled(true);
+      localStorage.setItem('luckyStopMusicEnabled', 'true');
+    } else {
       setIsMusicEnabled(savedEnabled === 'true');
     }
+    
     if (savedVolume !== null) {
       setVolume(parseFloat(savedVolume));
     }
