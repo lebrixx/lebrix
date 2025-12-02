@@ -255,20 +255,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           </TabsList>
         </Tabs>
 
-        {/* Timer hebdomadaire + Bouton semaine précédente */}
+        {/* Timer hebdomadaire */}
         {selectedTab === 'weekly' && (
-          <div className="flex flex-col items-center gap-3 mb-4">
+          <div className="flex justify-center mb-4">
             <WeeklyTimer />
-            <Button
-              onClick={() => loadPreviousWeekScores(selectedMode)}
-              variant="outline"
-              size="sm"
-              disabled={loadingPreviousWeek || !isOnline}
-              className="border-wheel-border hover:bg-button-hover flex items-center gap-2"
-            >
-              <History className={`w-4 h-4 ${loadingPreviousWeek ? 'animate-spin' : ''}`} />
-              {language === 'fr' ? 'Top 5 semaine précédente' : 'Previous week Top 5'}
-            </Button>
           </div>
         )}
 
@@ -290,8 +280,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           ))}
         </div>
 
-        {/* Refresh Button */}
-        <div className="flex justify-center mb-4">
+        {/* Refresh Button + Previous Week Button */}
+        <div className="flex flex-col items-center gap-2 mb-4">
           <Button
             onClick={() => loadScores(selectedMode)}
             variant="outline"
@@ -302,6 +292,19 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             {t.refresh}
           </Button>
+          
+          {selectedTab === 'weekly' && (
+            <Button
+              onClick={() => loadPreviousWeekScores(selectedMode)}
+              variant="outline"
+              size="sm"
+              disabled={loadingPreviousWeek || !isOnline}
+              className="border-wheel-border hover:bg-button-hover flex items-center gap-2"
+            >
+              <History className={`w-4 h-4 ${loadingPreviousWeek ? 'animate-spin' : ''}`} />
+              {language === 'fr' ? 'Top 5 semaine précédente' : 'Previous week Top 5'}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -333,8 +336,9 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'shadow-glow-primary' : ''
-                        }`}>
+                          index < 3 ? 'shadow-glow-primary animate-fade-in' : ''
+                        }`}
+                        style={index < 3 ? { animationDelay: `${index * 150}ms`, animationFillMode: 'both' } : undefined}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
@@ -378,8 +382,9 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'shadow-glow-primary' : ''
-                        }`}>
+                          index < 3 ? 'shadow-glow-primary animate-fade-in' : ''
+                        }`}
+                        style={index < 3 ? { animationDelay: `${index * 150}ms`, animationFillMode: 'both' } : undefined}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
