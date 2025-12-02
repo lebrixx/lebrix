@@ -336,9 +336,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'shadow-glow-primary animate-fade-in' : ''
-                        }`}
-                        style={index < 3 ? { animationDelay: `${index * 150}ms`, animationFillMode: 'both' } : undefined}>
+                          index < 3 ? 'animate-podium-glow' : ''
+                        }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
@@ -382,9 +381,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'shadow-glow-primary animate-fade-in' : ''
-                        }`}
-                        style={index < 3 ? { animationDelay: `${index * 150}ms`, animationFillMode: 'both' } : undefined}>
+                          index < 3 ? 'animate-podium-glow' : ''
+                        }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
