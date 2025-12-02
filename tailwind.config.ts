@@ -179,7 +179,7 @@ export default {
         "danger-shake": "danger-shake 0.6s ease-out",
         "float": "float 3s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out",
-        "podium-subtle": "podium-subtle 3s ease-in-out infinite",
+        "podium-subtle": "podium-subtle 6s ease-in-out infinite",
         "scale-in": "scale-in 0.3s ease-out",
         "circle-flash": "circle-flash 0.15s ease-out",
         "particle-burst": "particle-burst 0.4s ease-out",
