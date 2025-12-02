@@ -16,28 +16,33 @@ const MUSIC_URL = 'https://assets.mixkit.co/music/preview/mixkit-games-worldbeat
 export const useBackgroundMusic = (): BackgroundMusicHook => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  const [isMusicEnabled, setIsMusicEnabled] = useState(() => {
-    const saved = localStorage.getItem('luckyStopMusicEnabled');
-    return saved === null ? false : saved === 'true'; // Désactivé par défaut
-  });
+  const [isMusicEnabled, setIsMusicEnabled] = useState(false);
+  const [volume, setVolume] = useState(0.3);
 
-  const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem('luckyStopMusicVolume');
-    return saved ? parseFloat(saved) : 0.3; // 30% par défaut
-  });
+  // Charger les préférences depuis localStorage au montage
+  useEffect(() => {
+    const savedEnabled = localStorage.getItem('luckyStopMusicEnabled');
+    const savedVolume = localStorage.getItem('luckyStopMusicVolume');
+    
+    if (savedEnabled !== null) {
+      setIsMusicEnabled(savedEnabled === 'true');
+    }
+    if (savedVolume !== null) {
+      setVolume(parseFloat(savedVolume));
+    }
+  }, []);
 
   // Initialiser l'audio
   useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(MUSIC_URL);
-      audioRef.current.loop = true;
-      audioRef.current.volume = volume;
-    }
+    const audio = new Audio(MUSIC_URL);
+    audio.loop = true;
+    audio.volume = volume;
+    audioRef.current = audio;
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.src = '';
         audioRef.current = null;
       }
     };
@@ -55,12 +60,12 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
     if (!audioRef.current) return;
 
     if (isMusicEnabled) {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch((error) => {
-        console.warn('Autoplay bloqué, attente interaction utilisateur:', error);
-        setIsPlaying(false);
-      });
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
+      }
     } else {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -76,7 +81,10 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => setIsPlaying(true)).catch(() => {});
+        }
       }
     };
 
@@ -85,10 +93,12 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
   }, [isMusicEnabled]);
 
   const toggleMusic = useCallback(() => {
-    const newEnabled = !isMusicEnabled;
-    setIsMusicEnabled(newEnabled);
-    localStorage.setItem('luckyStopMusicEnabled', String(newEnabled));
-  }, [isMusicEnabled]);
+    setIsMusicEnabled(prev => {
+      const newEnabled = !prev;
+      localStorage.setItem('luckyStopMusicEnabled', String(newEnabled));
+      return newEnabled;
+    });
+  }, []);
 
   const setMusicVolume = useCallback((newVolume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, newVolume));
@@ -98,7 +108,10 @@ export const useBackgroundMusic = (): BackgroundMusicHook => {
 
   const play = useCallback(() => {
     if (audioRef.current && isMusicEnabled) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => setIsPlaying(true)).catch(() => {});
+      }
     }
   }, [isMusicEnabled]);
 
