@@ -3,11 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Volume2, VolumeX, Bell, BellOff, Languages, Music, Music2 } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
-import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 
 interface SettingsProps {
   isOpen: boolean;
@@ -24,7 +22,6 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
-  const { isMusicEnabled, toggleMusic, volume, setMusicVolume } = useBackgroundMusic();
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     const saved = localStorage.getItem('notificationsEnabled');
@@ -75,40 +72,6 @@ export const Settings: React.FC<SettingsProps> = ({
               checked={!isSoundMuted}
               onCheckedChange={onToggleSound}
             />
-          </div>
-
-          {/* Musique de fond */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {isMusicEnabled ? (
-                  <Music className="w-5 h-5 text-primary" />
-                ) : (
-                  <Music2 className="w-5 h-5 text-text-muted" />
-                )}
-                <Label htmlFor="music" className="text-text-primary text-base">
-                  {language === 'fr' ? 'Musique' : 'Music'}
-                </Label>
-              </div>
-              <Switch
-                id="music"
-                checked={isMusicEnabled}
-                onCheckedChange={toggleMusic}
-              />
-            </div>
-            {isMusicEnabled && (
-              <div className="flex items-center gap-3 pl-8">
-                <span className="text-text-muted text-sm">{language === 'fr' ? 'Volume' : 'Volume'}</span>
-                <Slider
-                  value={[volume * 100]}
-                  onValueChange={(value) => setMusicVolume(value[0] / 100)}
-                  max={100}
-                  step={5}
-                  className="flex-1"
-                />
-                <span className="text-text-muted text-sm w-8">{Math.round(volume * 100)}%</span>
-              </div>
-            )}
           </div>
 
           {/* Notifications */}
