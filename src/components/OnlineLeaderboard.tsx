@@ -3,13 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit, Calendar, Globe, ChevronsDown } from 'lucide-react';
-import { fetchTop, fetchWeeklyTop, Score } from '@/utils/scoresApi';
+import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit, Calendar, Globe, ChevronsDown, History, X } from 'lucide-react';
+import { fetchTop, fetchWeeklyTop, fetchPreviousWeekTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
 import { WeeklyTimer } from '@/components/WeeklyTimer';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { getPreviousWeekStartDate, getPreviousWeekEndDate } from '@/utils/weeklyUtils';
 
 interface OnlineLeaderboardProps {
   onBack: () => void;
@@ -32,6 +33,9 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   const [selectedTab, setSelectedTab] = useState<string>('global');
   const [scores, setScores] = useState<Score[]>([]);
   const [weeklyScores, setWeeklyScores] = useState<Score[]>([]);
+  const [previousWeekScores, setPreviousWeekScores] = useState<Score[]>([]);
+  const [showPreviousWeek, setShowPreviousWeek] = useState(false);
+  const [loadingPreviousWeek, setLoadingPreviousWeek] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [currentUsername, setCurrentUsername] = useState<string>('');
@@ -80,6 +84,30 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
       setWeeklyScores([]);
     }
     setLoading(false);
+  };
+
+  const loadPreviousWeekScores = async (mode: string) => {
+    setLoadingPreviousWeek(true);
+    try {
+      const data = await fetchPreviousWeekTop(mode, 5);
+      setPreviousWeekScores(data);
+      setShowPreviousWeek(true);
+    } catch (error) {
+      toast({
+        title: t.networkError,
+        description: t.networkErrorDesc,
+        variant: "destructive",
+        duration: 3000
+      });
+      setPreviousWeekScores([]);
+    }
+    setLoadingPreviousWeek(false);
+  };
+
+  const formatPreviousWeekDates = () => {
+    const start = getPreviousWeekStartDate();
+    const end = getPreviousWeekEndDate();
+    return `${start.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} - ${end.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}`;
   };
 
   useEffect(() => {
@@ -227,10 +255,20 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           </TabsList>
         </Tabs>
 
-        {/* Timer hebdomadaire */}
+        {/* Timer hebdomadaire + Bouton semaine précédente */}
         {selectedTab === 'weekly' && (
-          <div className="flex justify-center mb-4">
+          <div className="flex flex-col items-center gap-3 mb-4">
             <WeeklyTimer />
+            <Button
+              onClick={() => loadPreviousWeekScores(selectedMode)}
+              variant="outline"
+              size="sm"
+              disabled={loadingPreviousWeek || !isOnline}
+              className="border-wheel-border hover:bg-button-hover flex items-center gap-2"
+            >
+              <History className={`w-4 h-4 ${loadingPreviousWeek ? 'animate-spin' : ''}`} />
+              {language === 'fr' ? 'Top 5 semaine précédente' : 'Previous week Top 5'}
+            </Button>
           </div>
         )}
 
@@ -389,6 +427,64 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
         isOpen={showUsernameModal}
         onUsernameSet={handleUsernameChange}
       />
+
+      {/* Previous Week Modal */}
+      {showPreviousWeek && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md bg-button-bg border-wheel-border p-6 relative">
+            <Button
+              onClick={() => setShowPreviousWeek(false)}
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 hover:bg-button-hover"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            
+            <div className="text-center mb-4">
+              <h2 className="text-xl font-bold text-text-primary flex items-center justify-center gap-2">
+                <History className="w-5 h-5 text-secondary" />
+                {language === 'fr' ? 'Semaine précédente' : 'Previous Week'}
+              </h2>
+              <p className="text-text-muted text-sm mt-1">{formatPreviousWeekDates()}</p>
+              <Badge variant="outline" className="mt-2">{modeNames[selectedMode as keyof typeof modeNames]}</Badge>
+            </div>
+
+            {previousWeekScores.length === 0 ? (
+              <div className="text-center py-6">
+                <Trophy className="w-12 h-12 mx-auto mb-3 text-text-muted opacity-50" />
+                <p className="text-text-muted">
+                  {language === 'fr' ? 'Aucun score la semaine dernière' : 'No scores last week'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {previousWeekScores.map((entry, index) => (
+                  <Card key={`prev-${entry.username}-${entry.score}-${index}`} 
+                        className={`p-3 bg-background/50 border-wheel-border/50 ${
+                          index < 3 ? 'shadow-glow-primary' : ''
+                        }`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          {getRankIcon(index + 1)}
+                          <Badge variant={getRankBadgeVariant(index + 1)} className="font-bold text-xs">
+                            #{index + 1}
+                          </Badge>
+                        </div>
+                        <span className="font-medium text-text-primary">
+                          {entry.username.length > 10 ? `${entry.username.substring(0, 10)}...` : entry.username}
+                        </span>
+                      </div>
+                      <span className="font-bold text-secondary">{entry.score}</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

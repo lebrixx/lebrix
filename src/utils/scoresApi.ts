@@ -166,6 +166,54 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
   }
 }
 
+export async function fetchPreviousWeekTop(mode: string, limit: number = 5): Promise<Score[]> {
+  try {
+    if (!VALID_MODES.includes(mode)) {
+      console.warn('Mode invalide pour fetchPreviousWeekTop:', mode);
+      return [];
+    }
+
+    // Calculer le début et fin de la semaine précédente
+    const now = new Date();
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    const currentMonday = new Date(now);
+    currentMonday.setDate(diff);
+    currentMonday.setHours(0, 0, 0, 0);
+
+    const previousMonday = new Date(currentMonday);
+    previousMonday.setDate(currentMonday.getDate() - 7);
+    
+    const previousSunday = new Date(previousMonday);
+    previousSunday.setDate(previousMonday.getDate() + 6);
+    previousSunday.setHours(23, 59, 59, 999);
+
+    const { data, error } = await supabase
+      .from('scores')
+      .select('username,weekly_score,weekly_updated_at')
+      .eq('mode', mode)
+      .gte('weekly_updated_at', previousMonday.toISOString())
+      .lte('weekly_updated_at', previousSunday.toISOString())
+      .order('weekly_score', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('Error fetching previous week leaderboard:', error);
+      return [];
+    }
+
+    return (data || []).map(entry => ({
+      username: entry.username,
+      score: entry.weekly_score,
+      created_at: entry.weekly_updated_at || entry.weekly_updated_at
+    }));
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération du classement de la semaine précédente:', error);
+    return [];
+  }
+}
+
 export function setUsernameForScores(username: string): void {
   setUsername(username);
 }
