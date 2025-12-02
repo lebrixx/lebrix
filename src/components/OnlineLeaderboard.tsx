@@ -336,7 +336,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'animate-podium-glow' : ''
+                          index < 3 ? 'border-primary/40 animate-podium-subtle' : ''
                         }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -381,7 +381,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
                         className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'animate-podium-glow' : ''
+                          index < 3 ? 'border-primary/40 animate-podium-subtle' : ''
                         }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
