@@ -51,3 +51,19 @@ export function isCurrentWeek(date: string | Date): boolean {
   
   return targetDate >= weekStart && targetDate <= weekEnd;
 }
+
+export function getPreviousWeekStartDate(date: Date = new Date()): Date {
+  const currentWeekStart = getWeekStartDate(date);
+  const previousMonday = new Date(currentWeekStart);
+  previousMonday.setDate(currentWeekStart.getDate() - 7);
+  previousMonday.setHours(0, 0, 0, 0);
+  return previousMonday;
+}
+
+export function getPreviousWeekEndDate(date: Date = new Date()): Date {
+  const previousWeekStart = getPreviousWeekStartDate(date);
+  const previousSunday = new Date(previousWeekStart);
+  previousSunday.setDate(previousWeekStart.getDate() + 6);
+  previousSunday.setHours(23, 59, 59, 999);
+  return previousSunday;
+}
