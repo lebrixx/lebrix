@@ -335,8 +335,11 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <div className="space-y-2">
                 {scores.map((entry, index) => (
                   <Card key={`global-${entry.username}-${entry.score}-${index}`} 
-                        className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'border-primary/40 animate-podium-subtle' : ''
+                        className={`p-4 bg-button-bg hover:scale-[1.02] transition-all duration-300 ${
+                          index === 0 ? 'border-2 border-yellow-500/50 bg-yellow-500/5' : 
+                          index === 1 ? 'border-2 border-gray-400/50 bg-gray-400/5' : 
+                          index === 2 ? 'border-2 border-amber-600/50 bg-amber-600/5' : 
+                          'border-wheel-border'
                         }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -380,8 +383,11 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <div className="space-y-2">
                 {weeklyScores.map((entry, index) => (
                   <Card key={`weekly-${entry.username}-${entry.score}-${index}`} 
-                        className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
-                          index < 3 ? 'border-primary/40 animate-podium-subtle' : ''
+                        className={`p-4 bg-button-bg hover:scale-[1.02] transition-all duration-300 ${
+                          index === 0 ? 'border-2 border-yellow-500/50 bg-yellow-500/5' : 
+                          index === 1 ? 'border-2 border-gray-400/50 bg-gray-400/5' : 
+                          index === 2 ? 'border-2 border-amber-600/50 bg-amber-600/5' : 
+                          'border-wheel-border'
                         }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
