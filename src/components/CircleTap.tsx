@@ -213,10 +213,28 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   // Style de l'arrière-plan basé sur la palette sélectionnée
   const getBackgroundStyle = () => ({ background: backgroundCss });
 
+  // Gestionnaire de tap sur l'écran entier (hors boutons)
+  const handleScreenTap = (e: React.MouseEvent | React.TouchEvent) => {
+    // Ne pas déclencher si on clique sur un bouton ou élément interactif
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[role="button"]') || target.closest('a')) {
+      return;
+    }
+    handleTap();
+  };
+
   return (
     <div 
       className={`circle-tap-game min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
-      style={getBackgroundStyle()}
+      style={{ ...getBackgroundStyle(), cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
+      onClick={handleScreenTap}
+      onTouchEnd={(e) => {
+        // Pour mobile, empêcher le double-tap zoom et gérer le tap
+        if (gameState.gameStatus === 'running') {
+          e.preventDefault();
+          handleScreenTap(e);
+        }
+      }}
     >
       {/* Bouton retour au menu - visible uniquement hors partie */}
       {onBack && (gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover') && (
@@ -272,8 +290,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           width={cfg.radius * 2 + 80}
           height={cfg.radius * 2 + 80}
           className="drop-shadow-2xl max-w-full h-auto"
-          onClick={handleTap}
-          style={{ cursor: gameState.gameStatus === 'running' ? 'pointer' : 'default' }}
+          style={{ cursor: 'inherit' }}
         >
           {/* Cercle de base avec glow */}
           <circle

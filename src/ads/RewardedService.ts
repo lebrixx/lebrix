@@ -141,10 +141,12 @@ console.log(`[Rewarded] Showing ad for kind: ${kind}`);
     return new Promise(async (resolve) => {
       let resolved = false;
       let safetyTimeout: NodeJS.Timeout;
+      let cleanupDone = false;
 
       const cleanup = (result: RewardedResult) => {
         if (resolved) return;
         resolved = true;
+        cleanupDone = true;
 
         if (safetyTimeout) clearTimeout(safetyTimeout);
         this.removeListeners();
@@ -154,7 +156,7 @@ console.log(`[Rewarded] Showing ad for kind: ${kind}`);
 
         console.log('[Rewarded] Result:', finalResult);
 
-        // Mettre à jour l'état
+        // Mettre à jour l'état immédiatement
         this.inFlight = false;
         this.lastShown = Date.now();
 
