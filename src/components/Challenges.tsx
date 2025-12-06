@@ -237,20 +237,25 @@ export const Challenges: React.FC<ChallengesProps> = ({
     }
   };
 
+  // Calculer les coins pour un palier (palier * 10)
+  const getCoinsForLevel = (level: number) => level * 10;
+
   // Réclamer une récompense
   const claimReward = (mode: string) => {
     const progress = getChallengeProgress();
     const modeProgress = progress[mode];
     
     if (modeProgress.pendingRewards.length > 0) {
-      const totalReward = modeProgress.pendingRewards.reduce((sum, r) => sum + r, 0);
+      // Les pendingRewards contiennent les targets (10, 20, 30...) qui correspondent aux paliers (1, 2, 3...)
+      // On calcule les coins: palier 1 = 10 coins, palier 2 = 20 coins, etc.
+      const totalCoins = modeProgress.pendingRewards.reduce((sum, target) => sum + target, 0);
       modeProgress.pendingRewards = [];
       saveChallengeProgress(progress);
-      onReward(totalReward);
+      onReward(totalCoins);
       forceUpdate(prev => prev + 1);
       
       toast.success('💰 Récompense réclamée !', {
-        description: `+${totalReward} coins ajoutés à votre compte`,
+        description: `+${totalCoins} coins ajoutés à votre compte`,
       });
     }
   };

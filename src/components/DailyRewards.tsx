@@ -209,10 +209,10 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 ) : nextReward.theme ? (
                   <span className="text-yellow-400 ml-1 flex items-center justify-center gap-1 mt-1">
                     <Crown className="w-4 h-4" />
-                    10 coins + Thème Exclusif
+                    {nextReward.coins} coins + Thème Exclusif
                   </span>
                 ) : (
-                  <span className="text-green-400 ml-1">10 coins</span>
+                  <span className="text-green-400 ml-1">{nextReward.coins} coins</span>
                 )}
               </div>
               <Button 
@@ -241,10 +241,10 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 ) : claimedReward.theme ? (
                   <span className="flex items-center justify-center gap-2">
                     <Crown className="w-6 h-6 text-yellow-400" />
-                    <span className="text-yellow-400">10 coins + Thème Royal</span>
+                    <span className="text-yellow-400">{claimedReward.coins} coins + Thème Royal</span>
                   </span>
                 ) : (
-                  <span className="text-green-400">+10 coins</span>
+                  <span className="text-green-400">+{claimedReward.coins} coins</span>
                 )}
               </div>
             </Card>
