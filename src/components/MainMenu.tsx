@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHea
 import { AdRewardDialog } from '@/components/AdRewardDialog';
 import { Settings } from '@/components/Settings';
 import { useIsTablet } from '@/hooks/use-tablet';
+import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 
 interface MainMenuProps {
   bestScore: number;
@@ -48,7 +49,32 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showAdReward, setShowAdReward] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const isTablet = useIsTablet();
+
+  // Vérifier les défis en attente
+  useEffect(() => {
+    const checkChallenges = () => {
+      setHasPendingChallenges(hasPendingChallengeRewards());
+    };
+    
+    checkChallenges();
+    
+    // Vérifier aussi quand le localStorage change (via storage event)
+    const handleStorageChange = () => {
+      checkChallenges();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier régulièrement au cas où
+    const interval = setInterval(checkChallenges, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
       {/* Free Coins Button - Discret */}
@@ -212,10 +238,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={onOpenChallenges}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
+            className={`relative border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group ${hasPendingChallenges ? 'animate-pulse-glow border-secondary' : ''}`}
           >
-            <Star className="w-4 h-4 mr-2 group-hover:animate-spin" />
+            <Star className={`w-4 h-4 mr-2 group-hover:animate-spin ${hasPendingChallenges ? 'text-secondary' : ''}`} />
             {t.dailyChallenges}
+            {hasPendingChallenges && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse flex items-center justify-center">
+                <span className="text-[8px] text-game-dark font-bold">!</span>
+              </div>
+            )}
           </Button>
 
           <Button
