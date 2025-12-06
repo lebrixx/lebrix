@@ -23,7 +23,7 @@ interface CircleTapProps {
     circle: string;
     effect: string;
   };
-  onGameOver?: (score: number) => void;
+  onGameOver?: (score: number, gameDuration: number) => void;
   selectedBoosts?: BoostType[];
   totalGamesPlayed?: number;
   isSoundMuted?: boolean;
@@ -117,12 +117,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
     }
   }, [gameState.lastResult, gameState.showResult, gameState.comboCount, playSuccess, playFailure]);
 
-  // Notify parent on game over with final score
+  // Notify parent on game over with final score and game duration
   useEffect(() => {
     if (gameState.gameStatus === 'gameover' && gameState.currentScore > 0) {
-      onGameOver?.(gameState.currentScore);
+      const gameDuration = gameState.gameStartTime > 0 
+        ? (Date.now() - gameState.gameStartTime) / 1000 
+        : 0;
+      onGameOver?.(gameState.currentScore, gameDuration);
     }
-  }, [gameState.gameStatus, gameState.currentScore, onGameOver]);
+  }, [gameState.gameStatus, gameState.currentScore, gameState.gameStartTime, onGameOver]);
 
   const handleTap = () => {
     playClick();

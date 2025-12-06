@@ -1,4 +1,5 @@
 import { ModeID } from '@/constants/modes';
+import { hasPendingDailyChallengeRewards } from './dailyChallenges';
 
 interface ChallengeProgress {
   mode: string;
@@ -15,6 +16,11 @@ interface GamesPlayedProgress {
 
 // Vérifier s'il y a des défis avec des récompenses à réclamer
 export function hasPendingChallengeRewards(): boolean {
+  // Vérifier les défis quotidiens
+  if (hasPendingDailyChallengeRewards()) {
+    return true;
+  }
+
   // Vérifier les défis par mode
   const challengeProgress = localStorage.getItem('challengeProgress');
   if (challengeProgress) {
