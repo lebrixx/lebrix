@@ -16,6 +16,7 @@ import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
+import { updateDailyChallengeProgress } from '@/utils/dailyChallenges';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
@@ -114,8 +115,11 @@ const Index = () => {
   };
 
   // Soumission automatique à la fin d'une partie (pilotée par CircleTap via onGameOver)
-  const handleGameOver = async (finalScore: number) => {
+  const handleGameOver = async (finalScore: number, gameDuration: number = 0) => {
     setLastGameScore(finalScore);
+    
+    // Mettre à jour la progression des défis quotidiens
+    updateDailyChallengeProgress(currentMode, finalScore, gameDuration);
 
     // Consommer les boosts utilisés
     selectedBoostsForGame.forEach(boostId => {
