@@ -7,6 +7,7 @@ import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { ModeType, ModeID } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
 
 interface PostGameBoostMenuProps {
   onStartGame: (selectedBoosts: BoostType[]) => void;
@@ -15,10 +16,11 @@ interface PostGameBoostMenuProps {
 }
 
 export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGame, onCancel, currentMode }) => {
-  const { getBoostCount } = useBoosts();
+  const { getBoostCount, removeBoost } = useBoosts();
   const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
   const { language } = useLanguage();
   const t = translations[language];
+  const { toast } = useToast();
 
   // Fonction pour vérifier si un boost est disponible pour ce mode
   const isBoostAvailable = (boostId: BoostType): boolean => {
@@ -52,6 +54,18 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
   };
 
   const handleStart = () => {
+    // Consommer les boosts sélectionnés de l'inventaire AVANT de démarrer
+    selectedBoosts.forEach(boostId => {
+      removeBoost(boostId);
+    });
+    
+    if (selectedBoosts.length > 0) {
+      toast({
+        title: "Boosts activés !",
+        description: `${selectedBoosts.length} boost(s) consommé(s)`,
+      });
+    }
+    
     onStartGame(selectedBoosts);
   };
 

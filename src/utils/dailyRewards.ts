@@ -78,7 +78,7 @@ export function getNextReward(): DailyReward {
   
   return {
     day: nextDay,
-    coins: 10
+    coins: 30 // Multiplié par 3
   };
 }
 
@@ -113,7 +113,7 @@ export function claimDailyReward(): { reward: DailyReward; newState: DailyReward
   } else {
     reward = {
       day: newStreak,
-      coins: 10
+      coins: 30 // Multiplié par 3
     };
   }
   
