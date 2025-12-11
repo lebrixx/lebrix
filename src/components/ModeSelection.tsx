@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Play, Zap } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { BOOSTS, BoostType } from '@/types/boosts';
+import { useBoosts } from '@/hooks/useBoosts';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
   gameStatus: 'idle' | 'running' | 'gameover';
   bestScores: Record<string, number>;
   unlockedModes: string[];
-  onSelectMode: (mode: ModeType) => void;
+  onSelectMode: (mode: ModeType, selectedBoosts?: BoostType[]) => void;
   onBack: () => void;
   onOpenShop: () => void;
 }
@@ -45,6 +48,41 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onOpenShop
 }) => {
   const isGameRunning = gameStatus === 'running';
+  const [showBoostDialog, setShowBoostDialog] = useState(false);
+  const [selectedModeForGame, setSelectedModeForGame] = useState<ModeType | null>(null);
+  const [selectedBoosts, setSelectedBoosts] = useState<BoostType[]>([]);
+  const { getBoostCount } = useBoosts();
+  const { language } = useLanguage();
+  const t = translations[language];
+
+  // Fonction pour vérifier si un boost est disponible pour ce mode
+  const isBoostAvailable = (boostId: BoostType, mode: ModeType): boolean => {
+    if (mode === ModeID.MEMOIRE_EXPERT) return false;
+    if (boostId === 'bigger_zone' && (mode === 'zone_traitresse' || mode === 'survie_60s')) return false;
+    return true;
+  };
+
+  const availableBoosts = Object.values(BOOSTS).filter(boost => getBoostCount(boost.id) > 0);
+
+  const toggleBoost = (boostId: BoostType) => {
+    if (!selectedModeForGame || !isBoostAvailable(boostId, selectedModeForGame)) return;
+    setSelectedBoosts(prev => 
+      prev.includes(boostId) ? prev.filter(id => id !== boostId) : [...prev, boostId]
+    );
+  };
+
+  const handlePlayClick = (modeId: ModeType) => {
+    setSelectedModeForGame(modeId);
+    setSelectedBoosts([]);
+    setShowBoostDialog(true);
+  };
+
+  const handleStartGame = () => {
+    if (selectedModeForGame) {
+      onSelectMode(selectedModeForGame, selectedBoosts);
+    }
+    setShowBoostDialog(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col items-center p-4 pt-12">
@@ -186,7 +224,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => onSelectMode(modeId as ModeType)}
+                    onClick={() => handlePlayClick(modeId as ModeType)}
                     disabled={!canSelect}
                     className={`
                       w-full transition-all duration-300
@@ -196,6 +234,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                       }
                     `}
                   >
+                    <Zap className="w-4 h-4 mr-2" />
                     {isCurrentMode ? 'Jouer maintenant' : 'Choisir ce Mode'}
                   </Button>
                 )}
@@ -218,6 +257,91 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           Les meilleurs scores sont sauvegardés séparément pour chaque mode
         </p>
       </div>
+
+      {/* Boost Selection Dialog */}
+      <Dialog open={showBoostDialog} onOpenChange={setShowBoostDialog}>
+        <DialogContent className="bg-button-bg border-wheel-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-text-primary flex items-center gap-2">
+              <Zap className="w-5 h-5 text-primary" />
+              {t.selectBoosts}
+            </DialogTitle>
+          </DialogHeader>
+
+          {availableBoosts.length === 0 || (selectedModeForGame === ModeID.MEMOIRE_EXPERT) ? (
+            <div className="text-center py-4">
+              <p className="text-text-secondary mb-4">
+                {selectedModeForGame === ModeID.MEMOIRE_EXPERT 
+                  ? t.unavailableMode || "Boosts non disponibles dans ce mode"
+                  : t.noBoostsAvailable}
+              </p>
+              <Button
+                onClick={handleStartGame}
+                className="bg-gradient-primary hover:scale-105 transition-all duration-300"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                {t.startWithoutBoost}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {availableBoosts.map(boost => {
+                  const isSelected = selectedBoosts.includes(boost.id);
+                  const count = getBoostCount(boost.id);
+                  const isLocked = selectedModeForGame ? !isBoostAvailable(boost.id, selectedModeForGame) : false;
+                  
+                  return (
+                    <Card
+                      key={boost.id}
+                      onClick={() => toggleBoost(boost.id)}
+                      className={`
+                        p-3 transition-all duration-300 relative
+                        ${isLocked 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : isSelected 
+                            ? 'bg-primary/20 border-primary border-2 cursor-pointer' 
+                            : 'bg-wheel-segment/20 border-wheel-border hover:border-primary/50 cursor-pointer'
+                        }
+                      `}
+                    >
+                      {isLocked && (
+                        <div className="absolute top-2 right-2 bg-red-500/80 rounded-full p-1">
+                          <Lock className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl">{boost.icon}</div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-text-primary font-bold text-sm">{boost.name}</h3>
+                            <Badge variant="secondary" className="text-xs">x{count}</Badge>
+                          </div>
+                          <p className="text-text-secondary text-xs">{boost.description}</p>
+                          {isLocked && <p className="text-xs text-red-400 mt-1">{t.unavailableMode}</p>}
+                        </div>
+                        {isSelected && !isLocked && (
+                          <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                            <div className="w-2 h-2 rounded-full bg-game-dark" />
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <Button
+                onClick={handleStartGame}
+                className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300 py-5 text-lg font-bold mt-4"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                {selectedBoosts.length > 0 ? `${t.startGameLabel} (${selectedBoosts.length} boost${selectedBoosts.length > 1 ? 's' : ''})` : t.startGameLabel}
+              </Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
