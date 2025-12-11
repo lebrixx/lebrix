@@ -85,17 +85,33 @@ function getTodayDate(): string {
 
 // Utilise une seed basée sur la date pour obtenir 3 défis différents chaque jour
 function getDailyChallengeIndices(date: string): number[] {
-  // Convertir la date en nombre pour le seed
+  // Convertir la date en hash plus complexe pour meilleure distribution
   const dateParts = date.split('-');
-  const seed = parseInt(dateParts[0]) * 10000 + parseInt(dateParts[1]) * 100 + parseInt(dateParts[2]);
+  const year = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]);
+  const day = parseInt(dateParts[2]);
   
-  // Générateur pseudo-aléatoire simple
+  // Créer un seed unique basé sur la date avec plus de variation
+  let seed = (year * 31337) ^ (month * 7919) ^ (day * 104729);
+  seed = Math.abs(seed);
+  
+  // Générateur pseudo-aléatoire Mulberry32 (meilleure distribution)
+  const mulberry32 = (a: number) => {
+    return () => {
+      let t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  };
+  
+  const random = mulberry32(seed);
   const indices: number[] = [];
-  let current = seed;
+  const totalChallenges = ALL_DAILY_CHALLENGES.length;
   
+  // Sélectionner 3 défis uniques
   while (indices.length < 3) {
-    current = (current * 1103515245 + 12345) % 2147483648;
-    const index = current % ALL_DAILY_CHALLENGES.length;
+    const index = Math.floor(random() * totalChallenges);
     if (!indices.includes(index)) {
       indices.push(index);
     }
