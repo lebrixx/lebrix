@@ -6,7 +6,7 @@ export interface DailyChallenge {
   description: string;
   type: 'play_games' | 'score_in_mode' | 'total_score' | 'play_mode' | 'best_score_any' | 'play_different_modes';
   target: number;
-  mode?: string; // Mode spécifique si applicable
+  mode?: string;
   reward: { coins: number };
 }
 
@@ -62,7 +62,7 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
 ];
 
 export interface DailyChallengeProgress {
-  date: string; // YYYY-MM-DD
+  date: string;
   challenges: {
     [challengeId: string]: {
       progress: number;
@@ -70,22 +70,24 @@ export interface DailyChallengeProgress {
       claimed: boolean;
     };
   };
-  // Statistiques de la journée - TOUTES doivent commencer à 0 au début du jour
-  gamesPlayedToday: number;
-  totalScoreToday: number;
-  modesPlayedToday: string[];
-  gamesPerModeToday: { [mode: string]: number };
-  bestScorePerModeToday: { [mode: string]: number };
-  bestScoreAnyModeToday: number;
+  stats: {
+    gamesPlayed: number;
+    totalScore: number;
+    modesPlayed: string[];
+    gamesPerMode: { [mode: string]: number };
+    bestScorePerMode: { [mode: string]: number };
+    bestScoreAny: number;
+  };
 }
 
-const DAILY_CHALLENGES_KEY = 'daily_challenges_progress_v2'; // Nouvelle clé pour reset
+// NOUVELLE CLÉ - v4 pour forcer un reset complet
+const STORAGE_KEY = 'daily_challenges_v4';
 
 function getTodayDate(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-// Générateur pseudo-aléatoire Mulberry32
+// Générateur pseudo-aléatoire déterministe
 function mulberry32(seed: number) {
   return function() {
     let t = seed += 0x6D2B79F5;
@@ -96,26 +98,17 @@ function mulberry32(seed: number) {
 }
 
 function getDailyChallengeIndices(date: string): number[] {
-  const dateParts = date.split('-');
-  const year = parseInt(dateParts[0]);
-  const month = parseInt(dateParts[1]);
-  const day = parseInt(dateParts[2]);
-  
-  // Seed basé sur la date
-  let seed = (year * 31337) ^ (month * 7919) ^ (day * 104729);
-  seed = Math.abs(seed);
-  
+  const [year, month, day] = date.split('-').map(Number);
+  const seed = Math.abs((year * 31337) ^ (month * 7919) ^ (day * 104729));
   const random = mulberry32(seed);
-  const indices: number[] = [];
-  const totalChallenges = ALL_DAILY_CHALLENGES.length;
   
+  const indices: number[] = [];
   while (indices.length < 3) {
-    const index = Math.floor(random() * totalChallenges);
+    const index = Math.floor(random() * ALL_DAILY_CHALLENGES.length);
     if (!indices.includes(index)) {
       indices.push(index);
     }
   }
-  
   return indices;
 }
 
@@ -125,204 +118,207 @@ export function getTodaysChallenges(): DailyChallenge[] {
   return indices.map(i => ALL_DAILY_CHALLENGES[i]);
 }
 
-function createFreshProgress(date: string): DailyChallengeProgress {
+function createEmptyProgress(date: string): DailyChallengeProgress {
   const challenges = getTodaysChallenges();
+  
   const progress: DailyChallengeProgress = {
     date,
     challenges: {},
-    gamesPlayedToday: 0,
-    totalScoreToday: 0,
-    modesPlayedToday: [],
-    gamesPerModeToday: {},
-    bestScorePerModeToday: {},
-    bestScoreAnyModeToday: 0
+    stats: {
+      gamesPlayed: 0,
+      totalScore: 0,
+      modesPlayed: [],
+      gamesPerMode: {},
+      bestScorePerMode: {},
+      bestScoreAny: 0
+    }
   };
   
+  // Initialiser chaque défi à 0
   challenges.forEach(c => {
-    progress.challenges[c.id] = { progress: 0, completed: false, claimed: false };
+    progress.challenges[c.id] = {
+      progress: 0,
+      completed: false,
+      claimed: false
+    };
   });
   
   return progress;
 }
 
+function isValidProgress(data: any, today: string): data is DailyChallengeProgress {
+  if (!data || typeof data !== 'object') return false;
+  if (data.date !== today) return false;
+  if (!data.stats || typeof data.stats !== 'object') return false;
+  if (typeof data.stats.gamesPlayed !== 'number') return false;
+  if (typeof data.stats.totalScore !== 'number') return false;
+  if (!Array.isArray(data.stats.modesPlayed)) return false;
+  if (typeof data.stats.gamesPerMode !== 'object') return false;
+  if (typeof data.stats.bestScorePerMode !== 'object') return false;
+  if (typeof data.stats.bestScoreAny !== 'number') return false;
+  if (!data.challenges || typeof data.challenges !== 'object') return false;
+  return true;
+}
+
 export function getDailyChallengeProgress(): DailyChallengeProgress {
-  const saved = localStorage.getItem(DAILY_CHALLENGES_KEY);
   const today = getTodayDate();
   
-  if (saved) {
-    try {
-      const parsed: DailyChallengeProgress = JSON.parse(saved);
-      
-      // Si c'est un nouveau jour, réinitialiser TOUT
-      if (parsed.date !== today) {
-        const freshProgress = createFreshProgress(today);
-        saveDailyChallengeProgress(freshProgress);
-        return freshProgress;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (isValidProgress(parsed, today)) {
+        return parsed;
       }
-      
-      // Valider les données - si corrompues, réinitialiser
-      if (typeof parsed.gamesPlayedToday !== 'number' || parsed.gamesPlayedToday < 0) {
-        const freshProgress = createFreshProgress(today);
-        saveDailyChallengeProgress(freshProgress);
-        return freshProgress;
-      }
-      
-      return parsed;
-    } catch (e) {
-      const freshProgress = createFreshProgress(today);
-      saveDailyChallengeProgress(freshProgress);
-      return freshProgress;
     }
+  } catch (e) {
+    console.error('[DailyChallenges] Error reading progress:', e);
   }
   
-  const freshProgress = createFreshProgress(today);
-  saveDailyChallengeProgress(freshProgress);
-  return freshProgress;
+  // Créer une nouvelle progression vide
+  const empty = createEmptyProgress(today);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(empty));
+  return empty;
 }
 
-export function saveDailyChallengeProgress(progress: DailyChallengeProgress): void {
-  localStorage.setItem(DAILY_CHALLENGES_KEY, JSON.stringify(progress));
+function saveProgress(progress: DailyChallengeProgress): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
 }
 
-// FONCTION PRINCIPALE - appelée après chaque partie
+// Calculer la progression d'un défi basé sur les stats actuelles
+function calculateChallengeProgress(challenge: DailyChallenge, stats: DailyChallengeProgress['stats']): number {
+  switch (challenge.type) {
+    case 'play_games':
+      return stats.gamesPlayed;
+      
+    case 'score_in_mode':
+      if (challenge.mode) {
+        return stats.bestScorePerMode[challenge.mode] || 0;
+      }
+      return 0;
+      
+    case 'total_score':
+      return stats.totalScore;
+      
+    case 'play_mode':
+      if (challenge.mode) {
+        return stats.gamesPerMode[challenge.mode] || 0;
+      }
+      return 0;
+      
+    case 'best_score_any':
+      return stats.bestScoreAny;
+      
+    case 'play_different_modes':
+      return stats.modesPlayed.length;
+      
+    default:
+      return 0;
+  }
+}
+
+// FONCTION PRINCIPALE - appelée après chaque partie terminée
 export function updateDailyChallengeProgress(
   mode: string,
   score: number,
   gameDuration: number
 ): void {
-  // Ne compter que les parties de plus de 5 secondes
+  // Ignorer les parties trop courtes (moins de 5 secondes)
   if (gameDuration < 5) {
-    console.log('[DailyChallenges] Game too short, ignoring:', gameDuration);
+    console.log('[DailyChallenges] Partie ignorée - durée:', gameDuration, 's');
     return;
   }
   
-  // Vérifier que le score est valide
+  // Valider le score
   if (typeof score !== 'number' || isNaN(score) || score < 0) {
-    console.log('[DailyChallenges] Invalid score, ignoring:', score);
+    console.log('[DailyChallenges] Score invalide:', score);
     return;
   }
   
-  // Récupérer la progression actuelle
+  // Récupérer ou créer la progression du jour
   const progress = getDailyChallengeProgress();
   const challenges = getTodaysChallenges();
   
-  console.log('[DailyChallenges] Before update:', {
-    gamesPlayedToday: progress.gamesPlayedToday,
-    totalScoreToday: progress.totalScoreToday,
-    mode,
-    score
-  });
+  console.log('[DailyChallenges] === AVANT mise à jour ===');
+  console.log('Stats:', JSON.stringify(progress.stats));
+  console.log('Mode joué:', mode, '| Score:', score);
   
-  // 1. Incrémenter le nombre de parties jouées (+1 à chaque partie)
-  progress.gamesPlayedToday += 1;
+  // === MISE À JOUR DES STATISTIQUES ===
   
-  // 2. Ajouter le score au total
-  progress.totalScoreToday += score;
+  // 1. Incrémenter le nombre de parties
+  progress.stats.gamesPlayed = (progress.stats.gamesPlayed || 0) + 1;
   
-  // 3. Ajouter le mode s'il n'est pas déjà présent
-  if (!progress.modesPlayedToday.includes(mode)) {
-    progress.modesPlayedToday.push(mode);
+  // 2. Ajouter au score total
+  progress.stats.totalScore = (progress.stats.totalScore || 0) + score;
+  
+  // 3. Ajouter le mode à la liste si nouveau
+  if (!progress.stats.modesPlayed) {
+    progress.stats.modesPlayed = [];
+  }
+  if (!progress.stats.modesPlayed.includes(mode)) {
+    progress.stats.modesPlayed.push(mode);
   }
   
-  // 4. Incrémenter le compteur pour ce mode
-  if (!progress.gamesPerModeToday[mode]) {
-    progress.gamesPerModeToday[mode] = 0;
+  // 4. Incrémenter le compteur de parties pour ce mode
+  if (!progress.stats.gamesPerMode) {
+    progress.stats.gamesPerMode = {};
   }
-  progress.gamesPerModeToday[mode] += 1;
+  progress.stats.gamesPerMode[mode] = (progress.stats.gamesPerMode[mode] || 0) + 1;
   
   // 5. Mettre à jour le meilleur score pour ce mode
-  if (!progress.bestScorePerModeToday[mode] || score > progress.bestScorePerModeToday[mode]) {
-    progress.bestScorePerModeToday[mode] = score;
+  if (!progress.stats.bestScorePerMode) {
+    progress.stats.bestScorePerMode = {};
+  }
+  const currentBestForMode = progress.stats.bestScorePerMode[mode] || 0;
+  if (score > currentBestForMode) {
+    progress.stats.bestScorePerMode[mode] = score;
   }
   
   // 6. Mettre à jour le meilleur score tous modes confondus
-  if (score > progress.bestScoreAnyModeToday) {
-    progress.bestScoreAnyModeToday = score;
+  if (score > (progress.stats.bestScoreAny || 0)) {
+    progress.stats.bestScoreAny = score;
   }
   
-  console.log('[DailyChallenges] After stats update:', {
-    gamesPlayedToday: progress.gamesPlayedToday,
-    totalScoreToday: progress.totalScoreToday,
-    modesPlayedToday: progress.modesPlayedToday,
-    gamesPerModeToday: progress.gamesPerModeToday
-  });
+  console.log('[DailyChallenges] === APRÈS mise à jour stats ===');
+  console.log('Stats:', JSON.stringify(progress.stats));
   
-  // 7. Évaluer chaque défi du jour
+  // === ÉVALUATION DES DÉFIS ===
   challenges.forEach(challenge => {
     // S'assurer que le défi existe dans la progression
     if (!progress.challenges[challenge.id]) {
-      progress.challenges[challenge.id] = { progress: 0, completed: false, claimed: false };
+      progress.challenges[challenge.id] = {
+        progress: 0,
+        completed: false,
+        claimed: false
+      };
     }
     
-    const challengeProgress = progress.challenges[challenge.id];
+    const challengeData = progress.challenges[challenge.id];
     
-    // Ne pas mettre à jour si déjà complété
-    if (challengeProgress.completed) {
+    // Ne pas modifier si déjà complété
+    if (challengeData.completed) {
       return;
     }
     
-    let newProgress = 0;
+    // Calculer la nouvelle progression
+    const newProgress = calculateChallengeProgress(challenge, progress.stats);
+    challengeData.progress = newProgress;
     
-    switch (challenge.type) {
-      case 'play_games':
-        // Nombre total de parties jouées aujourd'hui
-        newProgress = progress.gamesPlayedToday;
-        break;
-        
-      case 'score_in_mode':
-        // Meilleur score dans un mode spécifique
-        if (challenge.mode && progress.bestScorePerModeToday[challenge.mode]) {
-          newProgress = progress.bestScorePerModeToday[challenge.mode];
-        }
-        break;
-        
-      case 'total_score':
-        // Score total cumulé aujourd'hui
-        newProgress = progress.totalScoreToday;
-        break;
-        
-      case 'play_mode':
-        // Nombre de parties dans un mode spécifique
-        if (challenge.mode && progress.gamesPerModeToday[challenge.mode]) {
-          newProgress = progress.gamesPerModeToday[challenge.mode];
-        }
-        break;
-        
-      case 'best_score_any':
-        // Meilleur score en une seule partie tous modes
-        newProgress = progress.bestScoreAnyModeToday;
-        break;
-        
-      case 'play_different_modes':
-        // Nombre de modes différents joués
-        newProgress = progress.modesPlayedToday.length;
-        break;
-    }
-    
-    // Mettre à jour la progression
-    challengeProgress.progress = newProgress;
-    
-    // Vérifier si le défi est complété
+    // Vérifier si complété
     if (newProgress >= challenge.target) {
-      challengeProgress.completed = true;
-      console.log('[DailyChallenges] Challenge completed:', challenge.id, newProgress, '/', challenge.target);
+      challengeData.completed = true;
+      console.log('[DailyChallenges] Défi complété:', challenge.id, '(', newProgress, '/', challenge.target, ')');
+    } else {
+      console.log('[DailyChallenges] Défi en cours:', challenge.id, '(', newProgress, '/', challenge.target, ')');
     }
   });
   
-  // 8. Sauvegarder
-  saveDailyChallengeProgress(progress);
-  
-  console.log('[DailyChallenges] Final progress saved');
+  // Sauvegarder
+  saveProgress(progress);
+  console.log('[DailyChallenges] Progression sauvegardée');
 }
 
-// Réinitialiser les défis quotidiens (pour debug)
-export function resetDailyChallenges(): void {
-  const today = getTodayDate();
-  const freshProgress = createFreshProgress(today);
-  saveDailyChallengeProgress(freshProgress);
-  console.log('[DailyChallenges] Challenges reset');
-}
-
+// Réclamer un défi complété
 export function claimDailyChallenge(challengeId: string): number {
   const progress = getDailyChallengeProgress();
   const challenges = getTodaysChallenges();
@@ -330,21 +326,27 @@ export function claimDailyChallenge(challengeId: string): number {
   
   if (!challenge) return 0;
   
-  const challengeProgress = progress.challenges[challengeId];
-  if (!challengeProgress || !challengeProgress.completed || challengeProgress.claimed) {
+  const challengeData = progress.challenges[challengeId];
+  if (!challengeData || !challengeData.completed || challengeData.claimed) {
     return 0;
   }
   
-  challengeProgress.claimed = true;
-  saveDailyChallengeProgress(progress);
+  challengeData.claimed = true;
+  saveProgress(progress);
   
   return challenge.reward.coins;
 }
 
+// Vérifier s'il y a des récompenses non réclamées
 export function hasPendingDailyChallengeRewards(): boolean {
   const progress = getDailyChallengeProgress();
-  
-  return Object.values(progress.challenges).some(
-    c => c.completed && !c.claimed
-  );
+  return Object.values(progress.challenges).some(c => c.completed && !c.claimed);
+}
+
+// Reset manuel pour debug
+export function resetDailyChallenges(): void {
+  const today = getTodayDate();
+  const empty = createEmptyProgress(today);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(empty));
+  console.log('[DailyChallenges] Reset effectué');
 }
