@@ -4,7 +4,7 @@ export interface DailyChallenge {
   id: string;
   title: string;
   description: string;
-  type: 'play_games' | 'score_in_mode' | 'total_score' | 'play_mode' | 'direction_changes' | 'speed_reached';
+  type: 'play_games' | 'score_in_mode' | 'total_score' | 'play_mode' | 'best_score_any' | 'play_different_modes';
   target: number;
   mode?: string; // Mode spécifique si applicable
   reward: { coins: number };
@@ -47,18 +47,18 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'memoire_score_10', title: 'Mémoire eidétique', description: 'Fais un score de 10 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 55 } },
   { id: 'play_memoire_3', title: 'Entraînement mental', description: 'Joue 3 parties en Mémoire Expert', type: 'play_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
   
-  // Défis mixtes
-  { id: 'play_2_modes', title: 'Polyvalent', description: 'Joue dans 2 modes différents', type: 'play_games', target: 2, reward: { coins: 25 } },
+  // Défis mixtes - CORRIGÉS
+  { id: 'play_2_modes', title: 'Polyvalent', description: 'Joue dans 2 modes différents', type: 'play_different_modes', target: 2, reward: { coins: 25 } },
   { id: 'total_score_30', title: 'Cumulateur', description: 'Cumule 30 points au total aujourd\'hui', type: 'total_score', target: 30, reward: { coins: 30 } },
   { id: 'total_score_50', title: 'Collectionneur', description: 'Cumule 50 points au total aujourd\'hui', type: 'total_score', target: 50, reward: { coins: 45 } },
   { id: 'total_score_100', title: 'Accumulateur', description: 'Cumule 100 points au total aujourd\'hui', type: 'total_score', target: 100, reward: { coins: 75 } },
   
-  // Défis simples
+  // Défis simples - CORRIGÉS (best_score_any pour score en une seule partie)
   { id: 'first_game', title: 'Premier pas', description: 'Joue ta première partie du jour', type: 'play_games', target: 1, reward: { coins: 10 } },
-  { id: 'score_any_10', title: 'Décollage', description: 'Fais un score de 10 dans n\'importe quel mode', type: 'total_score', target: 10, reward: { coins: 15 } },
+  { id: 'score_any_10', title: 'Décollage', description: 'Fais un score de 10 en une partie', type: 'best_score_any', target: 10, reward: { coins: 15 } },
   { id: 'play_7_games', title: 'Semaine en un jour', description: 'Joue 7 parties', type: 'play_games', target: 7, reward: { coins: 35 } },
-  { id: 'play_any_mode_5', title: 'Découvreur', description: 'Joue 5 parties dans n\'importe quel mode', type: 'play_games', target: 5, reward: { coins: 30 } },
-  { id: 'score_any_20', title: 'Bonne performance', description: 'Fais un score de 20 dans n\'importe quel mode', type: 'total_score', target: 20, reward: { coins: 25 } },
+  { id: 'play_any_mode_5', title: 'Découvreur', description: 'Joue 5 parties', type: 'play_games', target: 5, reward: { coins: 30 } },
+  { id: 'score_any_20', title: 'Bonne performance', description: 'Fais un score de 20 en une partie', type: 'best_score_any', target: 20, reward: { coins: 25 } },
 ];
 
 export interface DailyChallengeProgress {
@@ -75,6 +75,7 @@ export interface DailyChallengeProgress {
   modesPlayedToday: string[];
   gamesPerModeToday: { [mode: string]: number };
   bestScorePerModeToday: { [mode: string]: number };
+  bestScoreAnyModeToday: number; // Meilleur score en une seule partie tous modes confondus
 }
 
 const DAILY_CHALLENGES_KEY = 'daily_challenges_progress';
@@ -200,7 +201,8 @@ function createFreshProgress(date: string): DailyChallengeProgress {
     totalScoreToday: 0,
     modesPlayedToday: [],
     gamesPerModeToday: {},
-    bestScorePerModeToday: {}
+    bestScorePerModeToday: {},
+    bestScoreAnyModeToday: 0
   };
   
   challenges.forEach(c => {
@@ -255,6 +257,12 @@ export function updateDailyChallengeProgress(
     score
   );
   
+  // Mettre à jour le meilleur score tous modes confondus
+  progress.bestScoreAnyModeToday = Math.max(
+    progress.bestScoreAnyModeToday || 0,
+    score
+  );
+  
   // Vérifier chaque défi
   challenges.forEach(challenge => {
     if (!progress.challenges[challenge.id]) {
@@ -264,7 +272,7 @@ export function updateDailyChallengeProgress(
     const challengeProgress = progress.challenges[challenge.id];
     if (challengeProgress.completed) return;
     
-    let newProgress = 0;
+    let newProgress = challengeProgress.progress; // Garder la progression existante par défaut
     
     switch (challenge.type) {
       case 'play_games':
@@ -274,10 +282,8 @@ export function updateDailyChallengeProgress(
         if (challenge.mode && challenge.mode === mode) {
           // Seulement mettre à jour si c'est le bon mode
           newProgress = progress.bestScorePerModeToday[challenge.mode] || 0;
-        } else if (challenge.mode) {
-          // Garder la progression existante pour les autres modes
-          newProgress = challengeProgress.progress;
         }
+        // Si ce n'est pas le bon mode, on garde la progression existante
         break;
       case 'total_score':
         newProgress = progress.totalScoreToday;
@@ -286,6 +292,14 @@ export function updateDailyChallengeProgress(
         if (challenge.mode) {
           newProgress = progress.gamesPerModeToday[challenge.mode] || 0;
         }
+        break;
+      case 'best_score_any':
+        // Meilleur score en une seule partie (tous modes)
+        newProgress = progress.bestScoreAnyModeToday || 0;
+        break;
+      case 'play_different_modes':
+        // Nombre de modes différents joués
+        newProgress = progress.modesPlayedToday.length;
         break;
     }
     
