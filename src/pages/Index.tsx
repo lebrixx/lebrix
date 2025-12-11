@@ -21,7 +21,7 @@ import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'pregame';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -238,7 +238,7 @@ const Index = () => {
             coins={currentCoins}
             theme={currentTheme}
             currentMode={currentMode}
-            onStartGame={() => setCurrentScreen('game')}
+            onStartGame={() => setCurrentScreen('pregame')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
@@ -248,6 +248,18 @@ const Index = () => {
             onAdRewardClaimed={addCoins}
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
+          />
+        );
+        
+      case 'pregame':
+        return (
+          <PreGameMenu
+            onStartGame={(boosts) => {
+              setSelectedBoostsForGame(boosts);
+              setCurrentScreen('game');
+            }}
+            onCancel={() => setCurrentScreen('menu')}
+            currentMode={currentMode}
           />
         );
         
