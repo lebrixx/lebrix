@@ -4,61 +4,49 @@ export interface DailyChallenge {
   id: string;
   title: string;
   description: string;
-  type: 'score_in_mode' | 'play_mode';
+  type: 'score_in_mode';
   target: number;
   mode: string;
   reward: { coins: number };
 }
 
-// UNIQUEMENT des défis spécifiques à un mode - plus aucun défi général
+// UNIQUEMENT des défis de score dans un mode spécifique
 export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
-  // Classique - Score
+  // Classique
   { id: 'classic_score_10', title: 'Classique Débutant', description: 'Fais un score de 10 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 15 } },
   { id: 'classic_score_15', title: 'Classique Apprenti', description: 'Fais un score de 15 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 15, reward: { coins: 20 } },
-  { id: 'classic_score_25', title: 'Classique Pro', description: 'Fais un score de 25 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 25, reward: { coins: 35 } },
-  // Classique - Parties
-  { id: 'play_classic_2', title: 'Fan du Classique', description: 'Joue 2 parties en Classique', type: 'play_mode', mode: ModeID.CLASSIC, target: 2, reward: { coins: 15 } },
-  { id: 'play_classic_5', title: 'Addict Classique', description: 'Joue 5 parties en Classique', type: 'play_mode', mode: ModeID.CLASSIC, target: 5, reward: { coins: 30 } },
+  { id: 'classic_score_20', title: 'Classique Confirmé', description: 'Fais un score de 20 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 30 } },
+  { id: 'classic_score_25', title: 'Classique Pro', description: 'Fais un score de 25 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 25, reward: { coins: 40 } },
   
-  // Arc changeant - Score
+  // Arc changeant
   { id: 'arc_score_8', title: 'Arc Débutant', description: 'Fais un score de 8 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 8, reward: { coins: 15 } },
-  { id: 'arc_score_15', title: 'Arc Intermédiaire', description: 'Fais un score de 15 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 15, reward: { coins: 25 } },
-  { id: 'arc_score_20', title: 'Arc Expert', description: 'Fais un score de 20 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 40 } },
-  // Arc changeant - Parties
-  { id: 'play_arc_2', title: 'Explorateur Arc', description: 'Joue 2 parties en Arc changeant', type: 'play_mode', mode: ModeID.ARC_CHANGEANT, target: 2, reward: { coins: 15 } },
-  { id: 'play_arc_5', title: 'Maître Arc', description: 'Joue 5 parties en Arc changeant', type: 'play_mode', mode: ModeID.ARC_CHANGEANT, target: 5, reward: { coins: 30 } },
+  { id: 'arc_score_12', title: 'Arc Intermédiaire', description: 'Fais un score de 12 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 12, reward: { coins: 20 } },
+  { id: 'arc_score_15', title: 'Arc Confirmé', description: 'Fais un score de 15 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 15, reward: { coins: 30 } },
+  { id: 'arc_score_20', title: 'Arc Expert', description: 'Fais un score de 20 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 45 } },
   
-  // Survie 30s - Score
+  // Survie 30s
   { id: 'survie_score_5', title: 'Survivant Débutant', description: 'Fais un score de 5 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 15 } },
-  { id: 'survie_score_10', title: 'Survivant', description: 'Fais un score de 10 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 10, reward: { coins: 30 } },
-  { id: 'survie_score_15', title: 'Maître Survie', description: 'Fais un score de 15 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 45 } },
-  // Survie 30s - Parties
-  { id: 'play_survie_2', title: 'Adrénaline', description: 'Joue 2 parties en Survie 30s', type: 'play_mode', mode: ModeID.SURVIE_60S, target: 2, reward: { coins: 15 } },
-  { id: 'play_survie_5', title: 'Survivaliste', description: 'Joue 5 parties en Survie 30s', type: 'play_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 30 } },
+  { id: 'survie_score_8', title: 'Survivant', description: 'Fais un score de 8 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 25 } },
+  { id: 'survie_score_12', title: 'Survie Confirmé', description: 'Fais un score de 12 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 35 } },
+  { id: 'survie_score_15', title: 'Maître Survie', description: 'Fais un score de 15 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
-  // Zone mobile - Score
+  // Zone mobile
   { id: 'mobile_score_8', title: 'Zone Nomade', description: 'Fais un score de 8 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 20 } },
-  { id: 'mobile_score_15', title: 'Chasseur Mobile', description: 'Fais un score de 15 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 35 } },
-  { id: 'mobile_score_20', title: 'Expert Mobile', description: 'Fais un score de 20 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 45 } },
-  // Zone mobile - Parties
-  { id: 'play_mobile_2', title: 'Zone en mouvement', description: 'Joue 2 parties en Zone mobile', type: 'play_mode', mode: ModeID.ZONE_MOBILE, target: 2, reward: { coins: 15 } },
-  { id: 'play_mobile_5', title: 'Maître Mobile', description: 'Joue 5 parties en Zone mobile', type: 'play_mode', mode: ModeID.ZONE_MOBILE, target: 5, reward: { coins: 30 } },
+  { id: 'mobile_score_12', title: 'Chasseur Mobile', description: 'Fais un score de 12 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 12, reward: { coins: 30 } },
+  { id: 'mobile_score_15', title: 'Mobile Confirmé', description: 'Fais un score de 15 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 40 } },
+  { id: 'mobile_score_20', title: 'Expert Mobile', description: 'Fais un score de 20 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 50 } },
   
-  // Zone traîtresse - Score
+  // Zone traîtresse
   { id: 'traitresse_score_5', title: 'Détecteur', description: 'Fais un score de 5 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 20 } },
-  { id: 'traitresse_score_10', title: 'Démineur', description: 'Fais un score de 10 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 35 } },
-  { id: 'traitresse_score_15', title: 'Expert Démineur', description: 'Fais un score de 15 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 50 } },
-  // Zone traîtresse - Parties
-  { id: 'play_traitresse_2', title: 'Courageux', description: 'Joue 2 parties en Zone traîtresse', type: 'play_mode', mode: ModeID.ZONE_TRAITRESSE, target: 2, reward: { coins: 15 } },
-  { id: 'play_traitresse_5', title: 'Sans peur', description: 'Joue 5 parties en Zone traîtresse', type: 'play_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 30 } },
+  { id: 'traitresse_score_8', title: 'Démineur', description: 'Fais un score de 8 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 8, reward: { coins: 30 } },
+  { id: 'traitresse_score_10', title: 'Traîtresse Confirmé', description: 'Fais un score de 10 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 40 } },
+  { id: 'traitresse_score_15', title: 'Expert Démineur', description: 'Fais un score de 15 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 55 } },
   
-  // Mémoire Expert - Score
+  // Mémoire Expert
   { id: 'memoire_score_3', title: 'Mémoire courte', description: 'Fais un score de 3 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
-  { id: 'memoire_score_6', title: 'Bonne mémoire', description: 'Fais un score de 6 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 6, reward: { coins: 40 } },
-  { id: 'memoire_score_10', title: 'Mémoire eidétique', description: 'Fais un score de 10 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 55 } },
-  // Mémoire Expert - Parties
-  { id: 'play_memoire_2', title: 'Entraînement mental', description: 'Joue 2 parties en Mémoire Expert', type: 'play_mode', mode: ModeID.MEMOIRE_EXPERT, target: 2, reward: { coins: 15 } },
-  { id: 'play_memoire_5', title: 'Génie', description: 'Joue 5 parties en Mémoire Expert', type: 'play_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 30 } },
+  { id: 'memoire_score_5', title: 'Bonne mémoire', description: 'Fais un score de 5 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 35 } },
+  { id: 'memoire_score_8', title: 'Mémoire Confirmé', description: 'Fais un score de 8 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 8, reward: { coins: 50 } },
+  { id: 'memoire_score_10', title: 'Mémoire eidétique', description: 'Fais un score de 10 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 60 } },
 ];
 
 export interface DailyChallengeProgress {
@@ -70,13 +58,12 @@ export interface DailyChallengeProgress {
       claimed: boolean;
     };
   };
-  // Stats simplifiées - uniquement par mode
-  gamesPerMode: { [mode: string]: number };
+  // Meilleur score du jour pour chaque mode
   bestScorePerMode: { [mode: string]: number };
 }
 
-// NOUVELLE CLÉ - v5 pour forcer un reset complet
-const STORAGE_KEY = 'daily_challenges_v5';
+// NOUVELLE CLÉ v6 - reset complet
+const STORAGE_KEY = 'daily_challenges_v6';
 
 function getTodayDate(): string {
   return new Date().toISOString().split('T')[0];
@@ -92,13 +79,14 @@ function mulberry32(seed: number) {
   };
 }
 
+// Sélectionne 2 défis différents pour aujourd'hui
 function getDailyChallengeIndices(date: string): number[] {
   const [year, month, day] = date.split('-').map(Number);
   const seed = Math.abs((year * 31337) ^ (month * 7919) ^ (day * 104729));
   const random = mulberry32(seed);
   
   const indices: number[] = [];
-  while (indices.length < 3) {
+  while (indices.length < 2) {
     const index = Math.floor(random() * ALL_DAILY_CHALLENGES.length);
     if (!indices.includes(index)) {
       indices.push(index);
@@ -119,7 +107,6 @@ function createEmptyProgress(date: string): DailyChallengeProgress {
   const progress: DailyChallengeProgress = {
     date,
     challenges: {},
-    gamesPerMode: {},
     bestScorePerMode: {}
   };
   
@@ -138,7 +125,6 @@ function createEmptyProgress(date: string): DailyChallengeProgress {
 function isValidProgress(data: any, today: string): data is DailyChallengeProgress {
   if (!data || typeof data !== 'object') return false;
   if (data.date !== today) return false;
-  if (typeof data.gamesPerMode !== 'object' || data.gamesPerMode === null) return false;
   if (typeof data.bestScorePerMode !== 'object' || data.bestScorePerMode === null) return false;
   if (!data.challenges || typeof data.challenges !== 'object') return false;
   return true;
@@ -175,7 +161,7 @@ export function updateDailyChallengeProgress(
   score: number,
   gameDuration: number
 ): void {
-  // Ignorer les parties trop courtes (moins de 5 secondes)
+  // Ignorer les parties trop courtes
   if (gameDuration < 5) {
     console.log('[DailyChallenges] Partie ignorée - durée:', gameDuration, 's');
     return;
@@ -187,34 +173,24 @@ export function updateDailyChallengeProgress(
     return;
   }
   
-  // Récupérer ou créer la progression du jour
   const progress = getDailyChallengeProgress();
   const challenges = getTodaysChallenges();
   
-  console.log('[DailyChallenges] === AVANT mise à jour ===');
-  console.log('gamesPerMode:', JSON.stringify(progress.gamesPerMode));
-  console.log('bestScorePerMode:', JSON.stringify(progress.bestScorePerMode));
-  console.log('Mode joué:', mode, '| Score:', score);
+  console.log('[DailyChallenges] Mode:', mode, '| Score:', score);
+  console.log('[DailyChallenges] bestScorePerMode AVANT:', JSON.stringify(progress.bestScorePerMode));
   
-  // === MISE À JOUR DES STATISTIQUES UNIQUEMENT POUR CE MODE ===
-  
-  // 1. Incrémenter le nombre de parties pour ce mode spécifique
-  const currentGames = progress.gamesPerMode[mode] || 0;
-  progress.gamesPerMode[mode] = currentGames + 1;
-  
-  // 2. Mettre à jour le meilleur score pour ce mode spécifique
+  // Mettre à jour le meilleur score du jour pour ce mode
   const currentBest = progress.bestScorePerMode[mode] || 0;
   if (score > currentBest) {
     progress.bestScorePerMode[mode] = score;
+    console.log('[DailyChallenges] Nouveau meilleur score pour', mode, ':', score);
   }
   
-  console.log('[DailyChallenges] === APRÈS mise à jour ===');
-  console.log('gamesPerMode:', JSON.stringify(progress.gamesPerMode));
-  console.log('bestScorePerMode:', JSON.stringify(progress.bestScorePerMode));
+  console.log('[DailyChallenges] bestScorePerMode APRÈS:', JSON.stringify(progress.bestScorePerMode));
   
-  // === ÉVALUATION DES DÉFIS ===
+  // Évaluer chaque défi du jour
   challenges.forEach(challenge => {
-    // S'assurer que le défi existe dans la progression
+    // S'assurer que le défi existe
     if (!progress.challenges[challenge.id]) {
       progress.challenges[challenge.id] = {
         progress: 0,
@@ -225,37 +201,31 @@ export function updateDailyChallengeProgress(
     
     const challengeData = progress.challenges[challenge.id];
     
-    // Ne pas modifier si déjà complété
+    // Si déjà complété, ne rien faire
     if (challengeData.completed) {
-      console.log('[DailyChallenges] Défi déjà complété:', challenge.id);
       return;
     }
     
-    // Calculer la progression basée sur le type
-    let newProgress = 0;
-    
-    if (challenge.type === 'play_mode') {
-      // Nombre de parties jouées dans ce mode spécifique
-      newProgress = progress.gamesPerMode[challenge.mode] || 0;
-    } else if (challenge.type === 'score_in_mode') {
-      // Meilleur score dans ce mode spécifique
-      newProgress = progress.bestScorePerMode[challenge.mode] || 0;
+    // Le défi concerne-t-il le mode joué ?
+    if (challenge.mode !== mode) {
+      console.log('[DailyChallenges] Défi', challenge.id, 'pas pour ce mode (', challenge.mode, '!=', mode, ')');
+      return;
     }
     
-    challengeData.progress = newProgress;
+    // Mettre à jour la progression = meilleur score dans ce mode
+    const bestScore = progress.bestScorePerMode[mode] || 0;
+    challengeData.progress = bestScore;
     
     // Vérifier si complété
-    if (newProgress >= challenge.target) {
+    if (bestScore >= challenge.target) {
       challengeData.completed = true;
-      console.log('[DailyChallenges] ✅ Défi complété:', challenge.id, '(', newProgress, '/', challenge.target, ')');
+      console.log('[DailyChallenges] ✅ COMPLÉTÉ:', challenge.id, '(', bestScore, '>=', challenge.target, ')');
     } else {
-      console.log('[DailyChallenges] ⏳ Défi en cours:', challenge.id, '(', newProgress, '/', challenge.target, ')');
+      console.log('[DailyChallenges] ⏳ En cours:', challenge.id, '(', bestScore, '/', challenge.target, ')');
     }
   });
   
-  // Sauvegarder
   saveProgress(progress);
-  console.log('[DailyChallenges] Progression sauvegardée');
 }
 
 // Réclamer un défi complété
@@ -283,7 +253,7 @@ export function hasPendingDailyChallengeRewards(): boolean {
   return Object.values(progress.challenges).some(c => c.completed && !c.claimed);
 }
 
-// Reset manuel pour debug
+// Reset manuel
 export function resetDailyChallenges(): void {
   const today = getTodayDate();
   const empty = createEmptyProgress(today);
