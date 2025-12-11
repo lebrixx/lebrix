@@ -8,7 +8,7 @@ import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
-import { PreGameMenu } from '@/components/PreGameMenu';
+
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +21,7 @@ import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'pregame';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -74,12 +74,8 @@ const Index = () => {
     resetDayIfNeeded();
     setHasAvailableReward(canClaimReward());
     
-    // Demander la permission de notification au lancement
-    import('@/utils/notifications').then(({ requestNotificationPermission, initNotifications }) => {
-      requestNotificationPermission().then(() => {
-        initNotifications();
-      });
-    });
+    // Initialiser les notifications une seule fois
+    initNotifications();
   }, []);
 
   const handleDailyRewardClaimed = (coins: number, theme?: string, boostId?: string) => {
@@ -171,7 +167,7 @@ const Index = () => {
     });
   };
 
-  const handleModeChange = (mode: ModeType) => {
+  const handleModeChange = (mode: ModeType, selectedBoosts?: BoostType[]) => {
     if (gameState.gameStatus === 'running') {
       toast({
         title: "Impossible de changer de mode",
@@ -194,10 +190,9 @@ const Index = () => {
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
     
-    // Si on sélectionne le mode actuel, lancer le jeu directement
-    if (mode === currentMode || currentScreen === 'modes') {
-      setCurrentScreen('game');
-    }
+    // Définir les boosts sélectionnés et lancer le jeu
+    setSelectedBoostsForGame(selectedBoosts || []);
+    setCurrentScreen('game');
   };
 
   const handlePurchaseMode = (modeId: string, price: number): boolean => {
@@ -238,7 +233,7 @@ const Index = () => {
             coins={currentCoins}
             theme={currentTheme}
             currentMode={currentMode}
-            onStartGame={() => setCurrentScreen('pregame')}
+            onStartGame={() => setCurrentScreen('modes')}
             onOpenShop={() => setCurrentScreen('shop')}
             onOpenChallenges={() => setCurrentScreen('challenges')}
             onOpenModes={() => setCurrentScreen('modes')}
@@ -248,18 +243,6 @@ const Index = () => {
             onAdRewardClaimed={addCoins}
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
-          />
-        );
-        
-      case 'pregame':
-        return (
-          <PreGameMenu
-            onStartGame={(boosts) => {
-              setSelectedBoostsForGame(boosts);
-              setCurrentScreen('game');
-            }}
-            onCancel={() => setCurrentScreen('menu')}
-            currentMode={currentMode}
           />
         );
         
