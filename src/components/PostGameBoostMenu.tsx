@@ -69,9 +69,18 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
     onStartGame(selectedBoosts);
   };
 
+  // Empêcher la propagation des clics sur l'overlay
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Ne rien faire - on ne peut pas fermer en cliquant à l'extérieur
+  };
+
   return (
-    <div className="fixed inset-0 bg-game-dark/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md bg-button-bg border-wheel-border p-6">
+    <div 
+      className="fixed inset-0 bg-game-dark/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      onClick={handleOverlayClick}
+    >
+      <Card className="w-full max-w-md bg-button-bg border-wheel-border p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-text-primary">
             {t.availableBoosts}
