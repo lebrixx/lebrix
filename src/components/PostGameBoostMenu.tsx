@@ -91,9 +91,26 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
             <p className="text-text-secondary mb-4">
               {t.noBoostsAvailable}
             </p>
-            <p className="text-text-muted text-sm">
+            <p className="text-text-muted text-sm mb-6">
               {t.buyBoostsShop}
             </p>
+            <div className="flex gap-3 justify-center">
+              <Button
+                onClick={onCancel}
+                variant="outline"
+                className="border-wheel-border hover:bg-button-hover"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Fermer
+              </Button>
+              <Button
+                onClick={() => onStartGame([])}
+                className="bg-gradient-primary hover:scale-105 transition-all duration-300"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Rejouer
+              </Button>
+            </div>
           </div>
         ) : (
           <>
