@@ -115,15 +115,64 @@ export function getDailyChallengeProgress(): DailyChallengeProgress {
   const today = getTodayDate();
   
   if (saved) {
-    const parsed: DailyChallengeProgress = JSON.parse(saved);
-    // Si c'est un nouveau jour, réinitialiser
-    if (parsed.date !== today) {
-      return createFreshProgress(today);
+    try {
+      const parsed: DailyChallengeProgress = JSON.parse(saved);
+      // Si c'est un nouveau jour, réinitialiser complètement
+      if (parsed.date !== today) {
+        const freshProgress = createFreshProgress(today);
+        saveDailyChallengeProgress(freshProgress);
+        return freshProgress;
+      }
+      
+      // Vérifier que tous les défis du jour sont présents
+      const todaysChallenges = getTodaysChallenges();
+      let needsUpdate = false;
+      
+      todaysChallenges.forEach(c => {
+        if (!parsed.challenges[c.id]) {
+          parsed.challenges[c.id] = { progress: 0, completed: false, claimed: false };
+          needsUpdate = true;
+        }
+      });
+      
+      // S'assurer que les stats sont des nombres valides
+      if (typeof parsed.gamesPlayedToday !== 'number' || isNaN(parsed.gamesPlayedToday)) {
+        parsed.gamesPlayedToday = 0;
+        needsUpdate = true;
+      }
+      if (typeof parsed.totalScoreToday !== 'number' || isNaN(parsed.totalScoreToday)) {
+        parsed.totalScoreToday = 0;
+        needsUpdate = true;
+      }
+      if (!Array.isArray(parsed.modesPlayedToday)) {
+        parsed.modesPlayedToday = [];
+        needsUpdate = true;
+      }
+      if (!parsed.gamesPerModeToday || typeof parsed.gamesPerModeToday !== 'object') {
+        parsed.gamesPerModeToday = {};
+        needsUpdate = true;
+      }
+      if (!parsed.bestScorePerModeToday || typeof parsed.bestScorePerModeToday !== 'object') {
+        parsed.bestScorePerModeToday = {};
+        needsUpdate = true;
+      }
+      
+      if (needsUpdate) {
+        saveDailyChallengeProgress(parsed);
+      }
+      
+      return parsed;
+    } catch (e) {
+      // En cas d'erreur de parsing, créer un nouveau progress
+      const freshProgress = createFreshProgress(today);
+      saveDailyChallengeProgress(freshProgress);
+      return freshProgress;
     }
-    return parsed;
   }
   
-  return createFreshProgress(today);
+  const freshProgress = createFreshProgress(today);
+  saveDailyChallengeProgress(freshProgress);
+  return freshProgress;
 }
 
 function createFreshProgress(date: string): DailyChallengeProgress {
@@ -157,18 +206,34 @@ export function updateDailyChallengeProgress(
   // Ne compter que les parties de plus de 5 secondes
   if (gameDuration < 5) return;
   
+  // Vérifier que le score est un nombre valide
+  if (typeof score !== 'number' || isNaN(score) || score < 0) {
+    console.warn('Invalid score for daily challenge update:', score);
+    return;
+  }
+  
   const progress = getDailyChallengeProgress();
   const challenges = getTodaysChallenges();
   
-  // Mettre à jour les statistiques du jour
-  progress.gamesPlayedToday++;
-  progress.totalScoreToday += score;
+  // Mettre à jour les statistiques du jour (incrémental)
+  progress.gamesPlayedToday = (progress.gamesPlayedToday || 0) + 1;
+  progress.totalScoreToday = (progress.totalScoreToday || 0) + score;
   
+  if (!progress.modesPlayedToday) {
+    progress.modesPlayedToday = [];
+  }
   if (!progress.modesPlayedToday.includes(mode)) {
     progress.modesPlayedToday.push(mode);
   }
   
+  if (!progress.gamesPerModeToday) {
+    progress.gamesPerModeToday = {};
+  }
   progress.gamesPerModeToday[mode] = (progress.gamesPerModeToday[mode] || 0) + 1;
+  
+  if (!progress.bestScorePerModeToday) {
+    progress.bestScorePerModeToday = {};
+  }
   progress.bestScorePerModeToday[mode] = Math.max(
     progress.bestScorePerModeToday[mode] || 0,
     score
@@ -176,8 +241,12 @@ export function updateDailyChallengeProgress(
   
   // Vérifier chaque défi
   challenges.forEach(challenge => {
+    if (!progress.challenges[challenge.id]) {
+      progress.challenges[challenge.id] = { progress: 0, completed: false, claimed: false };
+    }
+    
     const challengeProgress = progress.challenges[challenge.id];
-    if (!challengeProgress || challengeProgress.completed) return;
+    if (challengeProgress.completed) return;
     
     let newProgress = 0;
     
@@ -186,8 +255,12 @@ export function updateDailyChallengeProgress(
         newProgress = progress.gamesPlayedToday;
         break;
       case 'score_in_mode':
-        if (challenge.mode) {
+        if (challenge.mode && challenge.mode === mode) {
+          // Seulement mettre à jour si c'est le bon mode
           newProgress = progress.bestScorePerModeToday[challenge.mode] || 0;
+        } else if (challenge.mode) {
+          // Garder la progression existante pour les autres modes
+          newProgress = challengeProgress.progress;
         }
         break;
       case 'total_score':
@@ -208,6 +281,13 @@ export function updateDailyChallengeProgress(
   });
   
   saveDailyChallengeProgress(progress);
+}
+
+// Fonction pour réinitialiser les défis quotidiens (utile pour le debug)
+export function resetDailyChallenges(): void {
+  const today = getTodayDate();
+  const freshProgress = createFreshProgress(today);
+  saveDailyChallengeProgress(freshProgress);
 }
 
 export function claimDailyChallenge(challengeId: string): number {
