@@ -176,6 +176,54 @@ async function showNotification() {
   }
 }
 
+// Fonction pour tester les notifications
+export async function sendTestNotification(): Promise<boolean> {
+  const hasPermission = await requestNotificationPermission();
+  if (!hasPermission) return false;
+
+  const testMessage = "🔔 Test réussi ! Les notifications fonctionnent.";
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Lucky Stop - Test',
+            body: testMessage,
+            id: 999, // ID unique pour le test
+            schedule: { 
+              at: new Date(Date.now() + 500),
+              allowWhileIdle: true
+            },
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+      return true;
+    } catch (error) {
+      console.error('Erreur test notification native:', error);
+      return false;
+    }
+  }
+
+  // Sur web
+  try {
+    new Notification('Lucky Stop - Test', {
+      body: testMessage,
+      icon: '/icon-512.png',
+      badge: '/icon-512.png',
+      tag: 'test-notification',
+    });
+    return true;
+  } catch (error) {
+    console.error('Erreur test notification:', error);
+    return false;
+  }
+}
+
 // Initialiser les notifications au chargement
 export function initNotifications() {
   const enabled = localStorage.getItem('notificationsEnabled') === 'true';
