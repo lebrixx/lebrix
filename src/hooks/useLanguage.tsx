@@ -272,6 +272,13 @@ export const translations = {
     newLeaderboard: 'Nouveau classement dans:',
     daysShort: 'j',
     saveError: 'Erreur lors de la sauvegarde du pseudo',
+    // Notifications Test
+    testNotification: 'Tester les notifications',
+    testBtn: 'Test',
+    testNotificationSent: 'Notification envoyée !',
+    testNotificationSentDesc: 'Vérifie tes notifications.',
+    testNotificationFailed: 'Échec',
+    testNotificationFailedDesc: 'Autorise les notifications d\'abord.',
   },
   en: {
     // Main Menu
@@ -516,6 +523,13 @@ export const translations = {
     cancel: 'Cancel',
     newLeaderboard: 'New ranking in:',
     daysShort: 'd',
+    // Notifications Test
+    testNotification: 'Test notifications',
+    testBtn: 'Test',
+    testNotificationSent: 'Notification sent!',
+    testNotificationSentDesc: 'Check your notifications.',
+    testNotificationFailed: 'Failed',
+    testNotificationFailedDesc: 'Allow notifications first.',
   },
   es: {
     // Main Menu (même structure que FR/EN)
@@ -751,6 +765,13 @@ export const translations = {
     cancel: 'Cancelar',
     newLeaderboard: 'Nueva clasificación en:',
     daysShort: 'd',
+    // Notifications Test
+    testNotification: 'Probar notificaciones',
+    testBtn: 'Probar',
+    testNotificationSent: '¡Notificación enviada!',
+    testNotificationSentDesc: 'Revisa tus notificaciones.',
+    testNotificationFailed: 'Falló',
+    testNotificationFailedDesc: 'Permite las notificaciones primero.',
   },
   de: {
     title: 'LUCKY STOP',
@@ -985,6 +1006,13 @@ export const translations = {
     cancel: 'Abbrechen',
     newLeaderboard: 'Neue Rangliste in:',
     daysShort: 'T',
+    // Notifications Test
+    testNotification: 'Benachrichtigungen testen',
+    testBtn: 'Test',
+    testNotificationSent: 'Benachrichtigung gesendet!',
+    testNotificationSentDesc: 'Überprüfe deine Benachrichtigungen.',
+    testNotificationFailed: 'Fehlgeschlagen',
+    testNotificationFailedDesc: 'Erlaube zuerst Benachrichtigungen.',
   },
   it: {
     title: 'LUCKY STOP',
@@ -1219,6 +1247,13 @@ export const translations = {
     cancel: 'Annulla',
     newLeaderboard: 'Nuova classifica tra:',
     daysShort: 'g',
+    // Notifications Test
+    testNotification: 'Testa le notifiche',
+    testBtn: 'Test',
+    testNotificationSent: 'Notifica inviata!',
+    testNotificationSentDesc: 'Controlla le tue notifiche.',
+    testNotificationFailed: 'Fallito',
+    testNotificationFailedDesc: 'Consenti prima le notifiche.',
   },
   pt: {
     title: 'LUCKY STOP',
@@ -1453,6 +1488,13 @@ export const translations = {
     cancel: 'Cancelar',
     newLeaderboard: 'Nova classificação em:',
     daysShort: 'd',
+    // Notifications Test
+    testNotification: 'Testar notificações',
+    testBtn: 'Testar',
+    testNotificationSent: 'Notificação enviada!',
+    testNotificationSentDesc: 'Verifique suas notificações.',
+    testNotificationFailed: 'Falhou',
+    testNotificationFailedDesc: 'Permita as notificações primeiro.',
   },
   ar: {
     title: 'LUCKY STOP',
@@ -1687,6 +1729,13 @@ export const translations = {
     cancel: 'إلغاء',
     newLeaderboard: ':تصنيف جديد في',
     daysShort: 'ي',
+    // Notifications Test
+    testNotification: 'اختبار الإشعارات',
+    testBtn: 'اختبار',
+    testNotificationSent: 'تم إرسال الإشعار!',
+    testNotificationSentDesc: 'تحقق من إشعاراتك.',
+    testNotificationFailed: 'فشل',
+    testNotificationFailedDesc: 'اسمح بالإشعارات أولاً.',
   },
   ja: {
     title: 'LUCKY STOP',
@@ -1922,6 +1971,13 @@ export const translations = {
     newLeaderboard: '新しいランキングまで:',
     daysShort: '日',
     saveError: 'ユーザー名の保存エラー',
+    // Notifications Test
+    testNotification: '通知をテスト',
+    testBtn: 'テスト',
+    testNotificationSent: '通知が送信されました！',
+    testNotificationSentDesc: '通知を確認してください。',
+    testNotificationFailed: '失敗',
+    testNotificationFailedDesc: '最初に通知を許可してください。',
   },
   zh: {
     title: 'LUCKY STOP',
@@ -2156,5 +2212,12 @@ export const translations = {
     cancel: '取消',
     newLeaderboard: '新排名将在:',
     daysShort: '天',
+    // Notifications Test
+    testNotification: '测试通知',
+    testBtn: '测试',
+    testNotificationSent: '通知已发送！',
+    testNotificationSentDesc: '检查您的通知。',
+    testNotificationFailed: '失败',
+    testNotificationFailedDesc: '请先允许通知。',
   },
 };

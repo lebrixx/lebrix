@@ -3,9 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Volume2, VolumeX, Bell, BellOff, Languages } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages, Send } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
 
 interface SettingsProps {
   isOpen: boolean;
@@ -22,11 +23,37 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
+  const { toast } = useToast();
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
     const saved = localStorage.getItem('notificationsEnabled');
     return saved !== null ? saved === 'true' : true;
   });
+  const [isSendingTest, setIsSendingTest] = useState(false);
+
+  const handleTestNotification = async () => {
+    setIsSendingTest(true);
+    try {
+      const { sendTestNotification } = await import('@/utils/notifications');
+      const success = await sendTestNotification();
+      if (success) {
+        toast({
+          title: t.testNotificationSent || "Notification envoyée !",
+          description: t.testNotificationSentDesc || "Vérifie tes notifications.",
+        });
+      } else {
+        toast({
+          title: t.testNotificationFailed || "Échec",
+          description: t.testNotificationFailedDesc || "Autorise les notifications d'abord.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error sending test notification:', error);
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('notificationsEnabled', String(notificationsEnabled));
@@ -91,6 +118,25 @@ export const Settings: React.FC<SettingsProps> = ({
               checked={notificationsEnabled}
               onCheckedChange={setNotificationsEnabled}
             />
+          </div>
+
+          {/* Test Notification Button */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Send className="w-5 h-5 text-primary" />
+              <Label className="text-text-primary text-base">
+                {t.testNotification || "Tester les notifications"}
+              </Label>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleTestNotification}
+              disabled={isSendingTest}
+              className="border-wheel-border hover:bg-button-hover text-text-primary"
+            >
+              {isSendingTest ? "..." : (t.testBtn || "Test")}
+            </Button>
           </div>
 
           {/* Langue */}
