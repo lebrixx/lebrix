@@ -75,6 +75,31 @@ export function getLastFreeSpinDate(): string | null {
 }
 
 /**
+ * Calculer le temps restant jusqu'au prochain tour gratuit (en millisecondes)
+ */
+export function getTimeUntilNextFreeSpin(): number {
+  if (canSpinFree()) return 0;
+  
+  const now = new Date();
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  return tomorrow.getTime() - now.getTime();
+}
+
+/**
+ * Formater le temps restant en heures:minutes:secondes
+ */
+export function formatTimeRemaining(ms: number): string {
+  if (ms <= 0) return '00:00:00';
+  
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+/**
  * Marquer le tour gratuit comme utilisé
  */
 export function markFreeSpinUsed(): void {
