@@ -279,6 +279,13 @@ export const translations = {
     testNotificationSentDesc: 'Vérifie tes notifications.',
     testNotificationFailed: 'Échec',
     testNotificationFailedDesc: 'Autorise les notifications d\'abord.',
+    // Lucky Wheel
+    luckyWheelTitle: 'Roue de la Chance',
+    freeSpin: 'Tour Gratuit !',
+    watchAdToSpin: 'Pub pour tourner',
+    youWon: 'Tu as gagné :',
+    wheelReady: 'Roue prête !',
+    wheelReadyDesc: 'Viens tourner la roue de la chance ! 🎡',
   },
   en: {
     // Main Menu
@@ -530,6 +537,13 @@ export const translations = {
     testNotificationSentDesc: 'Check your notifications.',
     testNotificationFailed: 'Failed',
     testNotificationFailedDesc: 'Allow notifications first.',
+    // Lucky Wheel
+    luckyWheelTitle: 'Lucky Wheel',
+    freeSpin: 'Free Spin!',
+    watchAdToSpin: 'Watch ad to spin',
+    youWon: 'You won:',
+    wheelReady: 'Wheel ready!',
+    wheelReadyDesc: 'Come spin the lucky wheel! 🎡',
   },
   es: {
     // Main Menu (même structure que FR/EN)
@@ -772,6 +786,13 @@ export const translations = {
     testNotificationSentDesc: 'Revisa tus notificaciones.',
     testNotificationFailed: 'Falló',
     testNotificationFailedDesc: 'Permite las notificaciones primero.',
+    // Lucky Wheel
+    luckyWheelTitle: 'Rueda de la Suerte',
+    freeSpin: '¡Giro Gratis!',
+    watchAdToSpin: 'Ver anuncio para girar',
+    youWon: 'Ganaste:',
+    wheelReady: '¡Rueda lista!',
+    wheelReadyDesc: '¡Ven a girar la rueda de la suerte! 🎡',
   },
   de: {
     title: 'LUCKY STOP',
@@ -1013,6 +1034,13 @@ export const translations = {
     testNotificationSentDesc: 'Überprüfe deine Benachrichtigungen.',
     testNotificationFailed: 'Fehlgeschlagen',
     testNotificationFailedDesc: 'Erlaube zuerst Benachrichtigungen.',
+    // Lucky Wheel
+    luckyWheelTitle: 'Glücksrad',
+    freeSpin: 'Gratis drehen!',
+    watchAdToSpin: 'Werbung schauen zum Drehen',
+    youWon: 'Du hast gewonnen:',
+    wheelReady: 'Rad bereit!',
+    wheelReadyDesc: 'Komm und drehe das Glücksrad! 🎡',
   },
   it: {
     title: 'LUCKY STOP',
@@ -1254,6 +1282,13 @@ export const translations = {
     testNotificationSentDesc: 'Controlla le tue notifiche.',
     testNotificationFailed: 'Fallito',
     testNotificationFailedDesc: 'Consenti prima le notifiche.',
+    // Lucky Wheel
+    luckyWheelTitle: 'Ruota della Fortuna',
+    freeSpin: 'Giro Gratuito!',
+    watchAdToSpin: 'Guarda annuncio per girare',
+    youWon: 'Hai vinto:',
+    wheelReady: 'Ruota pronta!',
+    wheelReadyDesc: 'Vieni a girare la ruota della fortuna! 🎡',
   },
   pt: {
     title: 'LUCKY STOP',
@@ -1495,6 +1530,13 @@ export const translations = {
     testNotificationSentDesc: 'Verifique suas notificações.',
     testNotificationFailed: 'Falhou',
     testNotificationFailedDesc: 'Permita as notificações primeiro.',
+    // Lucky Wheel
+    luckyWheelTitle: 'Roda da Sorte',
+    freeSpin: 'Giro Grátis!',
+    watchAdToSpin: 'Ver anúncio para girar',
+    youWon: 'Você ganhou:',
+    wheelReady: 'Roda pronta!',
+    wheelReadyDesc: 'Venha girar a roda da sorte! 🎡',
   },
   ar: {
     title: 'LUCKY STOP',
@@ -1736,6 +1778,13 @@ export const translations = {
     testNotificationSentDesc: 'تحقق من إشعاراتك.',
     testNotificationFailed: 'فشل',
     testNotificationFailedDesc: 'اسمح بالإشعارات أولاً.',
+    // Lucky Wheel
+    luckyWheelTitle: 'عجلة الحظ',
+    freeSpin: '!دورة مجانية',
+    watchAdToSpin: 'شاهد إعلان للدوران',
+    youWon: ':لقد فزت ب',
+    wheelReady: '!العجلة جاهزة',
+    wheelReadyDesc: '!تعال وأدر عجلة الحظ 🎡',
   },
   ja: {
     title: 'LUCKY STOP',
@@ -1978,6 +2027,13 @@ export const translations = {
     testNotificationSentDesc: '通知を確認してください。',
     testNotificationFailed: '失敗',
     testNotificationFailedDesc: '最初に通知を許可してください。',
+    // Lucky Wheel
+    luckyWheelTitle: 'ラッキーホイール',
+    freeSpin: '無料スピン！',
+    watchAdToSpin: '広告を見て回す',
+    youWon: '獲得：',
+    wheelReady: 'ホイール準備完了！',
+    wheelReadyDesc: 'ラッキーホイールを回そう！🎡',
   },
   zh: {
     title: 'LUCKY STOP',
@@ -2219,5 +2275,12 @@ export const translations = {
     testNotificationSentDesc: '检查您的通知。',
     testNotificationFailed: '失败',
     testNotificationFailedDesc: '请先允许通知。',
+    // Lucky Wheel
+    luckyWheelTitle: '幸运转盘',
+    freeSpin: '免费转！',
+    watchAdToSpin: '看广告转一次',
+    youWon: '你赢了：',
+    wheelReady: '转盘准备好了！',
+    wheelReadyDesc: '来转幸运转盘吧！🎡',
   },
 };
