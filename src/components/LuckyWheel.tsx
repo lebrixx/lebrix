@@ -86,11 +86,11 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
       setCanFreeSpin(false);
     }
     
-    // Attendre la fin de l'animation
+    // Attendre la fin de l'animation (5 secondes)
     setTimeout(() => {
       setIsSpinning(false);
       giveReward(segment);
-    }, 4000);
+    }, 5200);
   }, [isSpinning, showRewardedAd, giveReward]);
   
   const getRewardText = (segment: WheelSegment): string => {
@@ -137,9 +137,10 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
             
             {/* Roue principale */}
             <div 
-              className="absolute inset-2 rounded-full overflow-hidden transition-transform duration-[4000ms] ease-out"
+              className="absolute inset-2 rounded-full overflow-hidden"
               style={{ 
                 transform: `rotate(${rotation}deg)`,
+                transition: 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)',
               }}
             >
               <svg viewBox="0 0 200 200" className="w-full h-full">
