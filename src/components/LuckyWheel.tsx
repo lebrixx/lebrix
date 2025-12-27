@@ -7,6 +7,7 @@ import { useLanguage, translations } from '@/hooks/useLanguage';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useBoosts } from '@/hooks/useBoosts';
 import { addTickets } from '@/utils/ticketSystem';
+import { scheduleWheelNotification } from '@/utils/notifications';
 import { 
   WHEEL_SEGMENTS, 
   canSpinFree, 
@@ -98,10 +99,12 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
     // Appliquer la rotation
     setRotation(prev => prev + targetRotation);
     
-    // Marquer le tour gratuit comme utilisé
+    // Marquer le tour gratuit comme utilisé et programmer la notification pour demain
     if (isFree) {
       markFreeSpinUsed();
       setCanFreeSpin(false);
+      // Programmer la notification pour quand la roue sera à nouveau disponible
+      scheduleWheelNotification();
     }
     
     // Attendre la fin de l'animation (5 secondes)

@@ -1,6 +1,7 @@
 // Service de notifications push
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { canSpinFree, getWheelState } from '@/utils/luckyWheel';
 
 const NOTIFICATION_MESSAGES = [
   "🎮 Prêt à battre ton score aujourd'hui ?",
@@ -10,6 +11,8 @@ const NOTIFICATION_MESSAGES = [
   "🌟 Tes adversaires progressent... et toi ?",
   "🚀 Prêt pour un nouveau défi ?",
 ];
+
+const WHEEL_NOTIFICATION_ID = 2000;
 
 export async function requestNotificationPermission(): Promise<boolean> {
   // Si on est sur mobile natif, utiliser les notifications locales Capacitor
@@ -224,6 +227,78 @@ export async function sendTestNotification(): Promise<boolean> {
   }
 }
 
+// Programmer la notification de la roue pour le lendemain
+export async function scheduleWheelNotification() {
+  const enabled = localStorage.getItem('notificationsEnabled') === 'true';
+  if (!enabled) return;
+
+  const hasPermission = await requestNotificationPermission();
+  if (!hasPermission) return;
+
+  // Calculer minuit du prochain jour
+  const now = new Date();
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  // Ajouter une heure aléatoire entre 8h et 12h pour la notification
+  const randomHour = Math.floor(Math.random() * (12 - 8 + 1)) + 8;
+  const randomMinute = Math.floor(Math.random() * 60);
+  tomorrow.setHours(randomHour, randomMinute, 0, 0);
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      // Annuler l'ancienne notification de roue
+      await LocalNotifications.cancel({ notifications: [{ id: WHEEL_NOTIFICATION_ID }] });
+      
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Lucky Stop 🎡',
+            body: '🎡 Ta roue de la chance est prête ! Viens tourner pour gagner des récompenses !',
+            id: WHEEL_NOTIFICATION_ID,
+            schedule: { 
+              at: tomorrow,
+              allowWhileIdle: true
+            },
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+      console.log('Notification roue programmée pour:', tomorrow.toLocaleString());
+    } catch (error) {
+      console.error('Erreur scheduling notification roue:', error);
+    }
+  } else {
+    // Sur web, programmer avec setTimeout
+    const delay = tomorrow.getTime() - now.getTime();
+    
+    // Annuler l'ancien timeout
+    const oldTimeoutId = localStorage.getItem('wheelNotificationTimeoutId');
+    if (oldTimeoutId) {
+      clearTimeout(Number(oldTimeoutId));
+    }
+    
+    const timeoutId = setTimeout(async () => {
+      if (canSpinFree()) {
+        try {
+          new Notification('Lucky Stop 🎡', {
+            body: '🎡 Ta roue de la chance est prête ! Viens tourner pour gagner des récompenses !',
+            icon: '/icon-512.png',
+            badge: '/icon-512.png',
+            tag: 'wheel-ready',
+          });
+        } catch (error) {
+          console.error('Erreur notification roue:', error);
+        }
+      }
+    }, delay);
+    
+    localStorage.setItem('wheelNotificationTimeoutId', String(timeoutId));
+    console.log('Notification roue web programmée pour:', tomorrow.toLocaleString());
+  }
+}
+
 // Initialiser les notifications au chargement
 export function initNotifications() {
   const enabled = localStorage.getItem('notificationsEnabled') === 'true';
@@ -231,6 +306,10 @@ export function initNotifications() {
     requestNotificationPermission().then(granted => {
       if (granted) {
         scheduleDailyNotification();
+        // Programmer aussi la notification de la roue si elle n'est pas déjà disponible
+        if (!canSpinFree()) {
+          scheduleWheelNotification();
+        }
       }
     });
   }
