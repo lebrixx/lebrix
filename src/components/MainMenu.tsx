@@ -10,7 +10,7 @@ import { Settings } from '@/components/Settings';
 import { LuckyWheel } from '@/components/LuckyWheel';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
-import { canSpinFree } from '@/utils/luckyWheel';
+import { canSpinFree, getTimeUntilNextFreeSpin, formatTimeRemaining } from '@/utils/luckyWheel';
 
 interface MainMenuProps {
   bestScore: number;
@@ -52,7 +52,25 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
+  const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
   const isTablet = useIsTablet();
+
+  // Timer pour la roue
+  useEffect(() => {
+    if (hasFreeSpin) return;
+    
+    const interval = setInterval(() => {
+      const remaining = getTimeUntilNextFreeSpin();
+      if (remaining <= 0) {
+        setHasFreeSpin(true);
+        setWheelTimer('00:00:00');
+      } else {
+        setWheelTimer(formatTimeRemaining(remaining));
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [hasFreeSpin]);
 
   // Vérifier les défis en attente
   useEffect(() => {
@@ -84,12 +102,19 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClick={() => setShowLuckyWheel(true)}
         variant="ghost"
         size="sm"
-        className={`absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-60 hover:opacity-100'}`}
+        className={`absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
       >
         <RotateCcw className={`w-4 h-4 ${hasFreeSpin ? 'text-primary animate-spin' : 'text-text-muted'}`} style={hasFreeSpin ? { animationDuration: '3s' } : {}} />
-        <span className={`text-xs font-medium ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
-          {hasFreeSpin ? (t.freeSpin || 'Tour Gratuit !') : t.luckyWheelTitle}
-        </span>
+        <div className="flex flex-col items-start">
+          <span className={`text-xs font-medium ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
+            {hasFreeSpin ? (t.freeSpin || 'Tour Gratuit !') : t.luckyWheelTitle}
+          </span>
+          {!hasFreeSpin && (
+            <span className="text-[10px] text-text-muted font-mono">
+              {wheelTimer}
+            </span>
+          )}
+        </div>
         {hasFreeSpin && (
           <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full animate-bounce flex items-center justify-center shadow-glow-primary">
             <span className="text-[8px] text-game-dark font-bold">1</span>
