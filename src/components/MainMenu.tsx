@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Tv, Settings as SettingsIcon, Instagram } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { AdRewardDialog } from '@/components/AdRewardDialog';
 import { Settings } from '@/components/Settings';
+import { LuckyWheel } from '@/components/LuckyWheel';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
+import { canSpinFree } from '@/utils/luckyWheel';
 
 interface MainMenuProps {
   bestScore: number;
@@ -47,9 +48,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
   const [showComingSoon, setShowComingSoon] = useState(false);
-  const [showAdReward, setShowAdReward] = useState(false);
+  const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
+  const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
   const isTablet = useIsTablet();
 
   // Vérifier les défis en attente
@@ -77,17 +79,20 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   }, []);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
-      {/* Free Coins Button - Discret */}
+      {/* Lucky Wheel Button */}
       <Button
-        onClick={() => setShowAdReward(true)}
+        onClick={() => setShowLuckyWheel(true)}
         variant="ghost"
         size="sm"
-        className="absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1 opacity-60 hover:opacity-100"
+        className={`absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1 ${hasFreeSpin ? 'animate-pulse-glow opacity-100' : 'opacity-60 hover:opacity-100'}`}
       >
-        <Tv className="w-3 h-3 text-text-muted" />
-        <span className="text-xs text-text-muted">
-          Free Coins
+        <RotateCcw className={`w-3 h-3 ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`} />
+        <span className={`text-xs ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
+          {t.luckyWheelTitle}
         </span>
+        {hasFreeSpin && (
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+        )}
       </Button>
 
       {/* Settings Button - Top Right */}
@@ -365,11 +370,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Ad Reward Dialog */}
-      <AdRewardDialog
-        isOpen={showAdReward}
-        onClose={() => setShowAdReward(false)}
-        onRewardClaimed={onAdRewardClaimed}
+      {/* Lucky Wheel */}
+      <LuckyWheel
+        isOpen={showLuckyWheel}
+        onClose={() => {
+          setShowLuckyWheel(false);
+          setHasFreeSpin(canSpinFree());
+        }}
+        onCoinsWon={onAdRewardClaimed}
       />
 
       {/* Settings Dialog */}
