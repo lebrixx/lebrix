@@ -84,14 +84,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClick={() => setShowLuckyWheel(true)}
         variant="ghost"
         size="sm"
-        className={`absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1 ${hasFreeSpin ? 'animate-pulse-glow opacity-100' : 'opacity-60 hover:opacity-100'}`}
+        className={`absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-60 hover:opacity-100'}`}
       >
-        <RotateCcw className={`w-3 h-3 ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`} />
-        <span className={`text-xs ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
-          {t.luckyWheelTitle}
+        <RotateCcw className={`w-4 h-4 ${hasFreeSpin ? 'text-primary animate-spin' : 'text-text-muted'}`} style={hasFreeSpin ? { animationDuration: '3s' } : {}} />
+        <span className={`text-xs font-medium ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
+          {hasFreeSpin ? (t.freeSpin || 'Tour Gratuit !') : t.luckyWheelTitle}
         </span>
         {hasFreeSpin && (
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full animate-bounce flex items-center justify-center shadow-glow-primary">
+            <span className="text-[8px] text-game-dark font-bold">1</span>
+          </div>
         )}
       </Button>
 
