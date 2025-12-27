@@ -46,18 +46,36 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
   
   const giveReward = useCallback((segment: WheelSegment) => {
     const reward = segment.reward;
+    console.log('[LuckyWheel] Giving reward:', reward);
     
     if (reward.type === 'coins') {
       onCoinsWon(reward.amount);
+      toast({
+        title: "🎉 " + (t.youWon || "Tu as gagné :"),
+        description: `${reward.amount} ${t.coins}`,
+      });
     } else if (reward.type === 'boost') {
       addBoost(reward.boostId);
+      const boostNames: Record<string, string> = {
+        shield: t.shield || 'Bouclier',
+        bigger_zone: t.biggerZone || 'Zone +',
+        start_20: t.start20 || 'Départ +20',
+      };
+      toast({
+        title: "🎉 " + (t.youWon || "Tu as gagné :"),
+        description: boostNames[reward.boostId] || 'Boost',
+      });
     } else if (reward.type === 'tickets') {
       addTickets(reward.amount);
+      toast({
+        title: "🎉 " + (t.youWon || "Tu as gagné :"),
+        description: `${reward.amount} ${t.tickets}`,
+      });
     }
     
     setLastReward(segment);
     setShowResult(true);
-  }, [onCoinsWon, addBoost]);
+  }, [onCoinsWon, addBoost, toast, t]);
   
   const handleSpin = useCallback(async (isFree: boolean) => {
     if (isSpinning) return;
