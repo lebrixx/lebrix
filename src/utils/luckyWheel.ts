@@ -121,10 +121,3 @@ export function checkWheelNotification(): void {
     window.dispatchEvent(new CustomEvent('wheelReady'));
   }
 }
-  // On veut que le segment atterrisse en haut (pointer vers le haut)
-  // On ajoute plusieurs tours complets + l'angle pour atteindre le segment
-  const baseRotation = 360 * 5; // 5 tours complets
-  const targetAngle = segmentIndex * segmentAngle;
-  // Le pointeur est en haut, donc on calcule l'angle pour que le segment soit en haut
-  return baseRotation + (360 - targetAngle) + segmentAngle / 2;
-}
