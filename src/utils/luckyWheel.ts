@@ -129,12 +129,22 @@ export function spinWheel(): { segmentIndex: number; segment: WheelSegment } {
 
 /**
  * Calculer l'angle de rotation pour un segment donné
+ * Le pointeur est en haut (position 12h), et la roue commence à -90° (3h)
+ * Pour que le segment X soit sous le pointeur, on doit tourner la roue de sorte que
+ * le milieu du segment X soit à la position du pointeur (en haut)
  */
 export function calculateRotationAngle(segmentIndex: number): number {
   const segmentAngle = 360 / WHEEL_SEGMENTS.length;
-  const baseRotation = 360 * 5; // 5 tours complets
-  const targetAngle = segmentIndex * segmentAngle;
-  return baseRotation + (360 - targetAngle) + segmentAngle / 2;
+  const baseRotation = 360 * 5; // 5 tours complets minimum pour l'effet
+  
+  // L'angle du milieu du segment par rapport au début de la roue
+  const segmentMiddleAngle = segmentIndex * segmentAngle + segmentAngle / 2;
+  
+  // On doit tourner dans le sens inverse pour amener ce segment sous le pointeur
+  // Le pointeur est en haut, les segments commencent à -90° (donc segment 0 est déjà en haut)
+  const rotationNeeded = 360 - segmentMiddleAngle;
+  
+  return baseRotation + rotationNeeded;
 }
 
 /**
