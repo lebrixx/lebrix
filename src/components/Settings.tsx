@@ -3,10 +3,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Volume2, VolumeX, Bell, BellOff, Languages, Send } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
+import { Capacitor } from '@capacitor/core';
 
 interface SettingsProps {
   isOpen: boolean;
@@ -30,6 +31,31 @@ export const Settings: React.FC<SettingsProps> = ({
     return saved !== null ? saved === 'true' : true;
   });
   const [isSendingTest, setIsSendingTest] = useState(false);
+
+  const openAppSettings = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { NativeSettings, AndroidSettings, IOSSettings } = await import('capacitor-native-settings');
+        if (Capacitor.getPlatform() === 'ios') {
+          await NativeSettings.openIOS({ option: IOSSettings.App });
+        } else {
+          await NativeSettings.openAndroid({ option: AndroidSettings.ApplicationDetails });
+        }
+      } catch (error) {
+        console.error('Error opening settings:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'ouvrir les paramètres de l'application.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      toast({
+        title: "Non disponible",
+        description: "Cette fonction est disponible uniquement sur mobile.",
+      });
+    }
+  };
 
   const handleTestNotification = async () => {
     setIsSendingTest(true);
@@ -102,22 +128,28 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
 
           {/* Notifications */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {notificationsEnabled ? (
-                <Bell className="w-5 h-5 text-primary" />
-              ) : (
-                <BellOff className="w-5 h-5 text-text-muted" />
-              )}
-              <Label htmlFor="notifications" className="text-text-primary text-base">
-                {t.dailyNotifications}
-              </Label>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {notificationsEnabled ? (
+                  <Bell className="w-5 h-5 text-primary" />
+                ) : (
+                  <BellOff className="w-5 h-5 text-text-muted" />
+                )}
+                <Label htmlFor="notifications" className="text-text-primary text-base">
+                  {t.dailyNotifications}
+                </Label>
+              </div>
+              <Switch
+                id="notifications"
+                checked={notificationsEnabled}
+                onCheckedChange={setNotificationsEnabled}
+              />
             </div>
-            <Switch
-              id="notifications"
-              checked={notificationsEnabled}
-              onCheckedChange={setNotificationsEnabled}
-            />
+            <div className="flex items-center gap-1 ml-8 text-xs text-blue-400">
+              <Coins className="w-3 h-3" />
+              <span>+20 coins/jour si activé</span>
+            </div>
           </div>
 
           {/* Test Notification Button */}
@@ -188,6 +220,26 @@ export const Settings: React.FC<SettingsProps> = ({
           <div className="text-xs text-text-muted text-center pt-2">
             {t.notificationDesc}
           </div>
+
+          {/* Bouton Autorisations App */}
+          {Capacitor.isNativePlatform() && (
+            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
+              <div className="flex items-center gap-3">
+                <Settings2 className="w-5 h-5 text-text-muted" />
+                <Label className="text-text-primary text-base">
+                  Autorisations de l'app
+                </Label>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={openAppSettings}
+                className="border-wheel-border hover:bg-button-hover text-text-primary"
+              >
+                Ouvrir
+              </Button>
+            </div>
+          )}
         </div>
 
         <Button
