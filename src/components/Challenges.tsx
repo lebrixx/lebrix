@@ -14,6 +14,7 @@ import {
   hasPendingDailyChallengeRewards,
   DailyChallenge
 } from '@/utils/dailyChallenges';
+import { notifyChallengeUpdate } from '@/utils/challengeUtils';
 
 interface ChallengeProgress {
   mode: string;
@@ -161,6 +162,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
     if (hasUpdates) {
       saveChallengeProgress(progress);
+      notifyChallengeUpdate(); // Notifier le MainMenu
       forceUpdate(prev => prev + 1);
     }
   };
@@ -179,6 +181,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       gamesProgress.lastCheckedGames = actualGamesPlayed;
       
       saveGamesPlayedProgress(gamesProgress);
+      notifyChallengeUpdate(); // Notifier le MainMenu
       forceUpdate(prev => prev + 1);
 
       toast.success('🎮 Défi Parties complété !', {

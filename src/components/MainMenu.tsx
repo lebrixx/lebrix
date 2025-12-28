@@ -82,17 +82,24 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     
     checkChallenges();
     
-    // Vérifier aussi quand le localStorage change (via storage event)
+    // Écouter les mises à jour de défis (événement personnalisé)
+    const handleChallengeUpdate = () => {
+      checkChallenges();
+    };
+    
+    // Écouter aussi le storage event pour les autres onglets
     const handleStorageChange = () => {
       checkChallenges();
     };
     
+    window.addEventListener('challengeUpdate', handleChallengeUpdate);
     window.addEventListener('storage', handleStorageChange);
     
     // Vérifier régulièrement au cas où
     const interval = setInterval(checkChallenges, 1000);
     
     return () => {
+      window.removeEventListener('challengeUpdate', handleChallengeUpdate);
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };

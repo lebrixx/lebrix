@@ -21,7 +21,7 @@ export function hasPendingChallengeRewards(): boolean {
     return true;
   }
 
-  // Vérifier les défis par mode
+  // Vérifier les défis par mode (globaux)
   const challengeProgress = localStorage.getItem('challengeProgress');
   if (challengeProgress) {
     try {
@@ -33,7 +33,7 @@ export function hasPendingChallengeRewards(): boolean {
     }
   }
 
-  // Vérifier le défi "Parties jouées"
+  // Vérifier le défi "Parties jouées" (global)
   const gamesProgress = localStorage.getItem('gamesPlayedProgress');
   if (gamesProgress) {
     try {
@@ -47,4 +47,9 @@ export function hasPendingChallengeRewards(): boolean {
   }
 
   return false;
+}
+
+// Émettre un événement quand les défis sont mis à jour
+export function notifyChallengeUpdate(): void {
+  window.dispatchEvent(new CustomEvent('challengeUpdate'));
 }
