@@ -3,15 +3,55 @@ import { persist } from 'zustand/middleware';
 
 export type Language = 'fr' | 'en' | 'es' | 'de' | 'it' | 'pt' | 'ar' | 'ja' | 'zh';
 
+const SUPPORTED_LANGUAGES: Language[] = ['fr', 'en', 'es', 'de', 'it', 'pt', 'ar', 'ja', 'zh'];
+
+/**
+ * Détecte la langue du navigateur/appareil et retourne une langue supportée
+ */
+function detectDeviceLanguage(): Language {
+  try {
+    // Récupère la langue du navigateur (ex: "fr-FR", "en-US", "es", etc.)
+    const browserLang = navigator.language || (navigator as any).userLanguage || 'fr';
+    
+    // Extrait le code de langue principal (ex: "fr" de "fr-FR")
+    const langCode = browserLang.split('-')[0].toLowerCase();
+    
+    // Vérifie si la langue est supportée
+    if (SUPPORTED_LANGUAGES.includes(langCode as Language)) {
+      return langCode as Language;
+    }
+    
+    // Fallback vers l'anglais pour les langues non supportées, sauf si c'est une langue latine proche du français
+    return 'en';
+  } catch {
+    return 'fr';
+  }
+}
+
+/**
+ * Vérifie si c'est le premier lancement (pas de langue sauvegardée)
+ */
+function isFirstLaunch(): boolean {
+  try {
+    const stored = localStorage.getItem('lucky-stop-language');
+    return !stored;
+  } catch {
+    return true;
+  }
+}
+
 interface LanguageState {
   language: Language;
   setLanguage: (language: Language) => void;
 }
 
+// Détecte la langue au premier lancement uniquement
+const initialLanguage = isFirstLaunch() ? detectDeviceLanguage() : 'fr';
+
 export const useLanguage = create<LanguageState>()(
   persist(
     (set) => ({
-      language: 'fr',
+      language: initialLanguage,
       setLanguage: (language) => set({ language }),
     }),
     {
