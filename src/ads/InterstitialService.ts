@@ -94,11 +94,24 @@ class InterstitialService {
       const restoreScreen = async () => {
         if (Capacitor.isNativePlatform()) {
           try {
-            await StatusBar.setOverlaysWebView({ overlay: false });
+            // Restaurer la StatusBar sans toucher à overlay pour préserver la safe area
             await StatusBar.show();
+            
+            // Forcer le recalcul de la safe area via CSS
+            document.documentElement.style.setProperty('--sat', 'env(safe-area-inset-top)');
+            document.documentElement.style.setProperty('--sab', 'env(safe-area-inset-bottom)');
+            document.documentElement.style.setProperty('--sal', 'env(safe-area-inset-left)');
+            document.documentElement.style.setProperty('--sar', 'env(safe-area-inset-right)');
+            
+            // Forcer un reflow pour appliquer les changements
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // Force reflow
+            document.body.style.display = '';
+            
             document.body.focus();
             window.focus();
-            console.log('[Interstitial] Screen restored');
+            
+            console.log('[Interstitial] Screen restored with safe area preserved');
           } catch (err) {
             console.log('[Interstitial] StatusBar restore error:', err);
           }
