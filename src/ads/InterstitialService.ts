@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
 
 const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
+const INITIAL_DELAY_MS = 300000; // 5 minutes minimum après lancement de l'app
 const INTERSTITIAL_COOLDOWN_MS = 420000; // 7 minutes entre chaque interstitielle
 const REWARDED_INTERSTITIAL_GAP_MS = 90000; // 90 secondes après une rewarded avant interstitielle
 const MAX_INTERSTITIALS_PER_SESSION = 3;
@@ -58,7 +59,7 @@ class InterstitialService {
   isInterstitialReady(): boolean {
     const now = Date.now();
     
-    const appRunningTimeCheck = now - this.appLaunchTime >= 360000; // 6 minutes
+    const appRunningTimeCheck = now - this.appLaunchTime >= INITIAL_DELAY_MS;
     const interstitialCooldownPassed = now - this.lastInterstitialShown >= INTERSTITIAL_COOLDOWN_MS;
     const noRecentRewarded = now - this.lastRewardedShown >= REWARDED_INTERSTITIAL_GAP_MS;
     const underSessionLimit = this.interstitialsShownThisSession < MAX_INTERSTITIALS_PER_SESSION;
@@ -92,28 +93,44 @@ class InterstitialService {
       let dismissed = false;
       let timeoutId: NodeJS.Timeout;
 
-      const cleanup = () => {
+      const restoreScreen = async () => {
+        // Toujours restaurer l'écran après une pub interstitielle
+        if (Capacitor.isNativePlatform()) {
+          try {
+            await StatusBar.setOverlaysWebView({ overlay: false });
+            await StatusBar.show();
+            console.log('[Interstitial] Screen restored successfully');
+          } catch (err) {
+            console.log('[Interstitial] StatusBar restore error (ignored):', err);
+          }
+        }
+      };
+
+      const cleanup = async () => {
         if (timeoutId) clearTimeout(timeoutId);
         this.removeInterstitialListeners();
         this.lastInterstitialShown = Date.now();
         this.interstitialsShownThisSession++;
         this.interstitialAdLoaded = false;
         
+        // Restaurer l'écran
+        await restoreScreen();
+        
         setTimeout(() => this.preloadInterstitial(), 2000);
       };
 
-      const finalize = (success: boolean) => {
+      const finalize = async (success: boolean) => {
         if (!dismissed) {
           dismissed = true;
-          cleanup();
+          await cleanup();
           console.log(`[Interstitial] ${success ? 'completed' : 'failed/dismissed'}`);
           resolve(success);
         }
       };
 
-      timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(async () => {
         console.warn('[Interstitial] timeout - forcing cleanup');
-        finalize(false);
+        await finalize(false);
       }, 30000);
 
       await this.setupInterstitialListeners(
@@ -126,7 +143,7 @@ class InterstitialService {
         console.log('[Interstitial] displayed successfully');
       } catch (error) {
         console.error('[Interstitial] Failed to show:', error);
-        finalize(false);
+        await finalize(false);
       }
     });
   }
@@ -135,14 +152,6 @@ class InterstitialService {
     try {
       const dismissedHandle = await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
         console.log('[Interstitial] dismissed');
-        
-        // Restaurer la StatusBar et la safe area
-        if (Capacitor.isNativePlatform()) {
-          StatusBar.setOverlaysWebView({ overlay: false }).catch(err => 
-            console.log('[Interstitial] StatusBar reset error (ignored):', err)
-          );
-        }
-        
         onSuccess();
       });
       this.interstitialListeners.push(dismissedHandle);
