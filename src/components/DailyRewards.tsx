@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Gift, Coins, Crown, Star, Sparkles, Zap, Video } from 'lucide-react';
+import { Gift, Coins, Crown, Star, Sparkles, Zap, Video, Bell, BellOff, Lock } from 'lucide-react';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -12,6 +12,8 @@ import {
   claimDailyReward, 
   resetDayIfNeeded,
   getNextReward,
+  claimNotificationBonus,
+  canClaimNotificationBonus,
   type DailyReward 
 } from '@/utils/dailyRewards';
 import { BOOSTS } from '@/types/boosts';
@@ -38,6 +40,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
   const [claiming, setClaiming] = useState(false);
   const [claimedReward, setClaimedReward] = useState<DailyReward | null>(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [canClaimNotifBonus, setCanClaimNotifBonus] = useState(false);
   const { addBoost } = useBoosts();
 
   // Mettre à jour le chrono chaque seconde
@@ -63,6 +67,11 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
       const state = getDailyRewardState();
       setRewardState(state);
       setCanClaim(canClaimReward());
+      
+      // Check notification state
+      const notifEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+      setNotificationsEnabled(notifEnabled);
+      setCanClaimNotifBonus(canClaimNotificationBonus());
     }
   }, [isOpen]);
 
@@ -75,6 +84,20 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
         description: "Tu as reçu 100 coins ! 🪙",
       });
       onRewardClaimed(100);
+    }
+  };
+
+  const handleClaimNotificationBonus = () => {
+    if (!notificationsEnabled || !canClaimNotifBonus) return;
+    
+    const claimed = claimNotificationBonus();
+    if (claimed) {
+      setCanClaimNotifBonus(false);
+      toast({
+        title: "Bonus Notifications !",
+        description: "+20 coins pour avoir activé les notifications ! 🔔",
+      });
+      onRewardClaimed(20);
     }
   };
 
@@ -257,6 +280,49 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
               </div>
             </Card>
           )}
+
+          {/* Bonus Notifications - 20 coins/jour */}
+          <Card className={`border-2 p-4 ${notificationsEnabled ? 'bg-gradient-to-br from-blue-500/20 to-primary/20 border-blue-500/50' : 'bg-game-bg border-wheel-border opacity-60'}`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {notificationsEnabled ? (
+                  <Bell className="w-5 h-5 text-blue-400" />
+                ) : (
+                  <BellOff className="w-5 h-5 text-text-muted" />
+                )}
+                <span className="text-text-primary font-bold text-sm">Bonus Notifications</span>
+              </div>
+              <Badge variant="secondary" className={notificationsEnabled ? "bg-blue-500/20 text-blue-400" : "bg-gray-500/20 text-gray-400"}>
+                +20 coins/jour
+              </Badge>
+            </div>
+            {notificationsEnabled ? (
+              <>
+                <p className="text-text-secondary text-xs mb-3">
+                  Active les notifications dans les réglages pour recevoir 20 coins bonus chaque jour !
+                </p>
+                {canClaimNotifBonus ? (
+                  <Button
+                    onClick={handleClaimNotificationBonus}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:scale-105 transition-all duration-300"
+                    size="sm"
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    Récupérer +20 coins
+                  </Button>
+                ) : (
+                  <div className="text-center text-text-muted text-xs py-2">
+                    ✓ Bonus déjà récupéré aujourd'hui
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex items-center gap-2 text-text-muted text-xs">
+                <Lock className="w-4 h-4" />
+                <span>Active les notifications dans les réglages pour débloquer</span>
+              </div>
+            )}
+          </Card>
 
           {/* Bouton pour gagner 100 coins via pub */}
           <Card className="bg-gradient-to-br from-green-500/20 to-primary/20 border-2 border-green-500/50 p-4">

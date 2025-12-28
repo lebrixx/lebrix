@@ -13,6 +13,7 @@ export interface DailyRewardState {
   currentStreak: number;
   totalClaimed: number;
   claimedToday: boolean;
+  lastNotificationBonusDate?: string | null;
 }
 
 const DAILY_REWARDS_KEY = 'lucky_stop_daily_rewards';
@@ -135,4 +136,34 @@ export function resetDayIfNeeded(): void {
     const newState = { ...state, claimedToday: false };
     saveDailyRewardState(newState);
   }
+}
+
+// Notification bonus functions
+export function canClaimNotificationBonus(): boolean {
+  const state = getDailyRewardState();
+  const notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+  
+  if (!notificationsEnabled) return false;
+  
+  // Check if bonus was already claimed today
+  if (state.lastNotificationBonusDate) {
+    const today = new Date().toDateString();
+    const lastBonusDate = new Date(state.lastNotificationBonusDate).toDateString();
+    if (today === lastBonusDate) return false;
+  }
+  
+  return true;
+}
+
+export function claimNotificationBonus(): boolean {
+  if (!canClaimNotificationBonus()) return false;
+  
+  const state = getDailyRewardState();
+  const newState: DailyRewardState = {
+    ...state,
+    lastNotificationBonusDate: new Date().toISOString()
+  };
+  
+  saveDailyRewardState(newState);
+  return true;
 }
