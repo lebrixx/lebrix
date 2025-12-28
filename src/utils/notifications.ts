@@ -14,6 +14,23 @@ const NOTIFICATION_MESSAGES = [
 
 const WHEEL_NOTIFICATION_ID = 2000;
 
+export async function checkNotificationPermission(): Promise<'granted' | 'denied' | 'prompt'> {
+  if (Capacitor.isNativePlatform()) {
+    const permission = await LocalNotifications.checkPermissions();
+    if (permission.display === 'granted') return 'granted';
+    if (permission.display === 'denied') return 'denied';
+    return 'prompt';
+  }
+
+  if (!('Notification' in window)) {
+    return 'denied';
+  }
+
+  if (Notification.permission === 'granted') return 'granted';
+  if (Notification.permission === 'denied') return 'denied';
+  return 'prompt';
+}
+
 export async function requestNotificationPermission(): Promise<boolean> {
   // Si on est sur mobile natif, utiliser les notifications locales Capacitor
   if (Capacitor.isNativePlatform()) {
