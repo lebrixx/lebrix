@@ -3,9 +3,9 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
 
 const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
-const INITIAL_DELAY_MS = 360000; // 6 minutes minimum après lancement (marge de sécurité au-delà des 5 min demandées)
+const INITIAL_DELAY_MS = 360000; // 6 minutes minimum après lancement
 const INTERSTITIAL_COOLDOWN_MS = 420000; // 7 minutes entre chaque interstitielle
-const REWARDED_INTERSTITIAL_GAP_MS = 90000; // 90 secondes après une rewarded avant interstitielle
+const REWARDED_INTERSTITIAL_GAP_MS = 90000; // 90 secondes après une rewarded
 const MAX_INTERSTITIALS_PER_SESSION = 3;
 
 class InterstitialService {
@@ -16,7 +16,7 @@ class InterstitialService {
   private lastInterstitialShown = 0;
   private interstitialsShownThisSession = 0;
   private interstitialListeners: any[] = [];
-  private lastRewardedShown = 0; // Pour respecter le gap avec les rewarded
+  private lastRewardedShown = 0;
 
   async init(): Promise<void> {
     if (this.isInitialized) return;
@@ -87,128 +87,114 @@ class InterstitialService {
       return false;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-
     return new Promise(async (resolve) => {
-      let dismissed = false;
-      let timeoutId: NodeJS.Timeout;
-      let forceRestoreInterval: NodeJS.Timeout;
+      let isFinalized = false;
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
       const restoreScreen = async () => {
-        // Toujours restaurer l'écran après une pub interstitielle
         if (Capacitor.isNativePlatform()) {
           try {
-            // Force multiple restore attempts to fix black screen
             await StatusBar.setOverlaysWebView({ overlay: false });
             await StatusBar.show();
-            
-            // Force focus back to webview
             document.body.focus();
             window.focus();
-            
-            console.log('[Interstitial] Screen restored successfully');
+            console.log('[Interstitial] Screen restored');
           } catch (err) {
-            console.log('[Interstitial] StatusBar restore error (ignored):', err);
+            console.log('[Interstitial] StatusBar restore error:', err);
           }
         }
       };
 
-      const cleanup = async () => {
-        if (timeoutId) clearTimeout(timeoutId);
-        if (forceRestoreInterval) clearInterval(forceRestoreInterval);
+      const finalize = async (success: boolean) => {
+        // Empêcher les appels multiples
+        if (isFinalized) {
+          console.log('[Interstitial] Already finalized, skipping');
+          return;
+        }
+        isFinalized = true;
+
+        // Nettoyer le timeout
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+
+        // Nettoyer les listeners
         this.removeInterstitialListeners();
+
+        // Mettre à jour les compteurs
         this.lastInterstitialShown = Date.now();
         this.interstitialsShownThisSession++;
         this.interstitialAdLoaded = false;
-        
-        // Restaurer l'écran immédiatement
+
+        // Restaurer l'écran avec délai pour laisser l'ad se fermer proprement
+        await new Promise(r => setTimeout(r, 300));
         await restoreScreen();
-        
-        // Double-restauration après délai pour éviter écran noir
-        setTimeout(async () => {
-          await restoreScreen();
-        }, 500);
-        
-        setTimeout(() => this.preloadInterstitial(), 2000);
+
+        // Double restauration après 500ms pour sécurité
+        setTimeout(restoreScreen, 500);
+
+        // Précharger la prochaine pub
+        setTimeout(() => this.preloadInterstitial(), 3000);
+
+        console.log(`[Interstitial] Finalized with success: ${success}`);
+        resolve(success);
       };
 
-      const finalize = async (success: boolean) => {
-        if (!dismissed) {
-          dismissed = true;
-          await cleanup();
-          console.log(`[Interstitial] ${success ? 'completed' : 'failed/dismissed'}`);
-          resolve(success);
-        }
-      };
-
-      // Timeout de sécurité réduit à 15s
-      timeoutId = setTimeout(async () => {
-        console.warn('[Interstitial] timeout - forcing cleanup');
-        await finalize(false);
-      }, 15000);
-
-      // Interval de sécurité pour forcer la restauration toutes les 5s
-      forceRestoreInterval = setInterval(async () => {
-        if (dismissed) {
-          clearInterval(forceRestoreInterval);
-          return;
-        }
-        // Vérifier si l'ad est toujours visible
-        console.log('[Interstitial] Force restore check...');
-      }, 5000);
-
-      await this.setupInterstitialListeners(
-        () => finalize(true), 
-        () => finalize(false)
-      );
-
+      // Setup listeners AVANT de montrer l'ad
       try {
+        const dismissedHandle = await AdMob.addListener(
+          InterstitialAdPluginEvents.Dismissed,
+          async () => {
+            console.log('[Interstitial] User dismissed ad');
+            // Attendre pour laisser l'animation de fermeture se terminer
+            await new Promise(r => setTimeout(r, 200));
+            await finalize(true);
+          }
+        );
+        this.interstitialListeners.push(dismissedHandle);
+
+        const failedToLoadHandle = await AdMob.addListener(
+          InterstitialAdPluginEvents.FailedToLoad,
+          async (error: any) => {
+            console.error('[Interstitial] Failed to load:', error);
+            await finalize(false);
+          }
+        );
+        this.interstitialListeners.push(failedToLoadHandle);
+
+        const failedToShowHandle = await AdMob.addListener(
+          InterstitialAdPluginEvents.FailedToShow,
+          async (error: any) => {
+            console.error('[Interstitial] Failed to show:', error);
+            await finalize(false);
+          }
+        );
+        this.interstitialListeners.push(failedToShowHandle);
+
+        console.log('[Interstitial] Listeners ready');
+      } catch (error) {
+        console.error('[Interstitial] Error setting up listeners:', error);
+        resolve(false);
+        return;
+      }
+
+      // Timeout de sécurité (30s pour laisser le temps de regarder)
+      timeoutId = setTimeout(async () => {
+        console.warn('[Interstitial] Safety timeout triggered');
+        await finalize(false);
+      }, 30000);
+
+      // Maintenant montrer l'ad
+      try {
+        console.log('[Interstitial] Showing ad...');
         await AdMob.showInterstitial();
-        console.log('[Interstitial] displayed successfully');
+        console.log('[Interstitial] Ad displayed successfully');
       } catch (error) {
         console.error('[Interstitial] Failed to show:', error);
         await finalize(false);
       }
     });
-  }
-
-  private async setupInterstitialListeners(onSuccess: () => void, onFailure: () => void): Promise<void> {
-    try {
-      const dismissedHandle = await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, async () => {
-        console.log('[Interstitial] dismissed event received');
-        
-        // Force restauration immédiate sur iOS/Android
-        if (Capacitor.isNativePlatform()) {
-          try {
-            await StatusBar.show();
-            await StatusBar.setOverlaysWebView({ overlay: false });
-          } catch (e) {
-            console.log('[Interstitial] Quick restore failed (ignored):', e);
-          }
-        }
-        
-        // Petit délai avant callback pour laisser le SDK nettoyer
-        setTimeout(() => onSuccess(), 100);
-      });
-      this.interstitialListeners.push(dismissedHandle);
-
-      const failedToLoadHandle = await AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, (error: any) => {
-        console.error('[Interstitial] failed to load:', error);
-        onFailure();
-      });
-      this.interstitialListeners.push(failedToLoadHandle);
-
-      const failedToShowHandle = await AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, (error: any) => {
-        console.error('[Interstitial] failed to show:', error);
-        onFailure();
-      });
-      this.interstitialListeners.push(failedToShowHandle);
-
-      console.log('[Interstitial] Listeners setup complete');
-    } catch (error) {
-      console.error('[Interstitial] Error setting up listeners:', error);
-      onFailure();
-    }
   }
 
   private removeInterstitialListeners(): void {
