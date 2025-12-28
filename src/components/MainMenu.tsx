@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -47,6 +48,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
+  const navigate = useNavigate();
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -253,32 +255,46 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             {t.gameModes}
           </Button>
 
-          <Button
-            onClick={onOpenShop}
-            variant="outline"
-            size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-          >
-            <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-            {t.shop}
-            <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark text-xs">
-              {coins}
-            </Badge>
-          </Button>
+          {/* Boutique et Défis côte à côte */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={onOpenShop}
+              variant="outline"
+              size="lg"
+              className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
+            >
+              <ShoppingBag className="w-4 h-4 mr-1 group-hover:animate-bounce" />
+              {t.shop}
+            </Button>
 
-          <Button 
-            onClick={onOpenChallenges}
+            <Button 
+              onClick={onOpenChallenges}
+              variant="outline"
+              size="lg"
+              className={`relative border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group ${hasPendingChallenges ? 'animate-pulse-glow border-secondary' : ''}`}
+            >
+              <Star className={`w-4 h-4 mr-1 group-hover:animate-spin ${hasPendingChallenges ? 'text-secondary' : ''}`} />
+              {t.dailyChallenges}
+              {hasPendingChallenges && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse flex items-center justify-center">
+                  <span className="text-[8px] text-game-dark font-bold">!</span>
+                </div>
+              )}
+            </Button>
+          </div>
+
+          {/* Multijoueur */}
+          <Button
+            onClick={() => navigate('/multiplayer')}
             variant="outline"
             size="lg"
-            className={`relative border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group ${hasPendingChallenges ? 'animate-pulse-glow border-secondary' : ''}`}
+            className="border-primary/50 bg-primary/5 hover:bg-primary/10 hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
           >
-            <Star className={`w-4 h-4 mr-2 group-hover:animate-spin ${hasPendingChallenges ? 'text-secondary' : ''}`} />
-            {t.dailyChallenges}
-            {hasPendingChallenges && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse flex items-center justify-center">
-                <span className="text-[8px] text-game-dark font-bold">!</span>
-              </div>
-            )}
+            <Users className="w-4 h-4 mr-2 text-primary group-hover:animate-pulse" />
+            <span className="text-primary font-medium">Multijoueur</span>
+            <Badge variant="secondary" className="ml-2 bg-secondary text-game-dark text-[10px] px-1.5">
+              Soon
+            </Badge>
           </Button>
 
           <Button
