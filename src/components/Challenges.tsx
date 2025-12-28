@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles, HelpCircle, Infinity } from 'lucide-react';
 import { ModeID } from '@/constants/modes';
 import { toast } from 'sonner';
 import { BOOSTS, BoostType } from '@/types/boosts';
@@ -64,21 +64,28 @@ export const Challenges: React.FC<ChallengesProps> = ({
   onBoostReward,
 }) => {
   const [, forceUpdate] = useState(0);
-  const [actualGamesPlayed, setActualGamesPlayed] = useState(totalGamesPlayed);
   const [dailyChallenges, setDailyChallenges] = useState<DailyChallenge[]>([]);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
   
-  useEffect(() => {
+  // Lire le nombre de parties directement depuis localStorage à chaque rendu
+  const getActualGamesPlayed = (): number => {
     const saved = localStorage.getItem('luckyStopGame');
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        setActualGamesPlayed(data.totalGamesPlayed || 0);
+        return data.totalGamesPlayed || 0;
       } catch (e) {
-        setActualGamesPlayed(totalGamesPlayed);
+        return totalGamesPlayed;
       }
     }
+    return totalGamesPlayed;
+  };
+  
+  const actualGamesPlayed = getActualGamesPlayed();
+  
+  useEffect(() => {
     setDailyChallenges(getTodaysChallenges());
-  }, [totalGamesPlayed]);
+  }, []);
 
   const getChallengeProgress = (): Record<string, ChallengeProgress> => {
     const saved = localStorage.getItem('challengeProgress');
@@ -412,6 +419,23 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
         {/* Global Challenges Tab */}
         <TabsContent value="global" className="space-y-4 animate-fade-in">
+          {/* Comment ça marche */}
+          <button
+            onClick={() => setShowHowItWorks(!showHowItWorks)}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-primary transition-colors"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            Comment ça marche ?
+          </button>
+          
+          {showHowItWorks && (
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-text-muted space-y-1">
+              <p>• <strong>Défis par mode :</strong> Atteignez des scores cibles (10, 20, 30...) pour gagner des coins.</p>
+              <p>• <strong>Parties jouées :</strong> Jouez 50, 100, 150... parties pour gagner des boosts aléatoires.</p>
+              <p>• Les récompenses s'accumulent - réclamez-les quand vous voulez !</p>
+            </div>
+          )}
+          
           {/* Stats header */}
           <div className="flex justify-center gap-4 mb-4">
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20">
@@ -435,12 +459,16 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-400/10 rounded-full blur-3xl" />
             <div className="relative p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-400/20">
+                <div className="p-2.5 rounded-xl bg-amber-400/20 relative">
                   <Gamepad2 className="w-5 h-5 text-amber-400" />
+                  <Infinity className="w-3 h-3 text-amber-400 absolute -bottom-1 -right-1" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-semibold text-text-primary text-sm">Parties jouées</h3>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-semibold text-text-primary text-sm">Parties jouées</h3>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-400 font-medium">∞</span>
+                    </div>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-400 font-medium">
                       Palier {gamesProgress.currentLevel + 1}
                     </span>
