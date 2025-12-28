@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
 
 const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
-const INITIAL_DELAY_MS = 300000; // 5 minutes minimum après lancement de l'app
+const INITIAL_DELAY_MS = 360000; // 6 minutes minimum après lancement (marge de sécurité au-delà des 5 min demandées)
 const INTERSTITIAL_COOLDOWN_MS = 420000; // 7 minutes entre chaque interstitielle
 const REWARDED_INTERSTITIAL_GAP_MS = 90000; // 90 secondes après une rewarded avant interstitielle
 const MAX_INTERSTITIALS_PER_SESSION = 3;
