@@ -31,6 +31,23 @@ export const Settings: React.FC<SettingsProps> = ({
     return saved !== null ? saved === 'true' : true;
   });
   const [isSendingTest, setIsSendingTest] = useState(false);
+  const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+
+  // Check permission status on open
+  useEffect(() => {
+    if (isOpen) {
+      import('@/utils/notifications').then(({ checkNotificationPermission }) => {
+        checkNotificationPermission().then(status => {
+          setPermissionStatus(status);
+          // If permission is denied but toggle is on, turn it off
+          if (status === 'denied' && notificationsEnabled) {
+            setNotificationsEnabled(false);
+            localStorage.setItem('notificationsEnabled', 'false');
+          }
+        });
+      });
+    }
+  }, [isOpen]);
 
   const openAppSettings = async () => {
     if (Capacitor.isNativePlatform()) {
@@ -57,6 +74,51 @@ export const Settings: React.FC<SettingsProps> = ({
     }
   };
 
+  const handleToggleNotifications = async (enabled: boolean) => {
+    if (enabled) {
+      // Check current permission
+      const { checkNotificationPermission, requestNotificationPermission } = await import('@/utils/notifications');
+      const status = await checkNotificationPermission();
+      
+      if (status === 'denied') {
+        // Permission was denied, show message and open settings
+        toast({
+          title: "Notifications bloquées",
+          description: "Ouvre les paramètres de l'app pour autoriser les notifications.",
+          variant: "destructive",
+        });
+        openAppSettings();
+        return;
+      }
+      
+      // Request permission if not yet granted
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        toast({
+          title: "Notifications refusées",
+          description: "Tu dois autoriser les notifications pour les activer.",
+          variant: "destructive",
+        });
+        setPermissionStatus('denied');
+        return;
+      }
+      
+      setPermissionStatus('granted');
+      setNotificationsEnabled(true);
+      localStorage.setItem('notificationsEnabled', 'true');
+      
+      // Schedule notifications
+      const { scheduleDailyNotification } = await import('@/utils/notifications');
+      scheduleDailyNotification();
+    } else {
+      setNotificationsEnabled(false);
+      localStorage.setItem('notificationsEnabled', 'false');
+      
+      const { cancelScheduledNotification } = await import('@/utils/notifications');
+      cancelScheduledNotification();
+    }
+  };
+
   const handleTestNotification = async () => {
     setIsSendingTest(true);
     try {
@@ -80,23 +142,6 @@ export const Settings: React.FC<SettingsProps> = ({
       setIsSendingTest(false);
     }
   };
-
-  useEffect(() => {
-    localStorage.setItem('notificationsEnabled', String(notificationsEnabled));
-    if (notificationsEnabled) {
-      import('@/utils/notifications').then(({ requestNotificationPermission, scheduleDailyNotification }) => {
-        requestNotificationPermission().then(granted => {
-          if (granted) {
-            scheduleDailyNotification();
-          }
-        });
-      });
-    } else {
-      import('@/utils/notifications').then(({ cancelScheduledNotification }) => {
-        cancelScheduledNotification();
-      });
-    }
-  }, [notificationsEnabled]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -143,13 +188,20 @@ export const Settings: React.FC<SettingsProps> = ({
               <Switch
                 id="notifications"
                 checked={notificationsEnabled}
-                onCheckedChange={setNotificationsEnabled}
+                onCheckedChange={handleToggleNotifications}
+                disabled={permissionStatus === 'denied'}
               />
             </div>
-            <div className="flex items-center gap-1 ml-8 text-xs text-blue-400">
-              <Coins className="w-3 h-3" />
-              <span>+20 coins/jour si activé</span>
-            </div>
+            {permissionStatus === 'denied' ? (
+              <div className="flex items-center gap-1 ml-8 text-xs text-red-400">
+                <span>⚠️ Notifications bloquées - ouvre les paramètres</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 ml-8 text-xs text-blue-400">
+                <Coins className="w-3 h-3" />
+                <span>+20 coins/jour si activé</span>
+              </div>
+            )}
           </div>
 
           {/* Test Notification Button */}
