@@ -87,18 +87,25 @@ class InterstitialService {
       return false;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     return new Promise(async (resolve) => {
       let dismissed = false;
       let timeoutId: NodeJS.Timeout;
+      let forceRestoreInterval: NodeJS.Timeout;
 
       const restoreScreen = async () => {
         // Toujours restaurer l'écran après une pub interstitielle
         if (Capacitor.isNativePlatform()) {
           try {
+            // Force multiple restore attempts to fix black screen
             await StatusBar.setOverlaysWebView({ overlay: false });
             await StatusBar.show();
+            
+            // Force focus back to webview
+            document.body.focus();
+            window.focus();
+            
             console.log('[Interstitial] Screen restored successfully');
           } catch (err) {
             console.log('[Interstitial] StatusBar restore error (ignored):', err);
@@ -108,13 +115,19 @@ class InterstitialService {
 
       const cleanup = async () => {
         if (timeoutId) clearTimeout(timeoutId);
+        if (forceRestoreInterval) clearInterval(forceRestoreInterval);
         this.removeInterstitialListeners();
         this.lastInterstitialShown = Date.now();
         this.interstitialsShownThisSession++;
         this.interstitialAdLoaded = false;
         
-        // Restaurer l'écran
+        // Restaurer l'écran immédiatement
         await restoreScreen();
+        
+        // Double-restauration après délai pour éviter écran noir
+        setTimeout(async () => {
+          await restoreScreen();
+        }, 500);
         
         setTimeout(() => this.preloadInterstitial(), 2000);
       };
@@ -128,10 +141,21 @@ class InterstitialService {
         }
       };
 
+      // Timeout de sécurité réduit à 15s
       timeoutId = setTimeout(async () => {
         console.warn('[Interstitial] timeout - forcing cleanup');
         await finalize(false);
-      }, 30000);
+      }, 15000);
+
+      // Interval de sécurité pour forcer la restauration toutes les 5s
+      forceRestoreInterval = setInterval(async () => {
+        if (dismissed) {
+          clearInterval(forceRestoreInterval);
+          return;
+        }
+        // Vérifier si l'ad est toujours visible
+        console.log('[Interstitial] Force restore check...');
+      }, 5000);
 
       await this.setupInterstitialListeners(
         () => finalize(true), 
@@ -150,9 +174,21 @@ class InterstitialService {
 
   private async setupInterstitialListeners(onSuccess: () => void, onFailure: () => void): Promise<void> {
     try {
-      const dismissedHandle = await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
-        console.log('[Interstitial] dismissed');
-        onSuccess();
+      const dismissedHandle = await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, async () => {
+        console.log('[Interstitial] dismissed event received');
+        
+        // Force restauration immédiate sur iOS/Android
+        if (Capacitor.isNativePlatform()) {
+          try {
+            await StatusBar.show();
+            await StatusBar.setOverlaysWebView({ overlay: false });
+          } catch (e) {
+            console.log('[Interstitial] Quick restore failed (ignored):', e);
+          }
+        }
+        
+        // Petit délai avant callback pour laisser le SDK nettoyer
+        setTimeout(() => onSuccess(), 100);
       });
       this.interstitialListeners.push(dismissedHandle);
 
