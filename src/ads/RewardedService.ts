@@ -239,11 +239,12 @@ safetyTimeout = setTimeout(() => {
         dismissedReceived = true;
         console.log(`👋 [${elapsed}ms] Ad dismissed, earned=${this.earned}`);
 
-        // Restaurer la StatusBar et la safe area
+        // Restaurer la StatusBar et stabiliser la safe area
         if (Capacitor.isNativePlatform()) {
-          StatusBar.setOverlaysWebView({ overlay: false }).catch(err => 
-            console.log('[Rewarded] StatusBar reset error (ignored):', err)
-          );
+          StatusBar.setOverlaysWebView({ overlay: false })
+            .then(() => StatusBar.show())
+            .then(() => requestAnimationFrame(() => window.dispatchEvent(new Event('resize'))))
+            .catch(err => console.log('[Rewarded] StatusBar reset error (ignored):', err));
         }
 
         if (this.earned) {
