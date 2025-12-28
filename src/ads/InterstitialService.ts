@@ -1,6 +1,6 @@
 import { AdMob, InterstitialAdPluginEvents, AdOptions } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
-import { StatusBar } from '@capacitor/status-bar';
+import { restoreNativeUi } from '@/utils/nativeUi';
 
 const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
 const INITIAL_DELAY_MS = 360000; // 6 minutes minimum après lancement
@@ -92,23 +92,8 @@ class InterstitialService {
       let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
       const restoreScreen = async () => {
-        if (Capacitor.isNativePlatform()) {
-          try {
-            // Remettre l'overlay comme au démarrage pour éviter le "shift" de safe area après une pub
-            await StatusBar.setOverlaysWebView({ overlay: false });
-            await StatusBar.show();
-
-            // Forcer le recalcul layout côté WebView
-            requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
-
-            document.body.focus();
-            window.focus();
-
-            console.log('[Interstitial] Screen restored (overlay=false)');
-          } catch (err) {
-            console.log('[Interstitial] StatusBar restore error:', err);
-          }
-        }
+        // Restaurer plusieurs fois via helper (overlay=false + resize)
+        await restoreNativeUi('interstitial');
       };
 
       const finalize = async (success: boolean) => {
@@ -194,6 +179,8 @@ class InterstitialService {
       // Maintenant montrer l'ad
       try {
         console.log('[Interstitial] Showing ad...');
+        // Stabiliser l'UI juste avant d'afficher la pub
+        await restoreNativeUi('interstitial_pre_show');
         await AdMob.showInterstitial();
         console.log('[Interstitial] Ad displayed successfully');
       } catch (error) {

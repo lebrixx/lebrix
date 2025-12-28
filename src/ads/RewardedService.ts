@@ -1,6 +1,6 @@
 import { AdMob, RewardAdOptions, RewardAdPluginEvents } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
-import { StatusBar } from '@capacitor/status-bar';
+import { restoreNativeUi } from '@/utils/nativeUi';
 
 const REWARDED_AD_UNIT_ID = 'ca-app-pub-6790106624716732/4113445950';
 const COOLDOWN_MS = 60000; // 60 secondes entre chaque rewarded
@@ -241,10 +241,7 @@ safetyTimeout = setTimeout(() => {
 
         // Restaurer la StatusBar et stabiliser la safe area
         if (Capacitor.isNativePlatform()) {
-          StatusBar.setOverlaysWebView({ overlay: false })
-            .then(() => StatusBar.show())
-            .then(() => requestAnimationFrame(() => window.dispatchEvent(new Event('resize'))))
-            .catch(err => console.log('[Rewarded] StatusBar reset error (ignored):', err));
+          void restoreNativeUi('rewarded');
         }
 
         if (this.earned) {
