@@ -317,13 +317,29 @@ export async function scheduleWheelNotification() {
 }
 
 // Initialiser les notifications au chargement
-export function initNotifications() {
+export async function initNotifications() {
+  const hasAskedPermission = localStorage.getItem('notificationsPermissionAsked');
   const enabled = localStorage.getItem('notificationsEnabled') === 'true';
+
+  // Premier lancement : demander la permission
+  if (!hasAskedPermission) {
+    localStorage.setItem('notificationsPermissionAsked', 'true');
+    const granted = await requestNotificationPermission();
+    if (granted) {
+      localStorage.setItem('notificationsEnabled', 'true');
+      scheduleDailyNotification();
+      if (!canSpinFree()) {
+        scheduleWheelNotification();
+      }
+    }
+    return;
+  }
+
+  // Lancements suivants : réactiver si déjà activé
   if (enabled) {
     requestNotificationPermission().then(granted => {
       if (granted) {
         scheduleDailyNotification();
-        // Programmer aussi la notification de la roue si elle n'est pas déjà disponible
         if (!canSpinFree()) {
           scheduleWheelNotification();
         }
