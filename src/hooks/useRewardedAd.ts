@@ -1,10 +1,21 @@
-import { useState, useCallback } from 'react';
-import { Rewarded, RewardKind } from '@/ads/RewardedService';
+import { useState, useCallback, useEffect } from 'react';
+import { Rewarded, RewardKind, REWARDED_COOLDOWN_EVENT } from '@/ads/RewardedService';
 import { useToast } from '@/hooks/use-toast';
 
 export const useRewardedAd = () => {
   const [isShowing, setIsShowing] = useState(false);
+  const [cooldownTick, setCooldownTick] = useState(0);
   const { toast } = useToast();
+
+  // Écouter les événements de changement de cooldown
+  useEffect(() => {
+    const handleCooldownChange = () => {
+      setCooldownTick(prev => prev + 1);
+    };
+    
+    window.addEventListener(REWARDED_COOLDOWN_EVENT, handleCooldownChange);
+    return () => window.removeEventListener(REWARDED_COOLDOWN_EVENT, handleCooldownChange);
+  }, []);
 
   const showRewardedAd = useCallback(async (kind: RewardKind): Promise<boolean> => {
     if (isShowing) {
@@ -70,10 +81,19 @@ export const useRewardedAd = () => {
     }
   }, [isShowing, toast]);
 
+  // Forcer le recalcul quand cooldownTick change
+  const getCooldown = useCallback(() => {
+    return Rewarded.getCooldownRemaining();
+  }, [cooldownTick]);
+
+  const isReady = useCallback(() => {
+    return Rewarded.isReady() && !isShowing;
+  }, [isShowing, cooldownTick]);
+
   return {
     showRewardedAd,
     isShowing,
-    isReady: () => Rewarded.isReady() && !isShowing,
-    getCooldown: () => Rewarded.getCooldownRemaining(),
+    isReady,
+    getCooldown,
   };
 };

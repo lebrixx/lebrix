@@ -5,6 +5,9 @@ import { restoreNativeUi } from '@/utils/nativeUi';
 const REWARDED_AD_UNIT_ID = 'ca-app-pub-6790106624716732/4113445950';
 const COOLDOWN_MS = 60000; // 60 secondes entre chaque rewarded
 
+// Event pour notifier les composants des changements de cooldown
+export const REWARDED_COOLDOWN_EVENT = 'rewarded_cooldown_change';
+
 export type RewardKind = 'revive' | 'boost1' | 'boost2' | 'boost3' | 'coins80' | 'ticket';
 
 type FSMState = 'idle' | 'loading' | 'ready' | 'showing' | 'cooldown';
@@ -168,6 +171,10 @@ this.state = 'cooldown';
 this.preload();
 
 if (this.cooldownTimeout) clearTimeout(this.cooldownTimeout);
+
+// Émettre un événement pour notifier les composants du changement
+this.emitCooldownChange();
+
 this.cooldownTimeout = setTimeout(() => {
   console.log('[Rewarded] Cooldown finished');
   // À la fin du cooldown, si une pub est déjà préchargée, passer en ready
@@ -176,6 +183,8 @@ this.cooldownTimeout = setTimeout(() => {
     // tenter un preload si pas déjà fait
     this.preload();
   }
+  // Notifier que le cooldown est terminé
+  this.emitCooldownChange();
 }, COOLDOWN_MS);
         } else {
           // Échec, retenter de précharger immédiatement
@@ -305,6 +314,15 @@ safetyTimeout = setTimeout(() => {
       inFlight: this.inFlight,
       cooldownRemaining: this.getCooldownRemaining(),
     };
+  }
+
+  // Émettre un événement de changement de cooldown
+  private emitCooldownChange(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(REWARDED_COOLDOWN_EVENT, {
+        detail: { cooldown: this.getCooldownRemaining(), lastShown: this.lastShown }
+      }));
+    }
   }
 }
 
