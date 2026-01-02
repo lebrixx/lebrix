@@ -365,6 +365,12 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Démarrer le jeu avec boosts sélectionnés
   const startGame = useCallback((boosts: BoostType[] = []) => {
+    // Éviter les appels multiples si déjà en cours
+    if (gameState.gameStatus === 'running') {
+      console.log('[startGame] Already running, ignoring');
+      return;
+    }
+    
     // Mode Expert : vérifier et consommer un ticket
     if (currentMode === ModeID.MEMOIRE_EXPERT) {
       const hasTicket = consumeTicket();
@@ -374,6 +380,13 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         return;
       }
     }
+    
+    // Annuler toute animation en cours avant de démarrer une nouvelle
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = undefined;
+    }
+    lastTimeRef.current = undefined;
     
     // Mark the start of game session for security tracking
     startGameSession();

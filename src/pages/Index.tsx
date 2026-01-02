@@ -63,11 +63,17 @@ const Index = () => {
   const { removeBoost, addBoost } = useBoosts();
   const { toast } = useToast();
   const [currentCoins, setCurrentCoins] = useState(gameState.coins);
+  const [ownedThemesState, setOwnedThemesState] = useState(gameState.ownedThemes);
   const { playClick, playSuccess, playFailure, isMuted, toggleMute } = useSound();
   
+  // Synchroniser les coins et les thèmes depuis gameState
   useEffect(() => {
     setCurrentCoins(gameState.coins);
   }, [gameState.coins]);
+
+  useEffect(() => {
+    setOwnedThemesState(gameState.ownedThemes);
+  }, [gameState.ownedThemes]);
 
   // Vérifier les récompenses disponibles au montage et initialiser les notifications
   useEffect(() => {
@@ -267,11 +273,18 @@ const Index = () => {
         return (
           <Shop
             coins={currentCoins}
-            ownedThemes={gameState.ownedThemes}
+            ownedThemes={ownedThemesState}
             currentTheme={currentTheme}
             unlockedModes={unlockedModes}
             onBack={() => setCurrentScreen('menu')}
-            onPurchaseTheme={(theme) => purchaseTheme(theme.id, theme.price)}
+            onPurchaseTheme={(theme) => {
+              const success = purchaseTheme(theme.id, theme.price);
+              if (success) {
+                // Forcer la mise à jour immédiate des thèmes
+                setOwnedThemesState(prev => [...prev, theme.id]);
+              }
+              return success;
+            }}
             onEquipTheme={handleThemeChange}
             onPurchaseMode={handlePurchaseMode}
             onSpendCoins={spendCoins}
