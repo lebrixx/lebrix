@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { isValidUsername, generateDefaultUsername, canChangeUsername, getRemainingUsernameChanges, getUsername } from '@/utils/localIdentity';
+import { isValidUsername, generateDefaultUsername, canChangeUsername, getRemainingUsernameChanges, getUsername, getDeviceId } from '@/utils/localIdentity';
 import { setUsernameForScores } from '@/utils/scoresApi';
-import { User, AlertTriangle } from 'lucide-react';
+import { User, AlertTriangle, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { 
   AlertDialog,
@@ -16,6 +16,7 @@ import {
   AlertDialogFooter
 } from '@/components/ui/alert-dialog';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UsernameModalProps {
   isOpen: boolean;
@@ -28,6 +29,8 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
   const [username, setUsername] = useState(currentUsername || generateDefaultUsername());
   const [error, setError] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
@@ -35,6 +38,43 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
   const isFirstUsername = !currentUsername;
   const remainingChanges = getRemainingUsernameChanges();
   const canChange = canChangeUsername();
+
+  // Check username availability with debounce
+  useEffect(() => {
+    if (!username || username === currentUsername) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
+    if (!isValidUsername(username)) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsCheckingUsername(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('check-username', {
+          body: { username, device_id: getDeviceId() }
+        });
+        
+        if (!error && data) {
+          setIsUsernameAvailable(data.available);
+          if (!data.available) {
+            setError('Ce pseudo est déjà pris par un autre joueur');
+          } else {
+            setError('');
+          }
+        }
+      } catch (err) {
+        console.error('Error checking username:', err);
+      } finally {
+        setIsCheckingUsername(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [username, currentUsername]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +87,12 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
     // Vérifier si le pseudo est identique
     if (currentUsername && username === currentUsername) {
       setError('Ce pseudo est déjà le tien');
+      return;
+    }
+
+    // Vérifier si le pseudo est disponible
+    if (isUsernameAvailable === false) {
+      setError('Ce pseudo est déjà pris par un autre joueur');
       return;
     }
 
@@ -87,6 +133,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
   const handleUsernameChange = (value: string) => {
     setUsername(value);
     setError('');
+    setIsUsernameAvailable(null);
   };
 
   return (
@@ -125,16 +172,30 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
           <Label htmlFor="username" className="text-text-primary">
             {t.usernameLabel}
           </Label>
-          <Input
-            id="username"
-            value={username}
-            onChange={(e) => handleUsernameChange(e.target.value)}
-            placeholder={t.usernamePlaceholder}
-            className="bg-background border-wheel-border text-text-primary"
-            maxLength={16}
-            autoFocus
-            disabled={!isFirstUsername && !canChange}
-          />
+          <div className="relative">
+            <Input
+              id="username"
+              value={username}
+              onChange={(e) => handleUsernameChange(e.target.value)}
+              placeholder={t.usernamePlaceholder}
+              className="bg-background border-wheel-border text-text-primary pr-10"
+              maxLength={16}
+              autoFocus
+              disabled={!isFirstUsername && !canChange}
+            />
+            {/* Indicateur de disponibilité */}
+            {username && username !== currentUsername && isValidUsername(username) && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {isCheckingUsername ? (
+                  <Loader2 className="w-4 h-4 text-text-muted animate-spin" />
+                ) : isUsernameAvailable === true ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : isUsernameAvailable === false ? (
+                  <XCircle className="w-4 h-4 text-red-500" />
+                ) : null}
+              </div>
+            )}
+          </div>
           {error && (
             <p className="text-sm text-red-400">{error}</p>
           )}
