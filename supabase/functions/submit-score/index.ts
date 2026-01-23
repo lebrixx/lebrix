@@ -122,7 +122,7 @@ serve(async (req) => {
     // Check if there's an existing score for this device_id and mode
     const { data: existingScore } = await supabase
       .from('scores')
-      .select('best_score, weekly_score')
+      .select('best_score, weekly_score, username')
       .eq('device_id', device_id)
       .eq('mode', mode)
       .single();
@@ -131,21 +131,30 @@ serve(async (req) => {
     let best_score = score;
     let weekly_score = score;
     let should_update = true;
+    let username_changed = false;
 
     if (existingScore) {
+      // Check if username changed
+      username_changed = existingScore.username !== username;
+      
       // Keep the best score for global leaderboard
       best_score = Math.max(score, existingScore.best_score);
       
       // Keep the best weekly score
       weekly_score = Math.max(score, existingScore.weekly_score || 0);
       
-      // Only update if either best_score OR weekly_score improved
+      // Only update if either best_score OR weekly_score improved OR username changed
       const best_score_improved = score > existingScore.best_score;
       const weekly_score_improved = score > (existingScore.weekly_score || 0);
       
-      if (!best_score_improved && !weekly_score_improved) {
-        console.log(`No improvement: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}`);
+      if (!best_score_improved && !weekly_score_improved && !username_changed) {
+        console.log(`No improvement and same username: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}`);
         should_update = false;
+      }
+      
+      // If only username changed (no score improvement), still update to reflect new username
+      if (username_changed) {
+        console.log(`Username changed from ${existingScore.username} to ${username}, updating record`);
       }
     }
 
