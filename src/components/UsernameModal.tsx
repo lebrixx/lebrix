@@ -20,9 +20,10 @@ import { useLanguage, translations } from '@/hooks/useLanguage';
 interface UsernameModalProps {
   isOpen: boolean;
   onUsernameSet: () => void;
+  onClose?: () => void;
 }
 
-export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsernameSet }) => {
+export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsernameSet, onClose }) => {
   const currentUsername = getUsername();
   const [username, setUsername] = useState(currentUsername || generateDefaultUsername());
   const [error, setError] = useState('');
@@ -89,7 +90,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
   };
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
       <DialogContent className="sm:max-w-md bg-button-bg border-wheel-border">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-text-primary">
