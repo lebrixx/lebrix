@@ -435,6 +435,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
       {/* Username Modal */}
       <UsernameModal 
         isOpen={showUsernameModal}
+        onClose={() => setShowUsernameModal(false)}
         onUsernameSet={handleUsernameChange}
       />
 

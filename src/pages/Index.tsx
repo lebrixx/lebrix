@@ -346,6 +346,7 @@ const Index = () => {
       {/* Modals */}
       <UsernameModal
         isOpen={showUsernameModal}
+        onClose={() => setShowUsernameModal(false)}
         onUsernameSet={() => {
           setShowUsernameModal(false);
           // Auto-submit le score du dernier jeu si disponible
