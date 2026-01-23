@@ -296,6 +296,12 @@ export const translations = {
     usernameRegisteredDesc: 'Ton pseudo a été enregistré avec succès !',
     usernameError: 'Le pseudo doit contenir entre 3 et 16 caractères (lettres, chiffres, underscore)',
     usernameSaveError: 'Erreur lors de la sauvegarde du pseudo',
+    usernameSameAsCurrent: 'Ce pseudo est déjà le tien',
+    usernameChangeLimitReached: 'Tu as atteint la limite de changements de pseudo (2 max)',
+    usernameChangesRemaining: '{count} changement(s) restant(s)',
+    usernameNoChangesLeft: 'Tu ne peux plus changer de pseudo',
+    usernameChangeWarning: 'Après cette confirmation, il te restera {count} changement(s) de pseudo.',
+    usernameFirstTimeNote: 'Tu pourras changer ton pseudo 2 fois maximum après cette première inscription.',
     // Submit Score Modal
     submitScoreLabel: 'Soumettre ton score',
     submitError: 'Erreur lors de la soumission',

@@ -3,9 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { isValidUsername, generateDefaultUsername } from '@/utils/localIdentity';
+import { isValidUsername, generateDefaultUsername, canChangeUsername, getRemainingUsernameChanges, getUsername } from '@/utils/localIdentity';
 import { setUsernameForScores } from '@/utils/scoresApi';
-import { User } from 'lucide-react';
+import { User, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { 
   AlertDialog,
@@ -23,18 +23,35 @@ interface UsernameModalProps {
 }
 
 export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsernameSet }) => {
-  const [username, setUsername] = useState(generateDefaultUsername());
+  const currentUsername = getUsername();
+  const [username, setUsername] = useState(currentUsername || generateDefaultUsername());
   const [error, setError] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
 
+  const isFirstUsername = !currentUsername;
+  const remainingChanges = getRemainingUsernameChanges();
+  const canChange = canChangeUsername();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isValidUsername(username)) {
       setError(t.usernameError);
+      return;
+    }
+
+    // Vérifier si le pseudo est identique
+    if (currentUsername && username === currentUsername) {
+      setError('Ce pseudo est déjà le tien');
+      return;
+    }
+
+    // Vérifier la limite de changements
+    if (!isFirstUsername && !canChange) {
+      setError('Tu as atteint la limite de changements de pseudo (2 max)');
       return;
     }
 
@@ -46,13 +63,22 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
     try {
       setUsernameForScores(username);
       setShowConfirmation(false);
+      
+      const newRemainingChanges = getRemainingUsernameChanges();
+      
       toast({
         title: t.usernameRegistered,
-        description: t.usernameRegisteredDesc,
+        description: isFirstUsername 
+          ? t.usernameRegisteredDesc
+          : `${t.usernameRegisteredDesc} (${newRemainingChanges} changement(s) restant(s))`,
       });
       onUsernameSet();
     } catch (err) {
-      setError(t.saveError);
+      if (err instanceof Error && err.message === 'LIMIT_REACHED') {
+        setError('Tu as atteint la limite de changements de pseudo (2 max)');
+      } else {
+        setError(t.saveError);
+      }
       setShowConfirmation(false);
     }
   };
@@ -83,6 +109,18 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             </p>
           </div>
           
+          {/* Afficher le nombre de changements restants si ce n'est pas le premier pseudo */}
+          {!isFirstUsername && (
+            <div className={`flex items-center gap-2 p-2 rounded-lg ${remainingChanges === 0 ? 'bg-red-500/20' : 'bg-yellow-500/20'}`}>
+              <AlertTriangle className={`w-4 h-4 ${remainingChanges === 0 ? 'text-red-400' : 'text-yellow-400'}`} />
+              <p className={`text-xs ${remainingChanges === 0 ? 'text-red-400' : 'text-yellow-400'}`}>
+                {remainingChanges === 0 
+                  ? 'Tu ne peux plus changer de pseudo'
+                  : `${remainingChanges} changement(s) restant(s)`}
+              </p>
+            </div>
+          )}
+          
           <Label htmlFor="username" className="text-text-primary">
             {t.usernameLabel}
           </Label>
@@ -94,6 +132,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             className="bg-background border-wheel-border text-text-primary"
             maxLength={16}
             autoFocus
+            disabled={!isFirstUsername && !canChange}
           />
           {error && (
             <p className="text-sm text-red-400">{error}</p>
@@ -109,12 +148,14 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               variant="outline"
               onClick={() => handleUsernameChange(generateDefaultUsername())}
               className="flex-1 border-wheel-border hover:bg-button-hover"
+              disabled={!isFirstUsername && !canChange}
             >
               {t.random}
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-gradient-primary hover:opacity-90"
+              disabled={!isFirstUsername && !canChange}
             >
               {t.validateLabel}
             </Button>
@@ -133,8 +174,15 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               <p>
                 {t.aboutToRegister} <span className="font-bold text-primary">{username}</span>
               </p>
+              {!isFirstUsername && (
+                <p className="text-sm text-yellow-400 font-medium">
+                  ⚠️ Après cette confirmation, il te restera {remainingChanges - 1} changement(s) de pseudo.
+                </p>
+              )}
               <p className="text-sm text-text-primary">
-                {t.dontChangeUsername}
+                {isFirstUsername 
+                  ? 'Tu pourras changer ton pseudo 2 fois maximum après cette première inscription.'
+                  : t.dontChangeUsername}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
