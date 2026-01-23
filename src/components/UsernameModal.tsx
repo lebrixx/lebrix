@@ -41,12 +41,14 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
 
   // Check username availability with debounce
   useEffect(() => {
-    if (!username || username === currentUsername) {
+    // Pour un changement de pseudo, on ne vérifie pas si c'est le même
+    if (!isFirstUsername && username === currentUsername) {
       setIsUsernameAvailable(null);
       return;
     }
 
-    if (!isValidUsername(username)) {
+    // Ne pas vérifier si le pseudo est vide ou invalide
+    if (!username || !isValidUsername(username)) {
       setIsUsernameAvailable(null);
       return;
     }
@@ -74,7 +76,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [username, currentUsername]);
+  }, [username, currentUsername, isFirstUsername]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
