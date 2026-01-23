@@ -65,6 +65,23 @@ serve(async (req) => {
       );
     }
 
+    // Check if username is already taken by another device
+    const { data: existingUsername } = await supabase
+      .from('scores')
+      .select('device_id')
+      .eq('username', username)
+      .neq('device_id', device_id)
+      .limit(1)
+      .maybeSingle();
+
+    if (existingUsername) {
+      console.log(`Username "${username}" already taken by another device`);
+      return new Response(
+        JSON.stringify({ error: 'Username already taken', code: 'USERNAME_TAKEN' }),
+        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Score validation
     const maxScore = SCORE_LIMITS[mode as keyof typeof SCORE_LIMITS];
     if (score < 2 || score > maxScore) {
