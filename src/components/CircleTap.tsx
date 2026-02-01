@@ -336,7 +336,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               fill="none"
               stroke={getCircleColor()}
               strokeWidth="20"
-              className={`drop-shadow-lg ${gameState.currentMode === 'memoire_expert' && !gameState.memoryZoneVisible ? 'opacity-0' : ''}`}
+              className={`${isAndroid ? '' : 'drop-shadow-lg'} ${gameState.currentMode === 'memoire_expert' && !gameState.memoryZoneVisible ? 'opacity-0' : ''}`}
               style={{
                 filter: getZoneFilter(getCircleColor()),
               }}
@@ -352,7 +352,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               fill="none"
               stroke={getCircleColor()}
               strokeWidth="20"
-              className="drop-shadow-lg opacity-80"
+              className={`${isAndroid ? '' : 'drop-shadow-lg'} opacity-80`}
               style={{
                 filter: getZoneFilter(getCircleColor()),
               }}
@@ -387,7 +387,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                     fill="none"
                     stroke={getCircleColor()}
                     strokeWidth="20"
-                    className="drop-shadow-lg"
+                    className={isAndroid ? '' : 'drop-shadow-lg'}
                     style={{
                       filter: getZoneFilter(getCircleColor()),
                       opacity,
