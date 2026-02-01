@@ -94,17 +94,17 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   // Android a des problèmes de rendu avec les drop-shadow multiples sur SVG
   const isAndroid = useMemo(() => Capacitor.getPlatform() === 'android', []);
   
-  // Filtres SVG adaptés à la plateforme (réduits sur Android pour éviter les reflets)
+  // Filtres SVG adaptés à la plateforme (désactivés sur Android pour éviter les reflets)
   const getZoneFilter = (color: string) => {
     if (isAndroid) {
-      return `drop-shadow(0 0 8px ${color})`;
+      return 'none'; // Aucun filtre sur Android = aucun reflet
     }
     return `drop-shadow(0 0 25px ${color}) drop-shadow(0 0 50px ${color})`;
   };
   
   const getBarFilter = (color: string) => {
     if (isAndroid) {
-      return `drop-shadow(0 0 5px ${color})`;
+      return 'none'; // Aucun filtre sur Android
     }
     return `drop-shadow(0 0 10px ${color}) drop-shadow(0 0 20px ${color})`;
   };
