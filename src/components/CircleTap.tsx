@@ -323,7 +323,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
             strokeWidth="12"
             className="opacity-90"
             style={{
-              filter: `drop-shadow(0 0 5px ${barColor})`,
+              filter: isAndroid ? 'none' : `drop-shadow(0 0 5px ${barColor})`,
             }}
           />
 
@@ -408,7 +408,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               height={6}
               fill={barColor}
               rx={3}
-              className="drop-shadow-lg"
+              className={isAndroid ? '' : 'drop-shadow-lg'}
               style={{
                 filter: getBarFilter(barColor),
               }}
