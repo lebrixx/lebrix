@@ -310,7 +310,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         <svg
           width={cfg.radius * 2 + 80}
           height={cfg.radius * 2 + 80}
-          className="drop-shadow-2xl max-w-full h-auto"
+          className={`${isAndroid ? '' : 'drop-shadow-2xl'} max-w-full h-auto`}
           style={{ cursor: 'inherit' }}
         >
           {/* Cercle de base avec glow */}
