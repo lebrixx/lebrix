@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { ModeID } from '@/constants/modes';
 import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
-
+import { Capacitor } from '@capacitor/core';
 interface CircleTapProps {
   theme: string;
   currentMode: ModeType;
@@ -90,6 +90,24 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const zoneColor = themeDef.preview.successZone;
   const barColor = themeDef.preview.circle;
   const backgroundCss = themeDef.preview.background;
+
+  // Android a des problèmes de rendu avec les drop-shadow multiples sur SVG
+  const isAndroid = useMemo(() => Capacitor.getPlatform() === 'android', []);
+  
+  // Filtres SVG adaptés à la plateforme (réduits sur Android pour éviter les reflets)
+  const getZoneFilter = (color: string) => {
+    if (isAndroid) {
+      return `drop-shadow(0 0 8px ${color})`;
+    }
+    return `drop-shadow(0 0 25px ${color}) drop-shadow(0 0 50px ${color})`;
+  };
+  
+  const getBarFilter = (color: string) => {
+    if (isAndroid) {
+      return `drop-shadow(0 0 5px ${color})`;
+    }
+    return `drop-shadow(0 0 10px ${color}) drop-shadow(0 0 20px ${color})`;
+  };
 
   // Gestion des touches clavier
   useEffect(() => {
@@ -320,7 +338,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               strokeWidth="20"
               className={`drop-shadow-lg ${gameState.currentMode === 'memoire_expert' && !gameState.memoryZoneVisible ? 'opacity-0' : ''}`}
               style={{
-                filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+                filter: getZoneFilter(getCircleColor()),
               }}
             />
           )}
@@ -336,7 +354,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               strokeWidth="20"
               className="drop-shadow-lg opacity-80"
               style={{
-                filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+                filter: getZoneFilter(getCircleColor()),
               }}
             />
           )}
@@ -371,7 +389,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                     strokeWidth="20"
                     className="drop-shadow-lg"
                     style={{
-                      filter: `drop-shadow(0 0 25px ${getCircleColor()}) drop-shadow(0 0 50px ${getCircleColor()})`,
+                      filter: getZoneFilter(getCircleColor()),
                       opacity,
                     }}
                   />
@@ -392,7 +410,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
               rx={3}
               className="drop-shadow-lg"
               style={{
-                filter: `drop-shadow(0 0 10px ${barColor}) drop-shadow(0 0 20px ${barColor})`,
+                filter: getBarFilter(barColor),
               }}
             />
           </g>
