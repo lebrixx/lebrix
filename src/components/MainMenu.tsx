@@ -106,8 +106,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   }, []);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
-      {/* TEST - À SUPPRIMER */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-red-500 font-bold text-xl z-50">test</div>
       {/* Lucky Wheel Button */}
       <Button
         onClick={() => setShowLuckyWheel(true)}
