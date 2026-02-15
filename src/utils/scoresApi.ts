@@ -166,7 +166,7 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
   }
 }
 
-export async function fetchPreviousWeekTop(mode: string, limit: number = 5): Promise<Score[]> {
+export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Promise<Score[]> {
   try {
     if (!VALID_MODES.includes(mode)) {
       console.warn('Mode invalide pour fetchPreviousWeekTop:', mode);
