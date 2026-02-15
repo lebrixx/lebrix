@@ -307,12 +307,14 @@ const Index = () => {
         );
 
         case 'modes':
+          const savedData = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
           const bestScores = {
-            classic: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_classic`] || 0,
-            arc_changeant: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_arc_changeant`] || 0,
-            survie_60s: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_survie_60s`] || 0,
-            zone_mobile: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_mobile`] || 0,
-            zone_traitresse: JSON.parse(localStorage.getItem('luckyStopGame') || '{}')[`bestScore_zone_traitresse`] || 0,
+            classic: savedData[`bestScore_classic`] || 0,
+            arc_changeant: savedData[`bestScore_arc_changeant`] || 0,
+            survie_60s: savedData[`bestScore_survie_60s`] || 0,
+            zone_mobile: savedData[`bestScore_zone_mobile`] || 0,
+            zone_traitresse: savedData[`bestScore_zone_traitresse`] || 0,
+            memoire_expert: savedData[`bestScore_memoire_expert`] || 0,
           };
           
           return (
