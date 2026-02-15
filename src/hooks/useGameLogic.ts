@@ -830,7 +830,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       return prev;
     });
     return success;
-  }, [gameState.coins, gameState.ownedItems]);
+  }, []);
 
   const reviveGame = useCallback(() => {
     setGameState(prev => ({
