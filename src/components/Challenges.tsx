@@ -220,6 +220,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       modeProgress.pendingRewards = [];
       saveChallengeProgress(progress);
       onReward(totalCoins);
+      notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
       
       toast.success(`+${totalCoins} coins !`);
@@ -237,6 +238,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       const boostNames = gamesProgress.pendingRewards.map(b => BOOSTS[b].name).join(', ');
       gamesProgress.pendingRewards = [];
       saveGamesPlayedProgress(gamesProgress);
+      notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
       
       toast.success(`${boostNames} ajouté(s) !`);
@@ -247,6 +249,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     const coinsEarned = claimDailyChallengeUtil(challengeId);
     if (coinsEarned > 0) {
       onReward(coinsEarned);
+      notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
       toast.success(`+${coinsEarned} coins !`);
     }
