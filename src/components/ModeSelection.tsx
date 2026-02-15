@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +50,26 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   const [showSlotMachine, setShowSlotMachine] = useState(false);
   const [bonusMode, setBonusMode] = useState<ModeType | null>(getActiveBonusMode());
   const canSpin = canSpinSlotToday();
+  const [countdown, setCountdown] = useState('');
+
+  // Countdown to midnight
+  useEffect(() => {
+    if (canSpin || !bonusMode) return;
+    const tick = () => {
+      const now = new Date();
+      const midnight = new Date(now);
+      midnight.setHours(24, 1, 0, 0); // 00h01 next day
+      const diff = midnight.getTime() - now.getTime();
+      if (diff <= 0) { setCountdown(''); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setCountdown(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [canSpin, bonusMode]);
 
   const handleBonusActivated = (mode: ModeType) => {
     setBonusMode(mode);
@@ -66,7 +86,13 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Retour au Menu
-        </Button>
+          </Button>
+          {!canSpin && bonusMode && countdown && (
+            <p className="text-text-muted text-xs mt-1.5 flex items-center justify-center gap-1.5">
+              <Clock className="w-3 h-3" />
+              Prochain tirage dans {countdown}
+            </p>
+          )}
 
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
