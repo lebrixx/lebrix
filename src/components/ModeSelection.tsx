@@ -76,20 +76,20 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           {/* Slot Machine Button */}
           <Button
             onClick={() => setShowSlotMachine(true)}
-            className={`mt-2 transition-all duration-300 ${
+            variant="outline"
+            className={`mt-3 transition-all duration-300 border ${
               canSpin 
-                ? 'bg-gradient-primary hover:scale-105 shadow-glow-primary animate-pulse' 
+                ? 'border-primary/50 text-primary hover:bg-primary/10 hover:scale-[1.03]' 
                 : bonusMode 
-                  ? 'bg-secondary/20 border-secondary text-secondary hover:bg-secondary/30' 
-                  : 'bg-button-bg border-wheel-border text-text-muted'
+                  ? 'border-secondary/40 text-secondary hover:bg-secondary/10' 
+                  : 'border-wheel-border text-text-muted'
             }`}
-            variant={canSpin ? 'default' : 'outline'}
           >
-            <Star className={`w-4 h-4 mr-2 ${canSpin ? 'animate-spin' : ''}`} />
+            <Star className="w-4 h-4 mr-2" />
             {canSpin 
-              ? '🎰 Lancer le Bonus x2 !' 
+              ? 'Bonus x2 disponible' 
               : bonusMode 
-                ? `⭐ ${cfgModes[bonusMode].name} - x2 actif` 
+                ? `${cfgModes[bonusMode].name} — x2 actif` 
                 : 'Bonus x2'
             }
           </Button>
