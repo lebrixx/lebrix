@@ -45,7 +45,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
     try {
       const { data, error } = await supabase
         .from('scores')
-        .select('id, device_id, username, mode, best_score, created_at')
+        .select('id, username, mode, best_score, created_at')
         .eq('mode', mode)
         .order('best_score', { ascending: false })
         .limit(50);
@@ -57,7 +57,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
       const formattedData = (data || []).map(entry => ({
         id: entry.id,
-        user_id: entry.device_id,
+        user_id: entry.id,
         username: entry.username || 'Anonyme',
         mode: entry.mode,
         score: entry.best_score,
