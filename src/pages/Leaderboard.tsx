@@ -85,12 +85,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   }, [selectedMode]);
 
   const handleScrollButton = () => {
-    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
-    if (isAtBottom) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isAtTop) {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
     } else {
-      window.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
