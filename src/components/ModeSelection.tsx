@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { useLanguage } from '@/hooks/useLanguage';
+import { SlotMachine } from '@/components/SlotMachine';
+import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
@@ -45,6 +47,13 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onOpenShop
 }) => {
   const isGameRunning = gameStatus === 'running';
+  const [showSlotMachine, setShowSlotMachine] = useState(false);
+  const [bonusMode, setBonusMode] = useState<ModeType | null>(getActiveBonusMode());
+  const canSpin = canSpinSlotToday();
+
+  const handleBonusActivated = (mode: ModeType) => {
+    setBonusMode(mode);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col items-center p-4 pt-12">
@@ -63,14 +72,37 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
             SÉLECTION DU MODE
           </h1>
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-text-secondary">Mode actuel:</span>
-            <Badge variant="outline" className="border-primary text-primary">
-              {cfgModes[currentMode].name}
-            </Badge>
-          </div>
+          
+          {/* Slot Machine Button */}
+          <Button
+            onClick={() => setShowSlotMachine(true)}
+            className={`mt-2 transition-all duration-300 ${
+              canSpin 
+                ? 'bg-gradient-primary hover:scale-105 shadow-glow-primary animate-pulse' 
+                : bonusMode 
+                  ? 'bg-secondary/20 border-secondary text-secondary hover:bg-secondary/30' 
+                  : 'bg-button-bg border-wheel-border text-text-muted'
+            }`}
+            variant={canSpin ? 'default' : 'outline'}
+          >
+            <Star className={`w-4 h-4 mr-2 ${canSpin ? 'animate-spin' : ''}`} />
+            {canSpin 
+              ? '🎰 Lancer le Bonus x2 !' 
+              : bonusMode 
+                ? `⭐ ${cfgModes[bonusMode].name} - x2 actif` 
+                : 'Bonus x2'
+            }
+          </Button>
         </div>
       </div>
+
+      {/* Slot Machine Dialog */}
+      <SlotMachine
+        isOpen={showSlotMachine}
+        onClose={() => setShowSlotMachine(false)}
+        unlockedModes={unlockedModes}
+        onBonusActivated={handleBonusActivated}
+      />
 
       {/* Warning if game is running */}
       {isGameRunning && (
@@ -93,6 +125,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           const isCurrentMode = modeId === currentMode;
           const isLocked = !unlockedModes.includes(modeId);
           const canSelect = !isGameRunning && !isLocked;
+          const hasBonus = isBonusActive(modeId as ModeType);
 
           return (
             <Card
@@ -108,6 +141,15 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 ${!isLocked && !isGameRunning ? 'hover:scale-105' : ''}
               `}
             >
+              {/* Bonus x2 Star Badge */}
+              {hasBonus && !isLocked && (
+                <div className="absolute top-4 right-4 z-10">
+                  <Badge className="bg-secondary/90 text-white border-secondary animate-pulse">
+                    <Star className="w-3 h-3 mr-1" />
+                    x2 COINS
+                  </Badge>
+                </div>
+              )}
               {/* Locked Badge */}
               {isLocked && (
                 <div className="absolute top-4 right-4 z-10">
