@@ -4,6 +4,7 @@ import { ModeType, ModeID, cfgModes, cfgBase, inArc } from '@/constants/modes';
 import { startGameSession } from '@/utils/scoresApi';
 import { BoostType } from '@/types/boosts';
 import { consumeTicket } from '@/utils/ticketSystem';
+import { getCoinMultiplier } from '@/utils/dailyBonusMode';
 
 interface CustomizationItem {
   id: string;
@@ -513,7 +514,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           ...prev,
           currentScore: newScore,
           bestScore: Math.max(prev.bestScore, newScore),
-          coins: prev.coins + (newScore % 2 === 0 ? 1 : 0), // +1 coin toutes les 2 zones réussies (comme les autres modes)
+          coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0), // +1 coin (x2 si bonus) toutes les 2 zones réussies
           zoneStart: newZoneStart,
           zoneEnd: newZoneStart + prev.zoneArc,
           memoryZoneVisible: true,
@@ -546,7 +547,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
           ...prev,
           gameStatus: 'gameover',
           bestScore: Math.max(prev.currentScore, prev.bestScore),
-          coins: prev.coins + Math.floor(prev.currentScore / 10),
+          coins: prev.coins + Math.floor(prev.currentScore / 10) * getCoinMultiplier(prev.currentMode),
           showResult: true,
           lastResult: 'failure',
           memoryZoneVisible: true, // Montrer où était la zone
@@ -598,7 +599,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         ...prev,
         gameStatus: 'gameover',
         bestScore: Math.max(prev.currentScore, prev.bestScore),
-        coins: prev.coins + Math.floor(prev.currentScore / 20),
+        coins: prev.coins + Math.floor(prev.currentScore / 20) * getCoinMultiplier(prev.currentMode),
         showResult: false, // Ne pas afficher le message
         lastResult: 'failure',
         totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
@@ -657,7 +658,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         zoneEnd: newZoneStart + newZoneArc,
         zoneArc: newZoneArc,
         zoneDriftSpeed: newZoneDriftSpeed,
-        coins: prev.coins + (newScore % 2 === 0 ? 1 : 0), // +1 coin toutes les 2 zones vertes réussies
+        coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0), // +1 coin (x2 si bonus) toutes les 2 zones vertes réussies
         level: prev.level + 1,
         lastResult: 'success',
         showResult: false,
@@ -707,7 +708,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         ...prev,
         gameStatus: 'gameover',
         bestScore: Math.max(prev.currentScore, prev.bestScore),
-        coins: prev.coins + Math.floor(prev.currentScore / 20), // Réduction drastique des coins
+        coins: prev.coins + Math.floor(prev.currentScore / 20) * getCoinMultiplier(prev.currentMode),
         showResult: false, // Ne pas afficher le message
         lastResult: 'failure',
         totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
