@@ -85,31 +85,24 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   }, [selectedMode]);
 
   const handleScrollButton = () => {
-    if (scrollContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
-      if (isAtBottom) {
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        scrollContainerRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
-      }
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
+    if (isAtBottom) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: scrollHeight, behavior: 'smooth' });
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      if (scrollContainerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-        setIsAtTop(scrollTop < 50);
-        setShowScrollButton(scrollHeight > clientHeight);
-      }
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      setIsAtTop(scrollTop < 50);
+      setShowScrollButton(scrollHeight > clientHeight + 100);
     };
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-      handleScroll();
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [leaderboard]);
 
   const getRankIcon = (position: number) => {

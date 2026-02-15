@@ -160,39 +160,28 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   };
 
   const handleScrollButton = () => {
-    if (scrollContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
-      
-      if (isAtBottom) {
-        // Si on est en bas, remonter en haut
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        // Sinon, descendre en bas
-        scrollContainerRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
-      }
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
+    
+    if (isAtBottom) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: scrollHeight, behavior: 'smooth' });
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      if (scrollContainerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-        const isBottom = scrollHeight - scrollTop <= clientHeight + 50;
-        const canScroll = scrollHeight > clientHeight;
-        
-        setIsAtTop(scrollTop < 50);
-        // Afficher le bouton uniquement si on peut scroller
-        setShowScrollButton(canScroll);
-      }
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      const canScroll = scrollHeight > clientHeight + 100;
+      
+      setIsAtTop(scrollTop < 50);
+      setShowScrollButton(canScroll);
     };
 
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-      handleScroll(); // Check initial state
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [scores, weeklyScores]);
 
   return (
