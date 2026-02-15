@@ -151,19 +151,27 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
       if (modeBestScore === modeProgress.lastCheckedScore) return;
 
-      if (modeProgress.currentLevel < MAX_LEVEL) {
+      // Débloquer TOUS les paliers atteints d'un coup
+      const unlockedTargets: number[] = [];
+      while (modeProgress.currentLevel < MAX_LEVEL) {
         const nextTarget = (modeProgress.currentLevel + 1) * 10;
-        
-        if (modeBestScore >= nextTarget && modeBestScore > modeProgress.lastCheckedScore) {
+        if (modeBestScore >= nextTarget) {
           modeProgress.pendingRewards.push(nextTarget);
           modeProgress.currentLevel++;
-          modeProgress.lastCheckedScore = modeBestScore;
+          unlockedTargets.push(nextTarget);
           hasUpdates = true;
-
-          toast.success('🎉 Défi complété !', {
-            description: `${MODE_INFO[mode].name} - Score de ${nextTarget} atteint !`,
-          });
+        } else {
+          break;
         }
+      }
+      
+      modeProgress.lastCheckedScore = modeBestScore;
+
+      if (unlockedTargets.length > 0) {
+        const maxTarget = unlockedTargets[unlockedTargets.length - 1];
+        toast.success(`🎉 ${unlockedTargets.length} palier${unlockedTargets.length > 1 ? 's' : ''} débloqué${unlockedTargets.length > 1 ? 's' : ''} !`, {
+          description: `${MODE_INFO[mode].name} - Score de ${maxTarget} atteint !`,
+        });
       }
     });
 
@@ -179,21 +187,27 @@ export const Challenges: React.FC<ChallengesProps> = ({
     
     if (actualGamesPlayed === gamesProgress.lastCheckedGames) return;
 
-    const nextTarget = (gamesProgress.currentLevel + 1) * 50;
+    let unlocked = 0;
+    while (true) {
+      const nextTarget = (gamesProgress.currentLevel + 1) * 50;
+      if (actualGamesPlayed >= nextTarget) {
+        const randomBoost = getRandomBoost();
+        gamesProgress.pendingRewards.push(randomBoost);
+        gamesProgress.currentLevel++;
+        unlocked++;
+      } else {
+        break;
+      }
+    }
     
-    if (actualGamesPlayed >= nextTarget && actualGamesPlayed > gamesProgress.lastCheckedGames) {
-      const randomBoost = getRandomBoost();
-      gamesProgress.pendingRewards.push(randomBoost);
-      gamesProgress.currentLevel++;
-      gamesProgress.lastCheckedGames = actualGamesPlayed;
-      
+    gamesProgress.lastCheckedGames = actualGamesPlayed;
+    
+    if (unlocked > 0) {
       saveGamesPlayedProgress(gamesProgress);
-      notifyChallengeUpdate(); // Notifier le MainMenu
+      notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
 
-      toast.success('🎮 Défi Parties complété !', {
-        description: `${nextTarget} parties jouées !`,
-      });
+      toast.success(`🎮 ${unlocked} palier${unlocked > 1 ? 's' : ''} Parties débloqué${unlocked > 1 ? 's' : ''} !`);
     }
   };
 
@@ -539,22 +553,28 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     
                     {/* Progression */}
                     <div className="mb-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] text-text-muted">
-                          {isCompleted ? '✓ Terminé' : `Score ${currentTarget}`}
-                        </span>
-                        <span className={`text-[10px] font-bold ${isCompleted ? 'text-success' : info.color}`}>
-                          {modeProgress.currentLevel}/{MAX_LEVEL}
-                        </span>
-                      </div>
-                      
-                      {!isCompleted && (
-                        <div className="h-1 bg-button-bg rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full rounded-full transition-all duration-500 ${hasPending ? 'bg-secondary' : 'bg-primary'}`}
-                            style={{ width: `${progressPercent}%` }}
-                          />
+                      {isCompleted ? (
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] text-success">✓ Terminé</span>
+                          <span className="text-[10px] font-bold text-success">{MAX_LEVEL}/{MAX_LEVEL}</span>
                         </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className={`text-[10px] font-bold ${info.color}`}>
+                              {modeBestScore}/{currentTarget}
+                            </span>
+                            <span className="text-[10px] text-text-muted">
+                              Palier {modeProgress.currentLevel + 1}/{MAX_LEVEL}
+                            </span>
+                          </div>
+                          <div className="h-1.5 bg-button-bg rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-500 ${hasPending ? 'bg-secondary' : 'bg-primary'}`}
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </>
                       )}
                     </div>
                     
@@ -576,7 +596,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     ) : (
                       <div className="flex items-center justify-center gap-1 py-1 px-2 rounded-md bg-white/5">
                         <Coins className="w-3 h-3 text-secondary" />
-                        <span className="text-[10px] text-text-muted">{currentTarget} coins</span>
+                        <span className="text-[10px] text-text-muted">+{currentTarget} coins</span>
                       </div>
                     )}
                   </div>
