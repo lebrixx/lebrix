@@ -469,7 +469,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
                 {previousWeekScores.map((entry, index) => (
                   <Card key={`prev-${entry.username}-${entry.score}-${index}`} 
                         className={`p-3 bg-background/50 border-wheel-border/50 ${

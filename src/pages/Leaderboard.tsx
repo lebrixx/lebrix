@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Medal, Award, Crown, Target, Coins, Zap } from 'lucide-react';
+import { ArrowLeft, Trophy, Medal, Award, Crown, Target, Coins, Zap, ChevronsDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,7 +35,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   const [selectedMode, setSelectedMode] = useState<string>('classic');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   const { toast } = useToast();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const fetchLeaderboard = async (mode: string) => {
     setLoading(true);
@@ -80,6 +83,34 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   useEffect(() => {
     fetchLeaderboard(selectedMode);
   }, [selectedMode]);
+
+  const handleScrollButton = () => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50;
+      if (isAtBottom) {
+        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        scrollContainerRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+        setIsAtTop(scrollTop < 50);
+        setShowScrollButton(scrollHeight > clientHeight);
+      }
+    };
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      handleScroll();
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, [leaderboard]);
 
   const getRankIcon = (position: number) => {
     switch (position) {
@@ -142,7 +173,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       </div>
 
       {/* Leaderboard */}
-      <div className="flex-1 px-4 pb-4">
+      <div ref={scrollContainerRef} className="flex-1 px-4 pb-4 overflow-y-auto relative">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -216,6 +247,18 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           </div>
         )}
       </div>
+
+      {/* Scroll Button */}
+      {showScrollButton && (
+        <Button
+          onClick={handleScrollButton}
+          size="icon"
+          className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/40 border border-wheel-border/50 hover:bg-button-bg/60 shadow-lg backdrop-blur-sm transition-all hover:scale-110 z-50"
+          aria-label={isAtTop ? 'Aller en bas' : 'Revenir en haut'}
+        >
+          <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${isAtTop ? '' : 'rotate-180'}`} />
+        </Button>
+      )}
     </div>
   );
 };
