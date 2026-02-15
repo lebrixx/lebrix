@@ -248,9 +248,13 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         }
       }
 
+      // Protéger le bestScore : ne jamais écrire un score inférieur à celui déjà stocké
+      const existingBestScore = savedData[`bestScore_${gameState.currentMode}`] || 0;
+      const safeBestScore = Math.max(gameState.bestScore, existingBestScore);
+
       const dataToSave = {
         ...savedData, // Préserver les données existantes
-        [`bestScore_${gameState.currentMode}`]: gameState.bestScore,
+        [`bestScore_${gameState.currentMode}`]: safeBestScore,
         coins: gameState.coins,
         ownedThemes: gameState.ownedThemes,
         ownedItems: gameState.ownedItems,
