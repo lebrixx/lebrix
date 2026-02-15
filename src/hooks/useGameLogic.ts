@@ -764,12 +764,16 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Dépenser des coins
   const spendCoins = useCallback((amount: number): boolean => {
-    if (gameState.coins >= amount) {
-      setGameState(prev => ({ ...prev, coins: prev.coins - amount }));
-      return true;
-    }
-    return false;
-  }, [gameState.coins]);
+    let success = false;
+    setGameState(prev => {
+      if (prev.coins >= amount) {
+        success = true;
+        return { ...prev, coins: prev.coins - amount };
+      }
+      return prev;
+    });
+    return success;
+  }, []);
 
   // Ajouter des coins (récompenses, défis)
   const addCoins = useCallback((amount: number) => {
@@ -789,37 +793,43 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
 
   // Acheter un thème (prix variable)
   const purchaseTheme = useCallback((themeId: string, price: number): boolean => {
-    if (gameState.ownedThemes.includes(themeId)) {
-      return false; // Déjà possédé
-    }
-    if (gameState.coins >= price) {
-      setGameState(prev => ({
-        ...prev,
-        coins: prev.coins - price,
-        ownedThemes: [...prev.ownedThemes, themeId],
-      }));
-      return true;
-    }
-    return false;
-  }, [gameState.coins, gameState.ownedThemes]);
+    let success = false;
+    setGameState(prev => {
+      if (prev.ownedThemes.includes(themeId)) {
+        return prev; // Déjà possédé
+      }
+      if (prev.coins >= price) {
+        success = true;
+        return {
+          ...prev,
+          coins: prev.coins - price,
+          ownedThemes: [...prev.ownedThemes, themeId],
+        };
+      }
+      return prev; // Pas assez de coins
+    });
+    return success;
+  }, []);
 
   // Acheter un item de personnalisation
   const purchaseItem = useCallback((item: CustomizationItem): boolean => {
-    if (gameState.ownedItems.find(owned => owned.id === item.id)) {
-      return false; // Déjà possédé
-    }
-    
-    const itemPrice = 30; // Prix pour les items de personnalisation
-    
-    if (gameState.coins >= itemPrice) {
-      setGameState(prev => ({
-        ...prev,
-        coins: prev.coins - itemPrice,
-        ownedItems: [...prev.ownedItems, item]
-      }));
-      return true;
-    }
-    return false;
+    let success = false;
+    const itemPrice = 30;
+    setGameState(prev => {
+      if (prev.ownedItems.find(owned => owned.id === item.id)) {
+        return prev; // Déjà possédé
+      }
+      if (prev.coins >= itemPrice) {
+        success = true;
+        return {
+          ...prev,
+          coins: prev.coins - itemPrice,
+          ownedItems: [...prev.ownedItems, item]
+        };
+      }
+      return prev;
+    });
+    return success;
   }, [gameState.coins, gameState.ownedItems]);
 
   const reviveGame = useCallback(() => {
