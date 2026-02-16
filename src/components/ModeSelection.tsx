@@ -99,7 +99,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
             variant="outline"
             className={`mt-3 transition-all duration-300 border ${
               canSpin 
-                ? 'border-primary/50 text-primary hover:bg-primary/10 hover:scale-[1.03]' 
+                ? 'border-primary/50 text-primary hover:bg-primary/10 hover:scale-[1.03] animate-[pulse-glow_3s_ease-in-out_infinite]' 
                 : bonusMode 
                   ? 'border-secondary/40 text-secondary hover:bg-secondary/10' 
                   : 'border-wheel-border text-text-muted'
