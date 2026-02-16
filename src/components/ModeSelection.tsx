@@ -87,12 +87,6 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           <ArrowLeft className="w-4 h-4 mr-2" />
           Retour au Menu
           </Button>
-          {!canSpin && bonusMode && countdown && (
-            <p className="text-text-muted text-xs mt-1.5 flex items-center justify-center gap-1.5">
-              <Clock className="w-3 h-3" />
-              Prochain tirage dans {countdown}
-            </p>
-          )}
 
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
@@ -119,6 +113,12 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 : 'Bonus x2'
             }
           </Button>
+          {!canSpin && bonusMode && countdown && (
+            <p className="text-text-muted text-xs mt-2 flex items-center justify-center gap-1.5">
+              <Clock className="w-3 h-3" />
+              Prochain tirage dans {countdown}
+            </p>
+          )}
         </div>
       </div>
 
