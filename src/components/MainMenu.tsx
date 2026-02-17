@@ -52,6 +52,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPassComingSoon, setShowPassComingSoon] = useState(false);
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
@@ -169,43 +170,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             )}
           </Button>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
-              >
-                <Languages className="w-4 h-4 text-text-muted" />
-                <span className="text-xs text-text-muted">{t.language}</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-40 p-2 bg-button-bg border-wheel-border z-50 max-h-72 overflow-y-auto">
-              <div className="flex flex-col gap-1">
-                {[
-                  { code: 'fr', label: '🇫🇷 Français' },
-                  { code: 'en', label: '🇬🇧 English' },
-                  { code: 'es', label: '🇪🇸 Español' },
-                  { code: 'de', label: '🇩🇪 Deutsch' },
-                  { code: 'it', label: '🇮🇹 Italiano' },
-                  { code: 'pt', label: '🇵🇹 Português' },
-                  { code: 'ar', label: '🇸🇦 العربية' },
-                  { code: 'ja', label: '🇯🇵 日本語' },
-                  { code: 'zh', label: '🇨🇳 中文' },
-                ].map(({ code, label }) => (
-                  <Button
-                    key={code}
-                    onClick={() => setLanguage(code as Language)}
-                    variant={language === code ? 'default' : 'ghost'}
-                    size="sm"
-                    className="justify-start text-xs"
-                  >
-                    {label}
-                  </Button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+          <Button
+            onClick={() => setShowPassComingSoon(true)}
+            variant="ghost"
+            size="sm"
+            className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
+          >
+            <Crown className="w-4 h-4 text-secondary" />
+            <span className="text-xs text-text-muted">Pass</span>
+          </Button>
 
           <Button
             onClick={() => setShowComingSoon(true)}
@@ -399,6 +372,31 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             className="mt-2 hover:bg-primary/10"
           >
             {t.close}
+          </Button>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Pass Coming Soon Dialog */}
+      <AlertDialog open={showPassComingSoon} onOpenChange={setShowPassComingSoon}>
+        <AlertDialogContent className="bg-button-bg border-wheel-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-primary text-center flex flex-col items-center gap-3">
+              <Crown className="w-8 h-8 text-secondary" />
+              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Pass de Saison
+              </span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-text-secondary pt-2 pb-4 text-sm leading-relaxed">
+              Le Pass de Saison arrive bientôt ! 🎉<br />
+              Débloquez des récompenses exclusives en jouant chaque jour.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Button 
+            onClick={() => setShowPassComingSoon(false)}
+            variant="ghost"
+            className="mt-2 hover:bg-primary/10"
+          >
+            Fermer
           </Button>
         </AlertDialogContent>
       </AlertDialog>
