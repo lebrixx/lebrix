@@ -190,11 +190,12 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
 
     const { data, error } = await supabase
       .from('scores')
-      .select('username,weekly_score,weekly_updated_at')
+      .select('username,previous_weekly_score,previous_weekly_updated_at')
       .eq('mode', mode)
-      .gte('weekly_updated_at', previousMonday.toISOString())
-      .lte('weekly_updated_at', previousSunday.toISOString())
-      .order('weekly_score', { ascending: false })
+      .gte('previous_weekly_updated_at', previousMonday.toISOString())
+      .lte('previous_weekly_updated_at', previousSunday.toISOString())
+      .gt('previous_weekly_score', 0)
+      .order('previous_weekly_score', { ascending: false })
       .limit(limit);
 
     if (error) {
@@ -204,8 +205,8 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
 
     return (data || []).map(entry => ({
       username: entry.username,
-      score: entry.weekly_score,
-      created_at: entry.weekly_updated_at || entry.weekly_updated_at
+      score: entry.previous_weekly_score,
+      created_at: entry.previous_weekly_updated_at || ''
     }));
 
   } catch (error) {
