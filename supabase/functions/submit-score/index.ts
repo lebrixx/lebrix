@@ -169,7 +169,20 @@ serve(async (req) => {
         // Same week: keep the best weekly score
         weekly_score = Math.max(score, existingScore.weekly_score || 0);
       } else {
-        // New week: reset weekly score to current score
+        // New week: save previous week's score before resetting
+        if (existingScore.weekly_score > 0 && weeklyUpdatedAt) {
+          await supabase
+            .from('scores')
+            .update({
+              previous_weekly_score: existingScore.weekly_score,
+              previous_weekly_updated_at: existingScore.weekly_updated_at
+            })
+            .eq('device_id', device_id)
+            .eq('username', username)
+            .eq('mode', mode);
+          console.log(`Saved previous weekly score: ${existingScore.weekly_score}`);
+        }
+        // Reset weekly score to current score
         weekly_score = score;
         console.log(`New week detected, resetting weekly_score to ${score}`);
       }

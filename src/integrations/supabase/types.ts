@@ -113,6 +113,8 @@ export type Database = {
           device_id: string
           id: string
           mode: string
+          previous_weekly_score: number
+          previous_weekly_updated_at: string | null
           username: string
           weekly_score: number
           weekly_updated_at: string | null
@@ -123,6 +125,8 @@ export type Database = {
           device_id: string
           id?: string
           mode: string
+          previous_weekly_score?: number
+          previous_weekly_updated_at?: string | null
           username: string
           weekly_score?: number
           weekly_updated_at?: string | null
@@ -133,6 +137,8 @@ export type Database = {
           device_id?: string
           id?: string
           mode?: string
+          previous_weekly_score?: number
+          previous_weekly_updated_at?: string | null
           username?: string
           weekly_score?: number
           weekly_updated_at?: string | null
