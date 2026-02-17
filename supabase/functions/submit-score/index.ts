@@ -139,7 +139,7 @@ serve(async (req) => {
     // Check if there's an existing score for this device_id, username, and mode
     const { data: existingScore } = await supabase
       .from('scores')
-      .select('best_score, weekly_score')
+      .select('best_score, weekly_score, weekly_updated_at')
       .eq('device_id', device_id)
       .eq('username', username)
       .eq('mode', mode)
@@ -154,12 +154,29 @@ serve(async (req) => {
       // Keep the best score for global leaderboard
       best_score = Math.max(score, existingScore.best_score);
       
-      // Keep the best weekly score
-      weekly_score = Math.max(score, existingScore.weekly_score || 0);
+      // Check if weekly_score is from the current week
+      const now_date = new Date();
+      const day = now_date.getDay();
+      const diff = now_date.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(now_date);
+      monday.setDate(diff);
+      monday.setHours(0, 0, 0, 0);
       
-      // Only update if either best_score OR weekly_score improved
+      const weeklyUpdatedAt = existingScore.weekly_updated_at ? new Date(existingScore.weekly_updated_at) : null;
+      const isCurrentWeek = weeklyUpdatedAt && weeklyUpdatedAt >= monday;
+      
+      if (isCurrentWeek) {
+        // Same week: keep the best weekly score
+        weekly_score = Math.max(score, existingScore.weekly_score || 0);
+      } else {
+        // New week: reset weekly score to current score
+        weekly_score = score;
+        console.log(`New week detected, resetting weekly_score to ${score}`);
+      }
+      
+      // Only update if best_score OR weekly_score improved
       const best_score_improved = score > existingScore.best_score;
-      const weekly_score_improved = score > (existingScore.weekly_score || 0);
+      const weekly_score_improved = !isCurrentWeek || score > (existingScore.weekly_score || 0);
       
       if (!best_score_improved && !weekly_score_improved) {
         console.log(`No improvement: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}`);
