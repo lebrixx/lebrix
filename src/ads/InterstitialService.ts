@@ -3,10 +3,10 @@ import { Capacitor } from '@capacitor/core';
 import { restoreNativeUi } from '@/utils/nativeUi';
 
 const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
-const INITIAL_DELAY_MS = 360000; // 6 minutes minimum après lancement
-const INTERSTITIAL_COOLDOWN_MS = 420000; // 7 minutes entre chaque interstitielle
+const INITIAL_DELAY_MS = 300000; // 5 minutes minimum après lancement
+const INTERSTITIAL_COOLDOWN_MS = 360000; // 6 minutes entre chaque interstitielle
 const REWARDED_INTERSTITIAL_GAP_MS = 90000; // 90 secondes après une rewarded
-const MAX_INTERSTITIALS_PER_SESSION = 3;
+const MAX_INTERSTITIALS_PER_SESSION = 5;
 
 class InterstitialService {
   private isInitialized = false;
