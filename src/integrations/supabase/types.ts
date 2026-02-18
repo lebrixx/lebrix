@@ -110,6 +110,7 @@ export type Database = {
         Row: {
           best_score: number
           created_at: string | null
+          decorations: string | null
           device_id: string
           id: string
           mode: string
@@ -122,6 +123,7 @@ export type Database = {
         Insert: {
           best_score: number
           created_at?: string | null
+          decorations?: string | null
           device_id: string
           id?: string
           mode: string
@@ -134,6 +136,7 @@ export type Database = {
         Update: {
           best_score?: number
           created_at?: string | null
+          decorations?: string | null
           device_id?: string
           id?: string
           mode?: string

@@ -9,6 +9,8 @@ import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Settings } from '@/components/Settings';
 import { LuckyWheel } from '@/components/LuckyWheel';
+import { SeasonPass } from '@/components/SeasonPass';
+import { hasDailyChallengeReward } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 import { canSpinFree, getTimeUntilNextFreeSpin, formatTimeRemaining } from '@/utils/luckyWheel';
@@ -52,7 +54,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showPassComingSoon, setShowPassComingSoon] = useState(false);
+  const [showSeasonPass, setShowSeasonPass] = useState(false);
+  const [hasPassReward, setHasPassReward] = useState(hasDailyChallengeReward());
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
@@ -171,13 +174,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </Button>
 
           <Button
-            onClick={() => setShowPassComingSoon(true)}
+            onClick={() => setShowSeasonPass(true)}
             variant="ghost"
             size="sm"
-            className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
+            className={`relative hover:bg-primary/20 transition-all duration-300 gap-1.5 ${hasPassReward ? 'animate-pulse-glow' : ''}`}
           >
-            <Crown className="w-4 h-4 text-secondary" />
+            <Crown className={`w-4 h-4 ${hasPassReward ? 'text-secondary' : 'text-text-muted'}`} />
             <span className="text-xs text-text-muted">Pass</span>
+            {hasPassReward && (
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full animate-pulse" />
+            )}
           </Button>
 
           <Button
@@ -376,30 +382,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Pass Coming Soon Dialog */}
-      <AlertDialog open={showPassComingSoon} onOpenChange={setShowPassComingSoon}>
-        <AlertDialogContent className="bg-button-bg border-wheel-border">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-primary text-center flex flex-col items-center gap-3">
-              <Crown className="w-8 h-8 text-secondary" />
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Pass de Saison
-              </span>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-text-secondary pt-2 pb-4 text-sm leading-relaxed">
-              Le Pass de Saison arrive bientôt ! 🎉<br />
-              Débloquez des récompenses exclusives en jouant chaque jour.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <Button 
-            onClick={() => setShowPassComingSoon(false)}
-            variant="ghost"
-            className="mt-2 hover:bg-primary/10"
-          >
-            Fermer
-          </Button>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Season Pass */}
+      <SeasonPass
+        isOpen={showSeasonPass}
+        onClose={() => {
+          setShowSeasonPass(false);
+          setHasPassReward(hasDailyChallengeReward());
+        }}
+      />
 
       {/* Lucky Wheel */}
       <LuckyWheel
