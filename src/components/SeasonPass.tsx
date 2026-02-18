@@ -137,10 +137,9 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
               <button
                 onClick={handleWatchAd}
                 disabled={isShowing}
-                className="relative flex-1 flex items-center justify-center gap-2 py-3 px-3 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed group"
+                className="relative flex-1 flex items-center justify-center gap-2 py-2.5 px-3 mx-1.5 rounded-xl border border-secondary/35 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-secondary/20 to-primary/10 transition-opacity pointer-events-none" />
-                <div className="w-6 h-6 rounded-lg bg-secondary/35 border border-secondary/60 flex items-center justify-center shrink-0 shadow-[0_0_10px_hsl(var(--secondary)/0.4)]">
+                <div className="w-6 h-6 rounded-lg bg-secondary/25 border border-secondary/50 flex items-center justify-center shrink-0 shadow-[0_0_8px_hsl(var(--secondary)/0.3)]">
                   <Video className="w-3.5 h-3.5 text-secondary" />
                 </div>
                 <div className="flex flex-col items-start leading-none">
