@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHea
 import { Settings } from '@/components/Settings';
 import { LuckyWheel } from '@/components/LuckyWheel';
 import { SeasonPass } from '@/components/SeasonPass';
-import { hasDailyChallengeReward } from '@/utils/seasonPass';
+import { hasDailyQuestReward } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 import { canSpinFree, getTimeUntilNextFreeSpin, formatTimeRemaining } from '@/utils/luckyWheel';
@@ -57,7 +57,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSeasonPass, setShowSeasonPass] = useState(false);
-  const [hasPassReward, setHasPassReward] = useState(hasDailyChallengeReward());
+  const [hasPassReward, setHasPassReward] = useState(hasDailyQuestReward());
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
@@ -389,7 +389,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         isOpen={showSeasonPass}
         onClose={() => {
           setShowSeasonPass(false);
-          setHasPassReward(hasDailyChallengeReward());
+          setHasPassReward(hasDailyQuestReward());
         }}
         coins={coins}
         onSpendCoins={onSpendCoins}

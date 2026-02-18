@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Crown, Diamond, Lock, Check, Gift, Star, Sparkles, Coins, Video, Backpack, ChevronRight } from 'lucide-react';
+import { Crown, Diamond, Lock, Check, Gift, Star, Sparkles, Coins, Video, Backpack, ChevronRight, Target, Zap } from 'lucide-react';
 import {
   getSeasonPassData,
   addDiamonds,
   PASS_TIERS,
   DECORATIONS,
-  getDailyChallenge,
-  claimDailyChallengeReward,
+  getDailyQuests,
+  claimDailyQuestReward,
   unlockTier,
   equipDecoration,
   getTierCost,
@@ -16,6 +16,7 @@ import {
 } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+
 
 interface SeasonPassProps {
   isOpen: boolean;
@@ -45,14 +46,16 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
     return () => clearInterval(interval);
   }, [isOpen, getCooldown]);
 
-  const dailyChallenge = getDailyChallenge();
+  const dailyQuests = getDailyQuests();
+  const bothCompleted = dailyQuests.quest1Completed && dailyQuests.quest2Completed;
 
   const handleClaimDaily = () => {
-    if (claimDailyChallengeReward()) {
+    if (claimDailyQuestReward()) {
       setPassData(getSeasonPassData());
-      toast({ title: '💎 Diamant obtenu !', description: 'Tu as gagné 1 diamant grâce au défi quotidien !' });
+      toast({ title: '💎 Diamant obtenu !', description: 'Tu as gagné 1 diamant en complétant les 2 quêtes !' });
     }
   };
+
 
   const handleUnlockTier = (tier: number) => {
     if (unlockTier(tier)) {
@@ -193,34 +196,75 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                 </div>
               )}
 
-              {/* Daily Challenge */}
+              {/* Daily Quests — 2 quêtes, 1 💎 quand les 2 sont faites */}
               <div className="relative overflow-hidden rounded-xl border border-secondary/40 bg-gradient-to-br from-secondary/10 to-transparent p-3.5">
                 <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/10 blur-xl rounded-full" />
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-2.5">
+                <div className="relative space-y-3">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-lg bg-secondary/20 flex items-center justify-center">
                         <Star className="w-4 h-4 text-secondary" />
                       </div>
-                      <span className="font-bold text-sm text-text-primary">Défi du jour</span>
+                      <span className="font-bold text-sm text-text-primary">Quêtes du jour</span>
                     </div>
                     <span className="text-xs font-bold bg-secondary/20 text-secondary border border-secondary/30 rounded-full px-2 py-0.5">
-                      +1 💎
+                      +1 💎 les 2 complétées
                     </span>
                   </div>
-                  <p className="text-text-secondary text-xs mb-3">{dailyChallenge.description}</p>
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <div className="relative flex-1 h-2 bg-game-darker rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-secondary to-primary transition-all duration-500"
-                        style={{ width: `${Math.min(100, (dailyChallenge.progress / dailyChallenge.target) * 100)}%` }}
-                      />
+
+                  {/* Quest 1 : Score 25+ */}
+                  <div className={`flex items-center gap-3 rounded-lg px-3 py-2.5 border transition-all ${
+                    dailyQuests.quest1Completed
+                      ? 'border-secondary/40 bg-secondary/10'
+                      : 'border-wheel-border/30 bg-game-darker/50'
+                  }`}>
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                      dailyQuests.quest1Completed ? 'bg-secondary/30' : 'bg-game-dark border border-wheel-border/40'
+                    }`}>
+                      {dailyQuests.quest1Completed
+                        ? <Check className="w-3.5 h-3.5 text-secondary" />
+                        : <Target className="w-3.5 h-3.5 text-text-muted" />
+                      }
                     </div>
-                    <span className="text-xs text-text-muted font-mono min-w-[40px] text-right">
-                      {dailyChallenge.progress}/{dailyChallenge.target}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-semibold leading-tight ${dailyQuests.quest1Completed ? 'text-secondary' : 'text-text-secondary'}`}>
+                        Score de 25+ dans une partie
+                      </p>
+                      <p className="text-[10px] text-text-muted mt-0.5">N'importe quel mode</p>
+                    </div>
+                    {dailyQuests.quest1Completed && (
+                      <span className="text-[10px] font-bold text-secondary shrink-0">✓</span>
+                    )}
                   </div>
-                  {dailyChallenge.completed && !dailyChallenge.claimed && (
+
+                  {/* Quest 2 : Utiliser un boost */}
+                  <div className={`flex items-center gap-3 rounded-lg px-3 py-2.5 border transition-all ${
+                    dailyQuests.quest2Completed
+                      ? 'border-secondary/40 bg-secondary/10'
+                      : 'border-wheel-border/30 bg-game-darker/50'
+                  }`}>
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                      dailyQuests.quest2Completed ? 'bg-secondary/30' : 'bg-game-dark border border-wheel-border/40'
+                    }`}>
+                      {dailyQuests.quest2Completed
+                        ? <Check className="w-3.5 h-3.5 text-secondary" />
+                        : <Zap className="w-3.5 h-3.5 text-text-muted" />
+                      }
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-semibold leading-tight ${dailyQuests.quest2Completed ? 'text-secondary' : 'text-text-secondary'}`}>
+                        Utiliser un boost en jeu
+                      </p>
+                      <p className="text-[10px] text-text-muted mt-0.5">N'importe quel boost ou mode</p>
+                    </div>
+                    {dailyQuests.quest2Completed && (
+                      <span className="text-[10px] font-bold text-secondary shrink-0">✓</span>
+                    )}
+                  </div>
+
+                  {/* Claim button or status */}
+                  {bothCompleted && !dailyQuests.claimed && (
                     <Button
                       onClick={handleClaimDaily}
                       size="sm"
@@ -229,53 +273,19 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                       <Gift className="w-3.5 h-3.5" /> Récupérer 1 💎
                     </Button>
                   )}
-                  {dailyChallenge.claimed && (
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-secondary font-semibold">
-                      <Check className="w-3.5 h-3.5" /> Récompense récupérée !
+                  {dailyQuests.claimed && (
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-secondary font-semibold py-1">
+                      <Check className="w-3.5 h-3.5" /> Récompense récupérée aujourd'hui !
                     </div>
+                  )}
+                  {!bothCompleted && !dailyQuests.claimed && (
+                    <p className="text-center text-[10px] text-text-muted">
+                      {[dailyQuests.quest1Completed, dailyQuests.quest2Completed].filter(Boolean).length}/2 quêtes complétées
+                    </p>
                   )}
                 </div>
               </div>
 
-              {/* Get diamonds */}
-              <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/8 to-transparent p-3.5">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-                    <Diamond className="w-4 h-4 text-primary" />
-                  </div>
-                  <span className="font-bold text-sm text-text-primary">Obtenir des diamants</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <Button
-                    onClick={handleBuyDiamond}
-                    size="sm"
-                    disabled={coins < 1}
-                    variant="outline"
-                    className="h-10 text-xs border-wheel-border bg-game-dark/60 hover:bg-primary/10 hover:border-primary/50 flex-col gap-0.5 rounded-xl"
-                  >
-                    <div className="flex items-center gap-1">
-                      <Coins className="w-3.5 h-3.5 text-secondary" />
-                      <span className="text-secondary font-bold">1 coin</span>
-                    </div>
-                    <span className="text-text-muted text-[10px]">→ 1 💎</span>
-                  </Button>
-                  <Button
-                    onClick={handleWatchAd}
-                    size="sm"
-                    disabled={isShowing || !isReady() || cooldownRemaining > 0}
-                    className="h-10 text-xs bg-gradient-to-r from-primary to-secondary text-game-darker font-black flex-col gap-0.5 rounded-xl shadow-[0_0_12px_hsl(var(--primary)/0.3)]"
-                  >
-                    <div className="flex items-center gap-1">
-                      <Video className="w-3.5 h-3.5" />
-                      <span>Pub gratuite</span>
-                    </div>
-                    <span className="text-[10px] opacity-80">{cooldownRemaining > 0 ? `${cooldownRemaining}s` : '→ 1 💎'}</span>
-                  </Button>
-                </div>
-                <p className="text-[10px] text-text-muted text-center">
-                  <Sparkles className="w-3 h-3 inline mr-0.5 text-primary" /> +1 💎 automatiquement par partie jouée
-                </p>
-              </div>
 
               {/* Tiers */}
               <div>

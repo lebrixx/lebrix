@@ -17,7 +17,7 @@ import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { updateDailyChallengeProgress } from '@/utils/dailyChallenges';
-import { addDiamonds, updateDailyChallengeProgress as updatePassChallenge } from '@/utils/seasonPass';
+import { updateQuestScore, updateQuestBoostUsed } from '@/utils/seasonPass';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
@@ -124,9 +124,13 @@ const Index = () => {
     // Mettre à jour la progression des défis quotidiens
     updateDailyChallengeProgress(currentMode, finalScore, gameDuration);
     
-    // Season Pass: award 1 diamond per game + update pass daily challenge
-    addDiamonds(1);
-    updatePassChallenge(currentMode, finalScore);
+    // Season Pass: update quest score
+    updateQuestScore(finalScore);
+    
+    // Season Pass: quest boost — si des boosts ont été utilisés dans cette partie
+    if (selectedBoostsForGame.length > 0) {
+      updateQuestBoostUsed();
+    }
 
     // Consommer les boosts utilisés
     selectedBoostsForGame.forEach(boostId => {
