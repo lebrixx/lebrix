@@ -31,6 +31,7 @@ interface CircleTapProps {
   playClick?: () => void;
   playSuccess?: (comboCount?: number) => void;
   playFailure?: () => void;
+  onBoostUsed?: () => void;
 }
 
 export const CircleTap: React.FC<CircleTapProps> = ({ 
@@ -45,7 +46,8 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   onToggleSound = () => {},
   playClick = () => {},
   playSuccess = () => {},
-  playFailure = () => {}
+  playFailure = () => {},
+  onBoostUsed = () => {}
 }) => {
   const { gameState, startGame, onTap, resetGame, reviveGame, cfg } = useGameLogic(currentMode);
   const [showBoostMenu, setShowBoostMenu] = useState(false);
@@ -201,21 +203,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const handleRestartWithBoosts = (boosts: BoostType[]) => {
     setShowBoostMenu(false);
     
-    // Mode expert : vérifier les tickets avant de démarrer
-    if (currentMode === ModeID.MEMOIRE_EXPERT && currentTickets <= 0) {
-      toast({
-        title: t.noTicket,
-        description: t.noTicketDesc,
-        variant: "destructive",
-      });
-      return;
+    // Notifier la quête "utiliser un boost" si des boosts sont sélectionnés
+    if (boosts.length > 0) {
+      onBoostUsed();
     }
     
     if (gameState.gameStatus === 'gameover') {
       resetGame();
       startGame(boosts);
     } else {
-      // En idle, on démarre directement
       startGame(boosts);
     }
   };
