@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Crown, Diamond, Lock, Check, Gift, Star, Sparkles, Coins, Video, Backpack } from 'lucide-react';
+import { Crown, Diamond, Lock, Check, Gift, Star, Sparkles, Coins, Video, Backpack, ChevronRight } from 'lucide-react';
 import {
   getSeasonPassData,
   addDiamonds,
@@ -27,17 +24,17 @@ interface SeasonPassProps {
   onSpendCoins?: (amount: number) => boolean;
 }
 
+type Tab = 'pass' | 'inventaire';
+
 export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins = 0, onSpendCoins }) => {
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
-  const [activeTab, setActiveTab] = useState<string>('pass');
+  const [activeTab, setActiveTab] = useState<Tab>('pass');
   const { toast } = useToast();
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   useEffect(() => {
-    if (isOpen) {
-      setPassData(getSeasonPassData());
-    }
+    if (isOpen) setPassData(getSeasonPassData());
   }, [isOpen]);
 
   useEffect(() => {
@@ -93,247 +90,360 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
   const nextTier = passData.currentTier + 1;
   const nextTierData = PASS_TIERS.find(t => t.tier === nextTier);
   const nextTierCost = nextTierData ? getTierCost(nextTier) : 0;
-  const progressPercent = nextTierData
-    ? Math.min(100, (passData.diamonds / nextTierCost) * 100)
-    : 100;
+  const progressPercent = nextTierData ? Math.min(100, (passData.diamonds / nextTierCost) * 100) : 100;
 
   const unlockedDecorations = DECORATIONS.filter(d => passData.currentTier >= d.tier);
+  const equippedDeco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-button-bg border-wheel-border max-w-md max-h-[85vh] overflow-hidden p-0 gap-0">
-        {/* Header */}
-        <div className="relative bg-gradient-to-b from-secondary/20 to-transparent px-5 pt-5 pb-3">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <Crown className="w-6 h-6 text-secondary" />
-            <h2 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Pass de Saison
-            </h2>
-          </div>
+      <DialogContent className="bg-game-darker border-wheel-border max-w-sm max-h-[90vh] overflow-hidden p-0 gap-0 rounded-2xl">
+        
+        {/* ── HEADER ── */}
+        <div className="relative overflow-hidden">
+          {/* Background glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-primary/10 to-transparent" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-16 bg-secondary/20 blur-2xl rounded-full" />
           
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <div className="flex items-center gap-1.5 bg-game-darker/60 rounded-full px-4 py-1.5 border border-wheel-border">
-              <Diamond className="w-4 h-4 text-primary" />
-              <span className="font-bold text-primary text-lg">{passData.diamonds}</span>
-              <span className="text-text-muted text-xs">diamants</span>
+          <div className="relative px-5 pt-5 pb-4">
+            {/* Title */}
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Crown className="w-5 h-5 text-secondary drop-shadow-[0_0_8px_hsl(var(--secondary))]" />
+              <h2 className="text-lg font-extrabold tracking-wide text-text-primary uppercase">
+                Pass de Saison
+              </h2>
+              <Crown className="w-5 h-5 text-secondary drop-shadow-[0_0_8px_hsl(var(--secondary))]" />
             </div>
-          </div>
-        </div>
 
-        {/* Tabs */}
-        <div className="px-5 pt-2">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 bg-game-darker border border-wheel-border h-9">
-              <TabsTrigger 
-                value="pass" 
-                className="flex items-center gap-1.5 text-xs data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+            {/* Diamond counter */}
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="flex items-center gap-2 bg-game-dark/80 border border-primary/30 rounded-2xl px-5 py-2.5 shadow-[0_0_16px_hsl(var(--primary)/0.2)]">
+                <Diamond className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(var(--primary))]" />
+                <span className="text-2xl font-black text-text-primary">{passData.diamonds}</span>
+                <span className="text-xs text-text-muted font-medium">💎</span>
+              </div>
+            </div>
+
+            {/* Tab switcher */}
+            <div className="flex bg-game-dark/60 border border-wheel-border/50 rounded-xl p-1 gap-1">
+              <button
+                onClick={() => setActiveTab('pass')}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
+                  activeTab === 'pass'
+                    ? 'bg-gradient-to-r from-primary/80 to-secondary/80 text-text-primary shadow-sm'
+                    : 'text-text-muted hover:text-text-secondary'
+                }`}
               >
                 <Crown className="w-3.5 h-3.5" />
                 Pass
-              </TabsTrigger>
-              <TabsTrigger 
-                value="inventaire"
-                className="flex items-center gap-1.5 text-xs data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+              </button>
+              <button
+                onClick={() => setActiveTab('inventaire')}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
+                  activeTab === 'inventaire'
+                    ? 'bg-gradient-to-r from-primary/80 to-secondary/80 text-text-primary shadow-sm'
+                    : 'text-text-muted hover:text-text-secondary'
+                }`}
               >
                 <Backpack className="w-3.5 h-3.5" />
                 Inventaire
                 {unlockedDecorations.length > 0 && (
-                  <Badge className="text-[9px] bg-secondary/20 text-secondary border-secondary/30 px-1 py-0 ml-0.5">
+                  <span className="bg-secondary/80 text-text-primary text-[9px] font-bold rounded-full px-1.5 py-0 min-w-[16px] text-center">
                     {unlockedDecorations.length}
-                  </Badge>
+                  </span>
                 )}
-              </TabsTrigger>
-            </TabsList>
+              </button>
+            </div>
+          </div>
+        </div>
 
-            {/* Pass Tab */}
-            <TabsContent value="pass" className="mt-3">
-              <div className="overflow-y-auto space-y-4 pb-5" style={{ maxHeight: 'calc(85vh - 240px)' }}>
-                {/* Progress to next tier */}
-                {nextTierData && (
-                  <div>
-                    <div className="flex justify-between text-xs text-text-muted mb-1">
-                      <span>Tier {passData.currentTier}</span>
-                      <span>Tier {nextTier}</span>
+        {/* ── CONTENT ── */}
+        <div className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+          
+          {/* ═══ PASS TAB ═══ */}
+          {activeTab === 'pass' && (
+            <div className="px-4 pb-6 space-y-3 pt-1">
+
+              {/* Progress bar to next tier */}
+              {nextTierData ? (
+                <div className="bg-game-dark/60 border border-wheel-border/40 rounded-xl p-3.5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] text-text-muted font-medium">Palier {passData.currentTier}</span>
+                    <div className="flex items-center gap-1">
+                      <Diamond className="w-3 h-3 text-primary" />
+                      <span className="text-[11px] text-text-secondary font-mono">{passData.diamonds}/{nextTierCost}</span>
                     </div>
-                    <Progress value={progressPercent} className="h-2 bg-game-darker" />
-                    <p className="text-center text-xs text-text-muted mt-1">
-                      {passData.diamonds}/{nextTierCost} 💎 pour le prochain palier
-                    </p>
+                    <span className="text-[11px] text-text-muted font-medium">Palier {nextTier}</span>
                   </div>
-                )}
-                {!nextTierData && passData.currentTier > 0 && (
-                  <p className="text-center text-xs text-secondary font-medium">
-                    ✨ Pass complété ! Toutes les décorations débloquées !
-                  </p>
-                )}
-
-                {/* Daily Challenge */}
-                <div className="rounded-xl border border-secondary/30 bg-secondary/5 p-3.5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Star className="w-4 h-4 text-secondary" />
-                    <span className="font-semibold text-sm text-text-primary">Défi Quotidien</span>
-                    <Badge variant="outline" className="text-[10px] border-secondary/40 text-secondary ml-auto px-1.5 py-0">
-                      +1 💎
-                    </Badge>
-                  </div>
-                  <p className="text-text-secondary text-xs mb-2">{dailyChallenge.description}</p>
-                  <div className="flex items-center gap-2">
-                    <Progress 
-                      value={Math.min(100, (dailyChallenge.progress / dailyChallenge.target) * 100)} 
-                      className="h-2 flex-1 bg-game-darker" 
+                  <div className="relative h-2.5 bg-game-darker rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-500"
+                      style={{ width: `${progressPercent}%` }}
                     />
+                  </div>
+                  <p className="text-center text-[10px] text-text-muted mt-1.5">
+                    {nextTierCost - passData.diamonds > 0
+                      ? `Encore ${nextTierCost - passData.diamonds} 💎 pour débloquer ${nextTierData.decoration.name}`
+                      : 'Tu peux débloquer le prochain palier !'}
+                  </p>
+                </div>
+              ) : passData.currentTier > 0 && (
+                <div className="text-center py-2">
+                  <p className="text-secondary font-bold text-sm">✨ Pass complété ! Tu es au sommet !</p>
+                </div>
+              )}
+
+              {/* Daily Challenge */}
+              <div className="relative overflow-hidden rounded-xl border border-secondary/40 bg-gradient-to-br from-secondary/10 to-transparent p-3.5">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/10 blur-xl rounded-full" />
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-secondary/20 flex items-center justify-center">
+                        <Star className="w-4 h-4 text-secondary" />
+                      </div>
+                      <span className="font-bold text-sm text-text-primary">Défi du jour</span>
+                    </div>
+                    <span className="text-xs font-bold bg-secondary/20 text-secondary border border-secondary/30 rounded-full px-2 py-0.5">
+                      +1 💎
+                    </span>
+                  </div>
+                  <p className="text-text-secondary text-xs mb-3">{dailyChallenge.description}</p>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <div className="relative flex-1 h-2 bg-game-darker rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-secondary to-primary transition-all duration-500"
+                        style={{ width: `${Math.min(100, (dailyChallenge.progress / dailyChallenge.target) * 100)}%` }}
+                      />
+                    </div>
                     <span className="text-xs text-text-muted font-mono min-w-[40px] text-right">
                       {dailyChallenge.progress}/{dailyChallenge.target}
                     </span>
                   </div>
                   {dailyChallenge.completed && !dailyChallenge.claimed && (
-                    <Button onClick={handleClaimDaily} size="sm" className="w-full mt-2 bg-gradient-to-r from-secondary to-primary text-game-darker font-bold text-xs h-8">
-                      <Gift className="w-3.5 h-3.5 mr-1" /> Récupérer le diamant !
+                    <Button
+                      onClick={handleClaimDaily}
+                      size="sm"
+                      className="w-full h-9 bg-gradient-to-r from-secondary to-primary text-game-darker font-black text-xs rounded-xl shadow-[0_0_16px_hsl(var(--secondary)/0.4)]"
+                    >
+                      <Gift className="w-3.5 h-3.5" /> Récupérer 1 💎
                     </Button>
                   )}
                   {dailyChallenge.claimed && (
-                    <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-secondary">
-                      <Check className="w-3.5 h-3.5" /> <span>Récompense récupérée !</span>
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-secondary font-semibold">
+                      <Check className="w-3.5 h-3.5" /> Récompense récupérée !
                     </div>
                   )}
                 </div>
+              </div>
 
-                {/* Obtenir des diamants */}
-                <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5">
-                  <div className="flex items-center gap-2 mb-3">
+              {/* Get diamonds */}
+              <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/8 to-transparent p-3.5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
                     <Diamond className="w-4 h-4 text-primary" />
-                    <span className="font-semibold text-sm text-text-primary">Obtenir des diamants</span>
                   </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleBuyDiamond} size="sm" variant="outline" disabled={coins < 1} className="flex-1 h-9 text-xs border-secondary/40 hover:bg-secondary/10 gap-1.5">
-                      <Coins className="w-3.5 h-3.5 text-secondary" /> <span>1 coin → 1 💎</span>
-                    </Button>
-                    <Button onClick={handleWatchAd} size="sm" disabled={isShowing || !isReady() || cooldownRemaining > 0} className="flex-1 h-9 text-xs bg-gradient-to-r from-primary to-secondary text-game-darker font-bold gap-1.5">
-                      <Video className="w-3.5 h-3.5" /> {cooldownRemaining > 0 ? `${cooldownRemaining}s` : 'Pub → 1 💎'}
-                    </Button>
-                  </div>
-                  <p className="text-[10px] text-text-muted text-center mt-2">
-                    <Sparkles className="w-3 h-3 inline mr-0.5 text-primary" /> +1 💎 par partie jouée
-                  </p>
+                  <span className="font-bold text-sm text-text-primary">Obtenir des diamants</span>
                 </div>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <Button
+                    onClick={handleBuyDiamond}
+                    size="sm"
+                    disabled={coins < 1}
+                    variant="outline"
+                    className="h-10 text-xs border-wheel-border bg-game-dark/60 hover:bg-primary/10 hover:border-primary/50 flex-col gap-0.5 rounded-xl"
+                  >
+                    <div className="flex items-center gap-1">
+                      <Coins className="w-3.5 h-3.5 text-secondary" />
+                      <span className="text-secondary font-bold">1 coin</span>
+                    </div>
+                    <span className="text-text-muted text-[10px]">→ 1 💎</span>
+                  </Button>
+                  <Button
+                    onClick={handleWatchAd}
+                    size="sm"
+                    disabled={isShowing || !isReady() || cooldownRemaining > 0}
+                    className="h-10 text-xs bg-gradient-to-r from-primary to-secondary text-game-darker font-black flex-col gap-0.5 rounded-xl shadow-[0_0_12px_hsl(var(--primary)/0.3)]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <Video className="w-3.5 h-3.5" />
+                      <span>Pub gratuite</span>
+                    </div>
+                    <span className="text-[10px] opacity-80">{cooldownRemaining > 0 ? `${cooldownRemaining}s` : '→ 1 💎'}</span>
+                  </Button>
+                </div>
+                <p className="text-[10px] text-text-muted text-center">
+                  <Sparkles className="w-3 h-3 inline mr-0.5 text-primary" /> +1 💎 automatiquement par partie jouée
+                </p>
+              </div>
 
-                {/* Tiers to unlock */}
+              {/* Tiers */}
+              <div>
+                <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-2.5 px-0.5 flex items-center gap-1.5">
+                  <Crown className="w-3.5 h-3.5 text-secondary" /> Paliers à débloquer
+                </h3>
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-text-primary flex items-center gap-1.5">
-                    <Crown className="w-4 h-4 text-secondary" /> Paliers
-                  </h3>
                   {PASS_TIERS.map((tier) => {
                     const isUnlocked = passData.currentTier >= tier.tier;
                     const isNext = tier.tier === passData.currentTier + 1;
                     const cost = getTierCost(tier.tier);
                     const canAfford = passData.diamonds >= cost;
-                    const isPrevUnlocked = tier.tier === 1 || passData.currentTier >= tier.tier - 1;
 
                     return (
-                      <div key={tier.tier} className={`relative rounded-xl border p-3 transition-all duration-300 ${
-                        isUnlocked ? 'border-secondary/30 bg-secondary/5' : isNext ? 'border-wheel-border bg-game-darker/40' : 'border-wheel-border/50 bg-game-darker/20 opacity-60'
-                      }`}>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                            isUnlocked ? 'bg-gradient-to-br from-secondary to-primary text-game-darker' : 'bg-game-darker border border-wheel-border text-text-muted'
-                          }`}>
-                            {isUnlocked ? <Check className="w-3.5 h-3.5" /> : tier.tier}
+                      <div
+                        key={tier.tier}
+                        className={`flex items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-all duration-300 ${
+                          isUnlocked
+                            ? 'border-secondary/30 bg-secondary/5'
+                            : isNext
+                            ? 'border-primary/30 bg-primary/5'
+                            : 'border-wheel-border/30 bg-game-dark/20 opacity-50'
+                        }`}
+                      >
+                        {/* Tier number / status */}
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sm font-black ${
+                          isUnlocked
+                            ? 'bg-gradient-to-br from-secondary to-primary text-game-darker shadow-[0_0_10px_hsl(var(--secondary)/0.4)]'
+                            : isNext
+                            ? 'bg-primary/15 border border-primary/40 text-primary'
+                            : 'bg-game-darker border border-wheel-border/30 text-text-muted'
+                        }`}>
+                          {isUnlocked ? <Check className="w-4 h-4" /> : tier.tier}
+                        </div>
+
+                        {/* Decoration preview */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-base leading-none">{tier.decoration.prefix.trim()}</span>
+                            <span className="font-semibold text-sm text-text-primary">{tier.decoration.name}</span>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <span className="font-medium text-sm text-text-primary">{tier.decoration.name}</span>
-                            <p className="text-text-secondary text-xs mt-0.5 truncate">
-                              {tier.decoration.preview.replace('Pseudo', '───')}
-                            </p>
-                          </div>
-                          <div className="shrink-0">
-                            {isUnlocked ? (
-                              <Check className="w-4 h-4 text-secondary" />
-                            ) : isNext && isPrevUnlocked ? (
-                              <Button onClick={() => handleUnlockTier(tier.tier)} size="sm" disabled={!canAfford} className={`h-7 text-xs px-2.5 ${
-                                canAfford ? 'bg-gradient-to-r from-primary to-secondary text-game-darker font-bold' : 'bg-game-darker text-text-muted border border-wheel-border'
-                              }`}>
-                                <Diamond className="w-3 h-3 mr-1" /> {cost}
-                              </Button>
-                            ) : (
-                              <Lock className="w-4 h-4 text-text-muted/40" />
-                            )}
-                          </div>
+                          <p className="text-[11px] text-text-muted mt-0.5 truncate">
+                            {tier.decoration.preview.replace('Pseudo', 'TonPseudo')}
+                          </p>
+                        </div>
+
+                        {/* Action */}
+                        <div className="shrink-0">
+                          {isUnlocked ? (
+                            <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center">
+                              <Check className="w-3.5 h-3.5 text-secondary" />
+                            </div>
+                          ) : isNext ? (
+                            <Button
+                              onClick={() => handleUnlockTier(tier.tier)}
+                              size="sm"
+                              disabled={!canAfford}
+                              className={`h-8 text-xs px-3 rounded-xl font-bold ${
+                                canAfford
+                                  ? 'bg-gradient-to-r from-primary to-secondary text-game-darker shadow-[0_0_10px_hsl(var(--primary)/0.3)]'
+                                  : 'bg-game-darker text-text-muted border border-wheel-border/40'
+                              }`}
+                            >
+                              <Diamond className="w-3 h-3" /> {cost}
+                            </Button>
+                          ) : (
+                            <Lock className="w-4 h-4 text-text-muted/30" />
+                          )}
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
-            </TabsContent>
+            </div>
+          )}
 
-            {/* Inventaire Tab */}
-            <TabsContent value="inventaire" className="mt-3">
-              <div className="overflow-y-auto space-y-3 pb-5" style={{ maxHeight: 'calc(85vh - 240px)' }}>
-                {unlockedDecorations.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Lock className="w-10 h-10 mx-auto mb-3 text-text-muted/40" />
-                    <p className="text-text-muted text-sm">Aucune décoration débloquée</p>
-                    <p className="text-text-muted text-xs mt-1">Débloque des paliers dans l'onglet Pass !</p>
+          {/* ═══ INVENTAIRE TAB ═══ */}
+          {activeTab === 'inventaire' && (
+            <div className="px-4 pb-6 pt-2 space-y-4">
+              {unlockedDecorations.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-game-dark border border-wheel-border/30 flex items-center justify-center mb-4">
+                    <Lock className="w-7 h-7 text-text-muted/30" />
                   </div>
-                ) : (
-                  <>
-                    {/* Unequip button */}
-                    {passData.equippedDecoration && (
-                      <Button
+                  <p className="text-text-secondary text-sm font-semibold">Aucune décoration</p>
+                  <p className="text-text-muted text-xs mt-1">Débloque des paliers dans l'onglet Pass !</p>
+                  <Button
+                    onClick={() => setActiveTab('pass')}
+                    size="sm"
+                    className="mt-4 h-9 text-xs bg-gradient-to-r from-primary to-secondary text-game-darker font-bold rounded-xl"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" /> Voir le Pass
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {/* Live preview card */}
+                  <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-4 text-center">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/15 blur-2xl rounded-full" />
+                    <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2 font-semibold">Aperçu classement</p>
+                    <div className="relative text-2xl font-black text-text-primary py-1">
+                      {equippedDeco
+                        ? `${equippedDeco.prefix}TonPseudo${equippedDeco.suffix}`
+                        : 'TonPseudo'
+                      }
+                    </div>
+                    {equippedDeco ? (
+                      <button
                         onClick={() => handleEquip(null)}
-                        variant="ghost"
-                        size="sm"
-                        className="w-full h-8 text-xs text-text-muted hover:text-text-primary border border-dashed border-wheel-border"
+                        className="mt-2 text-[11px] text-text-muted hover:text-danger transition-colors underline underline-offset-2"
                       >
                         Retirer la décoration
-                      </Button>
+                      </button>
+                    ) : (
+                      <p className="mt-1 text-[11px] text-text-muted">Appuie sur une décoration pour l'équiper</p>
                     )}
+                  </div>
 
-                    {/* Currently equipped preview */}
-                    <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 text-center">
-                      <p className="text-[10px] text-text-muted mb-1">Aperçu dans le classement</p>
-                      <p className="text-lg font-bold text-text-primary">
-                        {passData.equippedDecoration
-                          ? (() => {
-                              const deco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
-                              return deco ? `${deco.prefix}TonPseudo${deco.suffix}` : 'TonPseudo';
-                            })()
-                          : 'TonPseudo'
-                        }
-                      </p>
-                    </div>
-
-                    {/* Decoration grid */}
-                    <div className="grid grid-cols-2 gap-2">
+                  {/* Decoration grid */}
+                  <div>
+                    <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-semibold px-0.5">
+                      {unlockedDecorations.length} décoration{unlockedDecorations.length > 1 ? 's' : ''} débloquée{unlockedDecorations.length > 1 ? 's' : ''}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2.5">
                       {unlockedDecorations.map((deco) => {
                         const isEquipped = passData.equippedDecoration === deco.id;
                         return (
                           <button
                             key={deco.id}
                             onClick={() => handleEquip(isEquipped ? null : deco.id)}
-                            className={`relative rounded-xl border p-3 text-center transition-all duration-300 ${
+                            className={`relative rounded-xl border p-3.5 text-center transition-all duration-300 active:scale-95 ${
                               isEquipped
-                                ? 'border-primary bg-primary/10 shadow-[0_0_12px_hsl(var(--primary)/0.2)] scale-[1.02]'
-                                : 'border-wheel-border bg-game-darker/40 hover:border-secondary/50 hover:bg-secondary/5'
+                                ? 'border-primary bg-primary/15 shadow-[0_0_16px_hsl(var(--primary)/0.25)]'
+                                : 'border-wheel-border/50 bg-game-dark/40 hover:border-primary/40 hover:bg-primary/5'
                             }`}
                           >
-                            <p className="text-xl mb-1">{deco.prefix.trim()}{deco.suffix ? ` ${deco.suffix.trim()}` : ''}</p>
-                            <p className="text-xs font-medium text-text-primary">{deco.name}</p>
-                            <p className="text-[10px] text-text-muted mt-0.5">{deco.preview.replace('Pseudo', '···')}</p>
+                            {/* Equipped badge */}
                             {isEquipped && (
-                              <Badge className="absolute -top-1.5 -right-1.5 text-[8px] bg-primary text-primary-foreground px-1.5 py-0">
-                                Équipé
-                              </Badge>
+                              <div className="absolute -top-2 -right-2 bg-gradient-to-br from-primary to-secondary rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                                <Check className="w-3 h-3 text-game-darker" />
+                              </div>
                             )}
+                            {/* Emoji */}
+                            <div className="text-3xl mb-2 leading-none">
+                              {deco.prefix.trim() || deco.suffix.trim() || '🎨'}
+                            </div>
+                            {/* Name */}
+                            <p className="text-xs font-bold text-text-primary leading-tight">{deco.name}</p>
+                            {/* Preview */}
+                            <p className="text-[10px] text-text-muted mt-1 leading-tight truncate">
+                              {deco.preview.replace('Pseudo', '···')}
+                            </p>
+                            {/* Tier badge */}
+                            <div className={`mt-1.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full inline-block ${
+                              isEquipped ? 'bg-primary/20 text-primary' : 'bg-game-darker text-text-muted'
+                            }`}>
+                              Tier {deco.tier}
+                            </div>
                           </button>
                         );
                       })}
                     </div>
-                  </>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
