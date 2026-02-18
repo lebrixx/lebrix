@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHea
 import { Settings } from '@/components/Settings';
 import { LuckyWheel } from '@/components/LuckyWheel';
 import { SeasonPass } from '@/components/SeasonPass';
-import { hasDailyQuestReward } from '@/utils/seasonPass';
+import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 import { canSpinFree, getTimeUntilNextFreeSpin, formatTimeRemaining } from '@/utils/luckyWheel';
@@ -145,6 +145,17 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         className="absolute top-16 right-4 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
       >
         <SettingsIcon className="w-5 h-5 text-text-muted" />
+      </Button>
+
+      {/* DEBUG: +1 Diamond Button */}
+      <Button
+        onClick={() => { addDiamonds(1); }}
+        variant="ghost"
+        size="icon"
+        className="absolute top-16 right-14 hover:bg-secondary/20 transition-all duration-300 opacity-60 hover:opacity-100"
+        title="+1 💎 (debug)"
+      >
+        <span className="text-base">💎</span>
       </Button>
 
       {/* Logo/Title */}
