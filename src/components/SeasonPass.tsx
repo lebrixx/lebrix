@@ -261,78 +261,105 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
 
               {/* Tiers */}
               <div>
-                <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-2.5 px-0.5 flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-3 px-0.5 flex items-center gap-1.5">
                   <Crown className="w-3.5 h-3.5 text-secondary" /> Paliers à débloquer
                 </h3>
-                <div className="space-y-2">
-                  {PASS_TIERS.map((tier) => {
-                    const isUnlocked = passData.currentTier >= tier.tier;
-                    const isNext = tier.tier === passData.currentTier + 1;
-                    const cost = getTierCost(tier.tier);
-                    const canAfford = passData.diamonds >= cost;
+                <div className="relative">
+                  {/* Timeline line */}
+                  <div className="absolute left-[22px] top-4 bottom-4 w-px bg-gradient-to-b from-secondary/40 via-wheel-border/20 to-transparent" />
 
-                    return (
-                      <div
-                        key={tier.tier}
-                        className={`flex items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-all duration-300 ${
-                          isUnlocked
-                            ? 'border-secondary/30 bg-secondary/5'
-                            : isNext
-                            ? 'border-primary/30 bg-primary/5'
-                            : 'border-wheel-border/30 bg-game-dark/20 opacity-50'
-                        }`}
-                      >
-                        {/* Tier number / status */}
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sm font-black ${
-                          isUnlocked
-                            ? 'bg-gradient-to-br from-secondary to-primary text-game-darker shadow-[0_0_10px_hsl(var(--secondary)/0.4)]'
-                            : isNext
-                            ? 'bg-primary/15 border border-primary/40 text-primary'
-                            : 'bg-game-darker border border-wheel-border/30 text-text-muted'
-                        }`}>
-                          {isUnlocked ? <Check className="w-4 h-4" /> : tier.tier}
-                        </div>
+                  <div className="space-y-2">
+                    {PASS_TIERS.map((tier, index) => {
+                      const isUnlocked = passData.currentTier >= tier.tier;
+                      const isNext = tier.tier === passData.currentTier + 1;
+                      const cost = getTierCost(tier.tier);
+                      const canAfford = passData.diamonds >= cost;
+                      const isLast = index === PASS_TIERS.length - 1;
 
-                        {/* Decoration preview */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-base leading-none">{tier.decoration.prefix.trim()}</span>
-                            <span className="font-semibold text-sm text-text-primary">{tier.decoration.name}</span>
+                      return (
+                        <div key={tier.tier} className="relative flex items-stretch gap-3">
+                          {/* Timeline node */}
+                          <div className="flex flex-col items-center shrink-0 z-10">
+                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center text-sm font-black transition-all duration-300 ${
+                              isUnlocked
+                                ? 'bg-gradient-to-br from-secondary to-primary text-game-darker shadow-[0_0_14px_hsl(var(--secondary)/0.5)]'
+                                : isNext
+                                ? 'bg-primary/15 border-2 border-primary/60 text-primary shadow-[0_0_8px_hsl(var(--primary)/0.2)]'
+                                : 'bg-game-darker border border-wheel-border/30 text-text-muted/50'
+                            }`}>
+                              {isUnlocked ? <Check className="w-5 h-5" /> : (
+                                <span className="text-[13px] font-black">{tier.tier}</span>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-[11px] text-text-muted mt-0.5 truncate">
-                            {tier.decoration.preview.replace('Pseudo', 'TonPseudo')}
-                          </p>
-                        </div>
 
-                        {/* Action */}
-                        <div className="shrink-0">
-                          {isUnlocked ? (
-                            <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center">
-                              <Check className="w-3.5 h-3.5 text-secondary" />
+                          {/* Card */}
+                          <div className={`flex-1 rounded-2xl border overflow-hidden transition-all duration-300 mb-1 ${
+                            isUnlocked
+                              ? 'border-secondary/25 bg-gradient-to-r from-secondary/8 to-transparent'
+                              : isNext
+                              ? 'border-primary/35 bg-gradient-to-r from-primary/8 to-transparent shadow-[0_2px_12px_hsl(var(--primary)/0.1)]'
+                              : 'border-wheel-border/20 bg-game-dark/15 opacity-45'
+                          }`}>
+                            <div className="flex items-center gap-3 px-3.5 py-2.5">
+                              {/* Big emoji */}
+                              <div className={`text-3xl leading-none shrink-0 transition-all duration-300 ${
+                                isUnlocked ? 'opacity-100' : isNext ? 'opacity-90' : 'opacity-30 grayscale'
+                              }`}>
+                                {tier.decoration.prefix.trim() || tier.decoration.suffix.trim() || '🎨'}
+                              </div>
+
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                  <span className={`font-bold text-sm leading-tight ${
+                                    isUnlocked ? 'text-secondary' : isNext ? 'text-text-primary' : 'text-text-muted'
+                                  }`}>{tier.decoration.name}</span>
+                                  {isUnlocked && (
+                                    <span className="text-[9px] font-black bg-secondary/20 text-secondary px-1.5 py-0.5 rounded-full border border-secondary/30 uppercase tracking-wider">
+                                      Débloqué
+                                    </span>
+                                  )}
+                                </div>
+                                <p className={`text-[11px] truncate leading-tight ${
+                                  isUnlocked ? 'text-secondary/70' : 'text-text-muted'
+                                }`}>
+                                  {tier.decoration.preview.replace('Pseudo', 'TonPseudo')}
+                                </p>
+                              </div>
+
+                              {/* Action */}
+                              <div className="shrink-0">
+                                {isUnlocked ? (
+                                  <div className="w-8 h-8 rounded-xl bg-secondary/15 border border-secondary/30 flex items-center justify-center">
+                                    <Check className="w-4 h-4 text-secondary" />
+                                  </div>
+                                ) : isNext ? (
+                                  <Button
+                                    onClick={() => handleUnlockTier(tier.tier)}
+                                    size="sm"
+                                    disabled={!canAfford}
+                                    className={`h-9 text-xs px-3 rounded-xl font-black flex items-center gap-1 ${
+                                      canAfford
+                                        ? 'bg-gradient-to-r from-primary to-secondary text-game-darker shadow-[0_0_12px_hsl(var(--primary)/0.35)]'
+                                        : 'bg-game-darker text-text-muted border border-wheel-border/40'
+                                    }`}
+                                  >
+                                    <Diamond className="w-3 h-3" /> {cost}
+                                  </Button>
+                                ) : (
+                                  <div className="flex items-center gap-0.5 opacity-35">
+                                    <Diamond className="w-3 h-3 text-text-muted" />
+                                    <span className="text-xs font-bold text-text-muted">{cost}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          ) : isNext ? (
-                            <Button
-                              onClick={() => handleUnlockTier(tier.tier)}
-                              size="sm"
-                              disabled={!canAfford}
-                              className={`h-8 text-xs px-3 rounded-xl font-bold ${
-                                canAfford
-                                  ? 'bg-gradient-to-r from-primary to-secondary text-game-darker shadow-[0_0_10px_hsl(var(--primary)/0.3)]'
-                                  : 'bg-game-darker text-text-muted border border-wheel-border/40'
-                              }`}
-                            >
-                              <Diamond className="w-3 h-3" /> {cost}
-                            </Button>
-                          ) : (
-                            <div className="flex items-center gap-0.5 opacity-40">
-                              <Diamond className="w-3 h-3 text-text-muted" />
-                              <span className="text-xs font-bold text-text-muted">{cost}</span>
-                            </div>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
