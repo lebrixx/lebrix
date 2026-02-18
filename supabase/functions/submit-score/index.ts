@@ -197,14 +197,13 @@ serve(async (req) => {
       }
     }
 
-    // Always sync decorations across ALL modes for this device+username
+    // Always sync decorations across ALL devices and modes for this username
     if (decorations !== undefined) {
       await supabase
         .from('scores')
         .update({ decorations: decorations || null })
-        .eq('device_id', device_id)
         .eq('username', username);
-      console.log(`Synced decoration "${decorations}" across all modes for ${username}`);
+      console.log(`Synced decoration "${decorations}" across ALL devices/modes for ${username}`);
     }
 
     if (!should_update) {
