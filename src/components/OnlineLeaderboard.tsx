@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Trophy, Medal, Award, Crown, RefreshCw, Wifi, WifiOff, User, Edit, Calendar, Globe, ChevronsDown, History, X } from 'lucide-react';
 import { fetchTop, fetchWeeklyTop, fetchPreviousWeekTop, Score } from '@/utils/scoresApi';
+import { applyDecoration } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
@@ -338,7 +339,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                         </div>
                         <div>
                           <h3 className="font-bold text-text-primary text-lg">
-                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                            {(() => {
+                              const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
+                              return applyDecoration(displayName, entry.decorations || null);
+                            })()}
                           </h3>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}
@@ -386,7 +390,10 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                         </div>
                         <div>
                           <h3 className="font-bold text-text-primary text-lg">
-                            {entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username}
+                            {(() => {
+                              const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
+                              return applyDecoration(displayName, entry.decorations || null);
+                            })()}
                           </h3>
                           <p className="text-text-muted text-sm">
                             {formatDate(entry.created_at)}

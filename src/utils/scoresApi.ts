@@ -2,6 +2,7 @@
 import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
 import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
+import { getEquippedDecorationId } from './seasonPass';
 
 // Constantes de configuration
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
@@ -18,6 +19,7 @@ export interface Score {
   score: number;
   created_at: string;
   weekly_updated_at?: string;
+  decorations?: string | null;
 }
 
 export interface SubmitScoreParams {
@@ -58,6 +60,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     // Generate enhanced device fingerprint
     const clientFingerprint = generateDeviceFingerprint();
+    const decorations = getEquippedDecorationId();
 
     // Call the secure Edge Function instead of direct database access
     console.log('Appel Edge Function avec:', { deviceId, username, score, mode });
@@ -67,8 +70,9 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
         username,
         score,
         mode,
-        session_start_time: gameSessionStart || now - 10000, // Fallback if not set
-        client_fingerprint: clientFingerprint
+        session_start_time: gameSessionStart || now - 10000,
+        client_fingerprint: clientFingerprint,
+        decorations
       }
     });
 
@@ -105,7 +109,7 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
     // RLS policies ensure device_id is not exposed to public
     const { data, error } = await supabase
       .from('scores')
-      .select('username,best_score,created_at')
+      .select('username,best_score,created_at,decorations')
       .eq('mode', mode)
       .order('best_score', { ascending: false })
       .limit(limit);
@@ -118,7 +122,8 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
     return (data || []).map(entry => ({
       username: entry.username,
       score: entry.best_score,
-      created_at: entry.created_at
+      created_at: entry.created_at,
+      decorations: entry.decorations,
     }));
 
   } catch (error) {
@@ -143,7 +148,7 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
 
     const { data, error } = await supabase
       .from('scores')
-      .select('username,weekly_score,weekly_updated_at')
+      .select('username,weekly_score,weekly_updated_at,decorations')
       .eq('mode', mode)
       .gte('weekly_updated_at', monday.toISOString())
       .order('weekly_score', { ascending: false })
@@ -157,7 +162,8 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
     return (data || []).map(entry => ({
       username: entry.username,
       score: entry.weekly_score,
-      created_at: entry.weekly_updated_at || entry.weekly_updated_at
+      created_at: entry.weekly_updated_at || entry.weekly_updated_at,
+      decorations: entry.decorations,
     }));
 
   } catch (error) {
