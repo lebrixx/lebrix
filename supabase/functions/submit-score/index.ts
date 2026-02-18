@@ -197,16 +197,17 @@ serve(async (req) => {
       }
     }
 
+    // Always sync decorations across ALL modes for this device+username
+    if (decorations !== undefined) {
+      await supabase
+        .from('scores')
+        .update({ decorations: decorations || null })
+        .eq('device_id', device_id)
+        .eq('username', username);
+      console.log(`Synced decoration "${decorations}" across all modes for ${username}`);
+    }
+
     if (!should_update) {
-      // Still update decorations even if score didn't improve
-      if (existingScore && decorations !== undefined) {
-        await supabase
-          .from('scores')
-          .update({ decorations: decorations || null })
-          .eq('device_id', device_id)
-          .eq('username', username)
-          .eq('mode', mode);
-      }
       return new Response(
         JSON.stringify({ success: true, decoration_updated: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
