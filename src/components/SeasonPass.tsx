@@ -167,34 +167,6 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
           {activeTab === 'pass' && (
             <div className="px-4 pb-6 space-y-3 pt-1">
 
-              {/* Progress bar to next tier */}
-              {nextTierData ? (
-                <div className="bg-game-dark/60 border border-wheel-border/40 rounded-xl p-3.5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] text-text-muted font-medium">Palier {passData.currentTier}</span>
-                    <div className="flex items-center gap-1">
-                      <Diamond className="w-3 h-3 text-primary" />
-                      <span className="text-[11px] text-text-secondary font-mono">{passData.diamonds}/{nextTierCost}</span>
-                    </div>
-                    <span className="text-[11px] text-text-muted font-medium">Palier {nextTier}</span>
-                  </div>
-                  <div className="relative h-2.5 bg-game-darker rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-500"
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                  </div>
-                  <p className="text-center text-[10px] text-text-muted mt-1.5">
-                    {nextTierCost - passData.diamonds > 0
-                      ? `Encore ${nextTierCost - passData.diamonds} 💎 pour débloquer ${nextTierData.decoration.name}`
-                      : 'Tu peux débloquer le prochain palier !'}
-                  </p>
-                </div>
-              ) : passData.currentTier > 0 && (
-                <div className="text-center py-2">
-                  <p className="text-secondary font-bold text-sm">✨ Pass complété ! Tu es au sommet !</p>
-                </div>
-              )}
 
               {/* Daily Quests — 2 quêtes, 1 💎 quand les 2 sont faites */}
               <div className="relative overflow-hidden rounded-xl border border-secondary/40 bg-gradient-to-br from-secondary/10 to-transparent p-3.5">
@@ -352,7 +324,10 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                               <Diamond className="w-3 h-3" /> {cost}
                             </Button>
                           ) : (
-                            <Lock className="w-4 h-4 text-text-muted/30" />
+                            <div className="flex items-center gap-0.5 opacity-40">
+                              <Diamond className="w-3 h-3 text-text-muted" />
+                              <span className="text-xs font-bold text-text-muted">{cost}</span>
+                            </div>
                           )}
                         </div>
                       </div>
