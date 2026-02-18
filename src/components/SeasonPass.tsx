@@ -118,13 +118,34 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
               <Crown className="w-5 h-5 text-secondary drop-shadow-[0_0_8px_hsl(var(--secondary))]" />
             </div>
 
-            {/* Diamond counter */}
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="flex items-center gap-2 bg-game-dark/80 border border-primary/30 rounded-2xl px-5 py-2.5 shadow-[0_0_16px_hsl(var(--primary)/0.2)]">
-                <Diamond className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(var(--primary))]" />
-                <span className="text-2xl font-black text-text-primary">{passData.diamonds}</span>
+            {/* Diamond counter + Watch Ad button */}
+            <div className="flex items-center justify-between gap-3 mb-4">
+              {/* Counter à gauche */}
+              <div className="flex items-center gap-2 bg-game-dark/80 border border-primary/30 rounded-2xl px-4 py-2.5 shadow-[0_0_16px_hsl(var(--primary)/0.2)]">
+                <Diamond className="w-4 h-4 text-primary drop-shadow-[0_0_6px_hsl(var(--primary))]" />
+                <span className="text-xl font-black text-text-primary">{passData.diamonds}</span>
                 <span className="text-xs text-text-muted font-medium">💎</span>
               </div>
+
+              {/* Bouton pub à droite */}
+              <button
+                onClick={handleWatchAd}
+                disabled={isShowing}
+                className="relative flex items-center gap-2 px-4 py-2.5 rounded-2xl font-black text-xs overflow-hidden transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-secondary/70 to-primary/70 border border-secondary/40 shadow-[0_0_18px_hsl(var(--secondary)/0.3)]"
+              >
+                {/* Glow bg */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                <div className="absolute -top-3 -right-3 w-10 h-10 bg-secondary/20 blur-xl rounded-full pointer-events-none" />
+                {/* Icon vidéo */}
+                <div className="relative w-6 h-6 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
+                  <Video className="w-3.5 h-3.5 text-text-primary" />
+                </div>
+                <div className="relative flex flex-col items-start leading-tight">
+                  <span className="text-text-muted text-[9px] font-semibold uppercase tracking-wider">Pub</span>
+                  <span className="text-text-primary font-black text-xs flex items-center gap-1">+1 💎</span>
+                </div>
+                <Sparkles className="relative w-3.5 h-3.5 text-secondary shrink-0" />
+              </button>
             </div>
 
             {/* Tab switcher */}
