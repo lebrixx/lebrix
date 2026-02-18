@@ -198,8 +198,17 @@ serve(async (req) => {
     }
 
     if (!should_update) {
+      // Still update decorations even if score didn't improve
+      if (existingScore && decorations !== undefined) {
+        await supabase
+          .from('scores')
+          .update({ decorations: decorations || null })
+          .eq('device_id', device_id)
+          .eq('username', username)
+          .eq('mode', mode);
+      }
       return new Response(
-        JSON.stringify({ success: false, error: 'Score not improved' }),
+        JSON.stringify({ success: true, decoration_updated: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
