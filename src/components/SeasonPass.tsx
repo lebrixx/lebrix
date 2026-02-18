@@ -299,12 +299,12 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                               ? 'border-secondary/25 bg-gradient-to-r from-secondary/8 to-transparent'
                               : isNext
                               ? 'border-primary/35 bg-gradient-to-r from-primary/8 to-transparent shadow-[0_2px_12px_hsl(var(--primary)/0.1)]'
-                              : 'border-wheel-border/20 bg-game-dark/15 opacity-45'
+                              : 'border-wheel-border/30 bg-game-dark/30'
                           }`}>
                             <div className="flex items-center gap-3 px-3.5 py-2.5">
                               {/* Big emoji */}
                               <div className={`text-3xl leading-none shrink-0 transition-all duration-300 ${
-                                isUnlocked ? 'opacity-100' : isNext ? 'opacity-90' : 'opacity-30 grayscale'
+                                isUnlocked ? 'opacity-100' : 'opacity-80'
                               }`}>
                                 {tier.decoration.prefix.trim() || tier.decoration.suffix.trim() || '🎨'}
                               </div>
@@ -313,7 +313,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5 mb-0.5">
                                   <span className={`font-bold text-sm leading-tight ${
-                                    isUnlocked ? 'text-secondary' : isNext ? 'text-text-primary' : 'text-text-muted'
+                                    isUnlocked ? 'text-secondary' : isNext ? 'text-text-primary' : 'text-text-secondary'
                                   }`}>{tier.decoration.name}</span>
                                   {isUnlocked && (
                                     <span className="text-[9px] font-black bg-secondary/20 text-secondary px-1.5 py-0.5 rounded-full border border-secondary/30 uppercase tracking-wider">
