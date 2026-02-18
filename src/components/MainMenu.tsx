@@ -179,7 +179,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             size="sm"
             className={`relative hover:bg-primary/20 transition-all duration-300 gap-1.5 ${hasPassReward ? 'animate-pulse-glow' : ''}`}
           >
-            <Crown className={`w-4 h-4 ${hasPassReward ? 'text-secondary' : 'text-text-muted'}`} />
+            <Crown className="w-4 h-4 text-secondary" />
             <span className="text-xs text-text-muted">Pass</span>
             {hasPassReward && (
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full animate-pulse" />
