@@ -1,5 +1,7 @@
 // Season Pass System - Diamonds, Tiers, Daily Challenges, Decorations
 
+export type UsernameColor = 'violet' | null;
+
 export interface Decoration {
   id: string;
   name: string;
@@ -7,6 +9,8 @@ export interface Decoration {
   suffix: string;
   tier: number;
   preview: string;
+  isColorReward?: boolean; // true = couleur de pseudo plutôt qu'emoji
+  color?: UsernameColor;
 }
 
 export interface PassTier {
@@ -29,6 +33,7 @@ export interface SeasonPassData {
   diamonds: number;
   currentTier: number;
   equippedDecoration: string | null;
+  equippedUsernameColor: UsernameColor;
   totalDiamondsEarned: number;
   dailyQuests: DailyQuestState | null;
 }
@@ -40,8 +45,8 @@ export const DECORATIONS: Decoration[] = [
   { id: 'fire', name: 'Flamme', prefix: '🔥 ', suffix: ' 🔥', tier: 2, preview: '🔥 Pseudo 🔥' },
   { id: 'sparkle', name: 'Étincelle', prefix: '✨ ', suffix: ' ✨', tier: 3, preview: '✨ Pseudo ✨' },
   { id: 'comet', name: 'Comète', prefix: '☄️ ', suffix: '', tier: 4, preview: '☄️ Pseudo' },
-  { id: 'crown', name: 'Couronne', prefix: '👑 ', suffix: '', tier: 5, preview: '👑 Pseudo' },
-  { id: 'lightning', name: 'Éclair', prefix: '⚡ ', suffix: ' ⚡', tier: 6, preview: '⚡ Pseudo ⚡' },
+  { id: 'purple_name', name: 'Pseudo Violet', prefix: '', suffix: '', tier: 5, preview: '💜 Pseudo en violet', isColorReward: true, color: 'violet' },
+  { id: 'crown', name: 'Couronne', prefix: '👑 ', suffix: '', tier: 6, preview: '👑 Pseudo' },
   { id: 'diamond', name: 'Diamant', prefix: '💎 ', suffix: ' 💎', tier: 7, preview: '💎 Pseudo 💎' },
   { id: 'trophy', name: 'Trophée', prefix: '🏆 ', suffix: ' 🏆', tier: 8, preview: '🏆 Pseudo 🏆' },
   { id: 'dragon', name: 'Dragon', prefix: '🐉 ', suffix: ' 🐉', tier: 9, preview: '🐉 Pseudo 🐉' },
@@ -75,6 +80,7 @@ export function getSeasonPassData(): SeasonPassData {
     diamonds: 0,
     currentTier: 0,
     equippedDecoration: null,
+    equippedUsernameColor: null as UsernameColor,
     totalDiamondsEarned: 0,
     dailyQuests: null,
   };
@@ -118,8 +124,30 @@ export function getTierCost(tier: number): number {
 
 export function equipDecoration(decorationId: string | null): void {
   const data = getSeasonPassData();
-  data.equippedDecoration = decorationId;
+  const deco = decorationId ? DECORATIONS.find(d => d.id === decorationId) : null;
+  if (deco?.isColorReward) {
+    data.equippedUsernameColor = deco.color || null;
+    data.equippedDecoration = decorationId;
+  } else {
+    data.equippedDecoration = decorationId;
+  }
   savePassData(data);
+}
+
+export function equipUsernameColor(color: UsernameColor): void {
+  const data = getSeasonPassData();
+  data.equippedUsernameColor = color;
+  if (color) {
+    data.equippedDecoration = 'purple_name';
+  } else if (data.equippedDecoration === 'purple_name') {
+    data.equippedDecoration = null;
+  }
+  savePassData(data);
+}
+
+export function getEquippedUsernameColor(): UsernameColor {
+  const data = getSeasonPassData();
+  return data.equippedUsernameColor ?? null;
 }
 
 export function getEquippedDecoration(): Decoration | null {
@@ -136,6 +164,7 @@ export function applyDecoration(username: string, decorationId: string | null): 
   if (!decorationId) return username;
   const deco = DECORATIONS.find(d => d.id === decorationId);
   if (!deco) return username;
+  if (deco.isColorReward) return username;
   return `${deco.prefix}${username}${deco.suffix}`;
 }
 
