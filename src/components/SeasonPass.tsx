@@ -119,32 +119,34 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
             </div>
 
             {/* Diamond counter + Watch Ad button */}
-            <div className="flex items-center justify-between gap-3 mb-4">
-              {/* Counter à gauche */}
-              <div className="flex items-center gap-2 bg-game-dark/80 border border-primary/30 rounded-2xl px-4 py-2.5 shadow-[0_0_16px_hsl(var(--primary)/0.2)]">
-                <Diamond className="w-4 h-4 text-primary drop-shadow-[0_0_6px_hsl(var(--primary))]" />
-                <span className="text-xl font-black text-text-primary">{passData.diamonds}</span>
-                <span className="text-xs text-text-muted font-medium">💎</span>
+            <div className="relative flex items-center bg-game-dark/70 border border-wheel-border/40 rounded-2xl overflow-hidden mb-4 shadow-[0_2px_16px_hsl(var(--primary)/0.12)]">
+              {/* Glow left */}
+              <div className="absolute left-0 top-0 h-full w-24 bg-primary/8 pointer-events-none" />
+
+              {/* Counter */}
+              <div className="flex-1 flex items-center justify-center gap-2.5 py-3">
+                <Diamond className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(var(--primary))]" />
+                <span className="text-2xl font-black text-text-primary tracking-tight">{passData.diamonds}</span>
+                <span className="text-sm text-text-muted">💎</span>
               </div>
 
-              {/* Bouton pub à droite */}
+              {/* Separator */}
+              <div className="w-px h-8 bg-wheel-border/40 shrink-0" />
+
+              {/* Bouton pub */}
               <button
                 onClick={handleWatchAd}
                 disabled={isShowing}
-                className="relative flex items-center gap-2 px-4 py-2.5 rounded-2xl font-black text-xs overflow-hidden transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-secondary/70 to-primary/70 border border-secondary/40 shadow-[0_0_18px_hsl(var(--secondary)/0.3)]"
+                className="relative flex-1 flex items-center justify-center gap-2 py-3 px-3 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed group"
               >
-                {/* Glow bg */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-                <div className="absolute -top-3 -right-3 w-10 h-10 bg-secondary/20 blur-xl rounded-full pointer-events-none" />
-                {/* Icon vidéo */}
-                <div className="relative w-6 h-6 rounded-lg bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
-                  <Video className="w-3.5 h-3.5 text-text-primary" />
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/12 to-primary/8 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none" />
+                <div className="w-6 h-6 rounded-lg bg-secondary/25 border border-secondary/40 flex items-center justify-center shrink-0 shadow-[0_0_8px_hsl(var(--secondary)/0.3)]">
+                  <Video className="w-3.5 h-3.5 text-secondary" />
                 </div>
-                <div className="relative flex flex-col items-start leading-tight">
-                  <span className="text-text-muted text-[9px] font-semibold uppercase tracking-wider">Pub</span>
-                  <span className="text-text-primary font-black text-xs flex items-center gap-1">+1 💎</span>
+                <div className="flex flex-col items-start leading-none">
+                  <span className="text-[9px] text-text-muted font-semibold uppercase tracking-wider">Pub →</span>
+                  <span className="text-xs font-black text-text-primary">+1 💎</span>
                 </div>
-                <Sparkles className="relative w-3.5 h-3.5 text-secondary shrink-0" />
               </button>
             </div>
 
