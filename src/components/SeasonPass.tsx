@@ -139,12 +139,12 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                 disabled={isShowing}
                 className="relative flex-1 flex items-center justify-center gap-2 py-3 px-3 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-secondary/12 to-primary/8 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none" />
-                <div className="w-6 h-6 rounded-lg bg-secondary/25 border border-secondary/40 flex items-center justify-center shrink-0 shadow-[0_0_8px_hsl(var(--secondary)/0.3)]">
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/20 to-primary/10 transition-opacity pointer-events-none" />
+                <div className="w-6 h-6 rounded-lg bg-secondary/35 border border-secondary/60 flex items-center justify-center shrink-0 shadow-[0_0_10px_hsl(var(--secondary)/0.4)]">
                   <Video className="w-3.5 h-3.5 text-secondary" />
                 </div>
                 <div className="flex flex-col items-start leading-none">
-                  <span className="text-[9px] text-text-muted font-semibold uppercase tracking-wider">Pub →</span>
+                  <span className="text-[9px] text-secondary/80 font-bold uppercase tracking-wider">Regarder →</span>
                   <span className="text-xs font-black text-text-primary">+1 💎</span>
                 </div>
               </button>
