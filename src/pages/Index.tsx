@@ -127,11 +127,6 @@ const Index = () => {
     // Season Pass: update quest score
     updateQuestScore(finalScore);
     
-    // Season Pass: quest boost — si des boosts ont été utilisés dans cette partie
-    if (selectedBoostsForGame.length > 0) {
-      updateQuestBoostUsed();
-    }
-
     // Consommer les boosts utilisés
     selectedBoostsForGame.forEach(boostId => {
       removeBoost(boostId);
@@ -205,6 +200,11 @@ const Index = () => {
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
     
+    // Season Pass: quête boost si des boosts sont sélectionnés au démarrage
+    if (selectedBoosts && selectedBoosts.length > 0) {
+      updateQuestBoostUsed();
+    }
+    
     // Définir les boosts sélectionnés et lancer le jeu
     setSelectedBoostsForGame(selectedBoosts || []);
     setCurrentScreen('game');
@@ -276,6 +276,7 @@ const Index = () => {
               playClick={playClick}
               playSuccess={playSuccess}
               playFailure={playFailure}
+              onBoostUsed={updateQuestBoostUsed}
             />
           );
         
