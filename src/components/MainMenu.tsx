@@ -28,6 +28,7 @@ interface MainMenuProps {
   onOpenDailyRewards: () => void;
   hasAvailableReward: boolean;
   onAdRewardClaimed: (coins: number) => void;
+  onSpendCoins?: (amount: number) => boolean;
   isSoundMuted?: boolean;
   onToggleSound?: () => void;
 }
@@ -45,6 +46,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenDailyRewards,
   hasAvailableReward,
   onAdRewardClaimed,
+  onSpendCoins,
   isSoundMuted = false,
   onToggleSound = () => {}
 }) => {
@@ -389,6 +391,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           setShowSeasonPass(false);
           setHasPassReward(hasDailyChallengeReward());
         }}
+        coins={coins}
+        onSpendCoins={onSpendCoins}
       />
 
       {/* Lucky Wheel */}

@@ -3,9 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Crown, Diamond, Lock, Check, Gift, Star, Sparkles } from 'lucide-react';
+import { Crown, Diamond, Lock, Check, Gift, Star, Sparkles, Coins, Video } from 'lucide-react';
 import {
   getSeasonPassData,
+  addDiamonds,
   PASS_TIERS,
   DECORATIONS,
   getDailyChallenge,
@@ -16,21 +17,35 @@ import {
   type SeasonPassData,
 } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 
 interface SeasonPassProps {
   isOpen: boolean;
   onClose: () => void;
+  coins?: number;
+  onSpendCoins?: (amount: number) => boolean;
 }
 
-export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose }) => {
+export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins = 0, onSpendCoins }) => {
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
   const { toast } = useToast();
+  const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
       setPassData(getSeasonPassData());
     }
   }, [isOpen]);
+
+  // Cooldown timer for ad
+  useEffect(() => {
+    if (!isOpen) return;
+    const update = () => setCooldownRemaining(getCooldown());
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [isOpen, getCooldown]);
 
   const dailyChallenge = getDailyChallenge();
 
@@ -61,6 +76,35 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose }) => {
     setPassData(getSeasonPassData());
   };
 
+  const handleBuyDiamond = () => {
+    if (onSpendCoins && onSpendCoins(1)) {
+      const newData = addDiamonds(1);
+      setPassData(newData);
+      toast({
+        title: '💎 Diamant acheté !',
+        description: '1 coin → 1 diamant',
+      });
+    } else {
+      toast({
+        title: 'Coins insuffisants',
+        description: 'Il te faut au moins 1 coin.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleWatchAd = async () => {
+    const success = await showRewardedAd('coins80');
+    if (success) {
+      const newData = addDiamonds(1);
+      setPassData(newData);
+      toast({
+        title: '💎 Diamant obtenu !',
+        description: 'Tu as gagné 1 diamant en regardant une pub !',
+      });
+    }
+  };
+
   // Progress to next tier
   const nextTier = passData.currentTier + 1;
   const nextTierData = PASS_TIERS.find(t => t.tier === nextTier);
@@ -84,8 +128,8 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose }) => {
           {/* Diamond counter */}
           <div className="flex items-center justify-center gap-2 mt-2">
             <div className="flex items-center gap-1.5 bg-game-darker/60 rounded-full px-4 py-1.5 border border-wheel-border">
-              <Diamond className="w-4 h-4 text-cyan-400" />
-              <span className="font-bold text-cyan-400 text-lg">{passData.diamonds}</span>
+              <Diamond className="w-4 h-4 text-primary" />
+              <span className="font-bold text-primary text-lg">{passData.diamonds}</span>
               <span className="text-text-muted text-xs">diamants</span>
             </div>
           </div>
@@ -153,11 +197,41 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* How to earn diamonds */}
-          <div className="rounded-xl border border-wheel-border bg-game-darker/40 p-3">
-            <p className="text-xs text-text-muted text-center">
-              <Sparkles className="w-3 h-3 inline mr-1 text-cyan-400" />
-              Gagne des 💎 en jouant (+1/partie) et via le défi quotidien
+          {/* Obtenir des diamants */}
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5">
+            <div className="flex items-center gap-2 mb-3">
+              <Diamond className="w-4 h-4 text-primary" />
+              <span className="font-semibold text-sm text-text-primary">Obtenir des diamants</span>
+            </div>
+            
+            <div className="flex gap-2">
+              {/* Acheter avec coins */}
+              <Button
+                onClick={handleBuyDiamond}
+                size="sm"
+                variant="outline"
+                disabled={coins < 1}
+                className="flex-1 h-9 text-xs border-secondary/40 hover:bg-secondary/10 gap-1.5"
+              >
+                <Coins className="w-3.5 h-3.5 text-secondary" />
+                <span>1 coin → 1 💎</span>
+              </Button>
+              
+              {/* Regarder une pub */}
+              <Button
+                onClick={handleWatchAd}
+                size="sm"
+                disabled={isShowing || !isReady() || cooldownRemaining > 0}
+                className="flex-1 h-9 text-xs bg-gradient-to-r from-primary to-secondary text-game-darker font-bold gap-1.5"
+              >
+                <Video className="w-3.5 h-3.5" />
+                {cooldownRemaining > 0 ? `${cooldownRemaining}s` : 'Pub → 1 💎'}
+              </Button>
+            </div>
+            
+            <p className="text-[10px] text-text-muted text-center mt-2">
+              <Sparkles className="w-3 h-3 inline mr-0.5 text-primary" />
+              +1 💎 par partie jouée
             </p>
           </div>
 
@@ -250,7 +324,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose }) => {
                           disabled={!canAfford}
                           className={`h-7 text-xs px-2.5 ${
                             canAfford 
-                              ? 'bg-gradient-to-r from-cyan-500 to-primary text-game-darker font-bold' 
+                              ? 'bg-gradient-to-r from-primary to-secondary text-game-darker font-bold' 
                               : 'bg-game-darker text-text-muted border border-wheel-border'
                           }`}
                         >

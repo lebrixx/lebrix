@@ -252,6 +252,7 @@ const Index = () => {
             onOpenDailyRewards={() => setShowDailyRewards(true)}
             hasAvailableReward={hasAvailableReward}
             onAdRewardClaimed={addCoins}
+            onSpendCoins={spendCoins}
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
           />
