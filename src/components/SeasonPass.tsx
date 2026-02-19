@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Crown, Diamond, Check, Gift, Star, Video, Target, Zap, Palette } from 'lucide-react';
+import { Crown, Check, Gift, Star, Video, Target, Zap, Palette } from 'lucide-react';
 import {
   getSeasonPassData,
   addDiamonds,
@@ -168,9 +168,8 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
 
               {/* Counter */}
               <div className="flex-1 flex items-center justify-center gap-2.5 py-3">
-                <Diamond className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(var(--primary))]" />
+                <span className="text-lg drop-shadow-[0_0_6px_hsl(var(--primary))]">💎</span>
                 <span className="text-2xl font-black text-text-primary tracking-tight">{passData.diamonds}</span>
-                <span className="text-sm text-text-muted">💎</span>
               </div>
 
               {/* Separator */}
@@ -391,11 +390,11 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                                         : 'bg-game-darker text-text-muted border border-wheel-border/40'
                                     }`}
                                   >
-                                    <Diamond className="w-3 h-3" /> {cost}
+                                    <span className="text-[10px]">💎</span> {cost}
                                   </Button>
                                 ) : (
                                   <div className="flex items-center gap-0.5 opacity-35">
-                                    <Diamond className="w-3 h-3 text-text-muted" />
+                                    <span className="text-[10px]">💎</span>
                                     <span className="text-xs font-bold text-text-muted">{cost}</span>
                                   </div>
                                 )}
