@@ -281,8 +281,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide transition-all duration-300 ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`}
                     style={{
-                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))',
-                      ...(isPulseEquipped ? { textShadow: '0 0 8px currentColor, 0 0 16px currentColor' } : {})
+                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))'
                     }}
                   >
                     {equippedDeco && !equippedDeco.isColorReward
