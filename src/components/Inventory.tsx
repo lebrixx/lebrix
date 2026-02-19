@@ -268,149 +268,138 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
           {/* ═══ DECOS TAB ═══ */}
           {activeTab === 'decos' && (
             <div className="pb-6 pt-2 space-y-5">
-              {unlockedDecorations.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-                  <div className="w-20 h-20 rounded-3xl bg-game-dark border border-wheel-border/30 flex items-center justify-center mb-4 shadow-inner">
-                    <Lock className="w-8 h-8 text-text-muted/30" />
-                  </div>
-                  <p className="text-text-secondary text-sm font-semibold">Aucune décoration</p>
-                  <p className="text-text-muted text-xs mt-1 leading-relaxed">Débloque des paliers dans<br/>le Pass de Saison !</p>
-                  <Button
-                    onClick={onClose}
-                    size="sm"
-                    className="mt-5 h-9 text-xs bg-gradient-to-r from-primary to-secondary text-game-darker font-bold rounded-xl px-5"
+              {/* ── Live Preview ── */}
+              <div className="relative mx-4 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-game-dark/60 to-secondary/5">
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
+                <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
+                  <div
+                    className="text-[28px] font-black leading-tight tracking-wide drop-shadow-sm transition-all duration-300"
+                    style={{ color: isVioletEquipped ? '#a855f7' : 'hsl(var(--text-primary))' }}
                   >
-                    <ChevronRight className="w-3.5 h-3.5 mr-1" /> Voir le Pass
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  {/* ── Live Preview ── */}
-                  <div className="relative mx-4 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-game-dark/60 to-secondary/5">
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
-                    <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
-                      <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
-                      <div
-                        className="text-[28px] font-black leading-tight tracking-wide drop-shadow-sm transition-all duration-300"
-                        style={{ color: isVioletEquipped ? '#a855f7' : 'hsl(var(--text-primary))' }}
-                      >
-                        {equippedDeco && !equippedDeco.isColorReward
-                          ? `${equippedDeco.prefix}${identity.username || 'TonPseudo'}${equippedDeco.suffix}`
-                          : (identity.username || 'TonPseudo')
-                        }
-                      </div>
-                      {(equippedDeco || isVioletEquipped) ? (
-                        <button
-                          onClick={() => { handleEquip(null); handleEquipColor(false); }}
-                          className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
-                        >
-                          <X className="w-3 h-3" /> Retirer la décoration
-                        </button>
-                      ) : (
-                        <p className="text-[10px] text-text-muted mt-1">Sélectionne une décoration ci-dessous</p>
-                      )}
-                    </div>
+                    {equippedDeco && !equippedDeco.isColorReward
+                      ? `${equippedDeco.prefix}${identity.username || 'TonPseudo'}${equippedDeco.suffix}`
+                      : (identity.username || 'TonPseudo')
+                    }
                   </div>
-
-                  {/* ── Couleur pseudo ── */}
-                  {hasVioletUnlocked && (
-                    <div className="px-4">
-                      <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
-                        <Palette className="w-3 h-3" /> Couleur du pseudo
-                      </p>
-                      <div className="flex gap-2.5">
-                        <button
-                          onClick={() => handleEquipColor(false)}
-                          className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-4 transition-all duration-300 active:scale-95 ${
-                            !isVioletEquipped
-                              ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
-                              : 'border-wheel-border/40 hover:border-wheel-border/70'
-                          }`}
-                        >
-                          {!isVioletEquipped && <div className="absolute inset-0 bg-primary/10" />}
-                          <div className="relative flex flex-col items-center gap-1.5">
-                            {!isVioletEquipped && (
-                              <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center mb-0.5">
-                                <Check className="w-3 h-3 text-game-darker" />
-                              </div>
-                            )}
-                            <span className="text-xs font-black text-text-primary">Défaut</span>
-                            <span className="text-base font-black text-text-primary leading-none">Aa</span>
-                          </div>
-                        </button>
-
-                        <button
-                          onClick={() => handleEquipColor(true)}
-                          className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-4 transition-all duration-300 active:scale-95 ${
-                            isVioletEquipped
-                              ? 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                              : 'border-wheel-border/40 hover:border-purple-500/50'
-                          }`}
-                        >
-                          {isVioletEquipped && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-900/10" />}
-                          <div className="relative flex flex-col items-center gap-1.5">
-                            {isVioletEquipped && (
-                              <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center mb-0.5">
-                                <Check className="w-3 h-3 text-white" />
-                              </div>
-                            )}
-                            <span className={`text-xs font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>Violet</span>
-                            <span className="text-base font-black leading-none" style={{ color: '#a855f7' }}>Aa</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
+                  {(equippedDeco || isVioletEquipped) ? (
+                    <button
+                      onClick={() => { handleEquip(null); handleEquipColor(false); }}
+                      className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
+                    >
+                      <X className="w-3 h-3" /> Retirer la décoration
+                    </button>
+                  ) : (
+                    <p className="text-[10px] text-text-muted mt-1">Sélectionne une décoration ci-dessous</p>
                   )}
+                </div>
+              </div>
 
-                  {/* ── Décorations grid ── */}
-                  <div className="px-4">
-                    <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
-                      <Star className="w-3 h-3 text-yellow-400" />
-                      {unlockedDecorations.filter(d => !d.isColorReward).length} décoration{unlockedDecorations.filter(d => !d.isColorReward).length > 1 ? 's' : ''} débloquée{unlockedDecorations.filter(d => !d.isColorReward).length > 1 ? 's' : ''}
-                    </p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {unlockedDecorations.map((deco) => {
-                        if (deco.isColorReward) return null;
-                        const isEquipped = passData.equippedDecoration === deco.id;
-                        return (
-                          <button
-                            key={deco.id}
-                            onClick={() => handleEquip(isEquipped ? null : deco.id)}
-                            className={`relative overflow-hidden rounded-2xl border-2 p-4 text-center transition-all duration-300 active:scale-95 ${
-                              isEquipped
-                                ? 'border-primary shadow-[0_0_18px_hsl(var(--primary)/0.35)]'
-                                : 'border-wheel-border/40 bg-game-dark/40 hover:border-primary/40 hover:bg-primary/5'
-                            }`}
-                          >
-                            {isEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-secondary/5 pointer-events-none" />}
-                            {isEquipped && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-md">
-                                <Check className="w-3 h-3 text-game-darker" />
-                              </div>
-                            )}
-                            <div className="relative">
-                              <div className="text-4xl mb-2 leading-none drop-shadow-sm">
-                                {deco.prefix.trim() || deco.suffix.trim() || '🎨'}
-                              </div>
-                              <p className="text-xs font-black text-text-primary leading-tight">{deco.name}</p>
-                              <p className="text-[10px] text-text-muted mt-1 leading-tight">
-                                {deco.preview.replace('Pseudo', '···')}
-                              </p>
-                              <div className={`mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full inline-block border ${
-                                isEquipped
-                                  ? 'border-primary/40 bg-primary/15 text-primary'
-                                  : 'border-wheel-border/30 bg-game-darker text-text-muted'
-                              }`}>
-                                Tier {deco.tier}
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
+              {/* ── Couleur pseudo ── */}
+              <div className="px-4">
+                <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
+                  <Palette className="w-3 h-3" /> Couleur du pseudo
+                </p>
+                <div className={`flex gap-2.5 ${!hasVioletUnlocked ? 'opacity-40 pointer-events-none' : ''}`}>
+                  <button
+                    onClick={() => handleEquipColor(false)}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-4 transition-all duration-300 active:scale-95 ${
+                      !isVioletEquipped
+                        ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
+                        : 'border-wheel-border/40 hover:border-wheel-border/70'
+                    }`}
+                  >
+                    {!isVioletEquipped && <div className="absolute inset-0 bg-primary/10" />}
+                    <div className="relative flex flex-col items-center gap-1.5">
+                      {!isVioletEquipped && (
+                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center mb-0.5">
+                          <Check className="w-3 h-3 text-game-darker" />
+                        </div>
+                      )}
+                      <span className="text-xs font-black text-text-primary">Défaut</span>
+                      <span className="text-base font-black text-text-primary leading-none">Aa</span>
                     </div>
-                  </div>
-                </>
-              )}
+                  </button>
+
+                  <button
+                    onClick={() => handleEquipColor(true)}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-4 transition-all duration-300 active:scale-95 ${
+                      isVioletEquipped
+                        ? 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
+                        : 'border-wheel-border/40 hover:border-purple-500/50'
+                    }`}
+                  >
+                    {isVioletEquipped && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-900/10" />}
+                    <div className="relative flex flex-col items-center gap-1.5">
+                      {isVioletEquipped && (
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center mb-0.5">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                      {!hasVioletUnlocked && <Lock className="w-3.5 h-3.5 text-text-muted mb-0.5" />}
+                      <span className={`text-xs font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>Violet</span>
+                      <span className="text-base font-black leading-none" style={{ color: '#a855f7' }}>Aa</span>
+                      {!hasVioletUnlocked && <span className="text-[9px] text-text-muted">Tier 5</span>}
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* ── Décorations grid (toutes, grisées si verrouillées) ── */}
+              <div className="px-4">
+                <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
+                  <Star className="w-3 h-3 text-yellow-400" />
+                  {unlockedDecorations.filter(d => !d.isColorReward).length} / {DECORATIONS.filter(d => !d.isColorReward).length} débloquée{unlockedDecorations.filter(d => !d.isColorReward).length > 1 ? 's' : ''}
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {DECORATIONS.filter(d => !d.isColorReward).map((deco) => {
+                    const isUnlocked = passData.currentTier >= deco.tier;
+                    const isEquipped = isUnlocked && passData.equippedDecoration === deco.id;
+                    return (
+                      <button
+                        key={deco.id}
+                        onClick={() => isUnlocked && handleEquip(isEquipped ? null : deco.id)}
+                        disabled={!isUnlocked}
+                        className={`relative overflow-hidden rounded-2xl border-2 p-4 text-center transition-all duration-300 ${
+                          isEquipped
+                            ? 'border-primary shadow-[0_0_18px_hsl(var(--primary)/0.35)] active:scale-95'
+                            : isUnlocked
+                              ? 'border-wheel-border/40 bg-game-dark/40 hover:border-primary/40 hover:bg-primary/5 active:scale-95'
+                              : 'border-wheel-border/20 bg-game-dark/20 opacity-40 cursor-not-allowed'
+                        }`}
+                      >
+                        {isEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-secondary/5 pointer-events-none" />}
+                        {isEquipped && (
+                          <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-md">
+                            <Check className="w-3 h-3 text-game-darker" />
+                          </div>
+                        )}
+                        {!isUnlocked && (
+                          <div className="absolute top-2 right-2 w-5 h-5 bg-game-darker/80 border border-wheel-border/30 rounded-full flex items-center justify-center">
+                            <Lock className="w-2.5 h-2.5 text-text-muted" />
+                          </div>
+                        )}
+                        <div className="relative">
+                          <div className="text-4xl mb-2 leading-none drop-shadow-sm">
+                            {deco.prefix.trim() || deco.suffix.trim() || '🎨'}
+                          </div>
+                          <p className="text-xs font-black text-text-primary leading-tight">{deco.name}</p>
+                          <p className="text-[10px] text-text-muted mt-1 leading-tight">
+                            {deco.preview.replace('Pseudo', '···')}
+                          </p>
+                          <div className={`mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full inline-block border ${
+                            isEquipped
+                              ? 'border-primary/40 bg-primary/15 text-primary'
+                              : 'border-wheel-border/30 bg-game-darker text-text-muted'
+                          }`}>
+                            Tier {deco.tier}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>
