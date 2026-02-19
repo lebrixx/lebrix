@@ -26,11 +26,11 @@ serve(async (req) => {
       );
     }
 
-    // Check if username exists for a DIFFERENT device
+    // Check if username exists for a DIFFERENT device (case-insensitive)
     const { data: existingUser, error } = await supabase
       .from('scores')
       .select('device_id')
-      .eq('username', username)
+      .ilike('username', username)
       .neq('device_id', device_id || '')
       .limit(1)
       .maybeSingle();
