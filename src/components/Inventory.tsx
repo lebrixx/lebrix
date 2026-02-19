@@ -381,13 +381,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* ── Décorations grid (toutes, grisées si verrouillées) ── */}
+              {/* ── Décorations list ── */}
               <div className="px-4">
-                <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
+                <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-bold flex items-center gap-1.5">
                   <Star className="w-3 h-3 text-yellow-400" />
                   {unlockedDecorations.filter(d => !d.isColorReward).length} / {DECORATIONS.filter(d => !d.isColorReward).length} débloquée{unlockedDecorations.filter(d => !d.isColorReward).length > 1 ? 's' : ''}
                 </p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   {DECORATIONS.filter(d => !d.isColorReward).map((deco) => {
                     const isUnlocked = passData.currentTier >= deco.tier;
                     const isEquipped = isUnlocked && passData.equippedDecoration === deco.id;
@@ -396,40 +396,33 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         key={deco.id}
                         onClick={() => isUnlocked && handleEquip(isEquipped ? null : deco.id)}
                         disabled={!isUnlocked}
-                        className={`relative overflow-hidden rounded-2xl border-2 p-4 text-center transition-all duration-300 ${
+                        className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-all duration-200 ${
                           isEquipped
-                            ? 'border-primary shadow-[0_0_18px_hsl(var(--primary)/0.35)] active:scale-95'
+                            ? 'border-primary/50 bg-primary/10 shadow-[0_0_12px_hsl(var(--primary)/0.2)]'
                             : isUnlocked
-                              ? 'border-wheel-border/40 bg-game-dark/40 hover:border-primary/40 hover:bg-primary/5 active:scale-95'
+                              ? 'border-wheel-border/30 bg-game-dark/40 hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98]'
                               : 'border-wheel-border/20 bg-game-dark/20 opacity-40 cursor-not-allowed'
                         }`}
                       >
-                        {isEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-secondary/5 pointer-events-none" />}
-                        {isEquipped && (
-                          <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-md">
-                            <Check className="w-3 h-3 text-game-darker" />
-                          </div>
-                        )}
-                        {!isUnlocked && (
-                          <div className="absolute top-2 right-2 w-5 h-5 bg-game-darker/80 border border-wheel-border/30 rounded-full flex items-center justify-center">
-                            <Lock className="w-2.5 h-2.5 text-text-muted" />
-                          </div>
-                        )}
-                        <div className="relative">
-                          <div className="text-4xl mb-2 leading-none drop-shadow-sm">
-                            {deco.prefix.trim() || deco.suffix.trim() || '🎨'}
-                          </div>
-                          <p className="text-xs font-black text-text-primary leading-tight">{deco.name}</p>
-                          <p className="text-[10px] text-text-muted mt-1 leading-tight">
-                            {deco.preview.replace('Pseudo', '···')}
-                          </p>
-                          <div className={`mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full inline-block border ${
+                        <div className="w-9 h-9 rounded-lg bg-game-darker border border-wheel-border/40 flex items-center justify-center text-lg shrink-0">
+                          {deco.prefix.trim() || deco.suffix.trim() || '🎨'}
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-xs font-bold text-text-primary leading-tight">{deco.name}</p>
+                          <p className="text-[10px] text-text-muted truncate">{deco.preview.replace('Pseudo', '···')}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
                             isEquipped
                               ? 'border-primary/40 bg-primary/15 text-primary'
                               : 'border-wheel-border/30 bg-game-darker text-text-muted'
-                          }`}>
-                            Tier {deco.tier}
-                          </div>
+                          }`}>T{deco.tier}</span>
+                          {isEquipped && (
+                            <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-game-darker" />
+                            </div>
+                          )}
+                          {!isUnlocked && <Lock className="w-3.5 h-3.5 text-text-muted" />}
                         </div>
                       </button>
                     );
