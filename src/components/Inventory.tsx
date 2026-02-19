@@ -200,59 +200,6 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
           {activeTab === 'items' && (
             <div className="px-4 pb-6 pt-2 space-y-4">
 
-              {/* Username section */}
-              <div className="relative overflow-hidden rounded-xl border border-wheel-border/50 bg-game-dark/40 p-3.5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Pencil className="w-3.5 h-3.5 text-primary" />
-                  <span className="font-bold text-sm text-text-primary">Pseudo</span>
-                </div>
-                {editingUsername ? (
-                  <div className="flex gap-2">
-                    <input
-                      value={newUsername}
-                      onChange={e => setNewUsername(e.target.value)}
-                      maxLength={20}
-                      className="flex-1 bg-game-darker border border-wheel-border/60 rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/60"
-                      placeholder="Nouveau pseudo..."
-                      onKeyDown={e => e.key === 'Enter' && handleSaveUsername()}
-                      autoFocus
-                    />
-                    <button
-                      onClick={handleSaveUsername}
-                      className="w-9 h-9 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center text-primary hover:bg-primary/30 transition-colors"
-                    >
-                      <Check className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setEditingUsername(false)}
-                      className="w-9 h-9 rounded-lg bg-game-darker border border-wheel-border/40 flex items-center justify-center text-text-muted hover:text-text-secondary transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-text-muted mb-0.5">Pseudo actuel</p>
-                      <p
-                        className="font-bold text-base"
-                        style={{ color: isVioletEquipped ? '#a855f7' : 'hsl(var(--text-primary))' }}
-                      >
-                        {equippedDeco && !equippedDeco.isColorReward
-                          ? `${equippedDeco.prefix}${identity.username || '—'}${equippedDeco.suffix}`
-                          : (identity.username || '—')}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => { setNewUsername(identity.username || ''); setEditingUsername(true); }}
-                      className="flex items-center gap-1.5 text-xs text-primary border border-primary/40 bg-primary/10 rounded-lg px-3 py-1.5 hover:bg-primary/20 transition-colors font-semibold"
-                    >
-                      <Pencil className="w-3 h-3" /> Modifier
-                    </button>
-                  </div>
-                )}
-              </div>
-
               {/* Boosts section */}
               <div>
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-semibold px-0.5 flex items-center gap-1.5">
