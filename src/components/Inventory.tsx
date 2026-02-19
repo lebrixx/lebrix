@@ -280,7 +280,10 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide transition-all duration-300 ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`}
-                    style={{ color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))' }}
+                    style={{
+                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))',
+                      ...(isPulseEquipped ? { textShadow: '0 0 8px currentColor, 0 0 16px currentColor' } : {})
+                    }}
                   >
                     {equippedDeco && !equippedDeco.isColorReward
                       ? `${equippedDeco.prefix}${identity.username || 'TonPseudo'}${equippedDeco.suffix}`
