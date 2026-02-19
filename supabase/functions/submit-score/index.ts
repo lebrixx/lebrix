@@ -65,11 +65,11 @@ serve(async (req) => {
       );
     }
 
-    // Check if username is already taken by another device
+    // Check if username is already taken by another device (case-insensitive)
     const { data: existingUsername } = await supabase
       .from('scores')
       .select('device_id')
-      .eq('username', username)
+      .ilike('username', username)
       .neq('device_id', device_id)
       .limit(1)
       .maybeSingle();
