@@ -344,7 +344,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                               }`}>
                                 {tier.decoration.isColorReward
                                     ? tier.decoration.color === 'pulse'
-                                      ? <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.5)] animate-[username-pulse_2s_ease-in-out_infinite]"><Palette className="w-5 h-5 text-white" /></div>
+                                      ? <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.5)] animate-[username-pulse_3s_ease-in-out_infinite]"><Palette className="w-5 h-5 text-white" /></div>
                                       : <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.5)]"><Palette className="w-5 h-5 text-white" /></div>
                                     : (tier.decoration.prefix.trim() || tier.decoration.suffix.trim() || '🎨')
                                 }
@@ -367,7 +367,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                                 }`}>
                                   {tier.decoration.isColorReward
                                     ? tier.decoration.color === 'pulse'
-                                      ? <span className="font-semibold animate-[username-pulse_2s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>TonPseudo pulsé</span>
+                                      ? <span className="font-semibold animate-[username-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>TonPseudo pulsé</span>
                                       : <span style={{ color: '#a855f7' }} className="font-semibold">TonPseudo en violet</span>
                                     : tier.decoration.preview.replace('Pseudo', 'TonPseudo')
                                   }
