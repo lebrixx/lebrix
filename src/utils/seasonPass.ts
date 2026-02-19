@@ -160,11 +160,17 @@ export function getEquippedDecorationId(): string | null {
   return getSeasonPassData().equippedDecoration;
 }
 
-export function applyDecoration(username: string, decorationId: string | null): string {
-  if (!decorationId) return username;
-  const deco = DECORATIONS.find(d => d.id === decorationId);
+export function applyDecoration(username: string, decorationsString: string | null): string {
+  if (!decorationsString) return username;
+  // Supporte le format combiné "star,purple_name" — cherche le premier emoji deco (non-couleur)
+  const ids = decorationsString.split(',').map(d => d.trim());
+  const decoId = ids.find(id => {
+    const d = DECORATIONS.find(dec => dec.id === id);
+    return d && !d.isColorReward;
+  });
+  if (!decoId) return username;
+  const deco = DECORATIONS.find(d => d.id === decoId);
   if (!deco) return username;
-  if (deco.isColorReward) return username;
   return `${deco.prefix}${username}${deco.suffix}`;
 }
 
