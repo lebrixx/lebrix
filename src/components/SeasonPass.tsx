@@ -74,9 +74,10 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
     try {
-      await supabase.functions.invoke('sync-decoration', {
+      const result = await supabase.functions.invoke('sync-decoration', {
         body: { device_id: deviceId, username, decorations: decorationId }
       });
+      console.log('Decoration sync result:', result);
     } catch (e) {
       console.warn('Decoration sync failed (offline?)', e);
     }
@@ -511,6 +512,10 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                             </div>
                           </button>
                         </div>
+                        {/* Info message */}
+                        <p className="text-[10px] text-text-muted mt-2.5 text-center leading-relaxed">
+                          🔄 La couleur s'applique immédiatement. Elle sera visible dans le classement des autres appareils après ta prochaine partie.
+                        </p>
                       </div>
                     </div>
                   )}
