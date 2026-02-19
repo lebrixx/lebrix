@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHea
 import { Settings } from '@/components/Settings';
 import { LuckyWheel } from '@/components/LuckyWheel';
 import { SeasonPass } from '@/components/SeasonPass';
+import { Inventory } from '@/components/Inventory';
 import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -57,6 +58,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSeasonPass, setShowSeasonPass] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
   const [hasPassReward, setHasPassReward] = useState(hasDailyQuestReward());
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
@@ -257,15 +259,26 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             {t.gameModes}
           </Button>
 
-          <Button
-            onClick={onOpenShop}
-            variant="outline"
-            size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-          >
-            <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-            {t.shop}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={onOpenShop}
+              variant="outline"
+              size="lg"
+              className="flex-1 border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
+            >
+              <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+              {t.shop}
+            </Button>
+            <Button
+              onClick={() => setShowInventory(true)}
+              variant="outline"
+              size="lg"
+              className="flex-1 border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
+            >
+              <Backpack className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+              Inventaire
+            </Button>
+          </div>
 
           <Button 
             onClick={onOpenChallenges}
@@ -407,6 +420,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         }}
         coins={coins}
         onSpendCoins={onSpendCoins}
+      />
+
+      {/* Inventory */}
+      <Inventory
+        isOpen={showInventory}
+        onClose={() => setShowInventory(false)}
       />
 
       {/* Lucky Wheel */}
