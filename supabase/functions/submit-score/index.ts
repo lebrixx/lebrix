@@ -22,6 +22,10 @@ const MIN_GAME_DURATION = 5000; // 5 seconds minimum
 // Simple in-memory rate limiting (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
+// Idempotence: track recently processed submission IDs (max 1000, auto-cleanup)
+const processedSubmissions = new Set<string>();
+const SUBMISSION_ID_TTL = 60000; // 60 seconds
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -33,9 +37,18 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, username, score, mode, session_start_time, client_fingerprint, decorations } = await req.json();
+    const { device_id, username, score, mode, session_start_time, client_fingerprint, decorations, submission_id } = await req.json();
 
-    console.log('Score submission attempt:', { device_id, username, score, mode });
+    console.log('Score submission attempt:', { device_id, username, score, mode, submission_id });
+
+    // Idempotence check: reject duplicate submission_id
+    if (submission_id && processedSubmissions.has(submission_id)) {
+      console.log(`Duplicate submission_id detected: ${submission_id}`);
+      return new Response(
+        JSON.stringify({ success: true, duplicate: true }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Input validation
     if (!device_id || !username || typeof score !== 'number' || !mode) {
@@ -238,6 +251,18 @@ Deno.serve(async (req) => {
     }
 
     console.log('Score successfully submitted:', data);
+
+    // Track submission_id for idempotence
+    if (submission_id) {
+      processedSubmissions.add(submission_id);
+      // Auto-cleanup after TTL
+      setTimeout(() => processedSubmissions.delete(submission_id), SUBMISSION_ID_TTL);
+      // Safety: cap set size
+      if (processedSubmissions.size > 1000) {
+        const first = processedSubmissions.values().next().value;
+        if (first) processedSubmissions.delete(first);
+      }
+    }
 
     return new Response(
       JSON.stringify({ success: true, data }),
