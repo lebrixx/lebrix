@@ -12,7 +12,8 @@ export interface WheelState {
 export type WheelRewardType = 
   | { type: 'coins'; amount: number }
   | { type: 'boost'; boostId: BoostType }
-  | { type: 'tickets'; amount: number };
+  | { type: 'tickets'; amount: number }
+  | { type: 'diamonds'; amount: number };
 
 export interface WheelSegment {
   id: string;
@@ -31,7 +32,8 @@ export const WHEEL_SEGMENTS: WheelSegment[] = [
   { id: 'boost_bigger', label: '🎯', reward: { type: 'boost', boostId: 'bigger_zone' }, color: 'hsl(var(--primary))', probability: 12 },
   { id: 'coins_100', label: '100', reward: { type: 'coins', amount: 100 }, color: 'hsl(var(--secondary))', probability: 5 },
   { id: 'tickets_3', label: '🎟️x3', reward: { type: 'tickets', amount: 3 }, color: 'hsl(var(--accent))', probability: 8 },
-  { id: 'boost_start', label: '🚀', reward: { type: 'boost', boostId: 'start_20' }, color: 'hsl(var(--primary))', probability: 12 },
+  { id: 'boost_start', label: '🚀', reward: { type: 'boost', boostId: 'start_20' }, color: 'hsl(var(--primary))', probability: 10 },
+  { id: 'diamond_1', label: '💎', reward: { type: 'diamonds', amount: 1 }, color: 'hsl(var(--accent))', probability: 5 },
 ];
 
 /**

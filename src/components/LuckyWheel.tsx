@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Tv, RotateCcw, Gift, Coins, Ticket } from 'lucide-react';
+import { Tv, RotateCcw, Gift, Coins, Ticket, Diamond } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useBoosts } from '@/hooks/useBoosts';
 import { addTickets } from '@/utils/ticketSystem';
+import { addDiamonds } from '@/utils/seasonPass';
 import { scheduleWheelNotification } from '@/utils/notifications';
 import { 
   WHEEL_SEGMENTS, 
@@ -72,6 +73,12 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
         title: "🎉 " + (t.youWon || "Tu as gagné :"),
         description: `${reward.amount} ${t.tickets}`,
       });
+    } else if (reward.type === 'diamonds') {
+      addDiamonds(reward.amount);
+      toast({
+        title: "🎉 " + (t.youWon || "Tu as gagné :"),
+        description: `${reward.amount} 💎`,
+      });
     }
     
     setLastReward(segment);
@@ -127,6 +134,8 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
       return boostNames[reward.boostId] || 'Boost';
     } else if (reward.type === 'tickets') {
       return `${reward.amount} ${t.tickets}`;
+    } else if (reward.type === 'diamonds') {
+      return `${reward.amount} 💎`;
     }
     return '';
   };
@@ -224,6 +233,7 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
               <div className="flex items-center justify-center gap-2 text-xl font-bold text-secondary">
                 {lastReward.reward.type === 'coins' && <Coins className="w-6 h-6" />}
                 {lastReward.reward.type === 'tickets' && <Ticket className="w-6 h-6" />}
+                {lastReward.reward.type === 'diamonds' && <Diamond className="w-6 h-6" />}
                 <span>{getRewardText(lastReward)}</span>
               </div>
             </div>
