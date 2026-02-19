@@ -115,15 +115,21 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && !isSpinning && onClose()}>
-      <DialogContent className="bg-game-dark border border-wheel-border/50 max-w-xs overflow-hidden rounded-2xl p-0">
+      <DialogContent className="bg-game-darker/95 backdrop-blur-xl border-primary/20 max-w-xs overflow-hidden rounded-2xl p-0 shadow-[0_0_60px_hsl(var(--primary)/0.12),0_0_120px_hsl(var(--secondary)/0.06)]">
         {/* Header */}
         <div className="px-6 pt-6 pb-2">
           <DialogHeader>
-            <DialogTitle className="text-center text-lg font-bold text-text-primary">
-              Bonus Quotidien
+            <DialogTitle className="text-center flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-secondary" />
+                <span className="bg-gradient-primary bg-clip-text text-transparent text-lg font-black tracking-wide">
+                  Bonus Quotidien
+                </span>
+                <Sparkles className="w-4 h-4 text-secondary" />
+              </div>
             </DialogTitle>
           </DialogHeader>
-          <p className="text-text-muted text-xs text-center mt-1">
+          <p className="text-text-muted text-[11px] text-center mt-1 tracking-wide">
             Lance la machine pour doubler tes coins dans un mode pendant 24h
           </p>
         </div>
@@ -132,8 +138,10 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
           {/* Slot Machine Window */}
           <div className="relative w-full">
             {/* Machine frame */}
+            {/* Halo ambient */}
+            <div className="absolute -inset-3 rounded-2xl bg-primary/5 blur-2xl pointer-events-none" />
             <div 
-              className="relative border border-wheel-border/40 rounded-xl bg-game-darker overflow-hidden"
+              className="relative border border-primary/25 rounded-xl bg-game-darker overflow-hidden shadow-[inset_0_0_30px_hsl(var(--primary)/0.05),0_0_20px_hsl(var(--primary)/0.1)]"
               style={{ height: `${ITEM_HEIGHT * 3}px` }}
             >
               {/* Center row highlight */}
@@ -141,10 +149,10 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
                 className="absolute left-0 right-0 z-10 pointer-events-none"
                 style={{ top: ITEM_HEIGHT, height: ITEM_HEIGHT }}
               >
-                <div className="absolute inset-0 border-y border-primary/30 bg-primary/5" />
+                <div className="absolute inset-0 border-y border-primary/40 bg-primary/8" />
                 {/* Side arrows */}
-                <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-primary/40 rounded-r" />
-                <div className="absolute right-1 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-primary/40 rounded-l" />
+                <div className="absolute left-0.5 top-1/2 -translate-y-1/2 w-2 h-5 bg-gradient-to-r from-primary/50 to-transparent rounded-r" />
+                <div className="absolute right-0.5 top-1/2 -translate-y-1/2 w-2 h-5 bg-gradient-to-l from-primary/50 to-transparent rounded-l" />
               </div>
               
               {/* Gradient overlays */}
@@ -179,7 +187,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
             <div className="animate-scale-in text-center space-y-2">
               <div className="flex items-center justify-center gap-2">
                 <Sparkles className="w-4 h-4 text-secondary" />
-                <span className="text-secondary font-bold">x2 COINS</span>
+                <span className="text-secondary font-black text-lg drop-shadow-[0_0_8px_hsl(var(--secondary)/0.4)]">x2 COINS</span>
                 <Sparkles className="w-4 h-4 text-secondary" />
               </div>
               <div className="flex items-center justify-center gap-2">
@@ -215,7 +223,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
               <Button
                 onClick={spin}
                 disabled={isSpinning}
-                className="w-full bg-gradient-primary text-game-dark font-bold transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full bg-gradient-primary text-game-dark font-black tracking-wide transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
               >
                 {isSpinning ? (
                   <>
