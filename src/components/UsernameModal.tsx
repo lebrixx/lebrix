@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,12 +17,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
+import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
 
 interface UsernameModalProps {
   isOpen: boolean;
   onUsernameSet: () => void;
   onClose?: () => void;
 }
+
+// Cache: username → available (persists across modal open/close within session)
+const usernameCache = new Map<string, boolean>();
 
 export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsernameSet, onClose }) => {
   const currentUsername = getUsername();
@@ -34,34 +38,72 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const lastCheckedRef = useRef<string>('');
 
   const isFirstUsername = !currentUsername;
   const remainingChanges = getRemainingUsernameChanges();
   const canChange = canChangeUsername();
 
-  // Check username availability with debounce
+  // Check username availability with optimized debounce
   useEffect(() => {
-    // Pour un changement de pseudo, on ne vérifie pas si c'est le même
+    // Skip if modal is closed
+    if (!isOpen) return;
+
+    // Skip if same as current username
     if (!isFirstUsername && username === currentUsername) {
       setIsUsernameAvailable(null);
       return;
     }
 
-    // Ne pas vérifier si le pseudo est vide ou invalide
+    // Skip if empty or invalid
     if (!username || !isValidUsername(username)) {
       setIsUsernameAvailable(null);
       return;
     }
 
+    const normalizedUsername = username.toLowerCase();
+
+    // Skip if already checked this exact username
+    if (lastCheckedRef.current === normalizedUsername) {
+      trackSkipped('check-username', 'already-checked-same');
+      return;
+    }
+
+    // Check cache first
+    if (usernameCache.has(normalizedUsername)) {
+      const cached = usernameCache.get(normalizedUsername)!;
+      setIsUsernameAvailable(cached);
+      setError(cached ? '' : 'Ce pseudo est déjà pris par un autre joueur');
+      lastCheckedRef.current = normalizedUsername;
+      trackSkipped('check-username', 'cache-hit');
+      return;
+    }
+
     const timer = setTimeout(async () => {
+      // Abort previous request if still in flight
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        trackSkipped('check-username', 'aborted-previous');
+      }
+
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       setIsCheckingUsername(true);
       try {
-        const { data, error } = await supabase.functions.invoke('check-username', {
+        trackSent('check-username');
+        const { data, error: fnError } = await supabase.functions.invoke('check-username', {
           body: { username, device_id: getDeviceId() }
         });
         
-        if (!error && data) {
+        // Ignore if aborted
+        if (controller.signal.aborted) return;
+
+        if (!fnError && data) {
           setIsUsernameAvailable(data.available);
+          lastCheckedRef.current = normalizedUsername;
+          usernameCache.set(normalizedUsername, data.available);
           if (!data.available) {
             setError('Ce pseudo est déjà pris par un autre joueur');
           } else {
@@ -69,14 +111,30 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
           }
         }
       } catch (err) {
-        console.error('Error checking username:', err);
+        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          console.error('Error checking username:', err);
+        }
       } finally {
-        setIsCheckingUsername(false);
+        if (!controller.signal.aborted) {
+          setIsCheckingUsername(false);
+        }
+        if (abortControllerRef.current === controller) {
+          abortControllerRef.current = null;
+        }
       }
-    }, 500);
+    }, 1200);
 
-    return () => clearTimeout(timer);
-  }, [username, currentUsername, isFirstUsername]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [username, currentUsername, isFirstUsername, isOpen]);
+
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,25 +144,21 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
       return;
     }
 
-    // Vérifier si le pseudo est identique
     if (currentUsername && username === currentUsername) {
       setError('Ce pseudo est déjà le tien');
       return;
     }
 
-    // Vérifier si le pseudo est disponible
     if (isUsernameAvailable === false) {
       setError('Ce pseudo est déjà pris par un autre joueur');
       return;
     }
 
-    // Vérifier la limite de changements
     if (!isFirstUsername && !canChange) {
       setError('Tu as atteint la limite de changements de pseudo (1 max)');
       return;
     }
 
-    // Afficher la confirmation
     setShowConfirmation(true);
   };
 
@@ -159,7 +213,6 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             </p>
           </div>
           
-          {/* Afficher le nombre de changements restants si ce n'est pas le premier pseudo */}
           {!isFirstUsername && (
             <div className={`flex items-center gap-2 p-2 rounded-lg ${remainingChanges === 0 ? 'bg-red-500/20' : 'bg-yellow-500/20'}`}>
               <AlertTriangle className={`w-4 h-4 ${remainingChanges === 0 ? 'text-red-400' : 'text-yellow-400'}`} />
@@ -185,7 +238,6 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               autoFocus
               disabled={!isFirstUsername && !canChange}
             />
-            {/* Indicateur de disponibilité */}
             {username && username !== currentUsername && isValidUsername(username) && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 {isCheckingUsername ? (
@@ -227,7 +279,6 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
         </form>
       </DialogContent>
 
-      {/* Dialogue de confirmation */}
       <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <AlertDialogContent className="bg-button-bg border-wheel-border">
           <AlertDialogHeader>

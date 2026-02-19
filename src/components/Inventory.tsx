@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
 import { Button } from '@/components/ui/button';
 import {
   Backpack, Ticket, Palette, Check, Pencil, X, Zap, Shield, Rocket, Target,
@@ -58,7 +59,10 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Sync decoration to server
+  // Sync decoration to server — with skip-if-same and single-inflight guards
+  const lastSyncedDecoration = useRef<string | null | undefined>(undefined);
+  const isSyncingDecoration = useRef(false);
+
   const syncDecorationToServer = async (data: SeasonPassData) => {
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
@@ -73,12 +77,30 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
       parts.push('pulse_name');
     }
     const decorations = parts.length > 0 ? parts.join(',') : null;
+
+    // Skip if identical to last synced value
+    if (lastSyncedDecoration.current !== undefined && lastSyncedDecoration.current === decorations) {
+      trackSkipped('sync-decoration', 'same-value');
+      return;
+    }
+
+    // Skip if already syncing
+    if (isSyncingDecoration.current) {
+      trackSkipped('sync-decoration', 'already-inflight');
+      return;
+    }
+
+    isSyncingDecoration.current = true;
     try {
+      trackSent('sync-decoration');
       await supabase.functions.invoke('sync-decoration', {
         body: { device_id: deviceId, username, decorations }
       });
+      lastSyncedDecoration.current = decorations;
     } catch (e) {
       console.warn('Decoration sync failed (offline?)', e);
+    } finally {
+      isSyncingDecoration.current = false;
     }
   };
 

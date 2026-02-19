@@ -363,6 +363,7 @@ const Index = () => {
         onUsernameSet={() => {
           setShowUsernameModal(false);
           // Auto-submit le score du dernier jeu si disponible
+          // submitScore has built-in hasSubmittedThisGame guard — safe against double submit
           if (lastGameScore > 0) {
             import('@/utils/scoresApi').then(({ submitScore }) => {
               submitScore({ score: lastGameScore, mode: currentMode });

@@ -3,6 +3,7 @@ import { getLocalIdentity, setUsername, generateDefaultUsername } from './localI
 import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
 import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
+import { trackSent, trackSkipped } from './edgeFunctionMetrics';
 
 // Construit la chaîne de décorations combinée (ex: "star,purple_name")
 function buildDecorationsString(): string | null {
@@ -30,6 +31,11 @@ let lastSubmitTime = 0;
 let gameSessionStart = 0;
 const SUBMIT_COOLDOWN = 3000; // 3 secondes
 
+// Idempotence & anti-burst guards
+let isSubmitting = false;
+let hasSubmittedThisGame = false;
+let currentSubmissionId: string | null = null;
+
 export interface Score {
   username: string;
   score: number;
@@ -45,8 +51,24 @@ export interface SubmitScoreParams {
 
 const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
 
+function generateSubmissionId(): string {
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export async function submitScore({ score, mode }: SubmitScoreParams): Promise<boolean> {
   try {
+    // Guard: already submitting
+    if (isSubmitting) {
+      trackSkipped('submit-score', 'already-submitting');
+      return false;
+    }
+
+    // Guard: already submitted this game
+    if (hasSubmittedThisGame) {
+      trackSkipped('submit-score', 'already-submitted-this-game');
+      return false;
+    }
+
     // Basic client-side validation
     if (typeof score !== 'number' || score < 2) {
       console.warn('Score invalide:', score);
@@ -61,7 +83,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     // Enhanced anti-spam
     const now = Date.now();
     if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
-      console.warn('Trop de submissions rapides, attendre', SUBMIT_COOLDOWN - (now - lastSubmitTime), 'ms');
+      trackSkipped('submit-score', `cooldown-${SUBMIT_COOLDOWN - (now - lastSubmitTime)}ms`);
       return false;
     }
 
@@ -69,17 +91,19 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     let { username } = identity;
     const { deviceId } = identity;
 
-    // Si pas de pseudo, demander à l'utilisateur de le définir
     if (!username) {
       throw new Error('USERNAME_REQUIRED');
     }
 
+    isSubmitting = true;
+
     // Generate enhanced device fingerprint
     const clientFingerprint = generateDeviceFingerprint();
     const decorations = buildDecorationsString();
+    const submissionId = currentSubmissionId || generateSubmissionId();
 
-    // Call the secure Edge Function instead of direct database access
-    console.log('Appel Edge Function avec:', { deviceId, username, score, mode });
+    // Call the secure Edge Function
+    trackSent('submit-score');
     const { data, error } = await supabase.functions.invoke('submit-score', {
       body: {
         device_id: deviceId,
@@ -88,7 +112,8 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
         mode,
         session_start_time: gameSessionStart || now - 10000,
         client_fingerprint: clientFingerprint,
-        decorations
+        decorations,
+        submission_id: submissionId
       }
     });
 
@@ -103,14 +128,17 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     }
 
     lastSubmitTime = now;
+    hasSubmittedThisGame = true;
     return true;
 
   } catch (error) {
     if (error instanceof Error && error.message === 'USERNAME_REQUIRED') {
-      throw error; // Re-throw pour que l'UI puisse gérer
+      throw error;
     }
     console.error('Erreur lors de la soumission du score:', error);
     return false;
+  } finally {
+    isSubmitting = false;
   }
 }
 
@@ -147,12 +175,10 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
           _latest_at: entryAt,
         });
       } else {
-        // Toujours garder le meilleur score
         if (entry.best_score > existing.score) {
           existing.score = entry.best_score;
           existing.created_at = entry.created_at;
         }
-        // Toujours garder les décorations les plus récentes
         if (entryAt > existing._latest_at) {
           existing.decorations = entry.decorations;
           existing._latest_at = entryAt;
@@ -177,7 +203,6 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       return [];
     }
 
-    // Calculer le début de la semaine (lundi 00:00)
     const now = new Date();
     const day = now.getDay();
     const diff = now.getDate() - day + (day === 0 ? -6 : 1);
@@ -197,7 +222,6 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       return [];
     }
 
-    // Dédupliquer par username : meilleur score hebdo + décorations les plus récentes (weekly_updated_at le plus tardif)
     const seen = new Map<string, Score & { _latest_at: string }>();
     for (const entry of (data || [])) {
       const existing = seen.get(entry.username);
@@ -211,12 +235,10 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
           _latest_at: entryAt,
         });
       } else {
-        // Toujours garder le meilleur score hebdo
         if (entry.weekly_score > existing.score) {
           existing.score = entry.weekly_score;
           existing.created_at = entry.weekly_updated_at || '';
         }
-        // Toujours garder les décorations les plus récentes
         if (entryAt > existing._latest_at) {
           existing.decorations = entry.decorations;
           existing._latest_at = entryAt;
@@ -241,7 +263,6 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
       return [];
     }
 
-    // Calculer le début et fin de la semaine précédente
     const now = new Date();
     const day = now.getDay();
     const diff = now.getDate() - day + (day === 0 ? -6 : 1);
@@ -290,4 +311,6 @@ export function setUsernameForScores(username: string): void {
 // Function to mark the start of a game session for timing validation
 export function startGameSession(): void {
   gameSessionStart = Date.now();
+  hasSubmittedThisGame = false;
+  currentSubmissionId = generateSubmissionId();
 }

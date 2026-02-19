@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Crown, Check, Gift, Star, Video, Target, Zap, Palette } from 'lucide-react';
@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { supabase } from '@/integrations/supabase/client';
 import { getLocalIdentity } from '@/utils/localIdentity';
+import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
 
 
 
@@ -83,17 +84,34 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
     return parts.length > 0 ? parts.join(',') : null;
   };
 
+  const lastSyncedDecoration = useRef<string | null | undefined>(undefined);
+  const isSyncingDecoration = useRef(false);
+
   const syncDecorationToServer = async (data: SeasonPassData) => {
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
     const decorations = buildDecorationsString(data);
+
+    if (lastSyncedDecoration.current !== undefined && lastSyncedDecoration.current === decorations) {
+      trackSkipped('sync-decoration', 'same-value');
+      return;
+    }
+    if (isSyncingDecoration.current) {
+      trackSkipped('sync-decoration', 'already-inflight');
+      return;
+    }
+
+    isSyncingDecoration.current = true;
     try {
-      const result = await supabase.functions.invoke('sync-decoration', {
+      trackSent('sync-decoration');
+      await supabase.functions.invoke('sync-decoration', {
         body: { device_id: deviceId, username, decorations }
       });
-      console.log('Decoration sync result:', result, '| Decorations string:', decorations);
+      lastSyncedDecoration.current = decorations;
     } catch (e) {
       console.warn('Decoration sync failed (offline?)', e);
+    } finally {
+      isSyncingDecoration.current = false;
     }
   };
 
