@@ -2,7 +2,21 @@
 import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
 import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
-import { getEquippedDecorationId } from './seasonPass';
+import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
+
+// Construit la chaîne de décorations combinée (ex: "star,purple_name")
+function buildDecorationsString(): string | null {
+  const parts: string[] = [];
+  const decoId = getEquippedDecorationId();
+  if (decoId && decoId !== 'purple_name') {
+    parts.push(decoId);
+  }
+  const color = getEquippedUsernameColor();
+  if (color === 'violet') {
+    parts.push('purple_name');
+  }
+  return parts.length > 0 ? parts.join(',') : null;
+}
 
 // Constantes de configuration
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
@@ -60,7 +74,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     // Generate enhanced device fingerprint
     const clientFingerprint = generateDeviceFingerprint();
-    const decorations = getEquippedDecorationId();
+    const decorations = buildDecorationsString();
 
     // Call the secure Edge Function instead of direct database access
     console.log('Appel Edge Function avec:', { deviceId, username, score, mode });
