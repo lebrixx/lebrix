@@ -82,7 +82,7 @@ export const Customization: React.FC<CustomizationProps> = ({
                 className={`relative p-4 cursor-pointer transition-all duration-300 hover:scale-105 ${
                   selectedCustomization.background === item.id 
                     ? 'border-primary shadow-glow-primary' 
-                    : 'border-wheel-border hover:border-primary'
+                    : 'border-wheel-border'
                 }`}
                 onClick={() => setSelectedCustomization(prev => ({ ...prev, background: item.id }))}
               >
@@ -113,7 +113,7 @@ export const Customization: React.FC<CustomizationProps> = ({
                 className={`relative p-4 cursor-pointer transition-all duration-300 hover:scale-105 ${
                   selectedCustomization.circle === item.id 
                     ? 'border-primary shadow-glow-primary' 
-                    : 'border-wheel-border hover:border-primary'
+                    : 'border-wheel-border'
                 }`}
                 onClick={() => setSelectedCustomization(prev => ({ ...prev, circle: item.id }))}
               >
@@ -146,7 +146,7 @@ export const Customization: React.FC<CustomizationProps> = ({
                 className={`relative p-4 cursor-pointer transition-all duration-300 hover:scale-105 ${
                   selectedCustomization.effect === item.id 
                     ? 'border-primary shadow-glow-primary' 
-                    : 'border-wheel-border hover:border-primary'
+                    : 'border-wheel-border'
                 }`}
                 onClick={() => setSelectedCustomization(prev => ({ ...prev, effect: item.id }))}
               >
