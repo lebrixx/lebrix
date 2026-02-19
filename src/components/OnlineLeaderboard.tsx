@@ -350,7 +350,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className={`font-bold text-lg ${hasPulseName(entry.decorations) ? 'animate-[username-pulse_2s_ease-in-out_infinite]' : ''}`} style={{
+                          <h3 className={`font-bold text-lg ${hasPulseName(entry.decorations) ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`} style={{
                             color: hasPulseName(entry.decorations) ? 'hsl(var(--primary))' : hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
                           }}>
                             {(() => {
@@ -403,7 +403,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className={`font-bold text-lg ${hasPulseName(entry.decorations) ? 'animate-[username-pulse_2s_ease-in-out_infinite]' : ''}`} style={{
+                          <h3 className={`font-bold text-lg ${hasPulseName(entry.decorations) ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`} style={{
                             color: hasPulseName(entry.decorations) ? 'hsl(var(--primary))' : hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
                           }}>
                             {(() => {

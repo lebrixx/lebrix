@@ -589,5 +589,5 @@
 
 @keyframes username-pulse {
   0%, 100% { opacity: 1; text-shadow: 0 0 4px currentColor; }
-  50% { opacity: 0.4; text-shadow: 0 0 12px currentColor, 0 0 24px currentColor; }
+  50% { opacity: 0.5; text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
 }

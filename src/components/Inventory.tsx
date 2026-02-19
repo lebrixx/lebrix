@@ -279,7 +279,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                 <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide drop-shadow-sm transition-all duration-300 ${isPulseEquipped ? 'animate-[username-pulse_2s_ease-in-out_infinite]' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide drop-shadow-sm transition-all duration-300 ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`}
                     style={{ color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))' }}
                   >
                     {equippedDeco && !equippedDeco.isColorReward
@@ -374,7 +374,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       )}
                       {!hasPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
                       <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>Pulsé</span>
-                      <span className="text-sm font-black leading-none animate-[username-pulse_2s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>Aa</span>
+                      <span className="text-sm font-black leading-none animate-[username-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>Aa</span>
                       {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
                     </div>
                   </button>
