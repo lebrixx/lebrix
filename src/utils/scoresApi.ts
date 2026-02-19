@@ -105,8 +105,6 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    // Use Supabase client to fetch from scores table (best_score for global)
-    // RLS policies ensure device_id is not exposed to public
     const { data, error } = await supabase
       .from('scores')
       .select('username,best_score,created_at,decorations')
@@ -119,12 +117,23 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    return (data || []).map(entry => ({
-      username: entry.username,
-      score: entry.best_score,
-      created_at: entry.created_at,
-      decorations: entry.decorations,
-    }));
+    // Dédupliquer par username, garder le meilleur score + décorations les plus récentes
+    const seen = new Map<string, Score>();
+    for (const entry of (data || [])) {
+      const existing = seen.get(entry.username);
+      if (!existing || entry.best_score > existing.score) {
+        seen.set(entry.username, {
+          username: entry.username,
+          score: entry.best_score,
+          created_at: entry.created_at,
+          decorations: entry.decorations,
+        });
+      } else if (existing && entry.decorations && !existing.decorations) {
+        existing.decorations = entry.decorations;
+      }
+    }
+
+    return Array.from(seen.values()).sort((a, b) => b.score - a.score);
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement:', error);
@@ -159,12 +168,23 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       return [];
     }
 
-    return (data || []).map(entry => ({
-      username: entry.username,
-      score: entry.weekly_score,
-      created_at: entry.weekly_updated_at || entry.weekly_updated_at,
-      decorations: entry.decorations,
-    }));
+    // Dédupliquer par username, garder le meilleur score hebdo + décorations
+    const seen = new Map<string, Score>();
+    for (const entry of (data || [])) {
+      const existing = seen.get(entry.username);
+      if (!existing || entry.weekly_score > existing.score) {
+        seen.set(entry.username, {
+          username: entry.username,
+          score: entry.weekly_score,
+          created_at: entry.weekly_updated_at || '',
+          decorations: entry.decorations,
+        });
+      } else if (existing && entry.decorations && !existing.decorations) {
+        existing.decorations = entry.decorations;
+      }
+    }
+
+    return Array.from(seen.values()).sort((a, b) => b.score - a.score);
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement hebdomadaire:', error);
