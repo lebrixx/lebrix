@@ -203,9 +203,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
               {/* Username section */}
               <div className="relative overflow-hidden rounded-xl border border-wheel-border/50 bg-game-dark/40 p-3.5">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-                    <Pencil className="w-3.5 h-3.5 text-primary" />
-                  </div>
+                  <Pencil className="w-3.5 h-3.5 text-primary" />
                   <span className="font-bold text-sm text-text-primary">Pseudo</span>
                 </div>
                 {editingUsername ? (
