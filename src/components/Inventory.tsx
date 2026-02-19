@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
-  Backpack, Diamond, Ticket, Palette, Check, Pencil, X, Zap, Shield, Rocket, Target,
+  Backpack, Ticket, Palette, Check, Pencil, X, Zap, Shield, Rocket, Target,
   Lock, ChevronRight, Crown, Star
 } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
@@ -149,7 +149,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
             <div className="grid grid-cols-3 gap-2 mb-4">
               {/* Diamonds */}
               <div className="flex flex-col items-center gap-1 bg-game-dark/70 border border-wheel-border/40 rounded-xl py-2.5 px-1">
-                <Diamond className="w-4 h-4 text-primary" />
+                <span className="text-base">💎</span>
                 <span className="text-lg font-black text-text-primary">{passData.diamonds}</span>
                 <span className="text-[9px] text-text-muted uppercase tracking-wide">Diamants</span>
               </div>
