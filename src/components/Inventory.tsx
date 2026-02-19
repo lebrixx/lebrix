@@ -312,7 +312,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       !isVioletEquipped && !isPulseEquipped
                         ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
-                        : 'border-wheel-border/40 hover:border-wheel-border/70'
+                        : 'border-wheel-border/40'
                     }`}
                   >
                     {!isVioletEquipped && !isPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
@@ -336,7 +336,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     } ${
                       isVioletEquipped
                         ? 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                        : 'border-wheel-border/40 hover:border-purple-500/50'
+                        : 'border-wheel-border/40'
                     }`}
                   >
                     {isVioletEquipped && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-900/10" />}
@@ -362,7 +362,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     } ${
                       isPulseEquipped
                         ? 'border-primary shadow-[0_0_20px_hsl(var(--primary)/0.4)]'
-                        : 'border-wheel-border/40 hover:border-primary/50'
+                        : 'border-wheel-border/40'
                     }`}
                   >
                     {isPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/10" />}
@@ -400,7 +400,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                           isEquipped
                             ? 'border-primary/50 bg-primary/10 shadow-[0_0_12px_hsl(var(--primary)/0.2)]'
                             : isUnlocked
-                              ? 'border-wheel-border/30 bg-game-dark/40 hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98]'
+                              ? 'border-wheel-border/30 bg-game-dark/40 active:scale-[0.98]'
                               : 'border-wheel-border/20 bg-game-dark/20 opacity-40 cursor-not-allowed'
                         }`}
                       >
