@@ -63,11 +63,14 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
     const parts: string[] = [];
-    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name') {
+    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name') {
       parts.push(data.equippedDecoration);
     }
     if (data.equippedUsernameColor === 'violet') {
       parts.push('purple_name');
+    }
+    if (data.equippedUsernameColor === 'pulse') {
+      parts.push('pulse_name');
     }
     const decorations = parts.length > 0 ? parts.join(',') : null;
     try {
@@ -86,8 +89,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     syncDecorationToServer(updated);
   };
 
-  const handleEquipColor = (active: boolean) => {
-    equipUsernameColor(active ? 'violet' : null);
+  const handleEquipColor = (color: 'violet' | 'pulse' | null) => {
+    equipUsernameColor(color);
     const updated = getSeasonPassData();
     setPassData(updated);
     syncDecorationToServer(updated);
@@ -121,7 +124,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const unlockedDecorations = DECORATIONS.filter(d => passData.currentTier >= d.tier);
   const equippedDeco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
   const hasVioletUnlocked = passData.currentTier >= 5;
+  const hasPulseUnlocked = passData.currentTier >= 10;
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
+  const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
@@ -282,9 +287,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       : (identity.username || 'TonPseudo')
                     }
                   </div>
-                  {(equippedDeco || isVioletEquipped) ? (
+                  {(equippedDeco || isVioletEquipped || isPulseEquipped) ? (
                     <button
-                      onClick={() => { handleEquip(null); handleEquipColor(false); }}
+                      onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
                     >
                       <X className="w-3 h-3" /> Retirer la décoration
@@ -300,46 +305,77 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
                   <Palette className="w-3 h-3" /> Couleur du pseudo
                 </p>
-                <div className={`flex gap-2.5 ${!hasVioletUnlocked ? 'opacity-40 pointer-events-none' : ''}`}>
+                <div className="flex gap-2.5">
+                  {/* Default */}
                   <button
-                    onClick={() => handleEquipColor(false)}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-4 transition-all duration-300 active:scale-95 ${
-                      !isVioletEquipped
+                    onClick={() => handleEquipColor(null)}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
+                      !isVioletEquipped && !isPulseEquipped
                         ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
                         : 'border-wheel-border/40 hover:border-wheel-border/70'
                     }`}
                   >
-                    {!isVioletEquipped && <div className="absolute inset-0 bg-primary/10" />}
-                    <div className="relative flex flex-col items-center gap-1.5">
-                      {!isVioletEquipped && (
-                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center mb-0.5">
-                          <Check className="w-3 h-3 text-game-darker" />
+                    {!isVioletEquipped && !isPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
+                    <div className="relative flex flex-col items-center gap-1">
+                      {!isVioletEquipped && !isPulseEquipped && (
+                        <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-game-darker" />
                         </div>
                       )}
-                      <span className="text-xs font-black text-text-primary">Défaut</span>
-                      <span className="text-base font-black text-text-primary leading-none">Aa</span>
+                      <span className="text-[10px] font-black text-text-primary">Défaut</span>
+                      <span className="text-sm font-black text-text-primary leading-none">Aa</span>
                     </div>
                   </button>
 
+                  {/* Violet */}
                   <button
-                    onClick={() => handleEquipColor(true)}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-4 transition-all duration-300 active:scale-95 ${
+                    onClick={() => hasVioletUnlocked && handleEquipColor('violet')}
+                    disabled={!hasVioletUnlocked}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
+                      hasVioletUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
+                    } ${
                       isVioletEquipped
                         ? 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
                         : 'border-wheel-border/40 hover:border-purple-500/50'
                     }`}
                   >
                     {isVioletEquipped && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-900/10" />}
-                    <div className="relative flex flex-col items-center gap-1.5">
+                    <div className="relative flex flex-col items-center gap-1">
                       {isVioletEquipped && (
-                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center mb-0.5">
-                          <Check className="w-3 h-3 text-white" />
+                        <div className="w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-white" />
                         </div>
                       )}
-                      {!hasVioletUnlocked && <Lock className="w-3.5 h-3.5 text-text-muted mb-0.5" />}
-                      <span className={`text-xs font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>Violet</span>
-                      <span className="text-base font-black leading-none" style={{ color: '#a855f7' }}>Aa</span>
-                      {!hasVioletUnlocked && <span className="text-[9px] text-text-muted">Tier 5</span>}
+                      {!hasVioletUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
+                      <span className={`text-[10px] font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>Violet</span>
+                      <span className="text-sm font-black leading-none" style={{ color: '#a855f7' }}>Aa</span>
+                      {!hasVioletUnlocked && <span className="text-[8px] text-text-muted">Tier 5</span>}
+                    </div>
+                  </button>
+
+                  {/* Pulse */}
+                  <button
+                    onClick={() => hasPulseUnlocked && handleEquipColor('pulse')}
+                    disabled={!hasPulseUnlocked}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
+                      hasPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
+                    } ${
+                      isPulseEquipped
+                        ? 'border-primary shadow-[0_0_20px_hsl(var(--primary)/0.4)]'
+                        : 'border-wheel-border/40 hover:border-primary/50'
+                    }`}
+                  >
+                    {isPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/10" />}
+                    <div className="relative flex flex-col items-center gap-1">
+                      {isPulseEquipped && (
+                        <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-game-darker" />
+                        </div>
+                      )}
+                      {!hasPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
+                      <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>Pulsé</span>
+                      <span className="text-sm font-black leading-none animate-[username-pulse_2s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>Aa</span>
+                      {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
                     </div>
                   </button>
                 </div>
