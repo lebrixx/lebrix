@@ -278,6 +278,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
                 <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
+                  <span className="text-[8px] text-text-muted/70 italic">Joue une partie pour appliquer les changements</span>
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`}
                     style={{
