@@ -2,7 +2,7 @@
 const DEVICE_ID_KEY = 'circle_tap_device_id';
 const USERNAME_KEY = 'circle_tap_username';
 const USERNAME_CHANGES_KEY = 'circle_tap_username_changes';
-const MAX_USERNAME_CHANGES = 2;
+const MAX_USERNAME_CHANGES = 1;
 
 export interface LocalIdentity {
   deviceId: string;

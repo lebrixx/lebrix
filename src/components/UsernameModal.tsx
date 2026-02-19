@@ -100,7 +100,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
 
     // Vérifier la limite de changements
     if (!isFirstUsername && !canChange) {
-      setError('Tu as atteint la limite de changements de pseudo (2 max)');
+      setError('Tu as atteint la limite de changements de pseudo (1 max)');
       return;
     }
 
@@ -124,7 +124,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
       onUsernameSet();
     } catch (err) {
       if (err instanceof Error && err.message === 'LIMIT_REACHED') {
-        setError('Tu as atteint la limite de changements de pseudo (2 max)');
+        setError('Tu as atteint la limite de changements de pseudo (1 max)');
       } else {
         setError(t.saveError);
       }
@@ -245,7 +245,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               )}
               <p className="text-sm text-text-primary">
                 {isFirstUsername 
-                  ? 'Tu pourras changer ton pseudo 2 fois maximum après cette première inscription.'
+                  ? 'Tu pourras changer ton pseudo 1 fois maximum après cette première inscription.'
                   : t.dontChangeUsername}
               </p>
             </AlertDialogDescription>
