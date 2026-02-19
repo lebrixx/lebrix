@@ -117,23 +117,36 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
-    // Dédupliquer par username, garder le meilleur score + décorations les plus récentes
-    const seen = new Map<string, Score>();
+    // Dédupliquer par username : meilleur score + décorations les plus récentes (created_at le plus tardif)
+    const seen = new Map<string, Score & { _latest_at: string }>();
     for (const entry of (data || [])) {
       const existing = seen.get(entry.username);
-      if (!existing || entry.best_score > existing.score) {
+      const entryAt = entry.created_at || '';
+      if (!existing) {
         seen.set(entry.username, {
           username: entry.username,
           score: entry.best_score,
           created_at: entry.created_at,
           decorations: entry.decorations,
+          _latest_at: entryAt,
         });
-      } else if (existing && entry.decorations && !existing.decorations) {
-        existing.decorations = entry.decorations;
+      } else {
+        // Toujours garder le meilleur score
+        if (entry.best_score > existing.score) {
+          existing.score = entry.best_score;
+          existing.created_at = entry.created_at;
+        }
+        // Toujours garder les décorations les plus récentes
+        if (entryAt > existing._latest_at) {
+          existing.decorations = entry.decorations;
+          existing._latest_at = entryAt;
+        }
       }
     }
 
-    return Array.from(seen.values()).sort((a, b) => b.score - a.score);
+    return Array.from(seen.values())
+      .map(({ _latest_at, ...s }) => s)
+      .sort((a, b) => b.score - a.score);
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement:', error);
@@ -168,23 +181,36 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       return [];
     }
 
-    // Dédupliquer par username, garder le meilleur score hebdo + décorations
-    const seen = new Map<string, Score>();
+    // Dédupliquer par username : meilleur score hebdo + décorations les plus récentes (weekly_updated_at le plus tardif)
+    const seen = new Map<string, Score & { _latest_at: string }>();
     for (const entry of (data || [])) {
       const existing = seen.get(entry.username);
-      if (!existing || entry.weekly_score > existing.score) {
+      const entryAt = entry.weekly_updated_at || '';
+      if (!existing) {
         seen.set(entry.username, {
           username: entry.username,
           score: entry.weekly_score,
           created_at: entry.weekly_updated_at || '',
           decorations: entry.decorations,
+          _latest_at: entryAt,
         });
-      } else if (existing && entry.decorations && !existing.decorations) {
-        existing.decorations = entry.decorations;
+      } else {
+        // Toujours garder le meilleur score hebdo
+        if (entry.weekly_score > existing.score) {
+          existing.score = entry.weekly_score;
+          existing.created_at = entry.weekly_updated_at || '';
+        }
+        // Toujours garder les décorations les plus récentes
+        if (entryAt > existing._latest_at) {
+          existing.decorations = entry.decorations;
+          existing._latest_at = entryAt;
+        }
       }
     }
 
-    return Array.from(seen.values()).sort((a, b) => b.score - a.score);
+    return Array.from(seen.values())
+      .map(({ _latest_at, ...s }) => s)
+      .sort((a, b) => b.score - a.score);
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement hebdomadaire:', error);
