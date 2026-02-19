@@ -17,6 +17,9 @@ import {
 } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { supabase } from '@/integrations/supabase/client';
+import { getLocalIdentity } from '@/utils/localIdentity';
+
 
 
 interface SeasonPassProps {
@@ -67,15 +70,32 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
     }
   };
 
+  const syncDecorationToServer = async (decorationId: string | null) => {
+    const { username, deviceId } = getLocalIdentity();
+    if (!username) return;
+    try {
+      await supabase.functions.invoke('sync-decoration', {
+        body: { device_id: deviceId, username, decorations: decorationId }
+      });
+    } catch (e) {
+      console.warn('Decoration sync failed (offline?)', e);
+    }
+  };
+
   const handleEquip = (decoId: string | null) => {
     equipDecoration(decoId);
-    setPassData(getSeasonPassData());
+    const updated = getSeasonPassData();
+    setPassData(updated);
+    syncDecorationToServer(updated.equippedDecoration);
   };
 
   const handleEquipColor = (active: boolean) => {
     equipUsernameColor(active ? 'violet' : null);
-    setPassData(getSeasonPassData());
+    const updated = getSeasonPassData();
+    setPassData(updated);
+    syncDecorationToServer(updated.equippedDecoration);
   };
+
 
   const handleBuyDiamond = () => {
     if (onSpendCoins && onSpendCoins(1)) {
