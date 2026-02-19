@@ -12,6 +12,12 @@ const hasPurpleName = (decorations: string | null | undefined): boolean => {
   if (!decorations) return false;
   return decorations.split(',').map(d => d.trim()).includes('purple_name');
 };
+
+// Helper: checks if pulse_name is in the decorations string
+const hasPulseName = (decorations: string | null | undefined): boolean => {
+  if (!decorations) return false;
+  return decorations.split(',').map(d => d.trim()).includes('pulse_name');
+};
 import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
@@ -344,8 +350,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className="font-bold text-lg" style={{
-                            color: hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
+                          <h3 className={`font-bold text-lg ${hasPulseName(entry.decorations) ? 'animate-[username-pulse_2s_ease-in-out_infinite]' : ''}`} style={{
+                            color: hasPulseName(entry.decorations) ? 'hsl(var(--primary))' : hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
                           }}>
                             {(() => {
                               const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
@@ -397,8 +403,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className="font-bold text-lg" style={{
-                            color: hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
+                          <h3 className={`font-bold text-lg ${hasPulseName(entry.decorations) ? 'animate-[username-pulse_2s_ease-in-out_infinite]' : ''}`} style={{
+                            color: hasPulseName(entry.decorations) ? 'hsl(var(--primary))' : hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
                           }}>
                             {(() => {
                               const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
