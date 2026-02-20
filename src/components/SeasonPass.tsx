@@ -156,7 +156,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
 
   const unlockedDecorations = DECORATIONS.filter(d => passData.currentTier >= d.tier);
   const equippedDeco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
-  const hasVioletUnlocked = passData.currentTier >= 5;
+  const hasVioletUnlocked = passData.currentTier >= 4;
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
 
   return (

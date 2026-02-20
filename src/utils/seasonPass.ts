@@ -44,18 +44,17 @@ export const DECORATIONS: Decoration[] = [
   { id: 'star', name: 'Étoile', prefix: '⭐ ', suffix: '', tier: 1, preview: '⭐ Pseudo' },
   { id: 'fire', name: 'Flamme', prefix: '🔥 ', suffix: ' 🔥', tier: 2, preview: '🔥 Pseudo 🔥' },
   { id: 'sparkle', name: 'Étincelle', prefix: '✨ ', suffix: ' ✨', tier: 3, preview: '✨ Pseudo ✨' },
-  { id: 'comet', name: 'Comète', prefix: '☄️ ', suffix: '', tier: 4, preview: '☄️ Pseudo' },
-  { id: 'purple_name', name: 'Pseudo Violet', prefix: '', suffix: '', tier: 5, preview: '💜 Pseudo en violet', isColorReward: true, color: 'violet' },
-  { id: 'crown', name: 'Couronne', prefix: '👑 ', suffix: '', tier: 6, preview: '👑 Pseudo' },
-  { id: 'diamond', name: 'Diamant', prefix: '💎 ', suffix: ' 💎', tier: 7, preview: '💎 Pseudo 💎' },
-  { id: 'trophy', name: 'Trophée', prefix: '🏆 ', suffix: ' 🏆', tier: 8, preview: '🏆 Pseudo 🏆' },
-  { id: 'dragon', name: 'Dragon', prefix: '🐉 ', suffix: ' 🐉', tier: 9, preview: '🐉 Pseudo 🐉' },
-  { id: 'pulse_name', name: 'Pseudo Pulsé', prefix: '', suffix: '', tier: 10, preview: '💫 Pseudo pulsé', isColorReward: true, color: 'pulse' },
+  { id: 'purple_name', name: 'Pseudo Violet', prefix: '', suffix: '', tier: 4, preview: '💜 Pseudo en violet', isColorReward: true, color: 'violet' },
+  { id: 'crown', name: 'Couronne', prefix: '👑 ', suffix: '', tier: 5, preview: '👑 Pseudo' },
+  { id: 'diamond', name: 'Diamant', prefix: '💎 ', suffix: ' 💎', tier: 6, preview: '💎 Pseudo 💎' },
+  { id: 'trophy', name: 'Trophée', prefix: '🏆 ', suffix: ' 🏆', tier: 7, preview: '🏆 Pseudo 🏆' },
+  { id: 'dragon', name: 'Dragon', prefix: '🐉 ', suffix: ' 🐉', tier: 8, preview: '🐉 Pseudo 🐉' },
+  { id: 'pulse_name', name: 'Pseudo Pulsé', prefix: '', suffix: '', tier: 9, preview: '💫 Pseudo pulsé', isColorReward: true, color: 'pulse' },
 ];
 
 export const PASS_TIERS: PassTier[] = DECORATIONS.map((deco, i) => ({
   tier: i + 1,
-  diamondsCost: [2, 5, 9, 14, 20, 27, 35, 44, 55, 70][i],
+  diamondsCost: [2, 5, 9, 14, 20, 27, 35, 44, 55][i],
   decoration: deco,
 }));
 
