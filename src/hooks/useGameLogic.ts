@@ -504,24 +504,24 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       const isInZone = inArc(gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd);
       
       if (isInZone) {
-        // Succès ! +1 point
-        const newScore = gameState.currentScore + 1;
-        
         // Générer une nouvelle position pour la zone
         const newZoneStart = Math.random() * 2 * Math.PI;
         
-        setGameState(prev => ({
-          ...prev,
-          currentScore: newScore,
-          bestScore: Math.max(prev.bestScore, newScore),
-          coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0), // +1 coin (x2 si bonus) toutes les 2 zones réussies
-          zoneStart: newZoneStart,
-          zoneEnd: newZoneStart + prev.zoneArc,
-          memoryZoneVisible: true,
-          successFlash: true,
-          successParticles: true,
-          comboCount: prev.comboCount + 1,
-        }));
+        setGameState(prev => {
+          const newScore = prev.currentScore + 1;
+          return {
+            ...prev,
+            currentScore: newScore,
+            bestScore: Math.max(prev.bestScore, newScore),
+            coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0),
+            zoneStart: newZoneStart,
+            zoneEnd: newZoneStart + prev.zoneArc,
+            memoryZoneVisible: true,
+            successFlash: true,
+            successParticles: true,
+            comboCount: prev.comboCount + 1,
+          };
+        });
         
         // Masquer les effets
         addTimeout(() => {
@@ -608,68 +608,55 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     }
 
     if (success) {
-      // SUCCÈS - Continue immédiatement sans pause
-      const newScore = gameState.currentScore + 1;
-      const baseSpeed = gameState.ballSpeed * cfg.speedGain; // +3%
-      
-      // Variation aléatoire de vitesse (±5%)
-      const speedVariation = (Math.random() - 0.5) * 2 * cfg.speedVariation;
-      const newSpeed = baseSpeed * (1 + speedVariation);
-      
+      // Pré-calculer les valeurs aléatoires en dehors du setState
       const modeConfig = cfgModes[gameState.currentMode];
-      
-      // Chance aléatoire d'inverser la direction (20%) - SAUF en mode zone mobile
+      const speedVariation = (Math.random() - 0.5) * 2 * cfg.speedVariation;
       const shouldReverse = modeConfig.keepMovingZone ? false : Math.random() < cfg.directionReverseChance;
-      const newDirection = shouldReverse ? gameState.ballDirection * -1 : gameState.ballDirection;
       
       let newZoneStart = gameState.zoneStart;
       let newZoneArc = gameState.zoneArc;
-      let newZoneDriftSpeed = gameState.zoneDriftSpeed;
-      let newMultipleZones = gameState.multipleZones;
       let newTrapZoneIndex = gameState.trapZoneIndex;
 
-      // Mode Arc Changeant : changer la taille et position de l'arc
       if (modeConfig.variableArc) {
         newZoneArc = Math.random() * (modeConfig.arcMax! - modeConfig.arcMin!) + modeConfig.arcMin!;
         newZoneStart = Math.random() * 2 * Math.PI;
-      }
-      // Mode Zone Traîtresse : changer seulement la zone piégée (garder les positions fixes)
-      else if (modeConfig.multipleZones && modeConfig.numberOfZones) {
-        // Les zones restent fixes, on change juste quelle zone est piégée
+      } else if (modeConfig.multipleZones && modeConfig.numberOfZones) {
         newTrapZoneIndex = Math.floor(Math.random() * modeConfig.numberOfZones);
-      }
-      // Mode Zone Mobile : accélérer le drift mais GARDER le sens opposé constant
-      else if (modeConfig.keepMovingZone && newZoneDriftSpeed) {
-        newZoneDriftSpeed = newZoneDriftSpeed * (modeConfig.zoneDriftGain || 1.05);
-        // Garder le même sens (pas d'inversion) pour maintenir l'opposition avec la balle
-      }
-      // Mode classique/survie : repositionner l'arc normalement
-      else if (!modeConfig.keepMovingZone) {
+      } else if (!modeConfig.keepMovingZone) {
         newZoneStart = Math.random() * 2 * Math.PI;
       }
 
-      setGameState(prev => ({
-        ...prev,
-        currentScore: newScore,
-        bestScore: Math.max(prev.bestScore, newScore),
-        ballSpeed: newSpeed,
-        ballDirection: newDirection,
-        zoneStart: newZoneStart,
-        zoneEnd: newZoneStart + newZoneArc,
-        zoneArc: newZoneArc,
-        zoneDriftSpeed: newZoneDriftSpeed,
-        coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0), // +1 coin (x2 si bonus) toutes les 2 zones vertes réussies
-        level: prev.level + 1,
-        lastResult: 'success',
-        showResult: false,
-        successFlash: true,
-        successParticles: true,
-        comboCount: newScore,
-        maxSpeedReached: Math.max(prev.maxSpeedReached, newSpeed),
-        directionChanges: shouldReverse ? prev.directionChanges + 1 : prev.directionChanges,
-        multipleZones: newMultipleZones,
-        trapZoneIndex: newTrapZoneIndex,
-      }));
+      setGameState(prev => {
+        const newScore = prev.currentScore + 1;
+        const newSpeed = prev.ballSpeed * cfg.speedGain * (1 + speedVariation);
+        const newDirection = shouldReverse ? prev.ballDirection * -1 : prev.ballDirection;
+        const newDriftSpeed = (modeConfig.keepMovingZone && prev.zoneDriftSpeed)
+          ? prev.zoneDriftSpeed * (modeConfig.zoneDriftGain || 1.05)
+          : prev.zoneDriftSpeed;
+
+        return {
+          ...prev,
+          currentScore: newScore,
+          bestScore: Math.max(prev.bestScore, newScore),
+          ballSpeed: newSpeed,
+          ballDirection: newDirection,
+          zoneStart: newZoneStart,
+          zoneEnd: newZoneStart + newZoneArc,
+          zoneArc: newZoneArc,
+          zoneDriftSpeed: newDriftSpeed,
+          coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0),
+          level: prev.level + 1,
+          lastResult: 'success',
+          showResult: false,
+          successFlash: true,
+          successParticles: true,
+          comboCount: newScore,
+          maxSpeedReached: Math.max(prev.maxSpeedReached, newSpeed),
+          directionChanges: shouldReverse ? prev.directionChanges + 1 : prev.directionChanges,
+          multipleZones: prev.multipleZones,
+          trapZoneIndex: newTrapZoneIndex,
+        };
+      });
 
       // Effacer les effets visuels après un court délai
       addTimeout(() => {
