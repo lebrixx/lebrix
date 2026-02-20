@@ -472,9 +472,10 @@ export const CircleTap: React.FC<CircleTapProps> = ({
                 <Button
                   onClick={handleBoostMenuOpen}
                   variant="outline"
-                  className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+                  className="relative border-primary/40 bg-primary/5 hover:bg-primary/15 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
                 >
-                  <Zap className="w-5 h-5 mr-2" />
+                  <span className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/10 via-transparent to-primary/10 pointer-events-none" />
+                  <Zap className="w-5 h-5 mr-2 text-primary" />
                   {t.boosts}
                 </Button>
               )}
