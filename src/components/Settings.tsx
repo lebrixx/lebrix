@@ -247,12 +247,6 @@ export const Settings: React.FC<SettingsProps> = ({
                     { code: 'fr', label: '🇫🇷 Français' },
                     { code: 'en', label: '🇬🇧 English' },
                     { code: 'es', label: '🇪🇸 Español' },
-                    { code: 'de', label: '🇩🇪 Deutsch' },
-                    { code: 'it', label: '🇮🇹 Italiano' },
-                    { code: 'pt', label: '🇵🇹 Português' },
-                    { code: 'ar', label: '🇸🇦 العربية' },
-                    { code: 'ja', label: '🇯🇵 日本語' },
-                    { code: 'zh', label: '🇨🇳 中文' },
                   ].map(({ code, label }) => (
                     <Button
                       key={code}
