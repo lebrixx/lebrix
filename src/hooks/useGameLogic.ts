@@ -509,10 +509,13 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         
         setGameState(prev => {
           const newScore = prev.currentScore + 1;
+          const newSpeed = prev.ballSpeed * 1.015; // +1.5% par réussite (moitié des autres modes)
           return {
             ...prev,
             currentScore: newScore,
             bestScore: Math.max(prev.bestScore, newScore),
+            ballSpeed: newSpeed,
+            maxSpeedReached: Math.max(prev.maxSpeedReached, newSpeed),
             coins: prev.coins + (newScore % 2 === 0 ? 1 * getCoinMultiplier(prev.currentMode) : 0),
             zoneStart: newZoneStart,
             zoneEnd: newZoneStart + prev.zoneArc,
