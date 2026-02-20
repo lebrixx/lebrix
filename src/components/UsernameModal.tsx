@@ -271,7 +271,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             <Button
               type="submit"
               className="flex-1 bg-gradient-primary hover:opacity-90"
-              disabled={!isFirstUsername && !canChange}
+              disabled={(!isFirstUsername && !canChange) || isCheckingUsername || isUsernameAvailable === false || (username !== currentUsername && isUsernameAvailable === null && isValidUsername(username))}
             >
               {t.validateLabel}
             </Button>
