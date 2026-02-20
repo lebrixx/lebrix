@@ -233,6 +233,13 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <Edit className="w-3 h-3" />
             </Button>
           </div>
+
+          {/* Pass promo hint */}
+          <p className="text-text-muted text-xs text-center italic opacity-70">
+            {language === 'es' ? '🎨 Desbloquea decoraciones de pseudo en el Pase' :
+             language === 'en' ? '🎨 Unlock username decorations in the Pass' :
+             '🎨 Débloque les décos de pseudo dans le Pass'}
+          </p>
         </div>
 
         {/* Onglets Classement */}
