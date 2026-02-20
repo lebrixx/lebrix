@@ -21,7 +21,7 @@ export interface PassTier {
 
 export interface DailyQuestState {
   date: string; // YYYY-MM-DD
-  // Quest 1: Score 25+ in any mode
+  // Quest 1: Score 20+ in any mode
   quest1Completed: boolean;
   // Quest 2: Use a boost in any mode
   quest2Completed: boolean;
@@ -54,7 +54,13 @@ export const DECORATIONS: Decoration[] = [
 
 export const PASS_TIERS: PassTier[] = DECORATIONS.map((deco, i) => ({
   tier: i + 1,
-  diamondsCost: [2, 5, 9, 14, 20, 27, 35, 44, 55][i],
+  diamondsCost: (() => {
+    // Emoji decorations cost 2, color rewards cost 4
+    const cost = deco.isColorReward ? 4 : 2;
+    // Cumulative cost
+    const prev = DECORATIONS.slice(0, i).reduce((sum, d) => sum + (d.isColorReward ? 4 : 2), 0);
+    return prev + cost;
+  })(),
   decoration: deco,
 }));
 
@@ -196,12 +202,12 @@ export function getDailyQuests(): DailyQuestState {
   return data.dailyQuests!;
 }
 
-/** Appelé en fin de partie — met à jour la quête score 25+ */
+/** Appelé en fin de partie — met à jour la quête score 20+ */
 export function updateQuestScore(score: number): void {
   const data = getSeasonPassData();
   ensureTodayQuests(data);
   if (data.dailyQuests!.quest1Completed) return;
-  if (score >= 25) {
+  if (score >= 20) {
     data.dailyQuests!.quest1Completed = true;
     savePassData(data);
   }

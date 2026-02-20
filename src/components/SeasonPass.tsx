@@ -238,7 +238,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                     </span>
                   </div>
 
-                  {/* Quest 1 : Score 25+ */}
+                  {/* Quest 1 : Score 20+ */}
                   <div className={`flex items-center gap-3 rounded-lg px-3 py-2.5 border transition-all ${
                     dailyQuests.quest1Completed
                       ? 'border-secondary/40 bg-secondary/10'
@@ -254,7 +254,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs font-semibold leading-tight ${dailyQuests.quest1Completed ? 'text-secondary' : 'text-text-secondary'}`}>
-                        Score de 25+ dans une partie
+                        Score de 20+ dans une partie
                       </p>
                       <p className="text-[10px] text-text-muted mt-0.5">N'importe quel mode</p>
                     </div>
