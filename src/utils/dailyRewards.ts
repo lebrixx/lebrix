@@ -4,6 +4,7 @@ import { BoostType } from '@/types/boosts';
 export interface DailyReward {
   day: number;
   coins: number;
+  diamonds?: number;
   theme?: string;
   boostId?: BoostType;
 }
@@ -77,9 +78,18 @@ export function getNextReward(): DailyReward {
     };
   }
   
+  // Jours 3 et 6: diamant
+  if (nextDay === 3 || nextDay === 6) {
+    return {
+      day: nextDay,
+      coins: 0,
+      diamonds: 1
+    };
+  }
+  
   return {
     day: nextDay,
-    coins: 30 // Multiplié par 3
+    coins: 30
   };
 }
 
@@ -111,10 +121,16 @@ export function claimDailyReward(): { reward: DailyReward; newState: DailyReward
       coins: 0,
       boostId: getRandomBoost()
     };
+  } else if (newStreak === 3 || newStreak === 6) {
+    reward = {
+      day: newStreak,
+      coins: 0,
+      diamonds: 1
+    };
   } else {
     reward = {
       day: newStreak,
-      coins: 30 // Multiplié par 3
+      coins: 30
     };
   }
   
