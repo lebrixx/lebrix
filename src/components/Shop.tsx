@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Tag } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
@@ -66,6 +67,7 @@ export const Shop: React.FC<ShopProps> = ({
   
   const [activeTab, setActiveTab] = useState('themes');
   const [currentTickets, setCurrentTickets] = useState(getTickets());
+  const [promoCode, setPromoCode] = useState('');
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
@@ -360,6 +362,38 @@ export const Shop: React.FC<ShopProps> = ({
               );
             })}
           </div>
+
+          {/* Code promo section */}
+          <Card className="mt-8 border-2 border-dashed border-wheel-border bg-button-bg/50 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Tag className="w-5 h-5 text-primary" />
+              <span className="text-text-primary font-bold">Entrer un code</span>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                placeholder="CODE..."
+                maxLength={20}
+                className="bg-game-dark border-wheel-border text-text-primary uppercase tracking-widest"
+              />
+              <Button
+                onClick={() => {
+                  if (!promoCode.trim()) return;
+                  toast({
+                    title: "Code invalide",
+                    description: "Ce code n'existe pas ou a expiré.",
+                    variant: "destructive"
+                  });
+                  setPromoCode('');
+                }}
+                className="bg-gradient-primary px-6"
+                disabled={!promoCode.trim()}
+              >
+                OK
+              </Button>
+            </div>
+          </Card>
         </TabsContent>
 
         {/* Game Modes Tab */}

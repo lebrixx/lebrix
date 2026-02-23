@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Gift, Coins, Crown, Star, Sparkles, Zap, Video, Bell, BellOff, Lock } from 'lucide-react';
+import { Gift, Coins, Crown, Star, Sparkles, Zap, Video, Bell, BellOff, Lock, Diamond } from 'lucide-react';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -146,6 +146,9 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
     if (day === 2 || day === 5) {
       return <Zap className={`w-5 h-5 ${status === 'claimed' ? 'text-purple-500' : status === 'available' ? 'text-purple-400 animate-pulse' : 'text-gray-400'}`} />;
     }
+    if (day === 3 || day === 6) {
+      return <Diamond className={`w-5 h-5 ${status === 'claimed' ? 'text-cyan-500' : status === 'available' ? 'text-cyan-400 animate-pulse' : 'text-gray-400'}`} />;
+    }
     return <Coins className={`w-5 h-5 ${status === 'claimed' ? 'text-green-500' : status === 'available' ? 'text-green-400' : 'text-gray-400'}`} />;
   };
 
@@ -205,6 +208,11 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                         Boost
                       </Badge>
                     )}
+                    {(day === 3 || day === 6) && (
+                      <Badge variant="outline" className="text-xs px-1 py-0 border-cyan-500 text-cyan-500">
+                        💎
+                      </Badge>
+                    )}
                     {status === 'claimed' && (
                       <Star className="w-3 h-3 text-green-500 absolute -top-1 -right-1 animate-pulse" />
                     )}
@@ -228,6 +236,10 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                   <span className="text-purple-400 ml-1 flex items-center justify-center gap-1 mt-1">
                     <Zap className="w-4 h-4" />
                     Boost {BOOSTS[nextReward.boostId].name} {BOOSTS[nextReward.boostId].icon}
+                  </span>
+                ) : nextReward.diamonds ? (
+                  <span className="text-cyan-400 ml-1 flex items-center justify-center gap-1 mt-1">
+                    💎 +{nextReward.diamonds} diamant
                   </span>
                 ) : nextReward.theme ? (
                   <span className="text-yellow-400 ml-1 flex items-center justify-center gap-1 mt-1">
@@ -260,6 +272,11 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                   <span className="flex items-center justify-center gap-2">
                     <span className="text-3xl">{BOOSTS[claimedReward.boostId].icon}</span>
                     <span className="text-purple-400">{BOOSTS[claimedReward.boostId].name}</span>
+                  </span>
+                ) : claimedReward.diamonds ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="text-3xl">💎</span>
+                    <span className="text-cyan-400">+{claimedReward.diamonds} diamant</span>
                   </span>
                 ) : claimedReward.theme ? (
                   <span className="flex items-center justify-center gap-2">
