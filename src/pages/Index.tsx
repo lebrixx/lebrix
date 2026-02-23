@@ -299,6 +299,7 @@ const Index = () => {
             onEquipTheme={handleThemeChange}
             onPurchaseMode={handlePurchaseMode}
             onSpendCoins={spendCoins}
+            onAddCoins={addCoins}
           />
         );
         

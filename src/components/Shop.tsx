@@ -14,6 +14,7 @@ import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { addDiamonds } from '@/utils/seasonPass';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -31,6 +32,7 @@ interface ShopProps {
   onEquipTheme: (themeId: string) => void;
   onPurchaseMode: (modeId: string, price: number) => boolean;
   onSpendCoins: (amount: number) => boolean;
+  onAddCoins?: (amount: number) => void;
 }
 
 const GAME_MODES_SHOP = [
@@ -61,6 +63,7 @@ export const Shop: React.FC<ShopProps> = ({
   onEquipTheme,
   onPurchaseMode,
   onSpendCoins,
+  onAddCoins,
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
@@ -380,11 +383,27 @@ export const Shop: React.FC<ShopProps> = ({
               <Button
                 onClick={() => {
                   if (!promoCode.trim()) return;
-                  toast({
-                    title: "Code invalide",
-                    description: "Ce code n'existe pas ou a expiré.",
-                    variant: "destructive"
-                  });
+                  const USED_CODES_KEY = 'lucky_stop_used_codes';
+                  const usedCodes: string[] = JSON.parse(localStorage.getItem(USED_CODES_KEY) || '[]');
+                  const code = promoCode.trim().toUpperCase();
+                  
+                  if (usedCodes.includes(code)) {
+                    toast({ title: "Code déjà utilisé", description: "Tu as déjà utilisé ce code.", variant: "destructive" });
+                    setPromoCode('');
+                    return;
+                  }
+                  
+                  if (code === 'LEBRIX') {
+                    usedCodes.push(code);
+                    localStorage.setItem(USED_CODES_KEY, JSON.stringify(usedCodes));
+                    addDiamonds(50);
+                    onAddCoins?.(2000);
+                    toast({ title: "🎉 Code activé !", description: "+50 💎 et +2000 coins !" });
+                    setPromoCode('');
+                    return;
+                  }
+                  
+                  toast({ title: "Code invalide", description: "Ce code n'existe pas ou a expiré.", variant: "destructive" });
                   setPromoCode('');
                 }}
                 className="bg-gradient-primary px-6"

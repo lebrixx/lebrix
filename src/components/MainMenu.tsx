@@ -149,16 +149,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <SettingsIcon className="w-5 h-5 text-text-muted" />
       </Button>
 
-      {/* DEBUG: +1 Diamond Button */}
-      <Button
-        onClick={() => { addDiamonds(100); }}
-        variant="ghost"
-        size="icon"
-        className="absolute top-16 right-14 hover:bg-secondary/20 transition-all duration-300 opacity-60 hover:opacity-100"
-        title="+1 💎 (debug)"
-      >
-        <span className="text-base">💎</span>
-      </Button>
 
       {/* Logo/Title */}
       <div className="text-center animate-fade-in pt-24 mb-6">
