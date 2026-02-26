@@ -126,20 +126,50 @@ Deno.serve(async (req) => {
       );
     }
 
-    // ===== USERNAME OWNERSHIP: allow same device to reclaim, block others =====
-    const { data: usernameOwners } = await supabase
+    // ===== USERNAME OWNERSHIP: migrate old device_ids to current device =====
+    // When a player reinstalls or clears cache, their device_id changes.
+    // Instead of blocking, we migrate their old scores to the new device_id.
+    const { data: oldDeviceEntries } = await supabase
       .from('scores')
-      .select('device_id')
+      .select('id, device_id, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, decorations')
       .ilike('username', username)
-      .neq('device_id', device_id)
-      .limit(1);
+      .neq('device_id', device_id);
 
-    if (usernameOwners && usernameOwners.length > 0) {
-      console.log(`Username "${username}" taken by another device`);
-      return new Response(
-        JSON.stringify({ error: 'Username already taken', code: 'USERNAME_TAKEN' }),
-        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (oldDeviceEntries && oldDeviceEntries.length > 0) {
+      console.log(`Migrating ${oldDeviceEntries.length} entries from old device(s) to ${device_id} for username "${username}"`);
+      
+      for (const oldEntry of oldDeviceEntries) {
+        // Check if current device already has an entry for this mode
+        const { data: currentDeviceEntry } = await supabase
+          .from('scores')
+          .select('id, best_score, weekly_score')
+          .eq('device_id', device_id)
+          .ilike('username', username)
+          .eq('mode', oldEntry.mode)
+          .maybeSingle();
+
+        if (currentDeviceEntry) {
+          // Merge: keep best scores, delete old entry
+          const mergedBest = Math.max(currentDeviceEntry.best_score, oldEntry.best_score);
+          const mergedWeekly = Math.max(currentDeviceEntry.weekly_score || 0, oldEntry.weekly_score || 0);
+          await supabase
+            .from('scores')
+            .update({ best_score: mergedBest, weekly_score: mergedWeekly })
+            .eq('id', currentDeviceEntry.id);
+          await supabase
+            .from('scores')
+            .delete()
+            .eq('id', oldEntry.id);
+          console.log(`Merged mode ${oldEntry.mode}: best=${mergedBest}`);
+        } else {
+          // Transfer: update device_id to current device
+          await supabase
+            .from('scores')
+            .update({ device_id })
+            .eq('id', oldEntry.id);
+          console.log(`Transferred mode ${oldEntry.mode} to new device`);
+        }
+      }
     }
 
     // ===== MIGRATE OLD USERNAMES: if this device had scores under a different username, migrate them =====
