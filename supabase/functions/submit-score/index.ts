@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 // Configuration constants
-const SCORE_LIMITS = {
+const SCORE_LIMITS: Record<string, number> = {
   classic: 10000,
   arc_changeant: 8000,
   survie_60s: 6000,
@@ -15,16 +15,24 @@ const SCORE_LIMITS = {
   memoire_expert: 5000
 };
 
-const RATE_LIMIT_WINDOW = 15000; // 15 seconds
+const RATE_LIMIT_WINDOW = 15000;
 const MAX_SUBMISSIONS_PER_WINDOW = 100;
-const MIN_GAME_DURATION = 5000; // 5 seconds minimum
 
-// Simple in-memory rate limiting (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-
-// Idempotence: track recently processed submission IDs (max 1000, auto-cleanup)
 const processedSubmissions = new Set<string>();
-const SUBMISSION_ID_TTL = 60000; // 60 seconds
+const SUBMISSION_ID_TTL = 60000;
+
+const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
+
+function getMondayOfCurrentWeek(): Date {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now);
+  monday.setDate(diff);
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -41,9 +49,8 @@ Deno.serve(async (req) => {
 
     console.log('Score submission attempt:', { device_id, username, score, mode, submission_id });
 
-    // Idempotence check: reject duplicate submission_id
+    // Idempotence check
     if (submission_id && processedSubmissions.has(submission_id)) {
-      console.log(`Duplicate submission_id detected: ${submission_id}`);
       return new Response(
         JSON.stringify({ success: true, duplicate: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -58,7 +65,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate username format
     const usernameRegex = /^[a-zA-Z0-9._-]{3,16}$/;
     if (!usernameRegex.test(username)) {
       return new Response(
@@ -67,45 +73,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate mode
-    const validModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
-    if (!validModes.includes(mode)) {
+    if (!VALID_MODES.includes(mode)) {
       return new Response(
         JSON.stringify({ error: 'Invalid game mode' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Check if username is already taken by another device (case-insensitive)
-    const { data: existingUsername } = await supabase
-      .from('scores')
-      .select('device_id')
-      .ilike('username', username)
-      .neq('device_id', device_id)
-      .limit(1)
-      .maybeSingle();
-
-    if (existingUsername) {
-      console.log(`Username "${username}" already taken by another device`);
-      return new Response(
-        JSON.stringify({ error: 'Username already taken', code: 'USERNAME_TAKEN' }),
-        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     // Score validation
-    const maxScore = SCORE_LIMITS[mode as keyof typeof SCORE_LIMITS];
+    const maxScore = SCORE_LIMITS[mode];
     if (score < 2 || score > maxScore) {
-      console.log(`Score validation failed: ${score} (must be >= 2 and <= ${maxScore}) for mode ${mode}`);
       return new Response(
         JSON.stringify({ error: 'Invalid score range' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Remove game duration validation completely - no time restrictions
-
-    // Enhanced rate limiting with device fingerprint
+    // Rate limiting
     const fingerprint = `${device_id}_${client_fingerprint || 'unknown'}`;
     const now = Date.now();
     const rateLimitData = rateLimitMap.get(fingerprint);
@@ -113,7 +97,6 @@ Deno.serve(async (req) => {
     if (rateLimitData) {
       if (now < rateLimitData.resetTime) {
         if (rateLimitData.count >= MAX_SUBMISSIONS_PER_WINDOW) {
-          console.log(`Rate limit exceeded for fingerprint: ${fingerprint}`);
           return new Response(
             JSON.stringify({ error: 'Too many submissions, please wait' }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -125,13 +108,10 @@ Deno.serve(async (req) => {
         rateLimitData.resetTime = now + RATE_LIMIT_WINDOW;
       }
     } else {
-      rateLimitMap.set(fingerprint, {
-        count: 1,
-        resetTime: now + RATE_LIMIT_WINDOW
-      });
+      rateLimitMap.set(fingerprint, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
     }
 
-    // Check for recent submissions from this device
+    // DB rate limit check
     const { data: recentScores } = await supabase
       .from('scores')
       .select('created_at')
@@ -140,14 +120,72 @@ Deno.serve(async (req) => {
       .order('created_at', { ascending: false });
 
     if (recentScores && recentScores.length >= MAX_SUBMISSIONS_PER_WINDOW) {
-      console.log(`Database rate limit exceeded for device: ${device_id}`);
       return new Response(
         JSON.stringify({ error: 'Too many recent submissions' }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Check if there's an existing score for this device_id, username, and mode
+    // ===== USERNAME OWNERSHIP: allow same device to reclaim, block others =====
+    const { data: usernameOwners } = await supabase
+      .from('scores')
+      .select('device_id')
+      .ilike('username', username)
+      .neq('device_id', device_id)
+      .limit(1);
+
+    if (usernameOwners && usernameOwners.length > 0) {
+      console.log(`Username "${username}" taken by another device`);
+      return new Response(
+        JSON.stringify({ error: 'Username already taken', code: 'USERNAME_TAKEN' }),
+        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // ===== MIGRATE OLD USERNAMES: if this device had scores under a different username, migrate them =====
+    const { data: oldEntries } = await supabase
+      .from('scores')
+      .select('id, username, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at')
+      .eq('device_id', device_id)
+      .neq('username', username);
+
+    if (oldEntries && oldEntries.length > 0) {
+      const oldUsername = oldEntries[0].username;
+      console.log(`Migrating ${oldEntries.length} scores from "${oldUsername}" to "${username}" for device ${device_id}`);
+
+      for (const oldEntry of oldEntries) {
+        // Check if there's already an entry for the new username + same mode
+        const { data: existingNew } = await supabase
+          .from('scores')
+          .select('id, best_score, weekly_score')
+          .eq('device_id', device_id)
+          .eq('username', username)
+          .eq('mode', oldEntry.mode)
+          .maybeSingle();
+
+        if (existingNew) {
+          // Merge: keep the best scores, then delete the old entry
+          const mergedBest = Math.max(existingNew.best_score, oldEntry.best_score);
+          const mergedWeekly = Math.max(existingNew.weekly_score || 0, oldEntry.weekly_score || 0);
+          await supabase
+            .from('scores')
+            .update({ best_score: mergedBest, weekly_score: mergedWeekly })
+            .eq('id', existingNew.id);
+          await supabase
+            .from('scores')
+            .delete()
+            .eq('id', oldEntry.id);
+        } else {
+          // Simply rename
+          await supabase
+            .from('scores')
+            .update({ username })
+            .eq('id', oldEntry.id);
+        }
+      }
+    }
+
+    // ===== FETCH EXISTING SCORE for this device+username+mode =====
     const { data: existingScore } = await supabase
       .from('scores')
       .select('best_score, weekly_score, weekly_updated_at')
@@ -159,28 +197,19 @@ Deno.serve(async (req) => {
     // Determine best_score and weekly_score
     let best_score = score;
     let weekly_score = score;
-    let should_update = true;
+
+    const monday = getMondayOfCurrentWeek();
 
     if (existingScore) {
-      // Keep the best score for global leaderboard
       best_score = Math.max(score, existingScore.best_score);
-      
-      // Check if weekly_score is from the current week
-      const now_date = new Date();
-      const day = now_date.getDay();
-      const diff = now_date.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(now_date);
-      monday.setDate(diff);
-      monday.setHours(0, 0, 0, 0);
-      
+
       const weeklyUpdatedAt = existingScore.weekly_updated_at ? new Date(existingScore.weekly_updated_at) : null;
       const isCurrentWeek = weeklyUpdatedAt && weeklyUpdatedAt >= monday;
-      
+
       if (isCurrentWeek) {
-        // Same week: keep the best weekly score
         weekly_score = Math.max(score, existingScore.weekly_score || 0);
       } else {
-        // New week: save previous week's score before resetting
+        // New week: archive previous weekly score
         if (existingScore.weekly_score > 0 && weeklyUpdatedAt) {
           await supabase
             .from('scores')
@@ -191,41 +220,42 @@ Deno.serve(async (req) => {
             .eq('device_id', device_id)
             .eq('username', username)
             .eq('mode', mode);
-          console.log(`Saved previous weekly score: ${existingScore.weekly_score}`);
+          console.log(`Archived previous weekly score: ${existingScore.weekly_score}`);
         }
-        // Reset weekly score to current score
         weekly_score = score;
-        console.log(`New week detected, resetting weekly_score to ${score}`);
       }
-      
-      // Only update if best_score OR weekly_score improved
-      const best_score_improved = score > existingScore.best_score;
-      const weekly_score_improved = !isCurrentWeek || score > (existingScore.weekly_score || 0);
-      
-      if (!best_score_improved && !weekly_score_improved) {
-        console.log(`No improvement: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}`);
-        should_update = false;
+
+      // Check if anything actually improved
+      const bestImproved = score > existingScore.best_score;
+      const weeklyImproved = !isCurrentWeek || score > (existingScore.weekly_score || 0);
+
+      if (!bestImproved && !weeklyImproved) {
+        console.log(`No improvement for ${username}: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}, submitted=${score}`);
+        
+        // Still sync decorations
+        if (decorations !== undefined) {
+          await supabase
+            .from('scores')
+            .update({ decorations: decorations || null })
+            .eq('username', username);
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, updated: false, reason: 'no_improvement', current_best: existingScore.best_score }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
     }
 
-    // Always sync decorations across ALL devices and modes for this username
+    // Sync decorations across all entries for this username
     if (decorations !== undefined) {
       await supabase
         .from('scores')
         .update({ decorations: decorations || null })
         .eq('username', username);
-      console.log(`Synced decoration "${decorations}" across ALL devices/modes for ${username}`);
     }
 
-    if (!should_update) {
-      return new Response(
-        JSON.stringify({ success: true, decoration_updated: true }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Upsert the score with separate best_score and weekly_score
-    // Now unique constraint is on device_id, username, mode - allows multiple entries per device with different usernames
+    // Upsert the score
     const { data, error } = await supabase
       .from('scores')
       .upsert({
@@ -250,14 +280,12 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Score successfully submitted:', data);
+    console.log('Score saved:', { username, mode, best_score, weekly_score });
 
     // Track submission_id for idempotence
     if (submission_id) {
       processedSubmissions.add(submission_id);
-      // Auto-cleanup after TTL
       setTimeout(() => processedSubmissions.delete(submission_id), SUBMISSION_ID_TTL);
-      // Safety: cap set size
       if (processedSubmissions.size > 1000) {
         const first = processedSubmissions.values().next().value;
         if (first) processedSubmissions.delete(first);
@@ -265,7 +293,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, data }),
+      JSON.stringify({ success: true, updated: true, best_score, weekly_score }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
