@@ -68,18 +68,18 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
         </div>
 
         {/* Rewards list */}
-        <div className="px-5 py-4 space-y-2.5">
+        <div className="px-3 py-2 space-y-1.5">
           {rewards.map((r, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 bg-game-darker/50 rounded-xl px-3.5 py-2.5 border border-wheel-border/40 hover:border-primary/40 transition-colors"
+              className="flex items-center gap-2 bg-game-darker/50 rounded-lg px-2.5 py-1.5 border border-wheel-border/40 hover:border-primary/40 transition-colors"
             >
-              <span className="text-xl">{r.emoji}</span>
+              <span className="text-base">{r.emoji}</span>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-text-primary">{r.label}</div>
-                <div className="text-xs text-text-muted">{r.desc}</div>
+                <div className="text-xs font-semibold text-text-primary">{r.label}</div>
+                <div className="text-[10px] text-text-muted">{r.desc}</div>
               </div>
-              <Check className="w-4 h-4 text-success shrink-0" />
+              <Check className="w-3 h-3 text-success shrink-0" />
             </div>
           ))}
         </div>
