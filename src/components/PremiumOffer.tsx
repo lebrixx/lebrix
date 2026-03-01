@@ -85,32 +85,32 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
         </div>
 
         {/* Price + CTA */}
-        <div className="px-5 pb-5 pt-1 space-y-3">
+        <div className="px-3 pb-3 pt-1 space-y-2">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-sm text-text-muted line-through">7,99 €</span>
-              <span className="text-3xl font-black bg-gradient-to-r from-yellow-300 via-yellow-400 to-secondary bg-clip-text text-transparent">
+              <span className="text-xs text-text-muted line-through">7,99 €</span>
+              <span className="text-2xl font-black bg-gradient-to-r from-yellow-300 via-yellow-400 to-secondary bg-clip-text text-transparent">
                 3,99 €
               </span>
             </div>
-            <p className="text-[11px] text-text-muted mt-0.5">Achat unique • Pas d'abonnement</p>
+            <p className="text-[10px] text-text-muted mt-0.5">Achat unique • Pas d'abonnement</p>
           </div>
 
           <Button
             onClick={() => {
-              // TODO: IAP integration
               console.log('Purchase clicked - not functional yet');
             }}
-            className="w-full py-5 text-base font-bold bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 text-game-dark hover:from-yellow-400 hover:to-yellow-400 shadow-[0_0_20px_hsl(45_100%_50%/0.4)] hover:shadow-[0_0_30px_hsl(45_100%_50%/0.6)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full py-3 text-sm font-bold bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 text-game-dark hover:from-yellow-400 hover:to-yellow-400 shadow-[0_0_20px_hsl(45_100%_50%/0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Crown className="w-5 h-5 mr-2" />
+            <Crown className="w-4 h-4 mr-1.5" />
             Débloquer maintenant
           </Button>
 
           <Button
             onClick={onClose}
             variant="ghost"
-            className="w-full text-sm text-text-muted hover:text-text-primary hover:bg-transparent"
+            size="sm"
+            className="w-full text-xs text-text-muted hover:text-text-primary hover:bg-transparent"
           >
             Non merci
           </Button>
