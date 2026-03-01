@@ -50,7 +50,7 @@ const rewards = [
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-button-bg border-wheel-border p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[320px] bg-button-bg border-wheel-border p-0 overflow-hidden max-h-[85vh] overflow-y-auto">
         {/* Header with gradient */}
         <div className="relative bg-gradient-to-br from-yellow-500/20 via-secondary/20 to-primary/20 p-5 pb-4 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(45_100%_60%/0.15),transparent_70%)]" />
