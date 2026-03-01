@@ -59,6 +59,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSeasonPass, setShowSeasonPass] = useState(false);
+  const [showPremiumOffer, setShowPremiumOffer] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
   const [hasPassReward, setHasPassReward] = useState(hasDailyQuestReward());
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
