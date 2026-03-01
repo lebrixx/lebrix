@@ -141,15 +141,32 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         )}
       </Button>
 
-      {/* Settings Button - Top Right */}
-      <Button
-        onClick={() => setShowSettings(true)}
-        variant="ghost"
-        size="icon"
-        className="absolute top-16 right-4 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
-      >
-        <SettingsIcon className="w-5 h-5 text-text-muted" />
-      </Button>
+      {/* Top Right: Offres + Settings */}
+      <div className="absolute top-16 right-4 flex items-center gap-2">
+        <Button
+          onClick={() => setShowPremiumOffer(true)}
+          variant="ghost"
+          size="sm"
+          className="relative hover:bg-yellow-500/10 transition-all duration-300 gap-1.5 border border-yellow-500/30 bg-yellow-500/5 animate-pulse-glow"
+          style={{ animationDuration: '3s' }}
+        >
+          <Sparkles className="w-4 h-4 text-yellow-400 animate-spin" style={{ animationDuration: '4s' }} />
+          <span className="text-xs font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
+            Offres
+          </span>
+          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full animate-bounce flex items-center justify-center shadow-[0_0_8px_hsl(var(--secondary)/0.8)]">
+            <span className="text-[7px] text-game-dark font-black">€</span>
+          </div>
+        </Button>
+        <Button
+          onClick={() => setShowSettings(true)}
+          variant="ghost"
+          size="icon"
+          className="hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
+        >
+          <SettingsIcon className="w-5 h-5 text-text-muted" />
+        </Button>
+      </div>
 
 
       {/* Logo/Title */}
