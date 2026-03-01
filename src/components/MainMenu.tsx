@@ -454,6 +454,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         isSoundMuted={isSoundMuted}
         onToggleSound={onToggleSound}
       />
+
+      {/* Premium Offer */}
+      <PremiumOffer
+        isOpen={showPremiumOffer}
+        onClose={() => setShowPremiumOffer(false)}
+      />
     </div>
   );
 };
