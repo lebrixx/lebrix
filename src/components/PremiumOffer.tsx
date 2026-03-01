@@ -52,16 +52,16 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[320px] bg-button-bg border-wheel-border p-0 overflow-hidden max-h-[85vh] overflow-y-auto">
         {/* Header with gradient */}
-        <div className="relative bg-gradient-to-br from-yellow-500/20 via-secondary/20 to-primary/20 p-5 pb-4 text-center">
+        <div className="relative bg-gradient-to-br from-yellow-500/20 via-secondary/20 to-primary/20 p-3 pb-2 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(45_100%_60%/0.15),transparent_70%)]" />
           <div className="relative">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 mb-3 shadow-[0_0_25px_hsl(45_100%_50%/0.5)] animate-pulse">
-              <Sparkles className="w-7 h-7 text-game-dark" />
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 mb-2 shadow-[0_0_20px_hsl(45_100%_50%/0.5)] animate-pulse">
+              <Sparkles className="w-5 h-5 text-game-dark" />
             </div>
-            <h2 className="text-2xl font-extrabold text-text-primary tracking-tight">
+            <h2 className="text-lg font-extrabold text-text-primary tracking-tight">
               Pack Premium
             </h2>
-            <p className="text-sm text-text-secondary mt-1">
+            <p className="text-xs text-text-secondary mt-0.5">
               Tout débloquer d'un coup 🔥
             </p>
           </div>
