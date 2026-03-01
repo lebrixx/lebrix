@@ -50,67 +50,67 @@ const rewards = [
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-button-bg border-wheel-border p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[320px] bg-button-bg border-wheel-border p-0 overflow-hidden max-h-[85vh] overflow-y-auto">
         {/* Header with gradient */}
-        <div className="relative bg-gradient-to-br from-yellow-500/20 via-secondary/20 to-primary/20 p-5 pb-4 text-center">
+        <div className="relative bg-gradient-to-br from-yellow-500/20 via-secondary/20 to-primary/20 p-3 pb-2 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(45_100%_60%/0.15),transparent_70%)]" />
           <div className="relative">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 mb-3 shadow-[0_0_25px_hsl(45_100%_50%/0.5)] animate-pulse">
-              <Sparkles className="w-7 h-7 text-game-dark" />
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 mb-2 shadow-[0_0_20px_hsl(45_100%_50%/0.5)] animate-pulse">
+              <Sparkles className="w-5 h-5 text-game-dark" />
             </div>
-            <h2 className="text-2xl font-extrabold text-text-primary tracking-tight">
+            <h2 className="text-lg font-extrabold text-text-primary tracking-tight">
               Pack Premium
             </h2>
-            <p className="text-sm text-text-secondary mt-1">
+            <p className="text-xs text-text-secondary mt-0.5">
               Tout débloquer d'un coup 🔥
             </p>
           </div>
         </div>
 
         {/* Rewards list */}
-        <div className="px-5 py-4 space-y-2.5">
+        <div className="px-3 py-2 space-y-1.5">
           {rewards.map((r, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 bg-game-darker/50 rounded-xl px-3.5 py-2.5 border border-wheel-border/40 hover:border-primary/40 transition-colors"
+              className="flex items-center gap-2 bg-game-darker/50 rounded-lg px-2.5 py-1.5 border border-wheel-border/40 hover:border-primary/40 transition-colors"
             >
-              <span className="text-xl">{r.emoji}</span>
+              <span className="text-base">{r.emoji}</span>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-text-primary">{r.label}</div>
-                <div className="text-xs text-text-muted">{r.desc}</div>
+                <div className="text-xs font-semibold text-text-primary">{r.label}</div>
+                <div className="text-[10px] text-text-muted">{r.desc}</div>
               </div>
-              <Check className="w-4 h-4 text-success shrink-0" />
+              <Check className="w-3 h-3 text-success shrink-0" />
             </div>
           ))}
         </div>
 
         {/* Price + CTA */}
-        <div className="px-5 pb-5 pt-1 space-y-3">
+        <div className="px-3 pb-3 pt-1 space-y-2">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-sm text-text-muted line-through">7,99 €</span>
-              <span className="text-3xl font-black bg-gradient-to-r from-yellow-300 via-yellow-400 to-secondary bg-clip-text text-transparent">
+              <span className="text-xs text-text-muted line-through">7,99 €</span>
+              <span className="text-2xl font-black bg-gradient-to-r from-yellow-300 via-yellow-400 to-secondary bg-clip-text text-transparent">
                 3,99 €
               </span>
             </div>
-            <p className="text-[11px] text-text-muted mt-0.5">Achat unique • Pas d'abonnement</p>
+            <p className="text-[10px] text-text-muted mt-0.5">Achat unique • Pas d'abonnement</p>
           </div>
 
           <Button
             onClick={() => {
-              // TODO: IAP integration
               console.log('Purchase clicked - not functional yet');
             }}
-            className="w-full py-5 text-base font-bold bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 text-game-dark hover:from-yellow-400 hover:to-yellow-400 shadow-[0_0_20px_hsl(45_100%_50%/0.4)] hover:shadow-[0_0_30px_hsl(45_100%_50%/0.6)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full py-3 text-sm font-bold bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 text-game-dark hover:from-yellow-400 hover:to-yellow-400 shadow-[0_0_20px_hsl(45_100%_50%/0.4)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Crown className="w-5 h-5 mr-2" />
+            <Crown className="w-4 h-4 mr-1.5" />
             Débloquer maintenant
           </Button>
 
           <Button
             onClick={onClose}
             variant="ghost"
-            className="w-full text-sm text-text-muted hover:text-text-primary hover:bg-transparent"
+            size="sm"
+            className="w-full text-xs text-text-muted hover:text-text-primary hover:bg-transparent"
           >
             Non merci
           </Button>
