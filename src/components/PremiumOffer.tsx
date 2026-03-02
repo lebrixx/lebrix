@@ -31,46 +31,58 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
               <div className="w-16 h-0.5 bg-gradient-primary mx-auto mt-2 rounded-full opacity-60" />
             </div>
 
-            {/* Rewards grid - 2 columns for main, 3 columns for boosts */}
+            {/* Rewards grid */}
             <div className="px-4 pb-3 space-y-2">
-              {/* Top row: Pass + Diamonds */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative group rounded-xl p-2.5 text-center border border-secondary/30 bg-secondary/5 hover:bg-secondary/10 transition-all">
-                  <div className="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_center,hsl(var(--secondary)/0.08),transparent)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-2xl block mb-1">👑</span>
-                  <div className="text-[11px] font-bold text-secondary">Pass Saison</div>
-                  <div className="text-[9px] text-text-muted">Tout débloqué</div>
+              {/* Star item: Season Pass */}
+              <div className="relative group rounded-xl p-3 text-center border border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-primary/10 overflow-hidden transition-all hover:border-secondary/60">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,hsl(var(--secondary)/0.15),transparent_70%)]" />
+                <div className="absolute top-1 right-1 px-1.5 py-0.5 rounded-full bg-secondary/20 border border-secondary/30">
+                  <span className="text-[7px] font-black text-secondary uppercase tracking-wider">⭐ Exclusif</span>
                 </div>
-                <div className="relative group rounded-xl p-2.5 text-center border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-all">
-                  <div className="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.08),transparent)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-2xl block mb-1">💎</span>
-                  <div className="text-[11px] font-bold text-primary">30 Diamants</div>
-                  <div className="text-[9px] text-text-muted">Season Pass</div>
-                </div>
-              </div>
-
-              {/* Middle: Coins - full width highlight */}
-              <div className="relative group rounded-xl p-2 text-center border border-secondary/20 bg-gradient-to-r from-secondary/5 via-primary/5 to-secondary/5 hover:from-secondary/10 hover:to-secondary/10 transition-all flex items-center justify-center gap-3">
-                <span className="text-xl">🪙</span>
-                <div className="text-left">
-                  <span className="text-xs font-bold text-secondary">1 000 Coins</span>
-                  <span className="text-[9px] text-text-muted block">Pour la boutique</span>
-                </div>
-              </div>
-
-              {/* Bottom: 3 boosts */}
-              <div className="grid grid-cols-3 gap-1.5">
-                {[
-                  { emoji: '🛡️', label: 'Bouclier', qty: '×2' },
-                  { emoji: '🎯', label: 'Zone+', qty: '×2' },
-                  { emoji: '🚀', label: 'Start 20', qty: '×2' },
-                ].map((b, i) => (
-                  <div key={i} className="rounded-lg p-2 text-center border border-wheel-border/30 bg-button-bg/50 hover:border-primary/30 transition-all">
-                    <span className="text-lg block">{b.emoji}</span>
-                    <div className="text-[9px] font-semibold text-text-primary mt-0.5">{b.label}</div>
-                    <div className="text-[9px] font-bold text-primary">{b.qty}</div>
+                <div className="relative flex items-center gap-3">
+                  <span className="text-3xl drop-shadow-[0_0_8px_hsl(var(--secondary)/0.5)]">👑</span>
+                  <div className="text-left">
+                    <div className="text-xs font-black text-secondary tracking-wide">PASS SAISON COMPLET</div>
+                    <div className="text-[9px] text-text-muted">Toutes les récompenses débloquées</div>
                   </div>
-                ))}
+                </div>
+              </div>
+
+              {/* Two cards: Diamonds + Coins */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative group rounded-xl p-2.5 text-center border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent overflow-hidden transition-all hover:border-primary/50 hover:shadow-[0_0_12px_hsl(var(--primary)/0.15)]">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.1),transparent_70%)]" />
+                  <div className="relative">
+                    <span className="text-2xl block mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]">💎</span>
+                    <div className="text-lg font-black text-primary leading-none">30</div>
+                    <div className="text-[9px] font-semibold text-text-muted mt-0.5">Diamants</div>
+                  </div>
+                </div>
+                <div className="relative group rounded-xl p-2.5 text-center border border-secondary/30 bg-gradient-to-b from-secondary/10 to-transparent overflow-hidden transition-all hover:border-secondary/50 hover:shadow-[0_0_12px_hsl(var(--secondary)/0.15)]">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.1),transparent_70%)]" />
+                  <div className="relative">
+                    <span className="text-2xl block mb-1 drop-shadow-[0_0_6px_hsl(var(--secondary)/0.4)]">🪙</span>
+                    <div className="text-lg font-black text-secondary leading-none">1 000</div>
+                    <div className="text-[9px] font-semibold text-text-muted mt-0.5">Coins</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Boosts row */}
+              <div className="rounded-xl border border-wheel-border/20 bg-button-bg/30 p-2">
+                <div className="text-[8px] font-bold text-text-muted uppercase tracking-widest text-center mb-1.5">× 2 de chaque boost</div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {[
+                    { emoji: '🛡️', label: 'Bouclier', color: 'primary' },
+                    { emoji: '🎯', label: 'Zone+', color: 'success' },
+                    { emoji: '🚀', label: 'Start 20', color: 'secondary' },
+                  ].map((b, i) => (
+                    <div key={i} className="rounded-lg p-1.5 text-center bg-game-darker/60 border border-wheel-border/15 hover:border-primary/30 transition-all">
+                      <span className="text-lg block drop-shadow-[0_0_4px_hsl(var(--primary)/0.3)]">{b.emoji}</span>
+                      <div className="text-[8px] font-bold text-text-secondary mt-0.5">{b.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
