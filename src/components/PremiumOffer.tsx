@@ -31,7 +31,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
               <div className="w-16 h-0.5 bg-gradient-primary mx-auto mt-2 rounded-full opacity-60" />
             </div>
 
-            {/* Rewards grid */}
+            {/* Rewards list */}
             <div className="px-4 pb-3 space-y-2">
               {/* Star item: Season Pass */}
               <div className="relative group rounded-xl p-3 text-center border border-secondary/40 bg-gradient-to-br from-secondary/15 via-secondary/5 to-primary/10 overflow-hidden transition-all hover:border-secondary/60">
