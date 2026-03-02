@@ -147,11 +147,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           onClick={() => setShowPremiumOffer(true)}
           variant="ghost"
           size="sm"
-          className="relative hover:bg-yellow-500/10 transition-all duration-300 gap-1.5 border border-yellow-500/30 bg-yellow-500/5 animate-pulse-glow"
-          style={{ animationDuration: '3s' }}
+          className="relative hover:bg-secondary/15 transition-all duration-300 gap-1.5 border border-secondary/40 bg-gradient-to-r from-secondary/10 to-primary/10 hover:scale-105"
         >
-          <Sparkles className="w-4 h-4 text-yellow-400 animate-spin" style={{ animationDuration: '4s' }} />
-          <span className="text-xs font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
+          <Sparkles className="w-4 h-4 text-secondary animate-spin" style={{ animationDuration: '4s' }} />
+          <span className="text-xs font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
             Offres
           </span>
           <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full animate-bounce flex items-center justify-center shadow-[0_0_8px_hsl(var(--secondary)/0.8)]">
