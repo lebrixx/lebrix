@@ -10,44 +10,44 @@ interface PremiumOfferProps {
 
 const REWARDS = [
   {
-    emoji: '👑',
+    emoji: '\u{1F451}',
     title: 'Pass Saison Complet',
-    description: 'Toutes les récompenses débloquées',
+    description: 'Toutes les recompenses debloquees',
     amount: 'Exclusif',
     tone: 'secondary' as const,
   },
   {
-    emoji: '💎',
+    emoji: '\u{1F48E}',
     title: 'Diamants',
     description: 'Monnaie premium',
     amount: '+30',
     tone: 'primary' as const,
   },
   {
-    emoji: '🪙',
+    emoji: '\u{1FA99}',
     title: 'Coins',
     description: 'Pour la boutique du jeu',
     amount: '+1 000',
     tone: 'secondary' as const,
   },
   {
-    emoji: '🛡️',
+    emoji: '\u{1F6E1}\uFE0F',
     title: 'Bouclier',
-    description: 'Protège d’une erreur',
+    description: "Protege d'une erreur",
     amount: 'x2',
     tone: 'primary' as const,
   },
   {
-    emoji: '🎯',
+    emoji: '\u{1F3AF}',
     title: 'Zone verte +',
-    description: 'Zone de réussite élargie',
+    description: 'Zone de reussite elargie',
     amount: 'x2',
     tone: 'primary' as const,
   },
   {
-    emoji: '🚀',
-    title: 'Démarrage 20',
-    description: 'Commence à 20 points',
+    emoji: '\u{1F680}',
+    title: 'Demarrage 20',
+    description: 'Commence a 20 points',
     amount: 'x2',
     tone: 'primary' as const,
   },
@@ -65,7 +65,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
           <div className="relative">
             <div className="text-center pt-5 pb-3 px-4">
               <div className="relative inline-block mb-2">
-                <span className="text-4xl drop-shadow-[0_0_12px_hsl(var(--secondary)/0.6)]">👑</span>
+                <span className="text-4xl drop-shadow-[0_0_12px_hsl(var(--secondary)/0.6)]">{'\u{1F451}'}</span>
                 <Sparkles className="absolute -top-1 -right-3 w-4 h-4 text-primary animate-pulse" />
               </div>
               <h2 className="text-xl font-black text-text-primary tracking-tight">
@@ -116,17 +116,17 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
 
             <div className="px-4 py-4 text-center space-y-3">
               <div>
-                <span className="text-xs text-text-muted line-through mr-2">7,99 €</span>
-                <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,99 €</span>
-                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique · Pas d'abonnement</div>
+                <span className="text-xs text-text-muted line-through mr-2">7,99 &#8364;</span>
+                <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,99 &#8364;</span>
+                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d&apos;abonnement</div>
               </div>
 
               <Button
-                onClick={() => console.log('Purchase clicked - not functional yet')}
+                onClick={() => console.log('Purchase clicked')}
                 className="w-full py-4 text-sm font-extrabold bg-gradient-primary hover:opacity-90 shadow-glow-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-game-dark"
               >
                 <Crown className="w-4 h-4 mr-1.5" />
-                DÉBLOQUER MAINTENANT
+                DEBLOQUER MAINTENANT
               </Button>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
