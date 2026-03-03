@@ -104,16 +104,16 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
                   return (
                     <div
                       key={reward.title}
-                      className={`relative overflow-hidden rounded-xl border bg-gradient-to-r to-transparent p-2.5 transition-all duration-300 ${toneClass} ${isSpecial || isSeasonPass ? 'ring-1 ring-inset ' + (isSpecial ? 'ring-[hsl(0,85%,60%)]/20' : 'ring-secondary/20') : ''}`}
+                      className={`relative overflow-hidden rounded-xl border bg-gradient-to-r to-transparent p-2 transition-all duration-300 ${toneClass} ${isSpecial || isSeasonPass ? 'ring-1 ring-inset ' + (isSpecial ? 'ring-[hsl(0,85%,60%)]/20' : 'ring-secondary/20') : ''}`}
                       style={{ animationDelay: `${index * 60}ms` }}
                     >
                       <div className={`absolute inset-0 ${isSpecial ? 'bg-[radial-gradient(circle_at_left,hsl(0_85%_60%/0.15),transparent_70%)]' : 'bg-[radial-gradient(circle_at_left,hsl(var(--primary)/0.12),transparent_70%)]'}`} />
                       <div className="relative flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <span className={`text-xl ${isSpecial ? 'drop-shadow-[0_0_10px_hsl(0,85%,60%,0.5)]' : 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]'}`}>{reward.emoji}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`text-lg ${isSpecial ? 'drop-shadow-[0_0_10px_hsl(0,85%,60%,0.5)]' : 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]'}`}>{reward.emoji}</span>
                           <div className="min-w-0">
                             <p className="text-[11px] font-black uppercase tracking-wide text-text-primary truncate">{reward.title}</p>
-                            <p className={`text-[9px] text-text-muted ${isSeasonPass ? 'whitespace-normal leading-tight' : 'truncate'}`}>{reward.description}</p>
+                            <p className={`text-[10px] text-text-muted ${isSeasonPass ? 'whitespace-normal leading-tight' : 'truncate'}`}>{reward.description}</p>
                           </div>
                         </div>
 
