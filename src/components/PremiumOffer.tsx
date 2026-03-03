@@ -10,10 +10,17 @@ interface PremiumOfferProps {
 
 const REWARDS = [
   {
+    emoji: '\u{1F6AB}',
+    title: 'Zero Pub',
+    description: 'Plus aucune pub interstitielle',
+    amount: '\u2205 Pubs',
+    tone: 'special' as const,
+  },
+  {
     emoji: '\u{1F451}',
-    title: 'Pass Saison Complet',
-    description: 'Toutes les recompenses debloquees',
-    amount: 'Exclusif',
+    title: 'Pass Saison VIP',
+    description: 'Debloque les 9 paliers + toutes les decorations et couleurs',
+    amount: 'Tout inclus',
     tone: 'secondary' as const,
   },
   {
@@ -77,30 +84,40 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
             <div className="px-4 pb-3">
               <div className="space-y-2">
                 {REWARDS.map((reward, index) => {
-                  const isExclusive = index === 0;
-                  const toneClass = reward.tone === 'secondary' ? 'border-secondary/35 from-secondary/15' : 'border-primary/35 from-primary/15';
-                  const amountClass = reward.tone === 'secondary' ? 'text-secondary' : 'text-primary';
+                  const isSpecial = reward.tone === 'special';
+                  const isSeasonPass = index === 1;
+                  const toneClass = isSpecial
+                    ? 'border-[hsl(0,85%,60%)]/40 from-[hsl(0,85%,60%)]/20'
+                    : reward.tone === 'secondary'
+                      ? 'border-secondary/35 from-secondary/15'
+                      : 'border-primary/35 from-primary/15';
+                  const amountClass = isSpecial
+                    ? 'text-[hsl(0,85%,65%)]'
+                    : reward.tone === 'secondary' ? 'text-secondary' : 'text-primary';
 
                   return (
                     <div
                       key={reward.title}
-                      className={`relative overflow-hidden rounded-xl border bg-gradient-to-r to-transparent p-2.5 ${toneClass}`}
+                      className={`relative overflow-hidden rounded-xl border bg-gradient-to-r to-transparent p-2.5 transition-all duration-300 ${toneClass} ${isSpecial || isSeasonPass ? 'ring-1 ring-inset ' + (isSpecial ? 'ring-[hsl(0,85%,60%)]/20' : 'ring-secondary/20') : ''}`}
+                      style={{ animationDelay: `${index * 60}ms` }}
                     >
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_left,hsl(var(--primary)/0.12),transparent_70%)]" />
+                      <div className={`absolute inset-0 ${isSpecial ? 'bg-[radial-gradient(circle_at_left,hsl(0_85%_60%/0.15),transparent_70%)]' : 'bg-[radial-gradient(circle_at_left,hsl(var(--primary)/0.12),transparent_70%)]'}`} />
                       <div className="relative flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <span className="text-xl drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]">{reward.emoji}</span>
+                          <span className={`text-xl ${isSpecial ? 'drop-shadow-[0_0_10px_hsl(0,85%,60%,0.5)]' : 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]'}`}>{reward.emoji}</span>
                           <div className="min-w-0">
                             <p className="text-[11px] font-black uppercase tracking-wide text-text-primary truncate">{reward.title}</p>
-                            <p className="text-[9px] text-text-muted truncate">{reward.description}</p>
+                            <p className={`text-[9px] text-text-muted ${isSeasonPass ? 'whitespace-normal leading-tight' : 'truncate'}`}>{reward.description}</p>
                           </div>
                         </div>
 
                         <span
                           className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black ${
-                            isExclusive
-                              ? 'border border-secondary/30 bg-secondary/20 text-secondary'
-                              : `border border-wheel-border/25 bg-game-darker/70 ${amountClass}`
+                            isSpecial
+                              ? 'border border-[hsl(0,85%,60%)]/30 bg-[hsl(0,85%,60%)]/20 text-[hsl(0,85%,65%)]'
+                              : isSeasonPass
+                                ? 'border border-secondary/30 bg-secondary/20 text-secondary'
+                                : `border border-wheel-border/25 bg-game-darker/70 ${amountClass}`
                           }`}
                         >
                           {reward.amount}
