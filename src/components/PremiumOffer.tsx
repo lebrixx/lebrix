@@ -10,10 +10,17 @@ interface PremiumOfferProps {
 
 const REWARDS = [
   {
+    emoji: '\u{1F6AB}',
+    title: 'Zero Pub',
+    description: 'Plus aucune pub interstitielle',
+    amount: '\u2205 Pubs',
+    tone: 'special' as const,
+  },
+  {
     emoji: '\u{1F451}',
-    title: 'Pass Saison Complet',
-    description: 'Toutes les recompenses debloquees',
-    amount: 'Exclusif',
+    title: 'Pass Saison VIP',
+    description: 'Debloque les 9 paliers + toutes les decorations et couleurs',
+    amount: 'Tout inclus',
     tone: 'secondary' as const,
   },
   {
