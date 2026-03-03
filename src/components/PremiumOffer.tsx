@@ -63,13 +63,19 @@ const REWARDS = [
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[330px] bg-transparent border-none p-0 overflow-hidden shadow-none [&>button]:hidden">
+       <DialogContent className="sm:max-w-[300px] max-w-[290px] bg-transparent border-none p-0 overflow-hidden shadow-none [&>button]:hidden">
         <div className="relative rounded-2xl overflow-hidden border border-primary/30 shadow-[0_0_40px_hsl(var(--primary)/0.2)]">
           <div className="absolute inset-0 bg-gradient-to-b from-game-darker via-button-bg to-game-darker" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.15),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,hsl(var(--secondary)/0.1),transparent_60%)]" />
 
           <div className="relative">
+            <button
+              onClick={onClose}
+              className="absolute top-2.5 right-2.5 z-10 rounded-full p-1 bg-game-darker/60 border border-wheel-border/20 text-text-muted hover:text-text-primary transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
             <div className="text-center pt-5 pb-3 px-4">
               <div className="relative inline-block mb-2">
                 <span className="text-4xl drop-shadow-[0_0_12px_hsl(var(--secondary)/0.6)]">{'\u{1F451}'}</span>
