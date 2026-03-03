@@ -76,19 +76,19 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-center pt-5 pb-3 px-4">
-              <div className="relative inline-block mb-2">
-                <span className="text-4xl drop-shadow-[0_0_12px_hsl(var(--secondary)/0.6)]">{'\u{1F451}'}</span>
+            <div className="text-center pt-4 pb-2 px-3">
+              <div className="relative inline-block mb-1.5">
+                <span className="text-3xl drop-shadow-[0_0_12px_hsl(var(--secondary)/0.6)]">{'\u{1F451}'}</span>
                 <Sparkles className="absolute -top-1 -right-3 w-4 h-4 text-primary animate-pulse" />
               </div>
-              <h2 className="text-xl font-black text-text-primary tracking-tight">
+              <h2 className="text-lg font-black text-text-primary tracking-tight">
                 PACK <span className="bg-gradient-primary bg-clip-text text-transparent">PREMIUM</span>
               </h2>
-              <div className="w-16 h-0.5 bg-gradient-primary mx-auto mt-2 rounded-full opacity-60" />
+              <div className="w-14 h-0.5 bg-gradient-primary mx-auto mt-1.5 rounded-full opacity-60" />
             </div>
 
-            <div className="px-4 pb-3">
-              <div className="space-y-2">
+            <div className="px-3 pb-2">
+              <div className="space-y-1.5">
                 {REWARDS.map((reward, index) => {
                   const isSpecial = reward.tone === 'special';
                   const isSeasonPass = index === 1;
