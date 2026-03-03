@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles } from 'lucide-react';
+import { Crown, Sparkles, X } from 'lucide-react';
 
 interface PremiumOfferProps {
   isOpen: boolean;
