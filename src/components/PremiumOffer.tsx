@@ -135,9 +135,9 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
               </div>
             </div>
 
-            <div className="mx-4 h-px bg-gradient-to-r from-transparent via-wheel-border to-transparent" />
+            <div className="mx-3 h-px bg-gradient-to-r from-transparent via-wheel-border to-transparent" />
 
-            <div className="px-4 py-4 text-center space-y-3">
+            <div className="px-3 py-3 text-center space-y-2.5">
               <div>
                 <span className="text-xs text-text-muted line-through mr-2">7,99 &#8364;</span>
                 <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,99 &#8364;</span>
