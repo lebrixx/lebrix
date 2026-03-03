@@ -126,109 +126,165 @@ Deno.serve(async (req) => {
       );
     }
 
-    // ===== USERNAME OWNERSHIP: migrate old device_ids to current device =====
-    // When a player reinstalls or clears cache, their device_id changes.
-    // Instead of blocking, we migrate their old scores to the new device_id.
-    const { data: oldDeviceEntries } = await supabase
+    // ===== CONSOLIDATION: Gather ALL entries belonging to this player =====
+    // Step 1: Find entries on OTHER devices with the same username (reinstall/cache clear)
+    const { data: otherDeviceEntries } = await supabase
       .from('scores')
       .select('id, device_id, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, decorations')
       .ilike('username', username)
       .neq('device_id', device_id);
 
-    if (oldDeviceEntries && oldDeviceEntries.length > 0) {
-      console.log(`Migrating ${oldDeviceEntries.length} entries from old device(s) to ${device_id} for username "${username}"`);
-      
-      for (const oldEntry of oldDeviceEntries) {
-        // Check if current device already has an entry for this mode
-        const { data: currentDeviceEntry } = await supabase
-          .from('scores')
-          .select('id, best_score, weekly_score')
-          .eq('device_id', device_id)
-          .ilike('username', username)
-          .eq('mode', oldEntry.mode)
-          .maybeSingle();
-
-        if (currentDeviceEntry) {
-          // Merge: keep best scores, delete old entry
-          const mergedBest = Math.max(currentDeviceEntry.best_score, oldEntry.best_score);
-          const mergedWeekly = Math.max(currentDeviceEntry.weekly_score || 0, oldEntry.weekly_score || 0);
-          await supabase
-            .from('scores')
-            .update({ best_score: mergedBest, weekly_score: mergedWeekly })
-            .eq('id', currentDeviceEntry.id);
-          await supabase
-            .from('scores')
-            .delete()
-            .eq('id', oldEntry.id);
-          console.log(`Merged mode ${oldEntry.mode}: best=${mergedBest}`);
-        } else {
-          // Transfer: update device_id to current device
-          await supabase
-            .from('scores')
-            .update({ device_id })
-            .eq('id', oldEntry.id);
-          console.log(`Transferred mode ${oldEntry.mode} to new device`);
-        }
-      }
-    }
-
-    // ===== MIGRATE OLD USERNAMES: if this device had scores under a different username, migrate them =====
-    const { data: oldEntries } = await supabase
+    // Step 2: Find entries on THIS device with a DIFFERENT username (username change)
+    const { data: oldUsernameEntries } = await supabase
       .from('scores')
-      .select('id, username, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at')
+      .select('id, username, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, decorations')
       .eq('device_id', device_id)
-      .neq('username', username);
+      .not('username', 'ilike', username);
 
-    if (oldEntries && oldEntries.length > 0) {
-      const oldUsername = oldEntries[0].username;
-      console.log(`Migrating ${oldEntries.length} scores from "${oldUsername}" to "${username}" for device ${device_id}`);
+    // Step 3: Find entries on THIS device with the CURRENT username
+    const { data: currentEntries } = await supabase
+      .from('scores')
+      .select('id, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, decorations')
+      .eq('device_id', device_id)
+      .ilike('username', username);
 
-      for (const oldEntry of oldEntries) {
-        // Check if there's already an entry for the new username + same mode
-        const { data: existingNew } = await supabase
-          .from('scores')
-          .select('id, best_score, weekly_score')
-          .eq('device_id', device_id)
-          .eq('username', username)
-          .eq('mode', oldEntry.mode)
-          .maybeSingle();
+    // Build a consolidated map: mode → best scores from ALL sources
+    const consolidated = new Map<string, {
+      best_score: number;
+      weekly_score: number;
+      weekly_updated_at: string | null;
+      previous_weekly_score: number;
+      previous_weekly_updated_at: string | null;
+      decorations: string | null;
+      existing_id: string | null; // ID of the entry to keep (on current device with current username)
+    }>();
 
-        if (existingNew) {
-          // Merge: keep the best scores, then delete the old entry
-          const mergedBest = Math.max(existingNew.best_score, oldEntry.best_score);
-          const mergedWeekly = Math.max(existingNew.weekly_score || 0, oldEntry.weekly_score || 0);
-          await supabase
-            .from('scores')
-            .update({ best_score: mergedBest, weekly_score: mergedWeekly })
-            .eq('id', existingNew.id);
-          await supabase
-            .from('scores')
-            .delete()
-            .eq('id', oldEntry.id);
-        } else {
-          // Simply rename
-          await supabase
-            .from('scores')
-            .update({ username })
-            .eq('id', oldEntry.id);
+    // Seed with current device + current username entries
+    for (const entry of (currentEntries || [])) {
+      consolidated.set(entry.mode, {
+        best_score: entry.best_score,
+        weekly_score: entry.weekly_score || 0,
+        weekly_updated_at: entry.weekly_updated_at,
+        previous_weekly_score: entry.previous_weekly_score || 0,
+        previous_weekly_updated_at: entry.previous_weekly_updated_at,
+        decorations: entry.decorations,
+        existing_id: entry.id,
+      });
+    }
+
+    // Merge in old username entries (same device, different username)
+    for (const entry of (oldUsernameEntries || [])) {
+      const existing = consolidated.get(entry.mode);
+      if (existing) {
+        existing.best_score = Math.max(existing.best_score, entry.best_score);
+        existing.weekly_score = Math.max(existing.weekly_score, entry.weekly_score || 0);
+        if (!existing.weekly_updated_at || (entry.weekly_updated_at && entry.weekly_updated_at > existing.weekly_updated_at)) {
+          existing.weekly_updated_at = entry.weekly_updated_at;
         }
+        existing.previous_weekly_score = Math.max(existing.previous_weekly_score, entry.previous_weekly_score || 0);
+        if (!existing.previous_weekly_updated_at || (entry.previous_weekly_updated_at && entry.previous_weekly_updated_at > existing.previous_weekly_updated_at)) {
+          existing.previous_weekly_updated_at = entry.previous_weekly_updated_at;
+        }
+      } else {
+        consolidated.set(entry.mode, {
+          best_score: entry.best_score,
+          weekly_score: entry.weekly_score || 0,
+          weekly_updated_at: entry.weekly_updated_at,
+          previous_weekly_score: entry.previous_weekly_score || 0,
+          previous_weekly_updated_at: entry.previous_weekly_updated_at,
+          decorations: entry.decorations,
+          existing_id: null,
+        });
       }
     }
 
-    // ===== FETCH EXISTING SCORE for this device+username+mode =====
+    // Merge in other device entries (same username, different device)
+    for (const entry of (otherDeviceEntries || [])) {
+      const existing = consolidated.get(entry.mode);
+      if (existing) {
+        existing.best_score = Math.max(existing.best_score, entry.best_score);
+        existing.weekly_score = Math.max(existing.weekly_score, entry.weekly_score || 0);
+        if (!existing.weekly_updated_at || (entry.weekly_updated_at && entry.weekly_updated_at > existing.weekly_updated_at)) {
+          existing.weekly_updated_at = entry.weekly_updated_at;
+        }
+        existing.previous_weekly_score = Math.max(existing.previous_weekly_score, entry.previous_weekly_score || 0);
+      } else {
+        consolidated.set(entry.mode, {
+          best_score: entry.best_score,
+          weekly_score: entry.weekly_score || 0,
+          weekly_updated_at: entry.weekly_updated_at,
+          previous_weekly_score: entry.previous_weekly_score || 0,
+          previous_weekly_updated_at: entry.previous_weekly_updated_at,
+          decorations: entry.decorations,
+          existing_id: null,
+        });
+      }
+    }
+
+    // Step 4: Write consolidated entries to current device + current username
+    const idsToKeep = new Set<string>();
+
+    for (const [entryMode, data] of consolidated.entries()) {
+      const { error: upsertError, data: upsertData } = await supabase
+        .from('scores')
+        .upsert({
+          device_id,
+          username,
+          mode: entryMode,
+          best_score: data.best_score,
+          weekly_score: data.weekly_score,
+          weekly_updated_at: data.weekly_updated_at || new Date().toISOString(),
+          previous_weekly_score: data.previous_weekly_score,
+          previous_weekly_updated_at: data.previous_weekly_updated_at,
+          decorations: decorations !== undefined ? (decorations || null) : data.decorations,
+        }, {
+          onConflict: 'device_id,username,mode'
+        })
+        .select('id');
+
+      if (upsertError) {
+        console.error(`Failed to upsert consolidated entry for mode ${entryMode}:`, upsertError);
+      } else if (upsertData && upsertData[0]) {
+        idsToKeep.add(upsertData[0].id);
+      }
+    }
+
+    // Step 5: Delete old entries that were merged (only AFTER successful upserts)
+    // Delete old username entries on this device
+    for (const entry of (oldUsernameEntries || [])) {
+      if (!idsToKeep.has(entry.id)) {
+        await supabase.from('scores').delete().eq('id', entry.id);
+        console.log(`Deleted old username entry: ${entry.username}/${entry.mode} (id=${entry.id})`);
+      }
+    }
+
+    // Delete other device entries that were merged
+    for (const entry of (otherDeviceEntries || [])) {
+      if (!idsToKeep.has(entry.id)) {
+        await supabase.from('scores').delete().eq('id', entry.id);
+        console.log(`Deleted other-device entry: ${entry.mode} from device ${entry.device_id} (id=${entry.id})`);
+      }
+    }
+
+    if ((oldUsernameEntries && oldUsernameEntries.length > 0) || (otherDeviceEntries && otherDeviceEntries.length > 0)) {
+      console.log(`Consolidation complete: ${consolidated.size} modes, kept ${idsToKeep.size} entries`);
+    }
+
+    // ===== Now handle the current score submission =====
+    const monday = getMondayOfCurrentWeek();
+
+    // Fetch the (now consolidated) existing score for this mode
     const { data: existingScore } = await supabase
       .from('scores')
       .select('best_score, weekly_score, weekly_updated_at')
       .eq('device_id', device_id)
-      .eq('username', username)
+      .ilike('username', username)
       .eq('mode', mode)
-      .maybeSingle();
+      .limit(1)
+      .single();
 
-    // Determine best_score and weekly_score
     let best_score = score;
     let weekly_score = score;
-
-    const monday = getMondayOfCurrentWeek();
 
     if (existingScore) {
       best_score = Math.max(score, existingScore.best_score);
@@ -248,7 +304,7 @@ Deno.serve(async (req) => {
               previous_weekly_updated_at: existingScore.weekly_updated_at
             })
             .eq('device_id', device_id)
-            .eq('username', username)
+            .ilike('username', username)
             .eq('mode', mode);
           console.log(`Archived previous weekly score: ${existingScore.weekly_score}`);
         }
@@ -262,12 +318,12 @@ Deno.serve(async (req) => {
       if (!bestImproved && !weeklyImproved) {
         console.log(`No improvement for ${username}: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}, submitted=${score}`);
         
-        // Still sync decorations
+        // Still sync decorations across all entries for this username
         if (decorations !== undefined) {
           await supabase
             .from('scores')
             .update({ decorations: decorations || null })
-            .eq('username', username);
+            .ilike('username', username);
         }
 
         return new Response(
@@ -282,7 +338,7 @@ Deno.serve(async (req) => {
       await supabase
         .from('scores')
         .update({ decorations: decorations || null })
-        .eq('username', username);
+        .ilike('username', username);
     }
 
     // Upsert the score
