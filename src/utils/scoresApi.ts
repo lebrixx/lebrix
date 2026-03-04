@@ -320,6 +320,7 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
 
 export function setUsernameForScores(username: string): void {
   setUsername(username);
+  markUsernameChanged();
 }
 
 // Function to mark the start of a game session for timing validation
