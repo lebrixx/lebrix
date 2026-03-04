@@ -110,6 +110,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     const submissionId = currentSubmissionId || generateSubmissionId();
 
     // Call the secure Edge Function
+    const shouldConsolidate = usernameRecentlyChanged;
     trackSent('submit-score');
     const { data, error } = await supabase.functions.invoke('submit-score', {
       body: {
@@ -120,9 +121,15 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
         session_start_time: gameSessionStart || now - 10000,
         client_fingerprint: clientFingerprint,
         decorations,
-        submission_id: submissionId
+        submission_id: submissionId,
+        username_changed: shouldConsolidate
       }
     });
+
+    // Clear the flag after successful submission with consolidation
+    if (shouldConsolidate && !error && data?.success) {
+      usernameRecentlyChanged = false;
+    }
 
     if (error) {
       console.error('Edge Function error:', error);
