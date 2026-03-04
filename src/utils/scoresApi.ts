@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
 import { trackSent, trackSkipped } from './edgeFunctionMetrics';
 
+// Track if username was recently changed (reset after first successful submission)
+let usernameRecentlyChanged = false;
+
+export function markUsernameChanged(): void {
+  usernameRecentlyChanged = true;
+}
+
 // Construit la chaîne de décorations combinée (ex: "star,purple_name")
 function buildDecorationsString(): string | null {
   const parts: string[] = [];
