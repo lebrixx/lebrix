@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
 import { trackSent, trackSkipped } from './edgeFunctionMetrics';
 
+// Track if username was recently changed (reset after first successful submission)
+let usernameRecentlyChanged = false;
+
+export function markUsernameChanged(): void {
+  usernameRecentlyChanged = true;
+}
+
 // Construit la chaîne de décorations combinée (ex: "star,purple_name")
 function buildDecorationsString(): string | null {
   const parts: string[] = [];
@@ -103,6 +110,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     const submissionId = currentSubmissionId || generateSubmissionId();
 
     // Call the secure Edge Function
+    const shouldConsolidate = usernameRecentlyChanged;
     trackSent('submit-score');
     const { data, error } = await supabase.functions.invoke('submit-score', {
       body: {
@@ -113,9 +121,15 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
         session_start_time: gameSessionStart || now - 10000,
         client_fingerprint: clientFingerprint,
         decorations,
-        submission_id: submissionId
+        submission_id: submissionId,
+        username_changed: shouldConsolidate
       }
     });
+
+    // Clear the flag after successful submission with consolidation
+    if (shouldConsolidate && !error && data?.success) {
+      usernameRecentlyChanged = false;
+    }
 
     if (error) {
       console.error('Edge Function error:', error);
@@ -306,6 +320,7 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
 
 export function setUsernameForScores(username: string): void {
   setUsername(username);
+  markUsernameChanged();
 }
 
 // Function to mark the start of a game session for timing validation
