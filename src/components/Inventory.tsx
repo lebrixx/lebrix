@@ -307,9 +307,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
                   <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${isGoldPulseEquipped ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''}`}
                     style={{
-                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))'
+                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : isGoldPulseEquipped ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
                     }}
                   >
                     {equippedDeco && !equippedDeco.isColorReward
