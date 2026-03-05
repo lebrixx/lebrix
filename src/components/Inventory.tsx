@@ -347,7 +347,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   >
                     {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
                     <div className="relative flex flex-col items-center gap-1">
-                      {!isVioletEquipped && !isPulseEquipped && (
+                      {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && (
                         <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-game-darker" />
                         </div>
