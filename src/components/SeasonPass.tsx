@@ -387,7 +387,9 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                                   isUnlocked ? 'text-secondary/70' : 'text-text-muted'
                                 }`}>
                                   {tier.decoration.isColorReward
-                                    ? tier.decoration.color === 'pulse'
+                                    ? tier.decoration.color === 'gold_pulse'
+                                      ? <span className="font-semibold animate-[username-gold-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(45, 100%, 55%)' }}>TonPseudo or pulsé</span>
+                                      : tier.decoration.color === 'pulse'
                                       ? <span className="font-semibold animate-[username-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>TonPseudo pulsé</span>
                                       : <span style={{ color: '#a855f7' }} className="font-semibold">TonPseudo en violet</span>
                                     : tier.decoration.preview.replace('Pseudo', 'TonPseudo')
