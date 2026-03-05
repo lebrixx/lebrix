@@ -114,7 +114,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     syncDecorationToServer(updated);
   };
 
-  const handleEquipColor = (color: 'violet' | 'pulse' | null) => {
+  const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | null) => {
     equipUsernameColor(color);
     const updated = getSeasonPassData();
     setPassData(updated);
