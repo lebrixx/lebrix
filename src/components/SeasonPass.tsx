@@ -362,7 +362,9 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                                 isUnlocked ? 'opacity-100' : 'opacity-80'
                               }`}>
                                 {tier.decoration.isColorReward
-                                    ? tier.decoration.color === 'pulse'
+                                    ? tier.decoration.color === 'gold_pulse'
+                                      ? <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center shadow-[0_0_12px_rgba(234,179,8,0.5)] animate-[username-gold-pulse_3s_ease-in-out_infinite]"><Palette className="w-5 h-5 text-white" /></div>
+                                      : tier.decoration.color === 'pulse'
                                       ? <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.5)] animate-[username-pulse_3s_ease-in-out_infinite]"><Palette className="w-5 h-5 text-white" /></div>
                                       : <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.5)]"><Palette className="w-5 h-5 text-white" /></div>
                                     : (tier.decoration.prefix.trim() || tier.decoration.suffix.trim() || '🎨')
