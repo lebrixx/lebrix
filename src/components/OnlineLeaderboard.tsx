@@ -18,6 +18,12 @@ const hasPulseName = (decorations: string | null | undefined): boolean => {
   if (!decorations) return false;
   return decorations.split(',').map(d => d.trim()).includes('pulse_name');
 };
+
+// Helper: checks if gold_pulse_name is in the decorations string
+const hasGoldPulseName = (decorations: string | null | undefined): boolean => {
+  if (!decorations) return false;
+  return decorations.split(',').map(d => d.trim()).includes('gold_pulse_name');
+};
 import { useToast } from '@/hooks/use-toast';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { UsernameModal } from '@/components/UsernameModal';
