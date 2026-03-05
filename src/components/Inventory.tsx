@@ -408,6 +408,32 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
                     </div>
                   </button>
+
+                  {/* Gold Pulse */}
+                  <button
+                    onClick={() => hasGoldPulseUnlocked && handleEquipColor('gold_pulse')}
+                    disabled={!hasGoldPulseUnlocked}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
+                      hasGoldPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
+                    } ${
+                      isGoldPulseEquipped
+                        ? 'border-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.4)]'
+                        : 'border-wheel-border/40'
+                    }`}
+                  >
+                    {isGoldPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-amber-900/10" />}
+                    <div className="relative flex flex-col items-center gap-1">
+                      {isGoldPulseEquipped && (
+                        <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-game-darker" />
+                        </div>
+                      )}
+                      {!hasGoldPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
+                      <span className={`text-[10px] font-black ${isGoldPulseEquipped ? 'text-yellow-400' : 'text-text-muted'}`}>Or Pulsé</span>
+                      <span className="text-base font-black leading-none animate-[username-gold-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_rgba(234,179,8,0.6)]" style={{ color: 'hsl(45, 100%, 55%)' }}>Aa</span>
+                      {!hasGoldPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
+                    </div>
+                  </button>
                 </div>
               </div>
 
