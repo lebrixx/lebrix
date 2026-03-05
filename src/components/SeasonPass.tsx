@@ -71,8 +71,8 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
   // Construit la chaîne de décorations combinée : "star,purple_name" si les deux sont équipés
   const buildDecorationsString = (data: SeasonPassData): string | null => {
     const parts: string[] = [];
-    // Ajouter l'emoji déco si ce n'est pas purple_name ou pulse_name
-    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name') {
+    // Ajouter l'emoji déco si ce n'est pas purple_name, pulse_name ou gold_pulse_name
+    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name' && data.equippedDecoration !== 'gold_pulse_name') {
       parts.push(data.equippedDecoration);
     }
     // Ajouter purple_name si la couleur violet est équipée
@@ -80,6 +80,8 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
       parts.push('purple_name');
     } else if (data.equippedUsernameColor === 'pulse') {
       parts.push('pulse_name');
+    } else if (data.equippedUsernameColor === 'gold_pulse') {
+      parts.push('gold_pulse_name');
     }
     return parts.length > 0 ? parts.join(',') : null;
   };
