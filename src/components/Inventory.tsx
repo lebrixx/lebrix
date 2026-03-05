@@ -67,7 +67,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
     const parts: string[] = [];
-    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name') {
+    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name' && data.equippedDecoration !== 'gold_pulse_name') {
       parts.push(data.equippedDecoration);
     }
     if (data.equippedUsernameColor === 'violet') {
@@ -75,6 +75,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     }
     if (data.equippedUsernameColor === 'pulse') {
       parts.push('pulse_name');
+    }
+    if (data.equippedUsernameColor === 'gold_pulse') {
+      parts.push('gold_pulse_name');
     }
     const decorations = parts.length > 0 ? parts.join(',') : null;
 
@@ -111,7 +114,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     syncDecorationToServer(updated);
   };
 
-  const handleEquipColor = (color: 'violet' | 'pulse' | null) => {
+  const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | null) => {
     equipUsernameColor(color);
     const updated = getSeasonPassData();
     setPassData(updated);
@@ -147,8 +150,10 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const equippedDeco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
   const hasVioletUnlocked = passData.currentTier >= 4;
   const hasPulseUnlocked = passData.currentTier >= 9;
+  const hasGoldPulseUnlocked = passData.currentTier >= 10;
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
+  const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
@@ -302,9 +307,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
                   <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${isGoldPulseEquipped ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''}`}
                     style={{
-                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : 'hsl(var(--text-primary))'
+                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : isGoldPulseEquipped ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
                     }}
                   >
                     {equippedDeco && !equippedDeco.isColorReward
@@ -312,7 +317,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       : (identity.username || 'TonPseudo')
                     }
                   </div>
-                  {(equippedDeco || isVioletEquipped || isPulseEquipped) ? (
+                  {(equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
                     <button
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
@@ -335,14 +340,14 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <button
                     onClick={() => handleEquipColor(null)}
                     className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
-                      !isVioletEquipped && !isPulseEquipped
+                      !isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped
                         ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
                         : 'border-wheel-border/40'
                     }`}
                   >
-                    {!isVioletEquipped && !isPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
+                    {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
                     <div className="relative flex flex-col items-center gap-1">
-                      {!isVioletEquipped && !isPulseEquipped && (
+                      {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && (
                         <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-game-darker" />
                         </div>
@@ -401,6 +406,32 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>Pulsé</span>
                       <span className="text-base font-black leading-none animate-[username-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]" style={{ color: 'hsl(var(--primary))' }}>Aa</span>
                       {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
+                    </div>
+                  </button>
+
+                  {/* Gold Pulse */}
+                  <button
+                    onClick={() => hasGoldPulseUnlocked && handleEquipColor('gold_pulse')}
+                    disabled={!hasGoldPulseUnlocked}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
+                      hasGoldPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
+                    } ${
+                      isGoldPulseEquipped
+                        ? 'border-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.4)]'
+                        : 'border-wheel-border/40'
+                    }`}
+                  >
+                    {isGoldPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-amber-900/10" />}
+                    <div className="relative flex flex-col items-center gap-1">
+                      {isGoldPulseEquipped && (
+                        <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-game-darker" />
+                        </div>
+                      )}
+                      {!hasGoldPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
+                      <span className={`text-[10px] font-black ${isGoldPulseEquipped ? 'text-yellow-400' : 'text-text-muted'}`}>Or Pulsé</span>
+                      <span className="text-base font-black leading-none animate-[username-gold-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_rgba(234,179,8,0.6)]" style={{ color: 'hsl(45, 100%, 55%)' }}>Aa</span>
+                      {!hasGoldPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
                     </div>
                   </button>
                 </div>

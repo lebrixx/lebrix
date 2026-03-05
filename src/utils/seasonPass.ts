@@ -1,6 +1,6 @@
 // Season Pass System - Diamonds, Tiers, Daily Challenges, Decorations
 
-export type UsernameColor = 'violet' | 'pulse' | null;
+export type UsernameColor = 'violet' | 'pulse' | 'gold_pulse' | null;
 
 export interface Decoration {
   id: string;
@@ -50,6 +50,7 @@ export const DECORATIONS: Decoration[] = [
   { id: 'trophy', name: 'Trophée', prefix: '🏆 ', suffix: ' 🏆', tier: 7, preview: '🏆 Pseudo 🏆' },
   { id: 'dragon', name: 'Dragon', prefix: '🐉 ', suffix: ' 🐉', tier: 8, preview: '🐉 Pseudo 🐉' },
   { id: 'pulse_name', name: 'Pseudo Pulsé', prefix: '', suffix: '', tier: 9, preview: '💫 Pseudo pulsé', isColorReward: true, color: 'pulse' },
+  { id: 'gold_pulse_name', name: 'Or Pulsé', prefix: '', suffix: '', tier: 10, preview: '✨ Pseudo or pulsé', isColorReward: true, color: 'gold_pulse' },
 ];
 
 export const PASS_TIERS: PassTier[] = DECORATIONS.map((deco, i) => ({
@@ -146,7 +147,9 @@ export function equipUsernameColor(color: UsernameColor): void {
     data.equippedDecoration = 'purple_name';
   } else if (color === 'pulse') {
     data.equippedDecoration = 'pulse_name';
-  } else if (data.equippedDecoration === 'purple_name' || data.equippedDecoration === 'pulse_name') {
+  } else if (color === 'gold_pulse') {
+    data.equippedDecoration = 'gold_pulse_name';
+  } else if (data.equippedDecoration === 'purple_name' || data.equippedDecoration === 'pulse_name' || data.equippedDecoration === 'gold_pulse_name') {
     data.equippedDecoration = null;
   }
   savePassData(data);

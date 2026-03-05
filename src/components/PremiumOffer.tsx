@@ -58,6 +58,13 @@ const REWARDS = [
     amount: 'x2',
     tone: 'primary' as const,
   },
+  {
+    emoji: '✨',
+    title: 'Or Pulsé',
+    description: 'Effet doré pulsé sur ton pseudo',
+    amount: 'Exclusif',
+    tone: 'special' as const,
+  },
 ];
 
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) => {
