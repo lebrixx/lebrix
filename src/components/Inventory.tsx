@@ -317,7 +317,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       : (identity.username || 'TonPseudo')
                     }
                   </div>
-                  {(equippedDeco || isVioletEquipped || isPulseEquipped) ? (
+                  {(equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
                     <button
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
