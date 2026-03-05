@@ -67,7 +67,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
     const parts: string[] = [];
-    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name') {
+    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name' && data.equippedDecoration !== 'gold_pulse_name') {
       parts.push(data.equippedDecoration);
     }
     if (data.equippedUsernameColor === 'violet') {
@@ -75,6 +75,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     }
     if (data.equippedUsernameColor === 'pulse') {
       parts.push('pulse_name');
+    }
+    if (data.equippedUsernameColor === 'gold_pulse') {
+      parts.push('gold_pulse_name');
     }
     const decorations = parts.length > 0 ? parts.join(',') : null;
 
