@@ -340,12 +340,12 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <button
                     onClick={() => handleEquipColor(null)}
                     className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
-                      !isVioletEquipped && !isPulseEquipped
+                      !isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped
                         ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
                         : 'border-wheel-border/40'
                     }`}
                   >
-                    {!isVioletEquipped && !isPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
+                    {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
                     <div className="relative flex flex-col items-center gap-1">
                       {!isVioletEquipped && !isPulseEquipped && (
                         <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
