@@ -174,6 +174,14 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
 
+  // Preview state: if previewing something locked, show it in the preview area
+  const isPreviewingLocked = previewDeco !== null || previewColor !== null;
+  const previewDecoObj = previewDeco ? DECORATIONS.find(d => d.id === previewDeco) : null;
+  const displayDeco = previewDecoObj || equippedDeco;
+  const displayViolet = previewColor === 'violet' || (!isPreviewingLocked && isVioletEquipped);
+  const displayPulse = previewColor === 'pulse' || (!isPreviewingLocked && isPulseEquipped);
+  const displayGoldPulse = previewColor === 'gold_pulse' || (!isPreviewingLocked && isGoldPulseEquipped);
+
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
   return (
