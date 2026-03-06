@@ -20,9 +20,9 @@ export async function restorePurchases(): Promise<'restored' | 'none' | 'error'>
 
   try {
     // Dynamically import to avoid crashes on web
-    const { Purchases } = await import('@capgo/capacitor-purchases');
+    const { CapacitorPurchases } = await import('@capgo/capacitor-purchases');
 
-    const { customerInfo } = await Purchases.restorePurchases();
+    const { customerInfo } = await CapacitorPurchases.restorePurchases();
 
     // Check if the premium entitlement is active
     // Adjust the entitlement identifier to match your RevenueCat config
