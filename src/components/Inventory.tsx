@@ -400,14 +400,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                   {/* Violet */}
                   <button
-                    onClick={() => hasVioletUnlocked && handleEquipColor('violet')}
-                    disabled={!hasVioletUnlocked}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
-                      hasVioletUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
-                    } ${
+                    onClick={() => hasVioletUnlocked ? handleEquipColor('violet') : handlePreviewColor('violet')}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       isVioletEquipped
                         ? 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                        : 'border-wheel-border/40'
+                        : previewColor === 'violet'
+                          ? 'border-purple-400/50 border-dashed'
+                          : 'border-wheel-border/40'
                     }`}
                   >
                     {isVioletEquipped && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-900/10" />}
@@ -426,14 +425,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                   {/* Pulse */}
                   <button
-                    onClick={() => hasPulseUnlocked && handleEquipColor('pulse')}
-                    disabled={!hasPulseUnlocked}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
-                      hasPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
-                    } ${
+                    onClick={() => hasPulseUnlocked ? handleEquipColor('pulse') : handlePreviewColor('pulse')}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       isPulseEquipped
                         ? 'border-primary shadow-[0_0_20px_hsl(var(--primary)/0.4)]'
-                        : 'border-wheel-border/40'
+                        : previewColor === 'pulse'
+                          ? 'border-primary/50 border-dashed'
+                          : 'border-wheel-border/40'
                     }`}
                   >
                     {isPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/10" />}
@@ -452,14 +450,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                   {/* Gold Pulse */}
                   <button
-                    onClick={() => hasGoldPulseUnlocked && handleEquipColor('gold_pulse')}
-                    disabled={!hasGoldPulseUnlocked}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
-                      hasGoldPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
-                    } ${
+                    onClick={() => hasGoldPulseUnlocked ? handleEquipColor('gold_pulse') : handlePreviewColor('gold_pulse')}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       isGoldPulseEquipped
                         ? 'border-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.4)]'
-                        : 'border-wheel-border/40'
+                        : previewColor === 'gold_pulse'
+                          ? 'border-yellow-400/50 border-dashed'
+                          : 'border-wheel-border/40'
                     }`}
                   >
                     {isGoldPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-amber-900/10" />}
