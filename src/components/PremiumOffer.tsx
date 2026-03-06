@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles, X } from 'lucide-react';
+import { Crown, Sparkles, X, Loader2 } from 'lucide-react';
 import { purchasePremiumPack } from '@/utils/seasonPass';
+import { restorePurchases } from '@/utils/restorePurchases';
 import { useToast } from '@/hooks/use-toast';
 
 interface PremiumOfferProps {
@@ -65,14 +66,34 @@ const REWARDS = [
 
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
+  const [isRestoring, setIsRestoring] = useState(false);
 
   const handlePurchase = () => {
     const result = purchasePremiumPack();
     onAddCoins?.(result.coins);
-    // Mark ads removed
     localStorage.setItem('ls_premium_no_ads', 'true');
     toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
     onClose();
+  };
+
+  const handleRestore = async () => {
+    if (isRestoring) return;
+    setIsRestoring(true);
+    try {
+      const result = await restorePurchases();
+      if (result === 'restored') {
+        toast({ title: '✅ Achats restaurés avec succès' });
+        onClose();
+      } else if (result === 'none') {
+        toast({ title: 'Aucun achat à restaurer', variant: 'destructive' });
+      } else {
+        toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+    } finally {
+      setIsRestoring(false);
+    }
   };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -167,6 +188,15 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
                 🔒 Paiement sécurisé
               </p>
+
+              <button
+                onClick={handleRestore}
+                disabled={isRestoring}
+                className="text-[10px] text-text-muted/70 hover:text-text-secondary transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+              >
+                {isRestoring && <Loader2 className="w-3 h-3 animate-spin" />}
+                Restaurer les achats
+              </button>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
                 Non merci
