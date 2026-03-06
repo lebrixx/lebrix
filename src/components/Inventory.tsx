@@ -131,13 +131,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   };
 
   const handlePreviewDeco = (decoId: string) => {
-    setPreviewDeco(decoId);
-    setPreviewColor(null);
+    setPreviewDeco(decoId || null);
+    // Don't reset previewColor — allow combining color + emoji in preview
   };
 
   const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse') => {
     setPreviewColor(color);
-    setPreviewDeco(null);
+    // Don't reset previewDeco — allow combining emoji + color in preview
   };
 
   const handleSaveUsername = async () => {
