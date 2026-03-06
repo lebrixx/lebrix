@@ -65,7 +65,8 @@ export async function purchasePremiumNative(
 
     // Trigger native purchase flow
     const { customerInfo } = await CapacitorPurchases.purchasePackage({
-      aPackage: targetPackage,
+      identifier: targetPackage.identifier,
+      offeringIdentifier: offerings.current!.identifier,
     });
 
     // Verify the entitlement is now active
