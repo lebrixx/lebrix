@@ -152,8 +152,8 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
 
             <div className="px-3 py-3 text-center space-y-2.5">
               <div>
-                <span className="text-xs text-text-muted line-through mr-2">7,99 &#8364;</span>
-                <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,99 &#8364;</span>
+                <span className="text-xs text-text-muted line-through mr-2">6,99 &#8364;</span>
+                <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,49 &#8364;</span>
                 <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d&apos;abonnement</div>
               </div>
 
