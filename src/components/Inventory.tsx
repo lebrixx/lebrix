@@ -331,20 +331,34 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
               <div className="relative mx-4 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-game-dark/60 to-secondary/5">
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
                 <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
-                  <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">
+                    {isPreviewingLocked ? '👁️ Prévisualisation' : 'Aperçu dans le classement'}
+                  </span>
+                  {isPreviewingLocked && (
+                    <span className="text-[9px] text-yellow-400/80 font-semibold">🔒 Non débloqué — aperçu uniquement</span>
+                  )}
+                  {!isPreviewingLocked && (
+                    <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
+                  )}
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${isGoldPulseEquipped ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
                     style={{
-                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : isGoldPulseEquipped ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
+                      color: displayViolet ? '#a855f7' : displayPulse ? 'hsl(var(--primary))' : displayGoldPulse ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
                     }}
                   >
-                    {equippedDeco && !equippedDeco.isColorReward
-                      ? `${equippedDeco.prefix}${identity.username || 'TonPseudo'}${equippedDeco.suffix}`
+                    {displayDeco && !displayDeco.isColorReward
+                      ? `${displayDeco.prefix}${identity.username || 'TonPseudo'}${displayDeco.suffix}`
                       : (identity.username || 'TonPseudo')
                     }
                   </div>
-                  {(equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
+                  {isPreviewingLocked ? (
+                    <button
+                      onClick={() => { setPreviewDeco(null); setPreviewColor(null); }}
+                      className="mt-2 text-[10px] text-yellow-400/70 hover:text-yellow-400 transition-colors flex items-center gap-1"
+                    >
+                      <X className="w-3 h-3" /> Fermer l'aperçu
+                    </button>
+                  ) : (equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
                     <button
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
