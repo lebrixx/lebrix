@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Crown, Sparkles, X, Loader2 } from 'lucide-react';
-import { purchasePremiumPack } from '@/utils/seasonPass';
+import { purchasePremiumNative } from '@/utils/purchaseService';
 import { restorePurchases } from '@/utils/restorePurchases';
 import { useToast } from '@/hooks/use-toast';
 
@@ -67,13 +67,26 @@ const REWARDS = [
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
-  const handlePurchase = () => {
-    const result = purchasePremiumPack();
-    onAddCoins?.(result.coins);
-    localStorage.setItem('ls_premium_no_ads', 'true');
-    toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
-    onClose();
+  const handlePurchase = async () => {
+    if (isPurchasing) return;
+    setIsPurchasing(true);
+    try {
+      const result = await purchasePremiumNative(onAddCoins);
+      if (result === 'purchased') {
+        toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
+        onClose();
+      } else if (result === 'cancelled') {
+        // User cancelled — do nothing
+      } else {
+        toast({ title: 'Erreur lors de l\'achat', description: 'Veuillez réessayer.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Erreur lors de l\'achat', variant: 'destructive' });
+    } finally {
+      setIsPurchasing(false);
+    }
   };
 
   const handleRestore = async () => {
@@ -180,10 +193,11 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
 
               <Button
                 onClick={handlePurchase}
+                disabled={isPurchasing}
                 className="w-full py-3 text-sm font-extrabold bg-gradient-primary hover:opacity-90 shadow-glow-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-game-dark"
               >
-                <Crown className="w-4 h-4 mr-1.5" />
-                Débloquer le Pack Premium
+                {isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Crown className="w-4 h-4 mr-1.5" />}
+                {isPurchasing ? 'Achat en cours...' : 'Débloquer le Pack Premium'}
               </Button>
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
                 🔒 Paiement sécurisé
