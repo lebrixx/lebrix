@@ -2,10 +2,13 @@ import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Crown, Sparkles, X } from 'lucide-react';
+import { purchasePremiumPack } from '@/utils/seasonPass';
+import { useToast } from '@/hooks/use-toast';
 
 interface PremiumOfferProps {
   isOpen: boolean;
   onClose: () => void;
+  onAddCoins?: (amount: number) => void;
 }
 
 const REWARDS = [
