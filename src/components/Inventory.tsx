@@ -131,13 +131,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   };
 
   const handlePreviewDeco = (decoId: string) => {
-    setPreviewDeco(decoId);
-    setPreviewColor(null);
+    setPreviewDeco(decoId || null);
+    // Don't reset previewColor — allow combining color + emoji in preview
   };
 
   const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse') => {
     setPreviewColor(color);
-    setPreviewDeco(null);
+    // Don't reset previewDeco — allow combining emoji + color in preview
   };
 
   const handleSaveUsername = async () => {
@@ -178,9 +178,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const isPreviewingLocked = previewDeco !== null || previewColor !== null;
   const previewDecoObj = previewDeco ? DECORATIONS.find(d => d.id === previewDeco) : null;
   const displayDeco = previewDecoObj || equippedDeco;
-  const displayViolet = previewColor === 'violet' || (!isPreviewingLocked && isVioletEquipped);
-  const displayPulse = previewColor === 'pulse' || (!isPreviewingLocked && isPulseEquipped);
-  const displayGoldPulse = previewColor === 'gold_pulse' || (!isPreviewingLocked && isGoldPulseEquipped);
+  const displayViolet = previewColor === 'violet' || (previewColor === null && isVioletEquipped);
+  const displayPulse = previewColor === 'pulse' || (previewColor === null && isPulseEquipped);
+  const displayGoldPulse = previewColor === 'gold_pulse' || (previewColor === null && isGoldPulseEquipped);
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
@@ -368,6 +368,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   ) : (
                     <p className="text-[10px] text-text-muted mt-1">Sélectionne une décoration ci-dessous</p>
                   )}
+                  <p className="text-[8px] text-text-muted/60 mt-1.5 italic">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
                 </div>
               </div>
 
