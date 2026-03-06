@@ -151,7 +151,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const equippedDeco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
   const hasVioletUnlocked = passData.currentTier >= 4;
   const hasPulseUnlocked = passData.currentTier >= 9;
-  const hasGoldPulseUnlocked = passData.currentTier >= 10;
+  const hasGoldPulseUnlocked = checkGoldPulse();
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
