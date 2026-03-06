@@ -170,7 +170,7 @@ export function getEquippedUsernameColor(): UsernameColor {
 export function getEquippedDecoration(): Decoration | null {
   const data = getSeasonPassData();
   if (!data.equippedDecoration) return null;
-  return DECORATIONS.find(d => d.id === data.equippedDecoration) || null;
+  return ALL_DECORATIONS.find(d => d.id === data.equippedDecoration) || null;
 }
 
 export function getEquippedDecorationId(): string | null {
