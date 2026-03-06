@@ -47,6 +47,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<'items' | 'decos'>('items');
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
+  const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
+  const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | null>(null); // preview locked color
   const { toast } = useToast();
 
   const identity = getLocalIdentity();
