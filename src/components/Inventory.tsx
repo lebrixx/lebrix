@@ -113,6 +113,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   };
 
   const handleEquip = (decoId: string | null) => {
+    setPreviewDeco(null);
+    setPreviewColor(null);
     equipDecoration(decoId);
     const updated = getSeasonPassData();
     setPassData(updated);
@@ -120,10 +122,22 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   };
 
   const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | null) => {
+    setPreviewDeco(null);
+    setPreviewColor(null);
     equipUsernameColor(color);
     const updated = getSeasonPassData();
     setPassData(updated);
     syncDecorationToServer(updated);
+  };
+
+  const handlePreviewDeco = (decoId: string) => {
+    setPreviewDeco(decoId);
+    setPreviewColor(null);
+  };
+
+  const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse') => {
+    setPreviewColor(color);
+    setPreviewDeco(null);
   };
 
   const handleSaveUsername = async () => {
