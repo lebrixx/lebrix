@@ -67,13 +67,26 @@ const REWARDS = [
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
-  const handlePurchase = () => {
-    const result = purchasePremiumPack();
-    onAddCoins?.(result.coins);
-    localStorage.setItem('ls_premium_no_ads', 'true');
-    toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
-    onClose();
+  const handlePurchase = async () => {
+    if (isPurchasing) return;
+    setIsPurchasing(true);
+    try {
+      const result = await purchasePremiumNative(onAddCoins);
+      if (result === 'purchased') {
+        toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
+        onClose();
+      } else if (result === 'cancelled') {
+        // User cancelled — do nothing
+      } else {
+        toast({ title: 'Erreur lors de l\'achat', description: 'Veuillez réessayer.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Erreur lors de l\'achat', variant: 'destructive' });
+    } finally {
+      setIsPurchasing(false);
+    }
   };
 
   const handleRestore = async () => {
