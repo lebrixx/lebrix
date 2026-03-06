@@ -59,6 +59,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
       setBoosts(getStoredBoosts());
       setTickets(getTickets());
       setNewUsername(identity.username || '');
+      setPreviewDeco(null);
+      setPreviewColor(null);
     }
   }, [isOpen]);
 
