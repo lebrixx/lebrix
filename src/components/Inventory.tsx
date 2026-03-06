@@ -47,6 +47,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<'items' | 'decos'>('items');
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
+  const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
+  const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | null>(null); // preview locked color
   const { toast } = useToast();
 
   const identity = getLocalIdentity();
@@ -57,6 +59,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
       setBoosts(getStoredBoosts());
       setTickets(getTickets());
       setNewUsername(identity.username || '');
+      setPreviewDeco(null);
+      setPreviewColor(null);
     }
   }, [isOpen]);
 
@@ -109,6 +113,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   };
 
   const handleEquip = (decoId: string | null) => {
+    setPreviewDeco(null);
+    setPreviewColor(null);
     equipDecoration(decoId);
     const updated = getSeasonPassData();
     setPassData(updated);
@@ -116,10 +122,22 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   };
 
   const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | null) => {
+    setPreviewDeco(null);
+    setPreviewColor(null);
     equipUsernameColor(color);
     const updated = getSeasonPassData();
     setPassData(updated);
     syncDecorationToServer(updated);
+  };
+
+  const handlePreviewDeco = (decoId: string) => {
+    setPreviewDeco(decoId);
+    setPreviewColor(null);
+  };
+
+  const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse') => {
+    setPreviewColor(color);
+    setPreviewDeco(null);
   };
 
   const handleSaveUsername = async () => {
@@ -155,6 +173,14 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
+
+  // Preview state: if previewing something locked, show it in the preview area
+  const isPreviewingLocked = previewDeco !== null || previewColor !== null;
+  const previewDecoObj = previewDeco ? DECORATIONS.find(d => d.id === previewDeco) : null;
+  const displayDeco = previewDecoObj || equippedDeco;
+  const displayViolet = previewColor === 'violet' || (!isPreviewingLocked && isVioletEquipped);
+  const displayPulse = previewColor === 'pulse' || (!isPreviewingLocked && isPulseEquipped);
+  const displayGoldPulse = previewColor === 'gold_pulse' || (!isPreviewingLocked && isGoldPulseEquipped);
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
@@ -305,20 +331,34 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
               <div className="relative mx-4 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-game-dark/60 to-secondary/5">
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
                 <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">Aperçu dans le classement</span>
-                  <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">
+                    {isPreviewingLocked ? '👁️ Prévisualisation' : 'Aperçu dans le classement'}
+                  </span>
+                  {isPreviewingLocked && (
+                    <span className="text-[9px] text-yellow-400/80 font-semibold">🔒 Non débloqué — aperçu uniquement</span>
+                  )}
+                  {!isPreviewingLocked && (
+                    <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
+                  )}
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide ${isPulseEquipped ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${isGoldPulseEquipped ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
                     style={{
-                      color: isVioletEquipped ? '#a855f7' : isPulseEquipped ? 'hsl(var(--primary))' : isGoldPulseEquipped ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
+                      color: displayViolet ? '#a855f7' : displayPulse ? 'hsl(var(--primary))' : displayGoldPulse ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
                     }}
                   >
-                    {equippedDeco && !equippedDeco.isColorReward
-                      ? `${equippedDeco.prefix}${identity.username || 'TonPseudo'}${equippedDeco.suffix}`
+                    {displayDeco && !displayDeco.isColorReward
+                      ? `${displayDeco.prefix}${identity.username || 'TonPseudo'}${displayDeco.suffix}`
                       : (identity.username || 'TonPseudo')
                     }
                   </div>
-                  {(equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
+                  {isPreviewingLocked ? (
+                    <button
+                      onClick={() => { setPreviewDeco(null); setPreviewColor(null); }}
+                      className="mt-2 text-[10px] text-yellow-400/70 hover:text-yellow-400 transition-colors flex items-center gap-1"
+                    >
+                      <X className="w-3 h-3" /> Fermer l'aperçu
+                    </button>
+                  ) : (equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
                     <button
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
@@ -360,14 +400,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                   {/* Violet */}
                   <button
-                    onClick={() => hasVioletUnlocked && handleEquipColor('violet')}
-                    disabled={!hasVioletUnlocked}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
-                      hasVioletUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
-                    } ${
+                    onClick={() => hasVioletUnlocked ? handleEquipColor('violet') : handlePreviewColor('violet')}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       isVioletEquipped
                         ? 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                        : 'border-wheel-border/40'
+                        : previewColor === 'violet'
+                          ? 'border-purple-400/50 border-dashed'
+                          : 'border-wheel-border/40'
                     }`}
                   >
                     {isVioletEquipped && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-900/10" />}
@@ -386,14 +425,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                   {/* Pulse */}
                   <button
-                    onClick={() => hasPulseUnlocked && handleEquipColor('pulse')}
-                    disabled={!hasPulseUnlocked}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
-                      hasPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
-                    } ${
+                    onClick={() => hasPulseUnlocked ? handleEquipColor('pulse') : handlePreviewColor('pulse')}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       isPulseEquipped
                         ? 'border-primary shadow-[0_0_20px_hsl(var(--primary)/0.4)]'
-                        : 'border-wheel-border/40'
+                        : previewColor === 'pulse'
+                          ? 'border-primary/50 border-dashed'
+                          : 'border-wheel-border/40'
                     }`}
                   >
                     {isPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/10" />}
@@ -412,14 +450,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                   {/* Gold Pulse */}
                   <button
-                    onClick={() => hasGoldPulseUnlocked && handleEquipColor('gold_pulse')}
-                    disabled={!hasGoldPulseUnlocked}
-                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 ${
-                      hasGoldPulseUnlocked ? 'active:scale-95' : 'opacity-40 cursor-not-allowed'
-                    } ${
+                    onClick={() => hasGoldPulseUnlocked ? handleEquipColor('gold_pulse') : handlePreviewColor('gold_pulse')}
+                    className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
                       isGoldPulseEquipped
                         ? 'border-yellow-400 shadow-[0_0_20px_rgba(234,179,8,0.4)]'
-                        : 'border-wheel-border/40'
+                        : previewColor === 'gold_pulse'
+                          ? 'border-yellow-400/50 border-dashed'
+                          : 'border-wheel-border/40'
                     }`}
                   >
                     {isGoldPulseEquipped && <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-amber-900/10" />}
@@ -448,17 +485,26 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   {DECORATIONS.filter(d => !d.isColorReward).map((deco) => {
                     const isUnlocked = passData.currentTier >= deco.tier;
                     const isEquipped = isUnlocked && passData.equippedDecoration === deco.id;
+                    const isPreviewing = !isUnlocked && previewDeco === deco.id;
                     return (
                       <button
                         key={deco.id}
-                        onClick={() => isUnlocked && handleEquip(isEquipped ? null : deco.id)}
-                        disabled={!isUnlocked}
+                        onClick={() => {
+                          if (isUnlocked) {
+                            handleEquip(isEquipped ? null : deco.id);
+                          } else {
+                            handlePreviewDeco(previewDeco === deco.id ? '' : deco.id);
+                            if (previewDeco === deco.id) { setPreviewDeco(null); }
+                          }
+                        }}
                         className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-all duration-200 ${
                           isEquipped
                             ? 'border-primary/50 bg-primary/10 shadow-[0_0_12px_hsl(var(--primary)/0.2)]'
-                            : isUnlocked
-                              ? 'border-wheel-border/30 bg-game-dark/40 active:scale-[0.98]'
-                              : 'border-wheel-border/20 bg-game-dark/20 opacity-40 cursor-not-allowed'
+                            : isPreviewing
+                              ? 'border-primary/30 border-dashed bg-primary/5'
+                              : isUnlocked
+                                ? 'border-wheel-border/30 bg-game-dark/40 active:scale-[0.98]'
+                                : 'border-wheel-border/20 bg-game-dark/20 opacity-60'
                         }`}
                       >
                         <div className="w-9 h-9 rounded-lg bg-game-darker border border-wheel-border/40 flex items-center justify-center text-lg shrink-0">

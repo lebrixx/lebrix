@@ -2,10 +2,13 @@ import React from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Crown, Sparkles, X } from 'lucide-react';
+import { purchasePremiumPack } from '@/utils/seasonPass';
+import { useToast } from '@/hooks/use-toast';
 
 interface PremiumOfferProps {
   isOpen: boolean;
   onClose: () => void;
+  onAddCoins?: (amount: number) => void;
 }
 
 const REWARDS = [
@@ -17,18 +20,18 @@ const REWARDS = [
     tone: 'special' as const,
   },
   {
+    emoji: '✨',
+    title: 'Or Pulsé',
+    description: 'Effet doré pulsé sur ton pseudo',
+    amount: 'Exclusif',
+    tone: 'special' as const,
+  },
+  {
     emoji: '\u{1F451}',
     title: 'Pass Saison VIP',
     description: 'Debloque les 9 paliers + toutes les decorations et couleurs',
     amount: 'Tout inclus',
     tone: 'secondary' as const,
-  },
-  {
-    emoji: '\u{1F48E}',
-    title: 'Diamants',
-    description: 'Monnaie premium',
-    amount: '+30',
-    tone: 'primary' as const,
   },
   {
     emoji: '\u{1FA99}',
@@ -58,16 +61,19 @@ const REWARDS = [
     amount: 'x2',
     tone: 'primary' as const,
   },
-  {
-    emoji: '✨',
-    title: 'Or Pulsé',
-    description: 'Effet doré pulsé sur ton pseudo',
-    amount: 'Exclusif',
-    tone: 'special' as const,
-  },
 ];
 
-export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) => {
+export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
+  const { toast } = useToast();
+
+  const handlePurchase = () => {
+    const result = purchasePremiumPack();
+    onAddCoins?.(result.coins);
+    // Mark ads removed
+    localStorage.setItem('ls_premium_no_ads', 'true');
+    toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
+    onClose();
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
        <DialogContent className="sm:max-w-[300px] max-w-[290px] bg-transparent border-none p-0 overflow-hidden shadow-none [&>button]:hidden">
@@ -146,13 +152,13 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) =
 
             <div className="px-3 py-3 text-center space-y-2.5">
               <div>
-                <span className="text-xs text-text-muted line-through mr-2">7,99 &#8364;</span>
-                <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,99 &#8364;</span>
+                <span className="text-xs text-text-muted line-through mr-2">6,99 &#8364;</span>
+                <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,49 &#8364;</span>
                 <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d&apos;abonnement</div>
               </div>
 
               <Button
-                onClick={() => console.log('Purchase clicked')}
+                onClick={handlePurchase}
                 className="w-full py-3 text-sm font-extrabold bg-gradient-primary hover:opacity-90 shadow-glow-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-game-dark"
               >
                 <Crown className="w-4 h-4 mr-1.5" />

@@ -458,6 +458,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       <PremiumOffer
         isOpen={showPremiumOffer}
         onClose={() => setShowPremiumOffer(false)}
+        onAddCoins={(amount) => onAdRewardClaimed(amount)}
       />
     </div>
   );
