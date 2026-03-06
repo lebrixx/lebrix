@@ -182,13 +182,24 @@ export function applyDecoration(username: string, decorationsString: string | nu
   // Supporte le format combiné "star,purple_name" — cherche le premier emoji deco (non-couleur)
   const ids = decorationsString.split(',').map(d => d.trim());
   const decoId = ids.find(id => {
-    const d = DECORATIONS.find(dec => dec.id === id);
+    const d = ALL_DECORATIONS.find(dec => dec.id === id);
     return d && !d.isColorReward;
   });
   if (!decoId) return username;
-  const deco = DECORATIONS.find(d => d.id === decoId);
+  const deco = ALL_DECORATIONS.find(d => d.id === decoId);
   if (!deco) return username;
   return `${deco.prefix}${username}${deco.suffix}`;
+}
+
+/** Unlock gold pulse (called by premium pack purchase or promo code) */
+export function unlockGoldPulse(): void {
+  const data = getSeasonPassData();
+  data.hasGoldPulse = true;
+  savePassData(data);
+}
+
+export function hasGoldPulseUnlocked(): boolean {
+  return getSeasonPassData().hasGoldPulse === true;
 }
 
 // ── Daily Quests ──

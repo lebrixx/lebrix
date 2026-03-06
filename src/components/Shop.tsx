@@ -398,7 +398,8 @@ export const Shop: React.FC<ShopProps> = ({
                     localStorage.setItem(USED_CODES_KEY, JSON.stringify(usedCodes));
                     addDiamonds(50);
                     onAddCoins?.(2000);
-                    toast({ title: "🎉 Code activé !", description: "+50 💎 et +2000 coins !" });
+                    unlockGoldPulse();
+                    toast({ title: "🎉 Code activé !", description: "+50 💎, +2000 coins et Or Pulsé débloqué ! ✨" });
                     setPromoCode('');
                     return;
                   }
