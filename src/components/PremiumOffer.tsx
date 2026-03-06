@@ -20,18 +20,18 @@ const REWARDS = [
     tone: 'special' as const,
   },
   {
+    emoji: '✨',
+    title: 'Or Pulsé',
+    description: 'Effet doré pulsé sur ton pseudo',
+    amount: 'Exclusif',
+    tone: 'special' as const,
+  },
+  {
     emoji: '\u{1F451}',
     title: 'Pass Saison VIP',
     description: 'Debloque les 9 paliers + toutes les decorations et couleurs',
     amount: 'Tout inclus',
     tone: 'secondary' as const,
-  },
-  {
-    emoji: '\u{1F48E}',
-    title: 'Diamants',
-    description: 'Monnaie premium',
-    amount: '+30',
-    tone: 'primary' as const,
   },
   {
     emoji: '\u{1FA99}',
@@ -60,13 +60,6 @@ const REWARDS = [
     description: 'Commence a 20 points',
     amount: 'x2',
     tone: 'primary' as const,
-  },
-  {
-    emoji: '✨',
-    title: 'Or Pulsé',
-    description: 'Effet doré pulsé sur ton pseudo',
-    amount: 'Exclusif',
-    tone: 'special' as const,
   },
 ];
 
