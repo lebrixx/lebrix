@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles, X } from 'lucide-react';
+import { Crown, Sparkles, X, Loader2 } from 'lucide-react';
 import { purchasePremiumPack } from '@/utils/seasonPass';
+import { restorePurchases } from '@/utils/restorePurchases';
 import { useToast } from '@/hooks/use-toast';
 
 interface PremiumOfferProps {
