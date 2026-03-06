@@ -13,6 +13,7 @@ import {
   DECORATIONS,
   equipDecoration,
   equipUsernameColor,
+  hasGoldPulseUnlocked as checkGoldPulse,
   type SeasonPassData,
 } from '@/utils/seasonPass';
 import { getLocalIdentity, setUsername } from '@/utils/localIdentity';
