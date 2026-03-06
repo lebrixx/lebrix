@@ -368,6 +368,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   ) : (
                     <p className="text-[10px] text-text-muted mt-1">Sélectionne une décoration ci-dessous</p>
                   )}
+                  <p className="text-[8px] text-text-muted/60 mt-1.5 italic">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
                 </div>
               </div>
 
