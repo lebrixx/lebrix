@@ -137,7 +137,7 @@ export function getTierCost(tier: number): number {
 
 export function equipDecoration(decorationId: string | null): void {
   const data = getSeasonPassData();
-  const deco = decorationId ? DECORATIONS.find(d => d.id === decorationId) : null;
+  const deco = decorationId ? ALL_DECORATIONS.find(d => d.id === decorationId) : null;
   if (deco?.isColorReward) {
     data.equippedUsernameColor = deco.color || null;
     data.equippedDecoration = decorationId;
