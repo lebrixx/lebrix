@@ -16,6 +16,7 @@ import { Rewarded } from '@/ads/RewardedService';
 import { Interstitials } from '@/ads/InterstitialService';
 import { initNotifications } from '@/utils/notifications';
 import { installNativeUiGuards, restoreNativeUi } from '@/utils/nativeUi';
+import { verifyPremiumOnLaunch } from '@/utils/purchaseService';
 
 // Configuration pour iOS - seulement sur les plateformes mobiles
 if (Capacitor.isNativePlatform()) {
@@ -29,5 +30,8 @@ Interstitials.init();
 
 // Initialize notifications on app start
 initNotifications();
+
+// Verify premium purchase status on launch (silent, non-blocking)
+verifyPremiumOnLaunch();
 
 createRoot(document.getElementById("root")!).render(<App />);
