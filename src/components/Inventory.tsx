@@ -178,9 +178,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const isPreviewingLocked = previewDeco !== null || previewColor !== null;
   const previewDecoObj = previewDeco ? DECORATIONS.find(d => d.id === previewDeco) : null;
   const displayDeco = previewDecoObj || equippedDeco;
-  const displayViolet = previewColor === 'violet' || (!isPreviewingLocked && isVioletEquipped);
-  const displayPulse = previewColor === 'pulse' || (!isPreviewingLocked && isPulseEquipped);
-  const displayGoldPulse = previewColor === 'gold_pulse' || (!isPreviewingLocked && isGoldPulseEquipped);
+  const displayViolet = previewColor === 'violet' || (previewColor === null && isVioletEquipped);
+  const displayPulse = previewColor === 'pulse' || (previewColor === null && isPulseEquipped);
+  const displayGoldPulse = previewColor === 'gold_pulse' || (previewColor === null && isGoldPulseEquipped);
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
