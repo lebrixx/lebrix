@@ -36,10 +36,12 @@ export interface SeasonPassData {
   equippedUsernameColor: UsernameColor;
   totalDiamondsEarned: number;
   dailyQuests: DailyQuestState | null;
+  hasGoldPulse?: boolean; // Unlocked via Premium Pack or promo code only
 }
 
 const STORAGE_KEY = 'ls_season_pass';
 
+// Decorations available in the Season Pass (9 tiers)
 export const DECORATIONS: Decoration[] = [
   { id: 'star', name: 'Étoile', prefix: '⭐ ', suffix: '', tier: 1, preview: '⭐ Pseudo' },
   { id: 'fire', name: 'Flamme', prefix: '🔥 ', suffix: ' 🔥', tier: 2, preview: '🔥 Pseudo 🔥' },
@@ -50,8 +52,13 @@ export const DECORATIONS: Decoration[] = [
   { id: 'trophy', name: 'Trophée', prefix: '🏆 ', suffix: ' 🏆', tier: 7, preview: '🏆 Pseudo 🏆' },
   { id: 'dragon', name: 'Dragon', prefix: '🐉 ', suffix: ' 🐉', tier: 8, preview: '🐉 Pseudo 🐉' },
   { id: 'pulse_name', name: 'Pseudo Pulsé', prefix: '', suffix: '', tier: 9, preview: '💫 Pseudo pulsé', isColorReward: true, color: 'pulse' },
-  { id: 'gold_pulse_name', name: 'Or Pulsé', prefix: '', suffix: '', tier: 10, preview: '✨ Pseudo or pulsé', isColorReward: true, color: 'gold_pulse' },
 ];
+
+// Gold Pulse decoration — unlocked only via Premium Pack or promo code LEBRIX
+export const GOLD_PULSE_DECORATION: Decoration = { id: 'gold_pulse_name', name: 'Or Pulsé', prefix: '', suffix: '', tier: 0, preview: '✨ Pseudo or pulsé', isColorReward: true, color: 'gold_pulse' };
+
+// All decorations including premium-exclusive ones (used for rendering/applying)
+export const ALL_DECORATIONS: Decoration[] = [...DECORATIONS, GOLD_PULSE_DECORATION];
 
 export const PASS_TIERS: PassTier[] = DECORATIONS.map((deco, i) => ({
   tier: i + 1,
@@ -130,7 +137,7 @@ export function getTierCost(tier: number): number {
 
 export function equipDecoration(decorationId: string | null): void {
   const data = getSeasonPassData();
-  const deco = decorationId ? DECORATIONS.find(d => d.id === decorationId) : null;
+  const deco = decorationId ? ALL_DECORATIONS.find(d => d.id === decorationId) : null;
   if (deco?.isColorReward) {
     data.equippedUsernameColor = deco.color || null;
     data.equippedDecoration = decorationId;
@@ -163,7 +170,7 @@ export function getEquippedUsernameColor(): UsernameColor {
 export function getEquippedDecoration(): Decoration | null {
   const data = getSeasonPassData();
   if (!data.equippedDecoration) return null;
-  return DECORATIONS.find(d => d.id === data.equippedDecoration) || null;
+  return ALL_DECORATIONS.find(d => d.id === data.equippedDecoration) || null;
 }
 
 export function getEquippedDecorationId(): string | null {
@@ -175,13 +182,24 @@ export function applyDecoration(username: string, decorationsString: string | nu
   // Supporte le format combiné "star,purple_name" — cherche le premier emoji deco (non-couleur)
   const ids = decorationsString.split(',').map(d => d.trim());
   const decoId = ids.find(id => {
-    const d = DECORATIONS.find(dec => dec.id === id);
+    const d = ALL_DECORATIONS.find(dec => dec.id === id);
     return d && !d.isColorReward;
   });
   if (!decoId) return username;
-  const deco = DECORATIONS.find(d => d.id === decoId);
+  const deco = ALL_DECORATIONS.find(d => d.id === decoId);
   if (!deco) return username;
   return `${deco.prefix}${username}${deco.suffix}`;
+}
+
+/** Unlock gold pulse (called by premium pack purchase or promo code) */
+export function unlockGoldPulse(): void {
+  const data = getSeasonPassData();
+  data.hasGoldPulse = true;
+  savePassData(data);
+}
+
+export function hasGoldPulseUnlocked(): boolean {
+  return getSeasonPassData().hasGoldPulse === true;
 }
 
 // ── Daily Quests ──

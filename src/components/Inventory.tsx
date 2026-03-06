@@ -13,6 +13,7 @@ import {
   DECORATIONS,
   equipDecoration,
   equipUsernameColor,
+  hasGoldPulseUnlocked as checkGoldPulse,
   type SeasonPassData,
 } from '@/utils/seasonPass';
 import { getLocalIdentity, setUsername } from '@/utils/localIdentity';
@@ -150,7 +151,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const equippedDeco = DECORATIONS.find(d => d.id === passData.equippedDecoration);
   const hasVioletUnlocked = passData.currentTier >= 4;
   const hasPulseUnlocked = passData.currentTier >= 9;
-  const hasGoldPulseUnlocked = passData.currentTier >= 10;
+  const hasGoldPulseUnlocked = checkGoldPulse();
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
@@ -431,7 +432,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       {!hasGoldPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
                       <span className={`text-[10px] font-black ${isGoldPulseEquipped ? 'text-yellow-400' : 'text-text-muted'}`}>Or Pulsé</span>
                       <span className="text-base font-black leading-none animate-[username-gold-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_rgba(234,179,8,0.6)]" style={{ color: 'hsl(45, 100%, 55%)' }}>Aa</span>
-                      {!hasGoldPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
+                      {!hasGoldPulseUnlocked && <span className="text-[8px] text-text-muted">Premium</span>}
                     </div>
                   </button>
                 </div>

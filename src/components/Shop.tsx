@@ -14,7 +14,7 @@ import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
-import { addDiamonds } from '@/utils/seasonPass';
+import { addDiamonds, unlockGoldPulse } from '@/utils/seasonPass';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -398,7 +398,8 @@ export const Shop: React.FC<ShopProps> = ({
                     localStorage.setItem(USED_CODES_KEY, JSON.stringify(usedCodes));
                     addDiamonds(50);
                     onAddCoins?.(2000);
-                    toast({ title: "🎉 Code activé !", description: "+50 💎 et +2000 coins !" });
+                    unlockGoldPulse();
+                    toast({ title: "🎉 Code activé !", description: "+50 💎, +2000 coins et Or Pulsé débloqué ! ✨" });
                     setPromoCode('');
                     return;
                   }
