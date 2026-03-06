@@ -485,17 +485,26 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   {DECORATIONS.filter(d => !d.isColorReward).map((deco) => {
                     const isUnlocked = passData.currentTier >= deco.tier;
                     const isEquipped = isUnlocked && passData.equippedDecoration === deco.id;
+                    const isPreviewing = !isUnlocked && previewDeco === deco.id;
                     return (
                       <button
                         key={deco.id}
-                        onClick={() => isUnlocked && handleEquip(isEquipped ? null : deco.id)}
-                        disabled={!isUnlocked}
+                        onClick={() => {
+                          if (isUnlocked) {
+                            handleEquip(isEquipped ? null : deco.id);
+                          } else {
+                            handlePreviewDeco(previewDeco === deco.id ? '' : deco.id);
+                            if (previewDeco === deco.id) { setPreviewDeco(null); }
+                          }
+                        }}
                         className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-all duration-200 ${
                           isEquipped
                             ? 'border-primary/50 bg-primary/10 shadow-[0_0_12px_hsl(var(--primary)/0.2)]'
-                            : isUnlocked
-                              ? 'border-wheel-border/30 bg-game-dark/40 active:scale-[0.98]'
-                              : 'border-wheel-border/20 bg-game-dark/20 opacity-40 cursor-not-allowed'
+                            : isPreviewing
+                              ? 'border-primary/30 border-dashed bg-primary/5'
+                              : isUnlocked
+                                ? 'border-wheel-border/30 bg-game-dark/40 active:scale-[0.98]'
+                                : 'border-wheel-border/20 bg-game-dark/20 opacity-60'
                         }`}
                       >
                         <div className="w-9 h-9 rounded-lg bg-game-darker border border-wheel-border/40 flex items-center justify-center text-lg shrink-0">
