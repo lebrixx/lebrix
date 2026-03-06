@@ -63,7 +63,17 @@ const REWARDS = [
   },
 ];
 
-export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose }) => {
+export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
+  const { toast } = useToast();
+
+  const handlePurchase = () => {
+    const result = purchasePremiumPack();
+    onAddCoins?.(result.coins);
+    // Mark ads removed
+    localStorage.setItem('ls_premium_no_ads', 'true');
+    toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
+    onClose();
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
        <DialogContent className="sm:max-w-[300px] max-w-[290px] bg-transparent border-none p-0 overflow-hidden shadow-none [&>button]:hidden">
