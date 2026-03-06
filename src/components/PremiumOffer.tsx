@@ -66,14 +66,34 @@ const REWARDS = [
 
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
+  const [isRestoring, setIsRestoring] = useState(false);
 
   const handlePurchase = () => {
     const result = purchasePremiumPack();
     onAddCoins?.(result.coins);
-    // Mark ads removed
     localStorage.setItem('ls_premium_no_ads', 'true');
     toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
     onClose();
+  };
+
+  const handleRestore = async () => {
+    if (isRestoring) return;
+    setIsRestoring(true);
+    try {
+      const result = await restorePurchases();
+      if (result === 'restored') {
+        toast({ title: '✅ Achats restaurés avec succès' });
+        onClose();
+      } else if (result === 'none') {
+        toast({ title: 'Aucun achat à restaurer', variant: 'destructive' });
+      } else {
+        toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+    } finally {
+      setIsRestoring(false);
+    }
   };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
