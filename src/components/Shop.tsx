@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Tag } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Tag, Package } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
@@ -71,6 +72,7 @@ export const Shop: React.FC<ShopProps> = ({
   const [activeTab, setActiveTab] = useState('themes');
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   const [promoCode, setPromoCode] = useState('');
+  const [showEssentialPack, setShowEssentialPack] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
@@ -191,6 +193,104 @@ export const Shop: React.FC<ShopProps> = ({
           {t.shopDesc}
         </p>
       </div>
+
+      {/* Pack Essentiel Banner */}
+      <Card 
+        onClick={() => setShowEssentialPack(true)}
+        className="w-full max-w-6xl mx-auto mb-8 border-2 border-primary/60 bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 
+                   hover:border-primary hover:shadow-glow-primary cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden relative"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
+        <div className="p-5 flex items-center gap-4 relative z-10">
+          <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+            <Package className="w-7 h-7 text-primary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-lg font-extrabold text-text-primary">Pack Essentiel</h3>
+              <Badge className="bg-secondary/20 text-secondary border border-secondary/40 text-xs">PROMO</Badge>
+            </div>
+            <p className="text-text-secondary text-sm">5 boosts de chaque + 15 tickets expert</p>
+          </div>
+          <div className="flex-shrink-0 text-right">
+            <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent">1,99 €</span>
+          </div>
+        </div>
+      </Card>
+
+      {/* Pack Essentiel Dialog */}
+      <Dialog open={showEssentialPack} onOpenChange={setShowEssentialPack}>
+        <DialogContent className="bg-game-dark border-primary/40 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-center">
+              <div className="flex flex-col items-center gap-3 mb-2">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+                  <Package className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <span className="text-2xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">Pack Essentiel</span>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3 mt-2">
+            {/* Boosts */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <span className="text-2xl">🛡️</span>
+                <div className="flex-1">
+                  <p className="text-text-primary font-semibold text-sm">Bouclier</p>
+                  <p className="text-text-muted text-xs">Protège d'une erreur</p>
+                </div>
+                <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <span className="text-2xl">🎯</span>
+                <div className="flex-1">
+                  <p className="text-text-primary font-semibold text-sm">Zone verte +</p>
+                  <p className="text-text-muted text-xs">Agrandit la zone verte</p>
+                </div>
+                <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <span className="text-2xl">🚀</span>
+                <div className="flex-1">
+                  <p className="text-text-primary font-semibold text-sm">Démarrage à 20</p>
+                  <p className="text-text-muted text-xs">Commence avec 20 pts</p>
+                </div>
+                <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
+              </div>
+            </div>
+
+            {/* Tickets */}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20">
+              <Ticket className="w-6 h-6 text-secondary" />
+              <div className="flex-1">
+                <p className="text-text-primary font-semibold text-sm">Tickets Expert</p>
+                <p className="text-text-muted text-xs">Pour le mode Mémoire</p>
+              </div>
+              <Badge variant="secondary" className="text-xs font-bold">×15</Badge>
+            </div>
+
+            {/* Separator */}
+            <div className="border-t border-wheel-border my-2" />
+
+            {/* Buy Button */}
+            <Button
+              onClick={() => {
+                toast({
+                  title: "🚧 Bientôt disponible",
+                  description: "L'achat sera activé prochainement.",
+                });
+              }}
+              className="w-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 hover:scale-105"
+            >
+              Acheter — 1,99 €
+            </Button>
+
+            <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
