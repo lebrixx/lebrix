@@ -159,7 +159,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`text-lg ${isSpecial ? 'drop-shadow-[0_0_10px_hsl(0,85%,60%,0.5)]' : 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]'}`}>{reward.emoji}</span>
                           <div className="min-w-0">
-                            <p className="text-[11px] font-black uppercase tracking-wide text-text-primary truncate">{reward.title}</p>
+                            <p className={`text-[11px] font-black uppercase tracking-wide truncate ${reward.title === 'Or Pulsé' ? '' : 'text-text-primary'}`} style={reward.title === 'Or Pulsé' ? { animation: 'username-gold-pulse 2s ease-in-out infinite' } : undefined}>{reward.title}</p>
                             <p className={`text-[10px] text-text-muted ${isSeasonPass ? 'whitespace-normal leading-tight' : 'truncate'}`}>{reward.description}</p>
                           </div>
                         </div>
