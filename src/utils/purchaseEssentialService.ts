@@ -55,16 +55,33 @@ export async function purchaseEssentialNative(): Promise<'purchased' | 'cancelle
 
     // Verify product is available on the store before purchasing
     console.log('[essentialPurchase] Loading products from store...');
-    const { products } = await NativePurchases.getProducts({
+    const rawResponse = await NativePurchases.getProducts({
       productIdentifiers: [PRODUCT_ID],
       productType: PURCHASE_TYPE.INAPP,
     });
 
-    console.log('[essentialPurchase] Loaded IAP products:', products?.map((p: any) => p.productIdentifier));
+    // Log the full raw response for debugging
+    console.log('[essentialPurchase] RAW getProducts response:', JSON.stringify(rawResponse, null, 2));
 
-    const found = products?.some((p: any) => p.productIdentifier === PRODUCT_ID);
+    const products = rawResponse?.products;
+
+    if (!products || products.length === 0) {
+      console.error('[essentialPurchase] No products returned by StoreKit / Google Play');
+      return 'unavailable';
+    }
+
+    // Log each product's full structure to detect field names
+    products.forEach((p: any, i: number) => {
+      console.log(`[essentialPurchase] Product[${i}]:`, JSON.stringify(p, null, 2));
+    });
+
+    // @capgo/native-purchases uses "identifier" (not "productIdentifier") on Product objects
+    const loadedIds = products.map((p: any) => p.identifier ?? p.productIdentifier ?? p.productId ?? p.id);
+    console.log('[essentialPurchase] Loaded product IDs:', loadedIds);
+
+    const found = loadedIds.includes(PRODUCT_ID);
     if (!found) {
-      console.error('[essentialPurchase] Product not found on store:', PRODUCT_ID);
+      console.error('[essentialPurchase] Product not found on store:', PRODUCT_ID, '— available:', loadedIds);
       return 'unavailable';
     }
 
