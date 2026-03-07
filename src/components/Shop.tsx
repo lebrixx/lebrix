@@ -75,6 +75,8 @@ export const Shop: React.FC<ShopProps> = ({
   const [showEssentialPack, setShowEssentialPack] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const { toast } = useToast();
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   useEffect(() => {
     const updateCooldown = () => {
