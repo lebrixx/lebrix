@@ -194,18 +194,17 @@ export const Shop: React.FC<ShopProps> = ({
         </p>
       </div>
 
-      {/* Pack Essentiel Banner */}
+      {/* Pack Essentiel Banner — locked/blurred */}
       <div
-        onClick={() => setShowEssentialPack(true)}
         className="w-full max-w-6xl mx-auto mb-6 flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg
-                   border border-wheel-border bg-button-bg/60 hover:border-primary/40 cursor-pointer transition-all duration-200"
+                   border border-wheel-border bg-button-bg/60 opacity-60 blur-[1.5px] pointer-events-none select-none relative"
       >
         <div className="flex items-center gap-2.5">
           <Package className="w-4 h-4 text-primary/70" />
           <span className="text-sm font-medium text-text-secondary">Pack Essentiel</span>
           <span className="text-xs text-text-muted">• 5 boosts + 15 tickets</span>
         </div>
-        <ArrowLeft className="w-3 h-3 text-text-muted rotate-180" />
+        <Lock className="w-4 h-4 text-text-muted" />
       </div>
 
       {/* Pack Essentiel Dialog */}
