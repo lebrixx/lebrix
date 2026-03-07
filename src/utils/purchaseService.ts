@@ -8,9 +8,11 @@ const PREMIUM_FLAG = 'ls_premium_no_ads';
  * Activate all premium benefits locally after a confirmed purchase.
  */
 function activatePremium(onAddCoins?: (amount: number) => void): void {
+  console.log('[purchaseService] Activating premium benefits...');
   const result = purchasePremiumPack();
   localStorage.setItem(PREMIUM_FLAG, 'true');
   onAddCoins?.(result.coins);
+  console.log('[purchaseService] Premium activated — coins:', result.coins, 'diamonds:', result.diamonds);
 }
 
 /**
