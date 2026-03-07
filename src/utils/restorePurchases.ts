@@ -1,9 +1,11 @@
 import { Capacitor } from '@capacitor/core';
 import { purchasePremiumPack } from '@/utils/seasonPass';
 
+const PRODUCT_ID = 'com.luckystop.premium';
+
 /**
  * Restore purchases from the native store (iOS App Store / Google Play).
- * Uses @capgo/capacitor-purchases (RevenueCat) when available.
+ * Uses @capgo/native-purchases (StoreKit 2 / Google Play Billing).
  * Returns: 'restored' | 'none' | 'error'
  */
 export async function restorePurchases(): Promise<'restored' | 'none' | 'error'> {
@@ -19,17 +21,21 @@ export async function restorePurchases(): Promise<'restored' | 'none' | 'error'>
   }
 
   try {
-    // Dynamically import to avoid crashes on web
-    const { CapacitorPurchases } = await import('@capgo/capacitor-purchases');
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
 
-    const { customerInfo } = await CapacitorPurchases.restorePurchases();
+    // Restore purchases replays historical purchases from the store
+    await NativePurchases.restorePurchases();
 
-    // Check if the premium entitlement is active
-    // Adjust the entitlement identifier to match your RevenueCat config
-    const premiumEntitlement = customerInfo.entitlements.active['premium'] 
-      ?? customerInfo.entitlements.active['premium_pack'];
+    // After restoring, check if the premium product is in the purchase history
+    const { purchases } = await NativePurchases.getPurchases({
+      productType: PURCHASE_TYPE.INAPP,
+    });
 
-    if (premiumEntitlement) {
+    const hasPremium = purchases?.some(
+      (p: any) => p.productIdentifier === PRODUCT_ID
+    );
+
+    if (hasPremium) {
       // Re-activate all premium benefits locally
       const result = purchasePremiumPack();
       localStorage.setItem('ls_premium_no_ads', 'true');
