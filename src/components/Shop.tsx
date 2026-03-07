@@ -195,28 +195,18 @@ export const Shop: React.FC<ShopProps> = ({
       </div>
 
       {/* Pack Essentiel Banner */}
-      <Card 
+      <div
         onClick={() => setShowEssentialPack(true)}
-        className="w-full max-w-6xl mx-auto mb-8 border-2 border-primary/60 bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 
-                   hover:border-primary hover:shadow-glow-primary cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden relative"
+        className="w-full max-w-6xl mx-auto mb-6 flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg
+                   border border-wheel-border bg-button-bg/60 hover:border-primary/40 cursor-pointer transition-all duration-200"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
-        <div className="p-5 flex items-center gap-4 relative z-10">
-          <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-            <Package className="w-7 h-7 text-primary-foreground" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-lg font-extrabold text-text-primary">Pack Essentiel</h3>
-              <Badge className="bg-secondary/20 text-secondary border border-secondary/40 text-xs">PROMO</Badge>
-            </div>
-            <p className="text-text-secondary text-sm">5 boosts de chaque + 15 tickets expert</p>
-          </div>
-          <div className="flex-shrink-0 text-right">
-            <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent">1,99 €</span>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <Package className="w-4 h-4 text-primary/70" />
+          <span className="text-sm font-medium text-text-secondary">Pack Essentiel</span>
+          <span className="text-xs text-text-muted">• 5 boosts + 15 tickets</span>
         </div>
-      </Card>
+        <span className="text-sm font-semibold text-primary/80">1,99 €</span>
+      </div>
 
       {/* Pack Essentiel Dialog */}
       <Dialog open={showEssentialPack} onOpenChange={setShowEssentialPack}>
