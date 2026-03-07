@@ -57,6 +57,12 @@ class InterstitialService {
   }
 
   isInterstitialReady(): boolean {
+    // Premium users never see interstitials
+    if (localStorage.getItem('ls_premium_no_ads') === 'true') {
+      console.log('[Interstitial] Skipped — user is premium (no ads)');
+      return false;
+    }
+
     const now = Date.now();
     
     const appRunningTimeCheck = now - this.appLaunchTime >= INITIAL_DELAY_MS;
