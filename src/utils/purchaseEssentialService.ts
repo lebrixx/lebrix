@@ -5,19 +5,19 @@ const PRODUCT_ID = 'com.luckystop.essentiel';
 
 /**
  * Apply Essential Pack rewards locally.
- * 15× each boost + 15 expert tickets.
+ * 5× each boost + 15 expert tickets.
  * Consumable — can be purchased multiple times.
  */
 function applyEssentialRewards(): void {
   console.log('[essentialPurchase] Applying essential pack rewards');
 
-  // 15 of each boost
+  // 5 of each boost
   try {
     const saved = localStorage.getItem('luckyStopBoosts');
     const boosts: Record<string, number> = saved ? JSON.parse(saved) : {};
-    boosts['shield'] = (boosts['shield'] || 0) + 15;
-    boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 15;
-    boosts['start_20'] = (boosts['start_20'] || 0) + 15;
+    boosts['shield'] = (boosts['shield'] || 0) + 5;
+    boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 5;
+    boosts['start_20'] = (boosts['start_20'] || 0) + 5;
     localStorage.setItem('luckyStopBoosts', JSON.stringify(boosts));
     window.dispatchEvent(new CustomEvent('boostsInventoryUpdate', { detail: boosts }));
   } catch (e) {
@@ -27,7 +27,7 @@ function applyEssentialRewards(): void {
   // 15 expert tickets
   addTickets(15);
 
-  console.log('[essentialPurchase] Rewards applied: 15× each boost, 15 tickets');
+  console.log('[essentialPurchase] Rewards applied: 5× each boost, 15 tickets');
 }
 
 /**

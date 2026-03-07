@@ -274,7 +274,7 @@ export const Shop: React.FC<ShopProps> = ({
                   const { purchaseEssentialNative } = await import('@/utils/purchaseEssentialService');
                   const result = await purchaseEssentialNative();
                   if (result === 'purchased') {
-                    toast({ title: "🎉 Pack Essentiel activé !", description: "15 boosts de chaque + 15 tickets ajoutés !" });
+                    toast({ title: "🎉 Pack Essentiel activé !", description: "5 boosts de chaque + 15 tickets ajoutés !" });
                   } else if (result === 'unavailable') {
                     toast({ title: "Produit temporairement indisponible sur le store.", variant: "destructive" });
                     setShowEssentialPack(false);
