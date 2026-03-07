@@ -56,9 +56,9 @@ export async function purchasePremiumNative(
       productType: PURCHASE_TYPE.INAPP,
     });
 
-    if (result.transaction) {
+    if (result.transactionId) {
       activatePremium(onAddCoins);
-      console.log('[purchaseService] Purchase successful, premium activated', result.transaction);
+      console.log('[purchaseService] Purchase successful, premium activated', result.transactionId);
       return 'purchased';
     }
 
