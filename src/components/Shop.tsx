@@ -266,35 +266,34 @@ export const Shop: React.FC<ShopProps> = ({
 
             {/* Buy Button */}
             <Button
-              onClick={() => {
-                toast({
-                  title: "🚧 Bientôt disponible",
-                  description: "L'achat sera activé prochainement.",
-                });
+              onClick={async () => {
+                if (isEssentialPurchasing) return;
+                setIsEssentialPurchasing(true);
+                try {
+                  const { purchaseEssentialNative } = await import('@/utils/purchaseEssentialService');
+                  const result = await purchaseEssentialNative(onAddCoins);
+                  if (result === 'purchased') {
+                    toast({ title: "🎉 Pack Essentiel activé !", description: "5 boosts de chaque + 15 tickets ajoutés !" });
+                    setShowEssentialPack(false);
+                  } else if (result === 'cancelled') {
+                    // User cancelled — do nothing
+                  } else {
+                    toast({ title: "Erreur lors de l'achat", description: "Veuillez réessayer.", variant: "destructive" });
+                  }
+                } catch {
+                  toast({ title: "Erreur lors de l'achat", variant: "destructive" });
+                } finally {
+                  setIsEssentialPurchasing(false);
+                }
               }}
+              disabled={isEssentialPurchasing}
               className="w-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 hover:scale-105"
             >
-              Acheter — 1,99 €
+              {isEssentialPurchasing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              {isEssentialPurchasing ? 'Achat en cours...' : 'Acheter — 1,99 €'}
             </Button>
 
             <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
-            <Button
-              onClick={async () => {
-                const { restorePurchases } = await import('@/utils/restorePurchases');
-                const result = await restorePurchases();
-                if (result === 'restored') {
-                  toast({ title: "✅ Achats restaurés", description: "Vos achats ont été restaurés avec succès." });
-                } else if (result === 'none') {
-                  toast({ title: "Aucun achat trouvé", description: "Aucun achat précédent n'a été trouvé.", variant: "destructive" });
-                } else {
-                  toast({ title: "Erreur", description: "Impossible de restaurer les achats.", variant: "destructive" });
-                }
-              }}
-              variant="ghost"
-              className="w-full text-xs text-text-muted hover:text-text-secondary"
-            >
-              Restaurer les achats
-            </Button>
           </div>
         </DialogContent>
       </Dialog>
