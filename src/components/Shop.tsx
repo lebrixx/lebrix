@@ -278,6 +278,23 @@ export const Shop: React.FC<ShopProps> = ({
             </Button>
 
             <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
+            <Button
+              onClick={async () => {
+                const { restorePurchases } = await import('@/utils/restorePurchases');
+                const result = await restorePurchases();
+                if (result === 'restored') {
+                  toast({ title: "✅ Achats restaurés", description: "Vos achats ont été restaurés avec succès." });
+                } else if (result === 'none') {
+                  toast({ title: "Aucun achat trouvé", description: "Aucun achat précédent n'a été trouvé.", variant: "destructive" });
+                } else {
+                  toast({ title: "Erreur", description: "Impossible de restaurer les achats.", variant: "destructive" });
+                }
+              }}
+              variant="ghost"
+              className="w-full text-xs text-text-muted hover:text-text-secondary"
+            >
+              Restaurer les achats
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
