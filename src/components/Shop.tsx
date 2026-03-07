@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Tag, Package } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Tag, Package, Loader2 } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
@@ -73,6 +73,7 @@ export const Shop: React.FC<ShopProps> = ({
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   const [promoCode, setPromoCode] = useState('');
   const [showEssentialPack, setShowEssentialPack] = useState(false);
+  const [isEssentialPurchasing, setIsEssentialPurchasing] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
@@ -194,17 +195,18 @@ export const Shop: React.FC<ShopProps> = ({
         </p>
       </div>
 
-      {/* Pack Essentiel Banner — locked/blurred */}
+      {/* Pack Essentiel Banner */}
       <div
+        onClick={() => setShowEssentialPack(true)}
         className="w-full max-w-6xl mx-auto mb-6 flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg
-                   border border-wheel-border bg-button-bg/60 opacity-60 blur-[1.5px] pointer-events-none select-none relative"
+                   border border-wheel-border bg-button-bg/60 hover:bg-button-hover/60 cursor-pointer transition-all duration-200 hover:border-primary/40"
       >
         <div className="flex items-center gap-2.5">
-          <Package className="w-4 h-4 text-primary/70" />
+          <Package className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium text-text-secondary">Pack Essentiel</span>
           <span className="text-xs text-text-muted">• 5 boosts + 15 tickets</span>
         </div>
-        <Lock className="w-4 h-4 text-text-muted" />
+        <ArrowLeft className="w-4 h-4 text-text-muted rotate-180" />
       </div>
 
       {/* Pack Essentiel Dialog */}
@@ -265,35 +267,34 @@ export const Shop: React.FC<ShopProps> = ({
 
             {/* Buy Button */}
             <Button
-              onClick={() => {
-                toast({
-                  title: "🚧 Bientôt disponible",
-                  description: "L'achat sera activé prochainement.",
-                });
+              onClick={async () => {
+                if (isEssentialPurchasing) return;
+                setIsEssentialPurchasing(true);
+                try {
+                  const { purchaseEssentialNative } = await import('@/utils/purchaseEssentialService');
+                  const result = await purchaseEssentialNative(onAddCoins);
+                  if (result === 'purchased') {
+                    toast({ title: "🎉 Pack Essentiel activé !", description: "5 boosts de chaque + 15 tickets ajoutés !" });
+                    setShowEssentialPack(false);
+                  } else if (result === 'cancelled') {
+                    // User cancelled — do nothing
+                  } else {
+                    toast({ title: "Erreur lors de l'achat", description: "Veuillez réessayer.", variant: "destructive" });
+                  }
+                } catch {
+                  toast({ title: "Erreur lors de l'achat", variant: "destructive" });
+                } finally {
+                  setIsEssentialPurchasing(false);
+                }
               }}
+              disabled={isEssentialPurchasing}
               className="w-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 hover:scale-105"
             >
-              Acheter — 1,99 €
+              {isEssentialPurchasing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              {isEssentialPurchasing ? 'Achat en cours...' : 'Acheter — 1,99 €'}
             </Button>
 
             <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
-            <Button
-              onClick={async () => {
-                const { restorePurchases } = await import('@/utils/restorePurchases');
-                const result = await restorePurchases();
-                if (result === 'restored') {
-                  toast({ title: "✅ Achats restaurés", description: "Vos achats ont été restaurés avec succès." });
-                } else if (result === 'none') {
-                  toast({ title: "Aucun achat trouvé", description: "Aucun achat précédent n'a été trouvé.", variant: "destructive" });
-                } else {
-                  toast({ title: "Erreur", description: "Impossible de restaurer les achats.", variant: "destructive" });
-                }
-              }}
-              variant="ghost"
-              className="w-full text-xs text-text-muted hover:text-text-secondary"
-            >
-              Restaurer les achats
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

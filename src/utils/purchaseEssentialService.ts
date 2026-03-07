@@ -1,0 +1,85 @@
+import { Capacitor } from '@capacitor/core';
+import { addTickets } from '@/utils/ticketSystem';
+
+const PRODUCT_ID = 'com.luckystop.essential';
+
+/**
+ * Apply Essential Pack rewards locally.
+ * 5× each boost + 15 expert tickets.
+ * Consumable — can be purchased multiple times.
+ */
+function applyEssentialRewards(onAddCoins?: (amount: number) => void): void {
+  console.log('[essentialPurchase] Applying essential pack rewards');
+
+  // 5 of each boost
+  try {
+    const saved = localStorage.getItem('luckyStopBoosts');
+    const boosts: Record<string, number> = saved ? JSON.parse(saved) : {};
+    boosts['shield'] = (boosts['shield'] || 0) + 5;
+    boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 5;
+    boosts['start_20'] = (boosts['start_20'] || 0) + 5;
+    localStorage.setItem('luckyStopBoosts', JSON.stringify(boosts));
+    // Notify other hook instances
+    window.dispatchEvent(new CustomEvent('boostsInventoryUpdate', { detail: boosts }));
+  } catch (e) {
+    console.error('[essentialPurchase] Failed to save boosts:', e);
+  }
+
+  // 15 expert tickets
+  addTickets(15);
+
+  console.log('[essentialPurchase] Rewards applied: 5× each boost, 15 tickets');
+}
+
+/**
+ * Purchase the Essential Pack via native IAP.
+ * This is a CONSUMABLE product — can be bought multiple times.
+ * Returns 'purchased' | 'cancelled' | 'error'
+ */
+export async function purchaseEssentialNative(
+  onAddCoins?: (amount: number) => void
+): Promise<'purchased' | 'cancelled' | 'error'> {
+  // On web, fall back to direct unlock (dev/testing)
+  if (!Capacitor.isNativePlatform()) {
+    console.warn('[essentialPurchase] Not on native platform — direct unlock for testing');
+    applyEssentialRewards(onAddCoins);
+    return 'purchased';
+  }
+
+  try {
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
+
+    console.log('[essentialPurchase] Checking billing support...');
+    const { isBillingSupported } = await NativePurchases.isBillingSupported();
+    if (!isBillingSupported) {
+      console.error('[essentialPurchase] Billing not supported on this device');
+      return 'error';
+    }
+
+    console.log('[essentialPurchase] Initiating purchase for', PRODUCT_ID);
+    const result = await NativePurchases.purchaseProduct({
+      productIdentifier: PRODUCT_ID,
+      productType: PURCHASE_TYPE.INAPP,
+    });
+
+    if (result.transactionId) {
+      applyEssentialRewards(onAddCoins);
+      console.log('[essentialPurchase] Purchase successful, rewards applied', result.transactionId);
+      return 'purchased';
+    }
+
+    console.warn('[essentialPurchase] Purchase completed but no transaction returned');
+    return 'error';
+  } catch (error: any) {
+    if (
+      error?.code === 'PURCHASE_CANCELLED' ||
+      error?.code === '1' ||
+      error?.message?.toLowerCase()?.includes('cancel')
+    ) {
+      console.log('[essentialPurchase] Purchase cancelled by user');
+      return 'cancelled';
+    }
+    console.error('[essentialPurchase] Purchase error:', error);
+    return 'error';
+  }
+}
