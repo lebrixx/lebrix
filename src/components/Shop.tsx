@@ -73,6 +73,7 @@ export const Shop: React.FC<ShopProps> = ({
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   const [promoCode, setPromoCode] = useState('');
   const [showEssentialPack, setShowEssentialPack] = useState(false);
+  const [isEssentialPurchasing, setIsEssentialPurchasing] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
