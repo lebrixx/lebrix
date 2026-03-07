@@ -52,6 +52,32 @@ export async function purchasePremiumNative(
       return 'error';
     }
 
+    // Verify product is available on the store before purchasing
+    console.log('[purchaseService] Loading products from store...');
+    const rawResponse = await NativePurchases.getProducts({
+      productIdentifiers: [PRODUCT_ID],
+      productType: PURCHASE_TYPE.INAPP,
+    });
+
+    console.log('[purchaseService] RAW getProducts response:', JSON.stringify(rawResponse, null, 2));
+
+    const products = rawResponse?.products;
+    if (!products || products.length === 0) {
+      console.error('[purchaseService] No products returned by StoreKit / Google Play');
+      return 'error';
+    }
+
+    // @capgo/native-purchases uses "identifier" on Product objects
+    const loadedIds = products.map((p: any) => p.identifier ?? p.productIdentifier ?? p.productId ?? p.id);
+    console.log('[purchaseService] Loaded product IDs:', loadedIds);
+
+    if (!loadedIds.includes(PRODUCT_ID)) {
+      console.error('[purchaseService] Product not found on store:', PRODUCT_ID, '— available:', loadedIds);
+      return 'error';
+    }
+
+    console.log('[purchaseService] Product found, initiating purchase for', PRODUCT_ID);
+
     // Initiate the native purchase flow
     const result = await NativePurchases.purchaseProduct({
       productIdentifier: PRODUCT_ID,
