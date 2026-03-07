@@ -21,7 +21,8 @@ export function isPremiumActive(): boolean {
 }
 
 /**
- * Purchase the Premium Pack via native IAP (RevenueCat).
+ * Purchase the Premium Pack via native IAP (StoreKit 2 / Google Play Billing).
+ * Uses @capgo/native-purchases — compatible with Capacitor 7.
  * Returns 'purchased' | 'cancelled' | 'error'
  */
 export async function purchasePremiumNative(
@@ -40,51 +41,31 @@ export async function purchasePremiumNative(
   }
 
   try {
-    const { CapacitorPurchases } = await import('@capgo/capacitor-purchases');
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
 
-    // Fetch available packages
-    const { offerings } = await CapacitorPurchases.getOfferings();
-
-    // Find our product in the current offering
-    let targetPackage: any = null;
-
-    if (offerings.current) {
-      // Search through all available packages for our product ID
-      const allPackages = [
-        ...(offerings.current.availablePackages ?? []),
-      ];
-      targetPackage = allPackages.find(
-        (pkg: any) => pkg.product?.identifier === PRODUCT_ID
-      );
-    }
-
-    if (!targetPackage) {
-      console.error('[purchaseService] Product not found in offerings:', PRODUCT_ID);
+    // Verify billing is available
+    const { isBillingSupported } = await NativePurchases.isBillingSupported();
+    if (!isBillingSupported) {
+      console.error('[purchaseService] Billing not supported on this device');
       return 'error';
     }
 
-    // Trigger native purchase flow
-    const { customerInfo } = await CapacitorPurchases.purchasePackage({
-      identifier: targetPackage.identifier,
-      offeringIdentifier: offerings.current!.identifier,
+    // Initiate the native purchase flow
+    const result = await NativePurchases.purchaseProduct({
+      productIdentifier: PRODUCT_ID,
+      productType: PURCHASE_TYPE.INAPP,
     });
 
-    // Verify the entitlement is now active
-    const premiumEntitlement =
-      customerInfo.entitlements.active['premium'] ??
-      customerInfo.entitlements.active['premium_pack'];
-
-    if (premiumEntitlement) {
+    if (result.transaction) {
       activatePremium(onAddCoins);
-      console.log('[purchaseService] Purchase successful, premium activated');
+      console.log('[purchaseService] Purchase successful, premium activated', result.transaction);
       return 'purchased';
     }
 
-    // Purchase went through but entitlement not found — unlikely but handle
-    console.warn('[purchaseService] Purchase completed but entitlement not active');
+    console.warn('[purchaseService] Purchase completed but no transaction returned');
     return 'error';
   } catch (error: any) {
-    // RevenueCat throws when the user cancels
+    // User cancelled the purchase
     if (
       error?.code === 'PURCHASE_CANCELLED' ||
       error?.code === '1' ||
@@ -99,7 +80,7 @@ export async function purchasePremiumNative(
 }
 
 /**
- * Verify premium status on app launch by checking the store.
+ * Verify premium status on app launch by checking past purchases.
  * Silently re-activates premium if the user owns it.
  */
 export async function verifyPremiumOnLaunch(): Promise<void> {
@@ -107,21 +88,24 @@ export async function verifyPremiumOnLaunch(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
 
   try {
-    const { CapacitorPurchases } = await import('@capgo/capacitor-purchases');
-    const { customerInfo } = await CapacitorPurchases.getCustomerInfo();
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
 
-    const premiumEntitlement =
-      customerInfo.entitlements.active['premium'] ??
-      customerInfo.entitlements.active['premium_pack'];
+    const { purchases } = await NativePurchases.getPurchases({
+      productType: PURCHASE_TYPE.INAPP,
+    });
 
-    if (premiumEntitlement && !isPremiumActive()) {
+    const hasPremium = purchases?.some(
+      (p: any) => p.productIdentifier === PRODUCT_ID
+    );
+
+    if (hasPremium && !isPremiumActive()) {
       // User owns it but local state was lost — restore
       activatePremium();
       console.log('[purchaseService] Premium re-verified and restored on launch');
-    } else if (!premiumEntitlement && isPremiumActive()) {
-      // Entitlement revoked (refund, etc.) — remove local premium
+    } else if (!hasPremium && isPremiumActive()) {
+      // Purchase no longer valid (refund, etc.) — remove local premium
       localStorage.removeItem(PREMIUM_FLAG);
-      console.log('[purchaseService] Premium entitlement no longer active, removed local flag');
+      console.log('[purchaseService] Premium purchase no longer found, removed local flag');
     }
   } catch (error) {
     console.warn('[purchaseService] Could not verify premium on launch:', error);
