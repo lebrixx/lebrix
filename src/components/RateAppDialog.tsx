@@ -85,8 +85,10 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
               </>
             ) : (
               <>
-                <div className="flex justify-center mb-5">
-                  <Star className="w-8 h-8 text-secondary fill-secondary" />
+                <div className="flex justify-center gap-1.5 mb-5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-6 h-6 text-secondary fill-secondary opacity-90" />
+                  ))}
                 </div>
 
                 <AlertDialogTitle className="text-center">
