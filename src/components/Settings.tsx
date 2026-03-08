@@ -294,7 +294,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 }}
                 className={`${hasPlayedToday() ? 'border-wheel-border text-text-muted' : 'border-primary text-primary hover:bg-primary/10'}`}
               >
-                {hasPlayedToday() ? 'Demain' : 'Jouer'}
+                {hasPlayedToday() ? t.settingsTomorrow : t.settingsPlay}
               </Button>
             </div>
           )}
