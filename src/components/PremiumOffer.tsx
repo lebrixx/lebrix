@@ -43,7 +43,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
       } else if (result === 'cancelled') {
         // User cancelled — do nothing
       } else {
-        toast({ title: 'Erreur lors de l\'achat', description: 'Veuillez réessayer.', variant: 'destructive' });
+        toast({ title: t.premiumPurchaseError, description: t.premiumPurchaseRetry, variant: 'destructive' });
       }
     } catch {
       toast({ title: 'Erreur lors de l\'achat', variant: 'destructive' });
