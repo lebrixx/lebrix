@@ -237,8 +237,8 @@ export const Shop: React.FC<ShopProps> = ({
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <span className="text-2xl">🎯</span>
                 <div className="flex-1">
-                  <p className="text-text-primary font-semibold text-sm">Zone verte +</p>
-                  <p className="text-text-muted text-xs">Agrandit la zone verte</p>
+                  <p className="text-text-primary font-semibold text-sm">{t.shopGreenZonePlus}</p>
+                  <p className="text-text-muted text-xs">{t.shopGreenZoneDesc}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
               </div>
