@@ -553,6 +553,7 @@ export const translations = {
     precisionGoodLabel: 'BIEN',
     precisionNotBad: 'PAS MAL',
     precisionTryAgain: 'À RÉESSAYER',
+    precisionTopForNow: 'pour le moment — classement en cours',
     precisionPlayers: 'joueur(s)',
   },
   en: {
