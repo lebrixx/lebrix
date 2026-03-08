@@ -239,7 +239,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
               </Button>
             ) : (
               <Button disabled variant="outline" className="w-full border-wheel-border text-text-muted">
-                Reviens demain
+                {t.slotComeBackTomorrow}
               </Button>
             )}
 
