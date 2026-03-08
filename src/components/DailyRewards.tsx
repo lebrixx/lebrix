@@ -349,11 +349,11 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 <span className="text-text-primary font-bold">{t.adBonus}</span>
               </div>
               <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                +100 coins
+                {t.adBonusAmount}
               </Badge>
             </div>
             <p className="text-text-secondary text-sm mb-3">
-              Regarde une pub et gagne 100 coins !
+              {t.adBonusDesc}
             </p>
             <Button
               onClick={handleClaimCoinsWithAd}
