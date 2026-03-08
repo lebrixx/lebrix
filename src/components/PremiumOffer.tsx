@@ -13,57 +13,7 @@ interface PremiumOfferProps {
   onAddCoins?: (amount: number) => void;
 }
 
-const REWARDS = [
-  {
-    emoji: '\u{1F6AB}',
-    title: 'Zero Pub',
-    description: 'Plus aucune pub interstitielle',
-    amount: '\u2205 Pubs',
-    tone: 'special' as const,
-  },
-  {
-    emoji: '✨',
-    title: 'Or Pulsé',
-    description: 'Effet doré pulsé sur ton pseudo',
-    amount: 'Exclusif',
-    tone: 'special' as const,
-  },
-  {
-    emoji: '\u{1F451}',
-    title: 'Pass Saison VIP',
-    description: 'Debloque les 9 paliers + toutes les decorations et couleurs',
-    amount: 'Tout inclus',
-    tone: 'secondary' as const,
-  },
-  {
-    emoji: '\u{1FA99}',
-    title: 'Coins',
-    description: 'Pour la boutique du jeu',
-    amount: '+1 000',
-    tone: 'secondary' as const,
-  },
-  {
-    emoji: '\u{1F6E1}\uFE0F',
-    title: 'Bouclier',
-    description: "Protege d'une erreur",
-    amount: 'x2',
-    tone: 'primary' as const,
-  },
-  {
-    emoji: '\u{1F3AF}',
-    title: 'Zone verte +',
-    description: 'Zone de reussite elargie',
-    amount: 'x2',
-    tone: 'primary' as const,
-  },
-  {
-    emoji: '\u{1F680}',
-    title: 'Demarrage 20',
-    description: 'Commence a 20 points',
-    amount: 'x2',
-    tone: 'primary' as const,
-  },
-];
+// REWARDS is now generated inside the component to use translations
 
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
