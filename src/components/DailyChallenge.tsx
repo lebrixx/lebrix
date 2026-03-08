@@ -336,14 +336,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
         {/* Result card — prettier version */}
         {phase === 'result' && result && quality && (
-          <div className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-4 space-y-3">
-            {/* Decorative glow */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[hsl(var(--primary)/0.08)] to-transparent rounded-bl-full" />
-            
-            <div className="relative text-center space-y-1">
-              <span className="text-3xl">{quality.emoji}</span>
-              <p className={`text-xl font-black tracking-wide ${quality.color}`}>{quality.label}</p>
-            </div>
+          <div className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3 space-y-2.5">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[hsl(var(--primary)/0.08)] to-transparent rounded-bl-full" />
 
             <div className="relative grid grid-cols-3 gap-1.5">
               {[
@@ -351,7 +345,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                 { label: 'Ton arrêt', value: result.result.toFixed(3), color: 'text-[hsl(var(--text-primary))]' },
                 { label: 'Écart', value: result.gap.toFixed(3), color: quality.color },
               ].map((stat, i) => (
-                <div key={i} className="bg-[hsl(var(--game-dark)/0.6)] backdrop-blur-sm border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2.5 text-center">
+                <div key={i} className="bg-[hsl(var(--game-dark)/0.6)] backdrop-blur-sm border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2 text-center">
                   <p className="text-[9px] text-[hsl(var(--text-muted))] uppercase mb-0.5">{stat.label}</p>
                   <p className={`text-sm font-mono font-bold ${stat.color}`}>{stat.value}</p>
                 </div>
