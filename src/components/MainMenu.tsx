@@ -121,16 +121,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   }, []);
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
-      {/* Animated lines background */}
-      <div className="main-menu-lines">
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-      </div>
 
       {/* Lucky Wheel Button */}
       <Button
