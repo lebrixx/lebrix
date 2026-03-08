@@ -202,7 +202,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
                 </span>
               </div>
               <Badge variant="outline" className="border-wheel-border text-text-muted text-xs">
-                Actif jusqu'à minuit
+                {t.activeUntilMidnight}
               </Badge>
             </div>
           )}
