@@ -67,6 +67,8 @@ const REWARDS = [
 
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const [isRestoring, setIsRestoring] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
 
