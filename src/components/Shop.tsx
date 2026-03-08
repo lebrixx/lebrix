@@ -513,7 +513,7 @@ export const Shop: React.FC<ShopProps> = ({
                     return;
                   }
                   
-                  toast({ title: "Code invalide", description: "Ce code n'existe pas ou a expiré.", variant: "destructive" });
+                  toast({ title: t.shopCodeInvalid, description: t.shopCodeInvalidDesc, variant: "destructive" });
                   setPromoCode('');
                 }}
                 className="bg-gradient-primary px-6"
