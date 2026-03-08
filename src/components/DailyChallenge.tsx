@@ -212,6 +212,11 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   // ────── STOPPED SCREEN ──────
   if (phase === 'stopped' && result) {
     const q = getQualityLabel(result.gap);
+    // Compute top % from leaderboard (already loaded, no extra call)
+    const myRank = leaderboard.findIndex(e => currentUsername && e.username.toLowerCase() === currentUsername.toLowerCase()) + 1;
+    const totalPlayers = leaderboard.length;
+    const topPercent = myRank > 0 && totalPlayers > 0 ? Math.max(1, Math.round((myRank / totalPlayers) * 100)) : null;
+
     return (
       <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col">
         <div className="flex items-center gap-3 px-4 pt-14 pb-3">
@@ -223,7 +228,19 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
         <div className="flex-1 flex flex-col items-center justify-center px-6 -mt-16">
           <span className="text-6xl mb-3">{q.emoji}</span>
-          <p className={`text-3xl font-black tracking-wide ${q.color} mb-6`}>{q.label}</p>
+          
+          {topPercent !== null ? (
+            <div className="text-center mb-6">
+              <p className="text-3xl font-black tracking-wide text-[hsl(var(--primary))]">
+                Top {topPercent}%
+              </p>
+              <p className="text-[11px] text-[hsl(var(--text-muted))] mt-1">
+                {t.precisionTopForNow}
+              </p>
+            </div>
+          ) : (
+            <p className={`text-3xl font-black tracking-wide ${q.color} mb-6`}>{q.label}</p>
+          )}
 
           <div className="relative mb-4">
             <div className="absolute inset-0 blur-3xl opacity-15 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))]" />
