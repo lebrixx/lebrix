@@ -113,7 +113,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
             LUCKY STOP
           </h1>
           <p className="text-text-secondary">
-            {isLogin ? 'Connectez-vous pour jouer' : 'Créez votre compte'}
+            {isLogin ? t.authLoginSubtitle : t.authSignupSubtitle}
           </p>
         </div>
       </div>
