@@ -71,6 +71,7 @@ Deno.serve(async (req) => {
         result: Math.round(result * 1000) / 1000,
         gap: Math.round(gap * 1000) / 1000,
         challenge_date: new Date().toISOString().slice(0, 10),
+        decorations: decorations || null,
       }, { onConflict: 'device_id,challenge_date' });
 
     if (error) {
