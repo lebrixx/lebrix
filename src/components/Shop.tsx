@@ -508,7 +508,7 @@ export const Shop: React.FC<ShopProps> = ({
                     addDiamonds(50);
                     onAddCoins?.(2000);
                     unlockGoldPulse();
-                    toast({ title: "🎉 Code activé !", description: "+50 💎, +2000 coins et Or Pulsé débloqué ! ✨" });
+                    toast({ title: t.shopCodeActivated, description: t.shopCodeActivatedDesc });
                     setPromoCode('');
                     return;
                   }
