@@ -33,6 +33,7 @@ interface MainMenuProps {
   onSpendCoins?: (amount: number) => boolean;
   isSoundMuted?: boolean;
   onToggleSound?: () => void;
+  onOpenRateDialog?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
