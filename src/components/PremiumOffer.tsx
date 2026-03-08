@@ -5,6 +5,7 @@ import { Crown, Sparkles, X, Loader2 } from 'lucide-react';
 import { purchasePremiumNative } from '@/utils/purchaseService';
 import { restorePurchases } from '@/utils/restorePurchases';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface PremiumOfferProps {
   isOpen: boolean;

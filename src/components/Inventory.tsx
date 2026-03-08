@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
 import { Button } from '@/components/ui/button';
