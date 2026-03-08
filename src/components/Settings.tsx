@@ -199,12 +199,12 @@ export const Settings: React.FC<SettingsProps> = ({
             </div>
             {permissionStatus === 'denied' ? (
               <div className="flex items-center gap-1 ml-8 text-xs text-red-400">
-                <span>⚠️ Notifications bloquées - ouvre les paramètres</span>
+                <span>{t.settingsNotifBlockedInline}</span>
               </div>
             ) : (
               <div className="flex items-center gap-1 ml-8 text-xs text-blue-400">
                 <Coins className="w-3 h-3" />
-                <span>+20 coins/jour si activé</span>
+                <span>{t.settingsNotifCoinBonus}</span>
               </div>
             )}
           </div>
