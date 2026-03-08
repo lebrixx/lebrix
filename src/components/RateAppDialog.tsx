@@ -96,8 +96,8 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
                     Merci !
                   </span>
                 </AlertDialogTitle>
-                <AlertDialogDescription className="text-center text-[hsl(var(--text-muted))] pt-2 text-xs leading-relaxed">
-                  Un avis sur le store nous aide à progresser.
+                <AlertDialogDescription className="text-center text-[hsl(var(--text-secondary))] pt-3 text-sm leading-relaxed font-medium">
+                  Chaque avis nous permet de rendre le jeu encore meilleur pour toi et toute la communauté.
                 </AlertDialogDescription>
               </>
             )}
