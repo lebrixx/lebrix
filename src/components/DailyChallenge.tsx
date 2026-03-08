@@ -84,8 +84,12 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
   const loadLeaderboard = useCallback(async () => {
     setLoadingLb(true);
-    const data = await fetchDailyPrecisionLeaderboard();
-    setLeaderboard(data);
+    const [todayData, yesterdayData] = await Promise.all([
+      fetchDailyPrecisionLeaderboard(),
+      fetchYesterdayPrecisionLeaderboard(),
+    ]);
+    setLeaderboard(todayData);
+    setYesterdayLb(yesterdayData);
     setLoadingLb(false);
   }, []);
 
