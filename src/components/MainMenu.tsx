@@ -290,7 +290,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             </Button>
           )}
 
-
+          <Button
             onClick={onOpenModes}
             variant="outline"
             size="lg"
