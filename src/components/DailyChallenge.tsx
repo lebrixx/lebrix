@@ -271,30 +271,28 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         )}
 
         {/* Daily Leaderboard */}
-        <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-[hsl(var(--wheel-border)/0.3)] bg-gradient-to-r from-[hsl(var(--wheel-base))] to-[hsl(var(--button-bg))]">
-            <Users className="w-4 h-4 text-[hsl(var(--primary))]" />
-            <p className="text-sm font-bold text-[hsl(var(--text-primary))]">Classement du jour</p>
-            <span className="ml-auto text-[10px] text-[hsl(var(--text-muted))] bg-[hsl(var(--game-dark))] px-2 py-0.5 rounded-full border border-[hsl(var(--wheel-border)/0.3)]">
+        <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-[hsl(var(--wheel-border)/0.3)] bg-gradient-to-r from-[hsl(var(--wheel-base))] to-[hsl(var(--button-bg))]">
+            <Users className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
+            <p className="text-xs font-bold text-[hsl(var(--text-primary))]">Classement du jour</p>
+            <span className="ml-auto text-[9px] text-[hsl(var(--text-muted))] bg-[hsl(var(--game-dark))] px-1.5 py-0.5 rounded-full border border-[hsl(var(--wheel-border)/0.3)]">
               {leaderboard.length} joueur{leaderboard.length !== 1 ? 's' : ''}
             </span>
-            <Button onClick={loadLeaderboard} variant="ghost" size="icon" className="w-7 h-7 text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
-              <RefreshCw className={`w-3.5 h-3.5 ${loadingLb ? 'animate-spin' : ''}`} />
+            <Button onClick={loadLeaderboard} variant="ghost" size="icon" className="w-6 h-6 text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
+              <RefreshCw className={`w-3 h-3 ${loadingLb ? 'animate-spin' : ''}`} />
             </Button>
           </div>
 
           {loadingLb && leaderboard.length === 0 ? (
-            <div className="p-8 text-center">
-              <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-              <p className="text-xs text-[hsl(var(--text-muted))]">Chargement...</p>
+            <div className="p-6 text-center">
+              <div className="w-5 h-5 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+              <p className="text-[10px] text-[hsl(var(--text-muted))]">Chargement...</p>
             </div>
           ) : leaderboard.length === 0 ? (
-            <div className="p-8 text-center space-y-2">
-              <span className="text-3xl">🏆</span>
-              <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">Aucun score aujourd'hui</p>
-              <p className="text-xs text-[hsl(var(--text-muted))]">
-                Sois le premier à relever le défi !
-              </p>
+            <div className="p-5 text-center space-y-1">
+              <span className="text-2xl">🏆</span>
+              <p className="text-xs font-medium text-[hsl(var(--text-secondary))]">Aucun score aujourd'hui</p>
+              <p className="text-[10px] text-[hsl(var(--text-muted))]">Sois le premier à relever le défi !</p>
             </div>
           ) : (
             <div className="divide-y divide-[hsl(var(--wheel-border)/0.15)]">
@@ -302,32 +300,25 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                 const rank = i + 1;
                 const isMe = currentUsername && entry.username.toLowerCase() === currentUsername.toLowerCase();
                 const q = getQualityLabel(entry.gap);
-                const isTop3 = rank <= 3;
                 return (
                   <div
                     key={entry.id}
-                    className={`flex items-center gap-3 px-4 py-3 transition-colors ${
-                      isMe 
-                        ? 'bg-[hsl(var(--primary)/0.1)] border-l-2 border-l-[hsl(var(--primary))]' 
-                        : isTop3 
-                          ? 'bg-[hsl(var(--wheel-base)/0.5)]' 
-                          : ''
+                    className={`flex items-center gap-2.5 px-3 py-2 transition-colors ${
+                      isMe ? 'bg-[hsl(var(--primary)/0.1)] border-l-2 border-l-[hsl(var(--primary))]' : ''
                     }`}
                   >
-                    <div className="w-6 flex justify-center shrink-0">{getRankIcon(rank)}</div>
+                    <div className="w-5 flex justify-center shrink-0">{getRankIcon(rank)}</div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium truncate ${
+                      <p className={`text-xs font-medium truncate ${
                         isMe ? 'text-[hsl(var(--primary))]' : 'text-[hsl(var(--text-primary))]'
                       }`}>
                         {entry.username}
-                        {isMe && <span className="text-[10px] ml-1.5 text-[hsl(var(--primary)/0.7)]">(toi)</span>}
+                        {isMe && <span className="text-[9px] ml-1 text-[hsl(var(--primary)/0.7)]">(toi)</span>}
                       </p>
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className={`text-sm font-mono font-bold ${q.color}`}>
-                        {entry.gap.toFixed(3)}
-                      </p>
-                    </div>
+                    <p className={`text-xs font-mono font-bold shrink-0 ${q.color}`}>
+                      {entry.gap.toFixed(3)}
+                    </p>
                   </div>
                 );
               })}
