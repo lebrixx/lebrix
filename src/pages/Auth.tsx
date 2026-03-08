@@ -26,8 +26,8 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
   const handleAuth = async () => {
     if (!email || !password || (!isLogin && !username)) {
       toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs",
+        title: t.authError,
+        description: t.authFillAllFields,
         variant: "destructive"
       });
       return;
