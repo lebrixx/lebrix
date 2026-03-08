@@ -24,7 +24,8 @@ export const Settings: React.FC<SettingsProps> = ({
   onClose,
   isSoundMuted,
   onToggleSound,
-  onOpenRateDialog
+  onOpenRateDialog,
+  onOpenDailyChallenge
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
