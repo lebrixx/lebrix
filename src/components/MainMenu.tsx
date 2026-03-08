@@ -16,6 +16,7 @@ import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 import { canSpinFree, getTimeUntilNextFreeSpin, formatTimeRemaining } from '@/utils/luckyWheel';
+import { hasPlayedToday, getSecondsUntilNextChallenge, formatCountdown } from '@/utils/dailyChallenge';
 
 interface MainMenuProps {
   bestScore: number;
