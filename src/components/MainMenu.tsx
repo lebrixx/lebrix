@@ -123,18 +123,23 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe relative overflow-hidden`}>
       {/* Animated background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Slow shifting gradient overlay */}
-        <div className="absolute inset-0 animate-[gradient-shift_12s_ease-in-out_infinite] opacity-30"
-          style={{
-            background: 'radial-gradient(ellipse at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, hsl(var(--secondary) / 0.12) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, hsl(var(--primary) / 0.1) 0%, transparent 50%)'
-          }}
+        {/* Large pulsing orbs */}
+        <div
+          className="absolute w-[500px] h-[500px] rounded-full animate-[orb-drift_16s_ease-in-out_infinite] blur-[120px]"
+          style={{ top: '-15%', left: '-10%', background: 'hsl(var(--primary) / 0.18)' }}
         />
-        {/* Floating particles */}
-        <div className="absolute w-2 h-2 rounded-full bg-[hsl(var(--primary)/0.15)] animate-[float-particle_20s_ease-in-out_infinite]" style={{ top: '15%', left: '10%' }} />
-        <div className="absolute w-1.5 h-1.5 rounded-full bg-[hsl(var(--secondary)/0.12)] animate-[float-particle_25s_ease-in-out_infinite_3s]" style={{ top: '60%', left: '85%' }} />
-        <div className="absolute w-1 h-1 rounded-full bg-[hsl(var(--primary)/0.1)] animate-[float-particle_18s_ease-in-out_infinite_7s]" style={{ top: '80%', left: '25%' }} />
-        <div className="absolute w-2.5 h-2.5 rounded-full bg-[hsl(var(--secondary)/0.08)] animate-[float-particle_22s_ease-in-out_infinite_12s]" style={{ top: '30%', left: '70%' }} />
-        <div className="absolute w-1 h-1 rounded-full bg-[hsl(var(--primary)/0.12)] animate-[float-particle_28s_ease-in-out_infinite_5s]" style={{ top: '45%', left: '45%' }} />
+        <div
+          className="absolute w-[400px] h-[400px] rounded-full animate-[orb-drift_20s_ease-in-out_infinite_4s] blur-[100px]"
+          style={{ bottom: '-10%', right: '-15%', background: 'hsl(var(--secondary) / 0.15)' }}
+        />
+        <div
+          className="absolute w-[300px] h-[300px] rounded-full animate-[orb-drift_14s_ease-in-out_infinite_8s] blur-[80px]"
+          style={{ top: '40%', left: '50%', transform: 'translateX(-50%)', background: 'hsl(var(--primary) / 0.08)' }}
+        />
+        {/* Subtle scan line */}
+        <div className="absolute inset-0 animate-[scanline_8s_linear_infinite] opacity-[0.03]"
+          style={{ background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--primary) / 0.3) 2px, hsl(var(--primary) / 0.3) 4px)' }}
+        />
       </div>
       {/* Lucky Wheel Button */}
       <Button
