@@ -163,7 +163,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 {isPurchasing ? t.premiumPurchasing : t.premiumUnlock}
               </Button>
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
-                🔒 Paiement sécurisé
+                {t.premiumSecurePayment}
               </p>
 
               <button
