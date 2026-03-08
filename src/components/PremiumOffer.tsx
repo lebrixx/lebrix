@@ -61,7 +61,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
         toast({ title: t.premiumRestored });
         onClose();
       } else if (result === 'none') {
-        toast({ title: 'Aucun achat à restaurer', variant: 'destructive' });
+        toast({ title: t.premiumNoPurchases, variant: 'destructive' });
       } else {
         toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
       }
