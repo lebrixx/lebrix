@@ -218,7 +218,7 @@ export const Shop: React.FC<ShopProps> = ({
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
                   <Package className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <span className="text-2xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">Pack Essentiel</span>
+                <span className="text-2xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">{t.shopPackEssential}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
