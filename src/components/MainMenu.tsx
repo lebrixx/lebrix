@@ -419,10 +419,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                   setShowComingSoon(false);
                   setTimeout(() => onOpenRateDialog(), 300);
                 }}
-                className="w-full py-5 rounded-xl bg-gradient-to-r from-secondary/90 to-secondary hover:from-secondary hover:to-secondary/80 shadow-[0_4px_20px_hsl(var(--secondary)/0.35)] hover:shadow-[0_6px_28px_hsl(var(--secondary)/0.5)] hover:scale-[1.03] transition-all duration-300 flex items-center justify-center gap-2.5"
+                className="w-full py-6 rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-secondary/80 hover:from-primary/90 hover:via-primary hover:to-secondary shadow-[0_6px_24px_hsl(var(--primary)/0.4),0_2px_8px_hsl(var(--secondary)/0.2)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.55),0_4px_12px_hsl(var(--secondary)/0.3)] hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden group"
               >
-                <Star className="w-5 h-5 fill-current" />
-                <span className="font-bold text-sm tracking-wide">★ Note-nous sur le store ★</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <Star className="w-5 h-5 fill-current drop-shadow-sm" />
+                <span className="font-bold text-base tracking-wide drop-shadow-sm">Laisse-nous un avis !</span>
+                <Star className="w-5 h-5 fill-current drop-shadow-sm" />
               </Button>
             </div>
           )}
