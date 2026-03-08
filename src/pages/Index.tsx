@@ -162,11 +162,6 @@ const Index = () => {
       setShowUsernameModal(true);
     }
 
-    // Incrémenter le compteur de parties et vérifier si on doit afficher la pop-up d'avis
-    incrementRateGameCount();
-    if (shouldShowRateDialog()) {
-      setTimeout(() => setShowRateDialog(true), 1500);
-    }
 
     // Afficher une interstitielle si toutes les conditions sont remplies
     import('@/ads/InterstitialService').then(({ Interstitials }) => {
