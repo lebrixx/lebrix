@@ -1531,5 +1531,7 @@ export const translations = {
     precisionPlayers: 'jugador(es)',
     precisionYourRank: 'Tu posición',
     precisionOutOf: 'de',
+    precisionNotInTop: 'Fuera del Top 1000',
+    precisionNotInTopDesc: 'Solo se muestran los 1000 mejores del día. ¡Inténtalo mañana!',
   },
 };
