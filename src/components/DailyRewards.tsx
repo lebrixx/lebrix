@@ -336,7 +336,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             ) : (
               <div className="flex items-center gap-2 text-text-muted text-xs">
                 <Lock className="w-4 h-4" />
-                <span>Active les notifications dans les réglages pour débloquer</span>
+                <span>{t.notifBonusLocked}</span>
               </div>
             )}
           </Card>
