@@ -279,9 +279,9 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="flex items-center gap-3">
                 <Crosshair className="w-5 h-5 text-primary" />
                 <div>
-                  <Label className="text-text-primary text-base">Défi Précision</Label>
+                  <Label className="text-text-primary text-base">{t.settingsPrecisionChallenge}</Label>
                   <p className="text-xs text-text-muted">
-                    {hasPlayedToday() ? 'Déjà joué aujourd\'hui' : 'Disponible !'}
+                    {hasPlayedToday() ? t.settingsAlreadyPlayed : t.settingsAvailable}
                   </p>
                 </div>
               </div>
