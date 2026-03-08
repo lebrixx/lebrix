@@ -353,6 +353,13 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
             />
           );
+
+        case 'daily_challenge':
+          return (
+            <DailyChallenge
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
         
         default:
           return null;
