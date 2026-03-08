@@ -8,8 +8,8 @@ import {
   getDailyBestGap,
   updateDailyBest,
   getSecondsUntilNextChallenge,
-  formatCountdown,
-} from '@/utils/dailyChallenge';
+  formatCountdown } from
+'@/utils/dailyChallenge';
 import { submitPrecisionScore, fetchDailyPrecisionLeaderboard, fetchYesterdayPrecisionLeaderboard, type PrecisionEntry } from '@/utils/precisionApi';
 import { getUsername } from '@/utils/localIdentity';
 import { applyDecoration } from '@/utils/seasonPass';
@@ -29,9 +29,9 @@ const getRankIcon = (rank: number) => {
 };
 
 // Decoration helpers (same as OnlineLeaderboard)
-const hasPurpleName = (d: string | null | undefined) => d?.split(',').map(s => s.trim()).includes('purple_name') ?? false;
-const hasPulseName = (d: string | null | undefined) => d?.split(',').map(s => s.trim()).includes('pulse_name') ?? false;
-const hasGoldPulseName = (d: string | null | undefined) => d?.split(',').map(s => s.trim()).includes('gold_pulse_name') ?? false;
+const hasPurpleName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('purple_name') ?? false;
+const hasPulseName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('pulse_name') ?? false;
+const hasGoldPulseName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('gold_pulse_name') ?? false;
 
 const getNameColor = (decorations: string | null | undefined): string => {
   if (hasGoldPulseName(decorations)) return 'hsl(45, 100%, 55%)';
@@ -50,7 +50,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const { language } = useLanguage();
   const t = translations[language];
 
-  const getQualityLabel = (gap: number): { label: string; color: string; emoji: string } => {
+  const getQualityLabel = (gap: number): {label: string;color: string;emoji: string;} => {
     if (gap <= 0.005) return { label: t.precisionPerfect, color: 'text-[hsl(var(--success))]', emoji: '🎯' };
     if (gap <= 0.05) return { label: t.precisionIncredible, color: 'text-[hsl(var(--success))]', emoji: '🔥' };
     if (gap <= 0.1) return { label: t.precisionExcellent, color: 'text-[hsl(var(--primary))]', emoji: '⚡' };
@@ -61,12 +61,12 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   };
 
   const RULES = [
-    { icon: <Crosshair className="w-4 h-4 text-[hsl(var(--primary))]" />, title: t.precisionRuleObjective, desc: t.precisionRuleObjectiveDesc },
-    { icon: <Zap className="w-4 h-4 text-[hsl(var(--secondary))]" />, title: t.precisionRuleSpeed, desc: t.precisionRuleSpeedDesc },
-    { icon: <Eye className="w-4 h-4 text-[hsl(var(--success))]" />, title: t.precisionRulePrecision, desc: t.precisionRulePrecisionDesc },
-    { icon: <Clock className="w-4 h-4 text-[hsl(var(--danger))]" />, title: t.precisionRuleOneChance, desc: t.precisionRuleOneChanceDesc },
-    { icon: <Trophy className="w-4 h-4 text-[hsl(var(--secondary))]" />, title: t.precisionRuleLeaderboard, desc: t.precisionRuleLeaderboardDesc },
-  ];
+  { icon: <Crosshair className="w-4 h-4 text-[hsl(var(--primary))]" />, title: t.precisionRuleObjective, desc: t.precisionRuleObjectiveDesc },
+  { icon: <Zap className="w-4 h-4 text-[hsl(var(--secondary))]" />, title: t.precisionRuleSpeed, desc: t.precisionRuleSpeedDesc },
+  { icon: <Eye className="w-4 h-4 text-[hsl(var(--success))]" />, title: t.precisionRulePrecision, desc: t.precisionRulePrecisionDesc },
+  { icon: <Clock className="w-4 h-4 text-[hsl(var(--danger))]" />, title: t.precisionRuleOneChance, desc: t.precisionRuleOneChanceDesc },
+  { icon: <Trophy className="w-4 h-4 text-[hsl(var(--secondary))]" />, title: t.precisionRuleLeaderboard, desc: t.precisionRuleLeaderboardDesc }];
+
 
   const target = getDailyTarget();
   const existingResult = getTodayResult();
@@ -89,15 +89,15 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const loadLeaderboard = useCallback(async () => {
     setLoadingLb(true);
     const [todayData, yesterdayData] = await Promise.all([
-      fetchDailyPrecisionLeaderboard(),
-      fetchYesterdayPrecisionLeaderboard(),
-    ]);
+    fetchDailyPrecisionLeaderboard(),
+    fetchYesterdayPrecisionLeaderboard()]
+    );
     setLeaderboard(todayData);
     setYesterdayLb(yesterdayData);
     setLoadingLb(false);
   }, []);
 
-  useEffect(() => { loadLeaderboard(); }, [loadLeaderboard]);
+  useEffect(() => {loadLeaderboard();}, [loadLeaderboard]);
 
   useEffect(() => {
     if (phase !== 'result' && phase !== 'stopped') return;
@@ -118,7 +118,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
     startTimeRef.current = performance.now();
     const tick = (now: number) => {
       const elapsed = (now - startTimeRef.current) / 1000;
-      setTimerValue((elapsed * SPEED) % MAX_VALUE);
+      setTimerValue(elapsed * SPEED % MAX_VALUE);
       animRef.current = requestAnimationFrame(tick);
     };
     animRef.current = requestAnimationFrame(tick);
@@ -152,8 +152,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
     return (
       <div
         className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
-        onPointerDown={startTimer}
-      >
+        onPointerDown={startTimer}>
+        
         <div className="absolute top-20 bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-full px-4 py-2 flex items-center gap-2">
           <Target className="w-4 h-4 text-[hsl(var(--primary))]" />
           <span className="text-sm text-[hsl(var(--text-muted))]">{t.precisionTarget}</span>
@@ -171,8 +171,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
             </p>
           </div>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   // ────── RUNNING SCREEN ──────
@@ -180,8 +180,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
     return (
       <div
         className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
-        onPointerDown={stopTimer}
-      >
+        onPointerDown={stopTimer}>
+        
         <div className="absolute top-20 bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-full px-4 py-2 flex items-center gap-2">
           <Target className="w-4 h-4 text-[hsl(var(--primary))]" />
           <span className="text-sm text-[hsl(var(--text-muted))]">{t.precisionTarget}</span>
@@ -198,15 +198,15 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         <div className="w-48 h-1 bg-[hsl(var(--wheel-base))] rounded-full mt-8 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))] transition-none"
-            style={{ width: `${(timerValue / MAX_VALUE) * 100}%` }}
-          />
+            style={{ width: `${timerValue / MAX_VALUE * 100}%` }} />
+          
         </div>
 
         <p className="mt-6 text-sm text-[hsl(var(--text-muted))] animate-pulse">
           {t.precisionTapToStop}
         </p>
-      </div>
-    );
+      </div>);
+
   }
 
   // ────── STOPPED SCREEN ──────
@@ -246,13 +246,13 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
           <Button
             onClick={handleSeeResults}
-            className="px-8 py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-xl"
-          >
+            className="px-8 py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-xl">
+            
             {t.precisionViewLeaderboardBtn}
           </Button>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   const quality = result ? getQualityLabel(result.gap) : null;
@@ -278,27 +278,27 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           onClick={() => setShowRules(!showRules)}
           variant="ghost"
           size="icon"
-          className={`text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))] ${showRules ? 'bg-[hsl(var(--button-hover))]' : ''}`}
-        >
+          className={`text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))] ${showRules ? 'bg-[hsl(var(--button-hover))]' : ''}`}>
+          
           <Info className="w-5 h-5" />
         </Button>
       </div>
 
-      <p className="text-sm font-bold bg-gradient-primary bg-clip-text text-transparent px-4 pl-[60px] pb-3">
+      <p className="text-sm font-bold bg-gradient-primary bg-clip-text text-transparent px-4 pl-[60px] pb-3 text-center">
         {t.precisionSubtitle}
       </p>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
         {/* Rules panel */}
-        {showRules && (
-          <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3.5 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
+        {showRules &&
+        <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3.5 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex items-center gap-2">
               <Info className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
               <p className="text-xs font-bold text-[hsl(var(--text-primary))]">{t.precisionHowToPlay}</p>
             </div>
             <div className="space-y-2">
-              {RULES.map((rule, i) => (
-                <div key={i} className="flex items-start gap-2.5">
+              {RULES.map((rule, i) =>
+            <div key={i} className="flex items-start gap-2.5">
                   <div className="w-6 h-6 rounded-md bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] flex items-center justify-center shrink-0 mt-0.5">
                     {React.cloneElement(rule.icon as React.ReactElement, { className: 'w-3 h-3' })}
                   </div>
@@ -307,10 +307,10 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                     <p className="text-[10px] text-[hsl(var(--text-muted))] leading-relaxed">{rule.desc}</p>
                   </div>
                 </div>
-              ))}
+            )}
             </div>
           </div>
-        )}
+        }
 
         {/* Target card */}
         <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-4">
@@ -325,36 +325,36 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
               <Target className="w-6 h-6 text-[hsl(var(--primary))]" />
             </div>
           </div>
-          {updatedBest !== null && (
-            <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-[hsl(var(--wheel-border)/0.3)]">
+          {updatedBest !== null &&
+          <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-[hsl(var(--wheel-border)/0.3)]">
               <Trophy className="w-3 h-3 text-[hsl(var(--secondary))]" />
               <span className="text-[11px] text-[hsl(var(--text-muted))]">{t.precisionRecord} <strong className="text-[hsl(var(--secondary))]">{updatedBest.toFixed(3)}</strong></span>
             </div>
-          )}
+          }
         </div>
 
         {/* Result card */}
-        {phase === 'result' && result && quality && (
-          <div className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3 space-y-2.5">
+        {phase === 'result' && result && quality &&
+        <div className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3 space-y-2.5">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[hsl(var(--primary)/0.08)] to-transparent rounded-bl-full" />
 
             <div className="relative grid grid-cols-3 gap-1.5">
               {[
-                { label: t.precisionTargetLabel, value: result.target.toFixed(3), color: 'text-[hsl(var(--primary))]' },
-                { label: t.precisionYourStop, value: result.result.toFixed(3), color: 'text-[hsl(var(--text-primary))]' },
-                { label: t.precisionGap, value: result.gap.toFixed(3), color: quality.color },
-              ].map((stat, i) => (
-                <div key={i} className="bg-[hsl(var(--game-dark)/0.6)] backdrop-blur-sm border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2 text-center">
+            { label: t.precisionTargetLabel, value: result.target.toFixed(3), color: 'text-[hsl(var(--primary))]' },
+            { label: t.precisionYourStop, value: result.result.toFixed(3), color: 'text-[hsl(var(--text-primary))]' },
+            { label: t.precisionGap, value: result.gap.toFixed(3), color: quality.color }].
+            map((stat, i) =>
+            <div key={i} className="bg-[hsl(var(--game-dark)/0.6)] backdrop-blur-sm border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2 text-center">
                   <p className="text-[9px] text-[hsl(var(--text-muted))] uppercase mb-0.5">{stat.label}</p>
                   <p className={`text-sm font-mono font-bold ${stat.color}`}>{stat.value}</p>
                 </div>
-              ))}
+            )}
             </div>
 
             <Button
-              onClick={handleRetry}
-              className="relative w-full py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-lg"
-            >
+            onClick={handleRetry}
+            className="relative w-full py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-lg">
+            
               <RotateCcw className="w-4 h-4 mr-2" />
               {t.precisionRetry}
             </Button>
@@ -365,19 +365,19 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
               <span className="text-sm font-mono font-bold text-[hsl(var(--text-primary))]">{formatCountdown(countdown)}</span>
             </div>
           </div>
-        )}
+        }
 
         {/* Launch button */}
-        {phase === 'intro' && (
-          <Button
-            onClick={goToReady}
-            className="w-full py-5 text-base font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_24px_hsl(var(--primary)/0.4)] transition-all duration-300 rounded-xl relative overflow-hidden group"
-          >
+        {phase === 'intro' &&
+        <Button
+          onClick={goToReady}
+          className="w-full py-5 text-base font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_24px_hsl(var(--primary)/0.4)] transition-all duration-300 rounded-xl relative overflow-hidden group">
+          
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <Target className="w-5 h-5 mr-2" />
             {t.precisionLaunch}
           </Button>
-        )}
+        }
 
         {/* Daily Leaderboard */}
         <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl overflow-hidden">
@@ -388,21 +388,21 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
               <button
                 onClick={() => setLbTab('today')}
                 className={`text-[9px] px-2 py-0.5 rounded-full border transition-colors ${
-                  lbTab === 'today'
-                    ? 'bg-[hsl(var(--primary)/0.2)] border-[hsl(var(--primary)/0.4)] text-[hsl(var(--primary))] font-bold'
-                    : 'bg-[hsl(var(--game-dark))] border-[hsl(var(--wheel-border)/0.3)] text-[hsl(var(--text-muted))]'
-                }`}
-              >
+                lbTab === 'today' ?
+                'bg-[hsl(var(--primary)/0.2)] border-[hsl(var(--primary)/0.4)] text-[hsl(var(--primary))] font-bold' :
+                'bg-[hsl(var(--game-dark))] border-[hsl(var(--wheel-border)/0.3)] text-[hsl(var(--text-muted))]'}`
+                }>
+                
                 {t.precisionToday} ({leaderboard.length})
               </button>
               <button
                 onClick={() => setLbTab('yesterday')}
                 className={`text-[9px] px-2 py-0.5 rounded-full border transition-colors ${
-                  lbTab === 'yesterday'
-                    ? 'bg-[hsl(var(--primary)/0.2)] border-[hsl(var(--primary)/0.4)] text-[hsl(var(--primary))] font-bold'
-                    : 'bg-[hsl(var(--game-dark))] border-[hsl(var(--wheel-border)/0.3)] text-[hsl(var(--text-muted))]'
-                }`}
-              >
+                lbTab === 'yesterday' ?
+                'bg-[hsl(var(--primary)/0.2)] border-[hsl(var(--primary)/0.4)] text-[hsl(var(--primary))] font-bold' :
+                'bg-[hsl(var(--game-dark))] border-[hsl(var(--wheel-border)/0.3)] text-[hsl(var(--text-muted))]'}`
+                }>
+                
                 {t.precisionYesterday} ({yesterdayLb.length})
               </button>
             </div>
@@ -420,8 +420,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                 <div className="p-6 text-center">
                   <div className="w-5 h-5 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin mx-auto mb-1" />
                   <p className="text-[10px] text-[hsl(var(--text-muted))]">{t.precisionLoading}</p>
-                </div>
-              );
+                </div>);
+
             }
             if (activeList.length === 0) {
               return (
@@ -433,8 +433,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                   <p className="text-[10px] text-[hsl(var(--text-muted))]">
                     {lbTab === 'today' ? t.precisionBeFirst : t.precisionNoDataYesterday}
                   </p>
-                </div>
-              );
+                </div>);
+
             }
             return (
               <div className="divide-y divide-[hsl(var(--wheel-border)/0.15)]">
@@ -451,15 +451,15 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                     <div
                       key={entry.id}
                       className={`flex items-center gap-2.5 px-3 py-2 transition-colors ${
-                        isMe ? 'bg-[hsl(var(--primary)/0.1)] border-l-2 border-l-[hsl(var(--primary))]' : ''
-                      }`}
-                    >
+                      isMe ? 'bg-[hsl(var(--primary)/0.1)] border-l-2 border-l-[hsl(var(--primary))]' : ''}`
+                      }>
+                      
                       <div className="w-5 flex justify-center shrink-0">{getRankIcon(rank)}</div>
                       <div className="flex-1 min-w-0">
                         <p
                           className={`text-xs font-medium truncate ${nameAnim}`}
-                          style={{ color: nameColor }}
-                        >
+                          style={{ color: nameColor }}>
+                          
                           {decoratedName}
                           {isMe && <span className="text-[9px] ml-1 opacity-60">{t.precisionYou}</span>}
                         </p>
@@ -467,14 +467,14 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                       <p className={`text-xs font-mono font-bold shrink-0 ${q.color}`}>
                         {entry.gap.toFixed(3)}
                       </p>
-                    </div>
-                  );
+                    </div>);
+
                 })}
-              </div>
-            );
+              </div>);
+
           })()}
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 };
