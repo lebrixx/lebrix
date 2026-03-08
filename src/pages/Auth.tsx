@@ -72,16 +72,16 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
         });
       }
     } catch (error: any) {
-      let message = "Une erreur s'est produite";
+      let message = t.authGenericError;
       
       if (error.message.includes('Invalid login credentials')) {
-        message = "Email ou mot de passe incorrect";
+        message = t.authInvalidCredentials;
       } else if (error.message.includes('User already registered')) {
-        message = "Cet email est déjà utilisé";
+        message = t.authAlreadyRegistered;
       } else if (error.message.includes('Password should be')) {
-        message = "Le mot de passe doit contenir au moins 6 caractères";
+        message = t.authPasswordTooShort;
       } else if (error.message.includes('Invalid email')) {
-        message = "Email invalide";
+        message = t.authInvalidEmail;
       }
 
       toast({
