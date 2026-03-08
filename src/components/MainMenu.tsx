@@ -477,6 +477,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         isSoundMuted={isSoundMuted}
         onToggleSound={onToggleSound}
         onOpenRateDialog={onOpenRateDialog}
+        onOpenDailyChallenge={onOpenDailyChallenge}
       />
 
       {/* Premium Offer */}
