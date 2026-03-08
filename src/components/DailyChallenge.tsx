@@ -155,7 +155,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   return (
     <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-14 pb-3">
+      <div className="flex items-center justify-between px-4 pt-14 pb-1">
         <div className="flex items-center gap-3">
           <Button onClick={onBack} variant="ghost" size="icon" className="text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))] shrink-0">
             <ArrowLeft className="w-5 h-5" />
@@ -176,6 +176,9 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           <Info className="w-5 h-5" />
         </Button>
       </div>
+      <p className="text-xs text-[hsl(var(--text-muted))] px-4 pl-[60px] pb-2">
+        Stoppe le chrono au plus près de la cible — une seule chance par jour !
+      </p>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-4">
         {/* Rules panel (togglable) */}
