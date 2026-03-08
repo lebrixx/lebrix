@@ -329,7 +329,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                   </Button>
                 ) : (
                   <div className="text-center text-text-muted text-xs py-2">
-                    ✓ Bonus déjà récupéré aujourd'hui
+                    {t.notifBonusClaimed}
                   </div>
                 )}
               </>
