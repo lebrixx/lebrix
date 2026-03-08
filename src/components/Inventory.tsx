@@ -159,7 +159,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
         body: { username: trimmed }
       });
       if (result.data?.taken) {
-        toast({ title: 'Pseudo déjà pris', description: 'Choisis un autre pseudo.', variant: 'destructive' });
+        toast({ title: t.inventoryUsernameTaken, description: t.inventoryUsernameTakenDesc, variant: 'destructive' });
         return;
       }
     } catch {}
