@@ -231,10 +231,10 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
                 {isSpinning ? (
                   <>
                     <RotateCcw className="w-4 h-4 mr-2 animate-spin" />
-                    Tirage en cours…
+                    {t.spinInProgress}
                   </>
                 ) : (
-                  'Lancer le tirage'
+                  t.launchSpin
                 )}
               </Button>
             ) : (
