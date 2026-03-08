@@ -150,7 +150,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
       return;
     }
     if (trimmed.length > 20) {
-      toast({ title: 'Pseudo trop long', description: 'Maximum 20 caractères.', variant: 'destructive' });
+      toast({ title: t.inventoryUsernameTooLong, description: t.inventoryUsernameTooLongDesc, variant: 'destructive' });
       return;
     }
     // Check availability
