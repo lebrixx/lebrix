@@ -46,7 +46,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
         toast({ title: t.premiumPurchaseError, description: t.premiumPurchaseRetry, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Erreur lors de l\'achat', variant: 'destructive' });
+      toast({ title: t.premiumPurchaseError, variant: 'destructive' });
     } finally {
       setIsPurchasing(false);
     }
