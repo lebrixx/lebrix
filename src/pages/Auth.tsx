@@ -142,7 +142,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
             <div className="space-y-2">
               <Label htmlFor="username" className="text-text-primary flex items-center gap-2">
                 <User className="w-4 h-4" />
-                Pseudo
+                {t.authPseudo}
               </Label>
               <Input
                 id="username"
