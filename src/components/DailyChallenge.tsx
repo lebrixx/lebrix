@@ -390,62 +390,96 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-2 border-b border-[hsl(var(--wheel-border)/0.3)] bg-gradient-to-r from-[hsl(var(--wheel-base))] to-[hsl(var(--button-bg))]">
             <Users className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
-            <p className="text-xs font-bold text-[hsl(var(--text-primary))]">Classement du jour</p>
-            <span className="ml-auto text-[9px] text-[hsl(var(--text-muted))] bg-[hsl(var(--game-dark))] px-1.5 py-0.5 rounded-full border border-[hsl(var(--wheel-border)/0.3)]">
-              {leaderboard.length} joueur{leaderboard.length !== 1 ? 's' : ''}
-            </span>
+            <p className="text-xs font-bold text-[hsl(var(--text-primary))]">Classement</p>
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                onClick={() => setLbTab('today')}
+                className={`text-[9px] px-2 py-0.5 rounded-full border transition-colors ${
+                  lbTab === 'today'
+                    ? 'bg-[hsl(var(--primary)/0.2)] border-[hsl(var(--primary)/0.4)] text-[hsl(var(--primary))] font-bold'
+                    : 'bg-[hsl(var(--game-dark))] border-[hsl(var(--wheel-border)/0.3)] text-[hsl(var(--text-muted))]'
+                }`}
+              >
+                Aujourd'hui ({leaderboard.length})
+              </button>
+              <button
+                onClick={() => setLbTab('yesterday')}
+                className={`text-[9px] px-2 py-0.5 rounded-full border transition-colors ${
+                  lbTab === 'yesterday'
+                    ? 'bg-[hsl(var(--primary)/0.2)] border-[hsl(var(--primary)/0.4)] text-[hsl(var(--primary))] font-bold'
+                    : 'bg-[hsl(var(--game-dark))] border-[hsl(var(--wheel-border)/0.3)] text-[hsl(var(--text-muted))]'
+                }`}
+              >
+                Hier ({yesterdayLb.length})
+              </button>
+            </div>
             <Button onClick={loadLeaderboard} variant="ghost" size="icon" className="w-6 h-6 text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
               <RefreshCw className={`w-3 h-3 ${loadingLb ? 'animate-spin' : ''}`} />
             </Button>
           </div>
 
-          {loadingLb && leaderboard.length === 0 ? (
-            <div className="p-6 text-center">
-              <div className="w-5 h-5 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin mx-auto mb-1" />
-              <p className="text-[10px] text-[hsl(var(--text-muted))]">Chargement...</p>
-            </div>
-          ) : leaderboard.length === 0 ? (
-            <div className="p-5 text-center space-y-1">
-              <span className="text-2xl">🏆</span>
-              <p className="text-xs font-medium text-[hsl(var(--text-secondary))]">Aucun score aujourd'hui</p>
-              <p className="text-[10px] text-[hsl(var(--text-muted))]">Sois le premier à relever le défi !</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-[hsl(var(--wheel-border)/0.15)]">
-              {leaderboard.map((entry, i) => {
-                const rank = i + 1;
-                const isMe = currentUsername && entry.username.toLowerCase() === currentUsername.toLowerCase();
-                const q = getQualityLabel(entry.gap);
-                const displayName = entry.username.length > 14 ? `${entry.username.substring(0, 14)}…` : entry.username;
-                const decoratedName = applyDecoration(displayName, entry.decorations || null);
-                const nameColor = isMe ? 'hsl(var(--primary))' : getNameColor(entry.decorations);
-                const nameAnim = getNameAnimation(entry.decorations);
+          {(() => {
+            const activeList = lbTab === 'today' ? leaderboard : yesterdayLb;
+            const maxDisplay = lbTab === 'today' ? 1000 : 50;
 
-                return (
-                  <div
-                    key={entry.id}
-                    className={`flex items-center gap-2.5 px-3 py-2 transition-colors ${
-                      isMe ? 'bg-[hsl(var(--primary)/0.1)] border-l-2 border-l-[hsl(var(--primary))]' : ''
-                    }`}
-                  >
-                    <div className="w-5 flex justify-center shrink-0">{getRankIcon(rank)}</div>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-xs font-medium truncate ${nameAnim}`}
-                        style={{ color: nameColor }}
-                      >
-                        {decoratedName}
-                        {isMe && <span className="text-[9px] ml-1 opacity-60">(toi)</span>}
+            if (loadingLb && activeList.length === 0) {
+              return (
+                <div className="p-6 text-center">
+                  <div className="w-5 h-5 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+                  <p className="text-[10px] text-[hsl(var(--text-muted))]">Chargement...</p>
+                </div>
+              );
+            }
+            if (activeList.length === 0) {
+              return (
+                <div className="p-5 text-center space-y-1">
+                  <span className="text-2xl">🏆</span>
+                  <p className="text-xs font-medium text-[hsl(var(--text-secondary))]">
+                    {lbTab === 'today' ? 'Aucun score aujourd\'hui' : 'Aucun score hier'}
+                  </p>
+                  <p className="text-[10px] text-[hsl(var(--text-muted))]">
+                    {lbTab === 'today' ? 'Sois le premier à relever le défi !' : 'Pas de données pour hier.'}
+                  </p>
+                </div>
+              );
+            }
+            return (
+              <div className="divide-y divide-[hsl(var(--wheel-border)/0.15)]">
+                {activeList.slice(0, maxDisplay).map((entry, i) => {
+                  const rank = i + 1;
+                  const isMe = currentUsername && entry.username.toLowerCase() === currentUsername.toLowerCase();
+                  const q = getQualityLabel(entry.gap);
+                  const displayName = entry.username.length > 14 ? `${entry.username.substring(0, 14)}…` : entry.username;
+                  const decoratedName = applyDecoration(displayName, entry.decorations || null);
+                  const nameColor = isMe ? 'hsl(var(--primary))' : getNameColor(entry.decorations);
+                  const nameAnim = getNameAnimation(entry.decorations);
+
+                  return (
+                    <div
+                      key={entry.id}
+                      className={`flex items-center gap-2.5 px-3 py-2 transition-colors ${
+                        isMe ? 'bg-[hsl(var(--primary)/0.1)] border-l-2 border-l-[hsl(var(--primary))]' : ''
+                      }`}
+                    >
+                      <div className="w-5 flex justify-center shrink-0">{getRankIcon(rank)}</div>
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={`text-xs font-medium truncate ${nameAnim}`}
+                          style={{ color: nameColor }}
+                        >
+                          {decoratedName}
+                          {isMe && <span className="text-[9px] ml-1 opacity-60">(toi)</span>}
+                        </p>
+                      </div>
+                      <p className={`text-xs font-mono font-bold shrink-0 ${q.color}`}>
+                        {entry.gap.toFixed(3)}
                       </p>
                     </div>
-                    <p className={`text-xs font-mono font-bold shrink-0 ${q.color}`}>
-                      {entry.gap.toFixed(3)}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
