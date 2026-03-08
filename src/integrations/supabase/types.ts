@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           challenge_date: string
           created_at: string
+          decorations: string | null
           device_id: string
           gap: number
           id: string
@@ -28,6 +29,7 @@ export type Database = {
         Insert: {
           challenge_date?: string
           created_at?: string
+          decorations?: string | null
           device_id: string
           gap: number
           id?: string
@@ -38,6 +40,7 @@ export type Database = {
         Update: {
           challenge_date?: string
           created_at?: string
+          decorations?: string | null
           device_id?: string
           gap?: number
           id?: string

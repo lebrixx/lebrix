@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, username, target, result, gap } = await req.json();
+    const { device_id, username, target, result, gap, decorations } = await req.json();
 
     // Validation
     if (!device_id || !username || typeof target !== 'number' || typeof result !== 'number' || typeof gap !== 'number') {
@@ -71,6 +71,7 @@ Deno.serve(async (req) => {
         result: Math.round(result * 1000) / 1000,
         gap: Math.round(gap * 1000) / 1000,
         challenge_date: new Date().toISOString().slice(0, 10),
+        decorations: decorations || null,
       }, { onConflict: 'device_id,challenge_date' });
 
     if (error) {

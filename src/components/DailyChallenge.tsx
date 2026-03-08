@@ -12,12 +12,13 @@ import {
 } from '@/utils/dailyChallenge';
 import { submitPrecisionScore, fetchDailyPrecisionLeaderboard, type PrecisionEntry } from '@/utils/precisionApi';
 import { getUsername } from '@/utils/localIdentity';
+import { applyDecoration } from '@/utils/seasonPass';
 
 interface DailyChallengeProps {
   onBack: () => void;
 }
 
-type Phase = 'intro' | 'running' | 'result';
+type Phase = 'intro' | 'ready' | 'running' | 'stopped' | 'result';
 
 const getQualityLabel = (gap: number): { label: string; color: string; emoji: string } => {
   if (gap <= 0.005) return { label: 'PARFAIT !', color: 'text-[hsl(var(--success))]', emoji: '🎯' };
@@ -36,6 +37,24 @@ const getRankIcon = (rank: number) => {
   return <span className="text-xs text-[hsl(var(--text-muted))] font-mono w-4 text-center">{rank}</span>;
 };
 
+// Decoration helpers (same as OnlineLeaderboard)
+const hasPurpleName = (d: string | null | undefined) => d?.split(',').map(s => s.trim()).includes('purple_name') ?? false;
+const hasPulseName = (d: string | null | undefined) => d?.split(',').map(s => s.trim()).includes('pulse_name') ?? false;
+const hasGoldPulseName = (d: string | null | undefined) => d?.split(',').map(s => s.trim()).includes('gold_pulse_name') ?? false;
+
+const getNameColor = (decorations: string | null | undefined): string => {
+  if (hasGoldPulseName(decorations)) return 'hsl(45, 100%, 55%)';
+  if (hasPulseName(decorations)) return 'hsl(var(--primary))';
+  if (hasPurpleName(decorations)) return '#a855f7';
+  return 'hsl(var(--text-primary))';
+};
+
+const getNameAnimation = (decorations: string | null | undefined): string => {
+  if (hasGoldPulseName(decorations)) return 'animate-[username-gold-pulse_3s_ease-in-out_infinite]';
+  if (hasPulseName(decorations)) return 'animate-[username-pulse_3s_ease-in-out_infinite]';
+  return '';
+};
+
 const RULES = [
   { icon: <Crosshair className="w-4 h-4 text-[hsl(var(--primary))]" />, title: 'Objectif', desc: 'Arrête le chrono le plus proche possible de la cible du jour.' },
   { icon: <Zap className="w-4 h-4 text-[hsl(var(--secondary))]" />, title: 'Vitesse', desc: 'Le compteur défile rapidement de 0.000 à 15.000 en boucle.' },
@@ -49,9 +68,9 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const existingResult = getTodayResult();
   const currentUsername = getUsername();
 
-  // TEST MODE: always allow retrying
   const [phase, setPhase] = useState<Phase>('intro');
   const [timerValue, setTimerValue] = useState(0);
+  const [stoppedValue, setStoppedValue] = useState<number | null>(null);
   const [result, setResult] = useState(existingResult);
   const [countdown, setCountdown] = useState(getSecondsUntilNextChallenge());
   const [leaderboard, setLeaderboard] = useState<PrecisionEntry[]>([]);
@@ -60,7 +79,6 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
   const animRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
-  const bestGap = getDailyBestGap();
 
   const loadLeaderboard = useCallback(async () => {
     setLoadingLb(true);
@@ -72,7 +90,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   useEffect(() => { loadLeaderboard(); }, [loadLeaderboard]);
 
   useEffect(() => {
-    if (phase !== 'result') return;
+    if (phase !== 'result' && phase !== 'stopped') return;
     const interval = setInterval(() => setCountdown(getSecondsUntilNextChallenge()), 1000);
     return () => clearInterval(interval);
   }, [phase]);
@@ -80,6 +98,12 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const SPEED = 2.5;
   const MAX_VALUE = 15;
 
+  // Phase 1: "ready" screen — user taps to start the actual timer
+  const goToReady = useCallback(() => {
+    setPhase('ready');
+  }, []);
+
+  // Phase 2: start timer on tap
   const startTimer = useCallback(() => {
     setPhase('running');
     setTimerValue(0);
@@ -92,24 +116,59 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
     animRef.current = requestAnimationFrame(tick);
   }, []);
 
-  const stopTimer = useCallback(async () => {
+  // Phase 3: stop — stay on stopped screen
+  const stopTimer = useCallback(() => {
     cancelAnimationFrame(animRef.current);
     const stopped = Math.round(timerValue * 1000) / 1000;
+    setStoppedValue(stopped);
     const { gap, target: t } = recordDailyResult(stopped);
     updateDailyBest(gap);
     setResult({ result: stopped, gap, target: t });
-    setPhase('result');
-    await submitPrecisionScore(t, stopped, gap);
-    loadLeaderboard();
+    setPhase('stopped');
+
+    // Submit async
+    submitPrecisionScore(t, stopped, gap).then(() => loadLeaderboard());
   }, [timerValue, loadLeaderboard]);
 
   useEffect(() => () => cancelAnimationFrame(animRef.current), []);
 
-  // Retry for testing
   const handleRetry = () => {
     setResult(null);
+    setStoppedValue(null);
     setPhase('intro');
   };
+
+  const handleSeeResults = () => {
+    setPhase('result');
+  };
+
+  // ────── READY SCREEN (tap to start timer) ──────
+  if (phase === 'ready') {
+    return (
+      <div
+        className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
+        onPointerDown={startTimer}
+      >
+        <div className="absolute top-20 bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-full px-4 py-2 flex items-center gap-2">
+          <Target className="w-4 h-4 text-[hsl(var(--primary))]" />
+          <span className="text-sm text-[hsl(var(--text-muted))]">Cible :</span>
+          <span className="text-sm font-mono font-bold text-[hsl(var(--primary))]">{target.toFixed(3)}</span>
+        </div>
+
+        <div className="text-center space-y-4">
+          <p className="text-6xl sm:text-7xl font-mono font-black text-[hsl(var(--text-muted)/0.3)] tabular-nums">
+            0.000
+          </p>
+          <div className="space-y-2">
+            <p className="text-lg font-bold text-[hsl(var(--text-primary))]">Prêt ?</p>
+            <p className="text-sm text-[hsl(var(--text-muted))] animate-pulse">
+              👆 Appuie pour lancer le chrono
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ────── RUNNING SCREEN ──────
   if (phase === 'running') {
@@ -118,14 +177,12 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
         onPointerDown={stopTimer}
       >
-        {/* Target reminder pill */}
         <div className="absolute top-20 bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-full px-4 py-2 flex items-center gap-2">
           <Target className="w-4 h-4 text-[hsl(var(--primary))]" />
           <span className="text-sm text-[hsl(var(--text-muted))]">Cible :</span>
           <span className="text-sm font-mono font-bold text-[hsl(var(--primary))]">{target.toFixed(3)}</span>
         </div>
 
-        {/* Timer */}
         <div className="relative">
           <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))]" />
           <p className="relative text-7xl sm:text-8xl font-mono font-black text-[hsl(var(--text-primary))] tabular-nums tracking-tight">
@@ -133,7 +190,6 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           </p>
         </div>
 
-        {/* Progress bar visual hint */}
         <div className="w-48 h-1 bg-[hsl(var(--wheel-base))] rounded-full mt-8 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))] transition-none"
@@ -142,8 +198,59 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         </div>
 
         <p className="mt-6 text-sm text-[hsl(var(--text-muted))] animate-pulse">
-          ⬇️ Appuie n'importe où pour stopper
+          ⬇️ Appuie pour stopper !
         </p>
+      </div>
+    );
+  }
+
+  // ────── STOPPED SCREEN (shows result before going to full results page) ──────
+  if (phase === 'stopped' && result) {
+    const q = getQualityLabel(result.gap);
+    return (
+      <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col">
+        {/* Back button */}
+        <div className="flex items-center gap-3 px-4 pt-14 pb-3">
+          <Button onClick={handleSeeResults} variant="ghost" size="icon" className="text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <span className="text-sm text-[hsl(var(--text-muted))]">Voir le classement</span>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center px-6 -mt-16">
+          {/* Big emoji + quality */}
+          <span className="text-6xl mb-3">{q.emoji}</span>
+          <p className={`text-3xl font-black tracking-wide ${q.color} mb-6`}>{q.label}</p>
+
+          {/* Stopped value */}
+          <div className="relative mb-4">
+            <div className="absolute inset-0 blur-3xl opacity-15 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))]" />
+            <p className="relative text-6xl sm:text-7xl font-mono font-black text-[hsl(var(--text-primary))] tabular-nums">
+              {result.result.toFixed(3)}
+            </p>
+          </div>
+
+          {/* Target comparison */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="text-center">
+              <p className="text-[10px] text-[hsl(var(--text-muted))] uppercase">Cible</p>
+              <p className="text-lg font-mono font-bold text-[hsl(var(--primary))]">{result.target.toFixed(3)}</p>
+            </div>
+            <div className="w-px h-8 bg-[hsl(var(--wheel-border)/0.5)]" />
+            <div className="text-center">
+              <p className="text-[10px] text-[hsl(var(--text-muted))] uppercase">Écart</p>
+              <p className={`text-lg font-mono font-black ${q.color}`}>{result.gap.toFixed(3)}</p>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <Button
+            onClick={handleSeeResults}
+            className="px-8 py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-xl"
+          >
+            Voir le classement →
+          </Button>
+        </div>
       </div>
     );
   }
@@ -176,12 +283,14 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           <Info className="w-5 h-5" />
         </Button>
       </div>
-      <p className="text-xs text-[hsl(var(--text-muted))] px-4 pl-[60px] pb-2">
-        Stoppe le chrono au plus près de la cible — une seule chance par jour !
+
+      {/* Subtitle — visible, gradient text like the main title */}
+      <p className="text-sm font-bold bg-gradient-primary bg-clip-text text-transparent px-4 pl-[60px] pb-3">
+        Stoppe le chrono au plus près de la cible !
       </p>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
-        {/* Rules panel (togglable) */}
+        {/* Rules panel */}
         {showRules && (
           <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3.5 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex items-center gap-2">
@@ -225,33 +334,39 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           )}
         </div>
 
-        {/* Result card */}
+        {/* Result card — prettier version */}
         {phase === 'result' && result && quality && (
-          <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-4 space-y-3">
-            <div className="text-center space-y-0.5">
-              <span className="text-2xl">{quality.emoji}</span>
-              <p className={`text-lg font-black tracking-wide ${quality.color}`}>{quality.label}</p>
+          <div className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-4 space-y-3">
+            {/* Decorative glow */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[hsl(var(--primary)/0.08)] to-transparent rounded-bl-full" />
+            
+            <div className="relative text-center space-y-1">
+              <span className="text-3xl">{quality.emoji}</span>
+              <p className={`text-xl font-black tracking-wide ${quality.color}`}>{quality.label}</p>
             </div>
-            <div className="grid grid-cols-3 gap-1.5">
+
+            <div className="relative grid grid-cols-3 gap-1.5">
               {[
                 { label: 'Cible', value: result.target.toFixed(3), color: 'text-[hsl(var(--primary))]' },
                 { label: 'Ton arrêt', value: result.result.toFixed(3), color: 'text-[hsl(var(--text-primary))]' },
                 { label: 'Écart', value: result.gap.toFixed(3), color: quality.color },
               ].map((stat, i) => (
-                <div key={i} className="bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] rounded-lg p-2 text-center">
+                <div key={i} className="bg-[hsl(var(--game-dark)/0.6)] backdrop-blur-sm border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2.5 text-center">
                   <p className="text-[9px] text-[hsl(var(--text-muted))] uppercase mb-0.5">{stat.label}</p>
                   <p className={`text-sm font-mono font-bold ${stat.color}`}>{stat.value}</p>
                 </div>
               ))}
             </div>
+
             <Button
               onClick={handleRetry}
-              className="w-full py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-lg"
+              className="relative w-full py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-lg"
             >
               <RotateCcw className="w-4 h-4 mr-2" />
               Réessayer (test)
             </Button>
-            <div className="bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] rounded-lg p-2.5 flex items-center justify-center gap-2">
+
+            <div className="relative bg-[hsl(var(--game-dark)/0.5)] border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2.5 flex items-center justify-center gap-2">
               <Clock className="w-3.5 h-3.5 text-[hsl(var(--text-muted))]" />
               <span className="text-[11px] text-[hsl(var(--text-muted))]">Prochain défi dans</span>
               <span className="text-sm font-mono font-bold text-[hsl(var(--text-primary))]">{formatCountdown(countdown)}</span>
@@ -259,9 +374,10 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           </div>
         )}
 
+        {/* Launch button */}
         {phase === 'intro' && (
           <Button
-            onClick={startTimer}
+            onClick={goToReady}
             className="w-full py-5 text-base font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_24px_hsl(var(--primary)/0.4)] transition-all duration-300 rounded-xl relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
@@ -300,6 +416,11 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                 const rank = i + 1;
                 const isMe = currentUsername && entry.username.toLowerCase() === currentUsername.toLowerCase();
                 const q = getQualityLabel(entry.gap);
+                const displayName = entry.username.length > 14 ? `${entry.username.substring(0, 14)}…` : entry.username;
+                const decoratedName = applyDecoration(displayName, entry.decorations || null);
+                const nameColor = isMe ? 'hsl(var(--primary))' : getNameColor(entry.decorations);
+                const nameAnim = getNameAnimation(entry.decorations);
+
                 return (
                   <div
                     key={entry.id}
@@ -309,11 +430,12 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
                   >
                     <div className="w-5 flex justify-center shrink-0">{getRankIcon(rank)}</div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-medium truncate ${
-                        isMe ? 'text-[hsl(var(--primary))]' : 'text-[hsl(var(--text-primary))]'
-                      }`}>
-                        {entry.username}
-                        {isMe && <span className="text-[9px] ml-1 text-[hsl(var(--primary)/0.7)]">(toi)</span>}
+                      <p
+                        className={`text-xs font-medium truncate ${nameAnim}`}
+                        style={{ color: nameColor }}
+                      >
+                        {decoratedName}
+                        {isMe && <span className="text-[9px] ml-1 opacity-60">(toi)</span>}
                       </p>
                     </div>
                     <p className={`text-xs font-mono font-bold shrink-0 ${q.color}`}>
