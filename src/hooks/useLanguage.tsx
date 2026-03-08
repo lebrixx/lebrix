@@ -1041,6 +1041,8 @@ export const translations = {
     precisionTryAgain: 'TRY AGAIN',
     precisionTopForNow: 'for now — ranking in progress',
     precisionPlayers: 'player(s)',
+    precisionYourRank: 'Your rank',
+    precisionOutOf: 'out of',
   },
   es: {
     title: 'LUCKY STOP',
