@@ -74,6 +74,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const [result, setResult] = useState(existingResult);
   const [countdown, setCountdown] = useState(getSecondsUntilNextChallenge());
   const [leaderboard, setLeaderboard] = useState<PrecisionEntry[]>([]);
+  const [yesterdayLb, setYesterdayLb] = useState<PrecisionEntry[]>([]);
+  const [lbTab, setLbTab] = useState<'today' | 'yesterday'>('today');
   const [loadingLb, setLoadingLb] = useState(false);
   const [showRules, setShowRules] = useState(false);
 
