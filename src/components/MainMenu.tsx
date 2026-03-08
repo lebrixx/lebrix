@@ -410,6 +410,22 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               <span className="font-bold">{t.contest}</span>
             </Button>
           </div>
+
+          {/* Rate App Button */}
+          {onOpenRateDialog && (
+            <div className="mt-4 pt-4 border-t border-wheel-border/30">
+              <Button
+                onClick={() => {
+                  setShowComingSoon(false);
+                  setTimeout(() => onOpenRateDialog(), 300);
+                }}
+                className="w-full py-5 rounded-xl bg-gradient-to-r from-secondary/90 to-secondary hover:from-secondary hover:to-secondary/80 shadow-[0_4px_20px_hsl(var(--secondary)/0.35)] hover:shadow-[0_6px_28px_hsl(var(--secondary)/0.5)] hover:scale-[1.03] transition-all duration-300 flex items-center justify-center gap-2.5"
+              >
+                <Star className="w-5 h-5 fill-current" />
+                <span className="font-bold text-sm tracking-wide">★ Note-nous sur le store ★</span>
+              </Button>
+            </div>
+          )}
           
           <Button 
             onClick={() => setShowComingSoon(false)}
