@@ -281,7 +281,7 @@ export const Shop: React.FC<ShopProps> = ({
                   } else if (result === 'cancelled') {
                     // User cancelled — do nothing
                   } else {
-                    toast({ title: "Erreur lors de l'achat", description: "Veuillez réessayer.", variant: "destructive" });
+                    toast({ title: t.shopPurchaseError, description: t.shopPurchaseRetry, variant: "destructive" });
                   }
                 } catch {
                   toast({ title: "Erreur lors de l'achat", variant: "destructive" });
