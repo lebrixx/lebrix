@@ -265,7 +265,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     `}
                   >
                     <Zap className="w-4 h-4 mr-2" />
-                    {isCurrentMode ? 'Jouer maintenant' : 'Choisir ce Mode'}
+                    {isCurrentMode ? t.playNowMode : t.selectMode}
                   </Button>
                 )}
               </div>
