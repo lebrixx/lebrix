@@ -8,6 +8,7 @@ import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
+import { DailyChallenge } from '@/components/DailyChallenge';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -23,7 +24,7 @@ import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -263,6 +264,7 @@ const Index = () => {
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
             onOpenRateDialog={() => setShowRateDialog(true)}
+            onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
           />
         );
         
@@ -348,6 +350,13 @@ const Index = () => {
         case 'leaderboard':
           return (
             <OnlineLeaderboard
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
+
+        case 'daily_challenge':
+          return (
+            <DailyChallenge
               onBack={() => setCurrentScreen('menu')}
             />
           );
