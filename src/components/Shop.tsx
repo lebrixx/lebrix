@@ -256,8 +256,8 @@ export const Shop: React.FC<ShopProps> = ({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20">
               <Ticket className="w-6 h-6 text-secondary" />
               <div className="flex-1">
-                <p className="text-text-primary font-semibold text-sm">Tickets Expert</p>
-                <p className="text-text-muted text-xs">Pour le mode Mémoire</p>
+                <p className="text-text-primary font-semibold text-sm">{t.shopTicketsExpert}</p>
+                <p className="text-text-muted text-xs">{t.shopTicketsExpertDesc}</p>
               </div>
               <Badge variant="secondary" className="text-xs font-bold">×15</Badge>
             </div>
