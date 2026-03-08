@@ -105,7 +105,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
           className="mb-6 border-wheel-border hover:bg-button-hover"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
+          {t.authBack}
         </Button>
 
         <div className="text-center">
