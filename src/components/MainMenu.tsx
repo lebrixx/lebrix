@@ -33,6 +33,7 @@ interface MainMenuProps {
   onSpendCoins?: (amount: number) => boolean;
   isSoundMuted?: boolean;
   onToggleSound?: () => void;
+  onOpenRateDialog?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -50,7 +51,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onAdRewardClaimed,
   onSpendCoins,
   isSoundMuted = false,
-  onToggleSound = () => {}
+  onToggleSound = () => {},
+  onOpenRateDialog
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
@@ -452,6 +454,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClose={() => setShowSettings(false)}
         isSoundMuted={isSoundMuted}
         onToggleSound={onToggleSound}
+        onOpenRateDialog={onOpenRateDialog}
       />
 
       {/* Premium Offer */}

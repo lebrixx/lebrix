@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins, Star } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
@@ -14,13 +14,15 @@ interface SettingsProps {
   onClose: () => void;
   isSoundMuted: boolean;
   onToggleSound: () => void;
+  onOpenRateDialog?: () => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({ 
   isOpen, 
   onClose,
   isSoundMuted,
-  onToggleSound
+  onToggleSound,
+  onOpenRateDialog
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
@@ -266,6 +268,29 @@ export const Settings: React.FC<SettingsProps> = ({
           <div className="text-xs text-text-muted text-center pt-2">
             {t.notificationDesc}
           </div>
+
+          {/* Bouton Test Avis (debug) */}
+          {onOpenRateDialog && (
+            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
+              <div className="flex items-center gap-3">
+                <Star className="w-5 h-5 text-secondary" />
+                <Label className="text-text-primary text-base">
+                  Tester pop-up avis
+                </Label>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  onClose();
+                  setTimeout(() => onOpenRateDialog(), 300);
+                }}
+                className="border-wheel-border hover:bg-button-hover text-text-primary"
+              >
+                Test
+              </Button>
+            </div>
+          )}
 
           {/* Bouton Autorisations App */}
           {Capacitor.isNativePlatform() && (

@@ -21,6 +21,7 @@ import { updateQuestScore, updateQuestBoostUsed } from '@/utils/seasonPass';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
+import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
@@ -32,6 +33,7 @@ const Index = () => {
   const [lastGameScore, setLastGameScore] = useState(0);
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
+  const [showRateDialog, setShowRateDialog] = useState(false);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -160,6 +162,12 @@ const Index = () => {
       setShowUsernameModal(true);
     }
 
+    // Incrémenter le compteur de parties et vérifier si on doit afficher la pop-up d'avis
+    incrementRateGameCount();
+    if (shouldShowRateDialog()) {
+      setTimeout(() => setShowRateDialog(true), 1500);
+    }
+
     // Afficher une interstitielle si toutes les conditions sont remplies
     import('@/ads/InterstitialService').then(({ Interstitials }) => {
       Interstitials.showInterstitialIfReady().catch(error => {
@@ -259,6 +267,7 @@ const Index = () => {
             onSpendCoins={spendCoins}
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
+            onOpenRateDialog={() => setShowRateDialog(true)}
           />
         );
         
@@ -388,6 +397,11 @@ const Index = () => {
         isOpen={showDailyRewards}
         onClose={() => setShowDailyRewards(false)}
         onRewardClaimed={handleDailyRewardClaimed}
+      />
+
+      <RateAppDialog
+        isOpen={showRateDialog}
+        onClose={() => setShowRateDialog(false)}
       />
     </div>
   );
