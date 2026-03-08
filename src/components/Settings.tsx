@@ -88,8 +88,8 @@ export const Settings: React.FC<SettingsProps> = ({
       if (status === 'denied') {
         // Permission was denied, show message and open settings
         toast({
-          title: "Notifications bloquées",
-          description: "Ouvre les paramètres de l'app pour autoriser les notifications.",
+          title: t.settingsNotifBlocked,
+          description: t.settingsNotifBlockedDesc,
           variant: "destructive",
         });
         openAppSettings();
