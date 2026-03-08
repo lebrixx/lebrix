@@ -168,6 +168,18 @@ export default {
           "75%": { background: "linear-gradient(315deg, hsl(var(--primary)), hsl(var(--secondary)))" },
           "100%": { background: "linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)))" },
         },
+        "gradient-shift": {
+          "0%, 100%": { transform: "translate(0%, 0%) scale(1)" },
+          "33%": { transform: "translate(5%, -5%) scale(1.05)" },
+          "66%": { transform: "translate(-3%, 3%) scale(0.97)" },
+        },
+        "float-particle": {
+          "0%": { transform: "translate(0, 0) scale(1)", opacity: "0.4" },
+          "25%": { transform: "translate(15px, -30px) scale(1.2)", opacity: "0.6" },
+          "50%": { transform: "translate(-10px, -60px) scale(0.8)", opacity: "0.3" },
+          "75%": { transform: "translate(20px, -30px) scale(1.1)", opacity: "0.5" },
+          "100%": { transform: "translate(0, 0) scale(1)", opacity: "0.4" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
