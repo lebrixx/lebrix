@@ -85,7 +85,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
       }
 
       toast({
-        title: "Erreur",
+        title: t.authError,
         description: message,
         variant: "destructive"
       });
