@@ -180,6 +180,15 @@ export default {
           "75%": { transform: "translate(20px, -30px) scale(1.1)", opacity: "0.5" },
           "100%": { transform: "translate(0, 0) scale(1)", opacity: "0.4" },
         },
+        "orb-drift": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)", opacity: "0.6" },
+          "33%": { transform: "translate(30px, -20px) scale(1.1)", opacity: "0.8" },
+          "66%": { transform: "translate(-20px, 15px) scale(0.9)", opacity: "0.5" },
+        },
+        "scanline": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
