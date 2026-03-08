@@ -35,12 +35,10 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
   const handleRate = () => {
     localStorage.setItem(RATE_APP_KEY, JSON.stringify({ rated: true }));
     const platform = Capacitor.getPlatform();
-    if (platform === 'ios') {
-      window.open('https://apps.apple.com/app/lucky-stop/id6744145937', '_blank');
-    } else if (platform === 'android') {
-      window.open('https://play.google.com/store/apps/details?id=app.lovable.2dd90aa453b647199c4d45da7e4a8847', '_blank');
+    if (platform === 'android') {
+      window.open('market://details?id=com.bryangouzou.luckystop&reviewId=0', '_blank');
     } else {
-      window.open('https://apps.apple.com/app/lucky-stop/id6744145937', '_blank');
+      window.open('https://apps.apple.com/app/id6753086875?action=write-review', '_blank');
     }
     setStep('ask');
     onClose();
