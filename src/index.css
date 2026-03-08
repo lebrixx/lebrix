@@ -195,6 +195,33 @@
     background-color: #000;
   }
 
+  /* Animated gradient background for main menu */
+  @keyframes gradient-drift {
+    0%, 100% { background-position: 0% 50%; }
+    25% { background-position: 100% 0%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 0% 100%; }
+  }
+
+  .main-menu-animated-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.15;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 25%,
+      hsl(var(--primary) / 0.5) 50%,
+      hsl(var(--secondary) / 0.3) 75%,
+      hsl(var(--primary)) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradient-drift 15s ease-in-out infinite;
+    will-change: background-position;
+    pointer-events: none;
+  }
+
   /* Menu principal optimisé mobile - complètement fixe */
   .main-menu-container {
     height: 100vh;
