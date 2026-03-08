@@ -203,8 +203,8 @@ export const Shop: React.FC<ShopProps> = ({
       >
         <div className="flex items-center gap-2.5">
           <Package className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-text-secondary">Pack Essentiel</span>
-          <span className="text-xs text-text-muted">• 5 boosts + 15 tickets</span>
+          <span className="text-sm font-medium text-text-secondary">{t.shopPackEssential}</span>
+          <span className="text-xs text-text-muted">• {t.shopPackEssentialItems}</span>
         </div>
         <ArrowLeft className="w-4 h-4 text-text-muted rotate-180" />
       </div>
@@ -218,7 +218,7 @@ export const Shop: React.FC<ShopProps> = ({
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
                   <Package className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <span className="text-2xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">Pack Essentiel</span>
+                <span className="text-2xl font-extrabold bg-gradient-primary bg-clip-text text-transparent">{t.shopPackEssential}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
@@ -229,24 +229,24 @@ export const Shop: React.FC<ShopProps> = ({
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <span className="text-2xl">🛡️</span>
                 <div className="flex-1">
-                  <p className="text-text-primary font-semibold text-sm">Bouclier</p>
-                  <p className="text-text-muted text-xs">Protège d'une erreur</p>
+                  <p className="text-text-primary font-semibold text-sm">{t.shopShieldLabel}</p>
+                  <p className="text-text-muted text-xs">{t.shopShieldProtect}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <span className="text-2xl">🎯</span>
                 <div className="flex-1">
-                  <p className="text-text-primary font-semibold text-sm">Zone verte +</p>
-                  <p className="text-text-muted text-xs">Agrandit la zone verte</p>
+                  <p className="text-text-primary font-semibold text-sm">{t.shopGreenZonePlus}</p>
+                  <p className="text-text-muted text-xs">{t.shopGreenZoneDesc}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <span className="text-2xl">🚀</span>
                 <div className="flex-1">
-                  <p className="text-text-primary font-semibold text-sm">Démarrage à 20</p>
-                  <p className="text-text-muted text-xs">Commence avec 20 pts</p>
+                  <p className="text-text-primary font-semibold text-sm">{t.shopStartAt20}</p>
+                  <p className="text-text-muted text-xs">{t.shopStartAt20Desc}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
               </div>
@@ -256,8 +256,8 @@ export const Shop: React.FC<ShopProps> = ({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20">
               <Ticket className="w-6 h-6 text-secondary" />
               <div className="flex-1">
-                <p className="text-text-primary font-semibold text-sm">Tickets Expert</p>
-                <p className="text-text-muted text-xs">Pour le mode Mémoire</p>
+                <p className="text-text-primary font-semibold text-sm">{t.shopTicketsExpert}</p>
+                <p className="text-text-muted text-xs">{t.shopTicketsExpertDesc}</p>
               </div>
               <Badge variant="secondary" className="text-xs font-bold">×15</Badge>
             </div>
@@ -274,17 +274,17 @@ export const Shop: React.FC<ShopProps> = ({
                   const { purchaseEssentialNative } = await import('@/utils/purchaseEssentialService');
                   const result = await purchaseEssentialNative();
                   if (result === 'purchased') {
-                    toast({ title: "🎉 Pack Essentiel activé !", description: "5 boosts de chaque + 15 tickets ajoutés !" });
+                    toast({ title: t.shopPackActivated, description: t.shopPackActivatedDesc });
                   } else if (result === 'unavailable') {
-                    toast({ title: "Produit temporairement indisponible sur le store.", variant: "destructive" });
+                    toast({ title: t.shopProductUnavailable, variant: "destructive" });
                     setShowEssentialPack(false);
                   } else if (result === 'cancelled') {
                     // User cancelled — do nothing
                   } else {
-                    toast({ title: "Erreur lors de l'achat", description: "Veuillez réessayer.", variant: "destructive" });
+                    toast({ title: t.shopPurchaseError, description: t.shopPurchaseRetry, variant: "destructive" });
                   }
                 } catch {
-                  toast({ title: "Erreur lors de l'achat", variant: "destructive" });
+                  toast({ title: t.shopPurchaseError, variant: "destructive" });
                 } finally {
                   setIsEssentialPurchasing(false);
                 }
@@ -293,10 +293,10 @@ export const Shop: React.FC<ShopProps> = ({
               className="w-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 hover:scale-105"
             >
               {isEssentialPurchasing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              {isEssentialPurchasing ? 'Achat en cours...' : 'Acheter — 1,99 €'}
+              {isEssentialPurchasing ? t.shopPurchasing : t.shopBuyEssential}
             </Button>
 
-            <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
+            <p className="text-center text-text-muted text-xs">{t.shopSecurePayment}</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -479,7 +479,7 @@ export const Shop: React.FC<ShopProps> = ({
           <Card className="mt-8 border-2 border-dashed border-wheel-border bg-button-bg/50 p-5">
             <div className="flex items-center gap-2 mb-3">
               <Tag className="w-5 h-5 text-primary" />
-              <span className="text-text-primary font-bold">Entrer un code</span>
+              <span className="text-text-primary font-bold">{t.shopEnterCode}</span>
             </div>
             <div className="flex gap-2">
               <Input
@@ -497,7 +497,7 @@ export const Shop: React.FC<ShopProps> = ({
                   const code = promoCode.trim().toUpperCase();
                   
                   if (usedCodes.includes(code)) {
-                    toast({ title: "Code déjà utilisé", description: "Tu as déjà utilisé ce code.", variant: "destructive" });
+                    toast({ title: t.shopCodeAlreadyUsed, description: t.shopCodeAlreadyUsedDesc, variant: "destructive" });
                     setPromoCode('');
                     return;
                   }
@@ -508,12 +508,12 @@ export const Shop: React.FC<ShopProps> = ({
                     addDiamonds(50);
                     onAddCoins?.(2000);
                     unlockGoldPulse();
-                    toast({ title: "🎉 Code activé !", description: "+50 💎, +2000 coins et Or Pulsé débloqué ! ✨" });
+                    toast({ title: t.shopCodeActivated, description: t.shopCodeActivatedDesc });
                     setPromoCode('');
                     return;
                   }
                   
-                  toast({ title: "Code invalide", description: "Ce code n'existe pas ou a expiré.", variant: "destructive" });
+                  toast({ title: t.shopCodeInvalid, description: t.shopCodeInvalidDesc, variant: "destructive" });
                   setPromoCode('');
                 }}
                 className="bg-gradient-primary px-6"

@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Target, RotateCcw, Clock, AlertTriangle, Brain, Star, Sparkles } from 'lucide-react';
 import { ModeType, ModeID, cfgModes } from '@/constants/modes';
 import { canSpinSlotToday, activateDailyBonus, getActiveBonusMode, getEligibleModes } from '@/utils/dailyBonusMode';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface SlotMachineProps {
   isOpen: boolean;
@@ -41,6 +42,8 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
   onBonusActivated,
 }) => {
   const [isSpinning, setIsSpinning] = useState(false);
+  const { language } = useLanguage();
+  const t = translations[language];
   const [canSpin, setCanSpin] = useState(true);
   const [result, setResult] = useState<ModeType | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -199,7 +202,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
                 </span>
               </div>
               <Badge variant="outline" className="border-wheel-border text-text-muted text-xs">
-                Actif jusqu'à minuit
+                {t.activeUntilMidnight}
               </Badge>
             </div>
           )}
@@ -207,7 +210,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
           {/* Already active */}
           {!canSpin && !showResult && (
             <div className="text-center space-y-2">
-              <p className="text-text-muted text-sm">Bonus déjà activé aujourd'hui</p>
+              <p className="text-text-muted text-sm">{t.bonusAlreadyActive}</p>
               {result && (
                 <Badge variant="outline" className="border-secondary/50 text-secondary text-xs">
                   <Star className="w-3 h-3 mr-1" />
@@ -228,15 +231,15 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
                 {isSpinning ? (
                   <>
                     <RotateCcw className="w-4 h-4 mr-2 animate-spin" />
-                    Tirage en cours…
+                    {t.spinInProgress}
                   </>
                 ) : (
-                  'Lancer le tirage'
+                  t.launchSpin
                 )}
               </Button>
             ) : (
               <Button disabled variant="outline" className="w-full border-wheel-border text-text-muted">
-                Reviens demain
+                {t.slotComeBackTomorrow}
               </Button>
             )}
 
@@ -247,7 +250,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
               size="sm"
               className="text-text-muted hover:text-text-primary text-xs"
             >
-              Fermer
+              {t.close}
             </Button>
           </div>
         </div>

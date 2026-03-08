@@ -34,6 +34,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
   currentCoins = 0,
 }) => {
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
+  const { language } = useLanguage();
+  const t = translations[language];
   const { toast } = useToast();
   const [rewardState, setRewardState] = useState(getDailyRewardState());
   const [canClaim, setCanClaim] = useState(false);
@@ -307,16 +309,16 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 ) : (
                   <BellOff className="w-5 h-5 text-text-muted" />
                 )}
-                <span className="text-text-primary font-bold text-sm">Bonus Notifications</span>
+                <span className="text-text-primary font-bold text-sm">{t.notifBonus}</span>
               </div>
               <Badge variant="secondary" className={notificationsEnabled ? "bg-blue-500/20 text-blue-400" : "bg-gray-500/20 text-gray-400"}>
-                +20 coins/jour
+                {t.notifBonusAmount}
               </Badge>
             </div>
             {notificationsEnabled ? (
               <>
                 <p className="text-text-secondary text-xs mb-3">
-                  Active les notifications dans les réglages pour recevoir 20 coins bonus chaque jour !
+                  {t.notifBonusDesc}
                 </p>
                 {canClaimNotifBonus ? (
                   <Button
@@ -325,18 +327,18 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                     size="sm"
                   >
                     <Bell className="w-4 h-4 mr-2" />
-                    Récupérer +20 coins
+                    {t.claimNotifBonus}
                   </Button>
                 ) : (
                   <div className="text-center text-text-muted text-xs py-2">
-                    ✓ Bonus déjà récupéré aujourd'hui
+                    {t.notifBonusClaimed}
                   </div>
                 )}
               </>
             ) : (
               <div className="flex items-center gap-2 text-text-muted text-xs">
                 <Lock className="w-4 h-4" />
-                <span>Active les notifications dans les réglages pour débloquer</span>
+                <span>{t.notifBonusLocked}</span>
               </div>
             )}
           </Card>
@@ -346,14 +348,14 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Coins className="w-6 h-6 text-green-400" />
-                <span className="text-text-primary font-bold">Bonus Publicité</span>
+                <span className="text-text-primary font-bold">{t.adBonus}</span>
               </div>
               <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                +100 coins
+                {t.adBonusAmount}
               </Badge>
             </div>
             <p className="text-text-secondary text-sm mb-3">
-              Regarde une pub et gagne 100 coins !
+              {t.adBonusDesc}
             </p>
             <Button
               onClick={handleClaimCoinsWithAd}
@@ -361,7 +363,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
               disabled={isShowing || !isReady() || cooldownRemaining > 0}
             >
               <Video className="w-4 h-4 mr-2" />
-              Regarder une pub
+              {t.dailyRewardsWatchAd}
               {cooldownRemaining > 0 && (
                 <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
               )}

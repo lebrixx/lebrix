@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
 
@@ -47,6 +47,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onOpenShop
 }) => {
   const isGameRunning = gameStatus === 'running';
+  const { language } = useLanguage();
+  const t = translations[language];
   const [showSlotMachine, setShowSlotMachine] = useState(false);
   const [bonusMode, setBonusMode] = useState<ModeType | null>(getActiveBonusMode());
   const canSpin = canSpinSlotToday();
@@ -137,8 +139,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-6 h-6 text-danger flex-shrink-0" />
               <div>
-                <p className="text-danger font-medium">Partie en cours</p>
-                <p className="text-text-muted text-sm">Termine ta partie actuelle pour changer de mode.</p>
+                <p className="text-danger font-medium">{t.modeGameInProgressLabel}</p>
+                <p className="text-text-muted text-sm">{t.modeGameInProgressDescLabel}</p>
               </div>
             </div>
           </Card>
@@ -265,7 +267,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     `}
                   >
                     <Zap className="w-4 h-4 mr-2" />
-                    {isCurrentMode ? 'Jouer maintenant' : 'Choisir ce Mode'}
+                    {isCurrentMode ? t.playNowMode : t.selectMode}
                   </Button>
                 )}
               </div>

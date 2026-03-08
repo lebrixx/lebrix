@@ -66,15 +66,15 @@ export const Settings: React.FC<SettingsProps> = ({
       } catch (error) {
         console.error('Error opening settings:', error);
         toast({
-          title: "Erreur",
-          description: "Impossible d'ouvrir les paramètres de l'application.",
+          title: t.settingsError,
+          description: t.settingsCannotOpenSettings,
           variant: "destructive",
         });
       }
     } else {
       toast({
-        title: "Non disponible",
-        description: "Cette fonction est disponible uniquement sur mobile.",
+        title: t.settingsNotAvailable,
+        description: t.settingsNotAvailableDesc,
       });
     }
   };
@@ -88,8 +88,8 @@ export const Settings: React.FC<SettingsProps> = ({
       if (status === 'denied') {
         // Permission was denied, show message and open settings
         toast({
-          title: "Notifications bloquées",
-          description: "Ouvre les paramètres de l'app pour autoriser les notifications.",
+          title: t.settingsNotifBlocked,
+          description: t.settingsNotifBlockedDesc,
           variant: "destructive",
         });
         openAppSettings();
@@ -100,8 +100,8 @@ export const Settings: React.FC<SettingsProps> = ({
       const granted = await requestNotificationPermission();
       if (!granted) {
         toast({
-          title: "Notifications refusées",
-          description: "Tu dois autoriser les notifications pour les activer.",
+          title: t.settingsNotifDenied,
+          description: t.settingsNotifDeniedDesc,
           variant: "destructive",
         });
         setPermissionStatus('denied');
@@ -199,12 +199,12 @@ export const Settings: React.FC<SettingsProps> = ({
             </div>
             {permissionStatus === 'denied' ? (
               <div className="flex items-center gap-1 ml-8 text-xs text-red-400">
-                <span>⚠️ Notifications bloquées - ouvre les paramètres</span>
+                <span>{t.settingsNotifBlockedInline}</span>
               </div>
             ) : (
               <div className="flex items-center gap-1 ml-8 text-xs text-blue-400">
                 <Coins className="w-3 h-3" />
-                <span>+20 coins/jour si activé</span>
+                <span>{t.settingsNotifCoinBonus}</span>
               </div>
             )}
           </div>
@@ -279,9 +279,9 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="flex items-center gap-3">
                 <Crosshair className="w-5 h-5 text-primary" />
                 <div>
-                  <Label className="text-text-primary text-base">Défi Précision</Label>
+                  <Label className="text-text-primary text-base">{t.settingsPrecisionChallenge}</Label>
                   <p className="text-xs text-text-muted">
-                    {hasPlayedToday() ? 'Déjà joué aujourd\'hui' : 'Disponible !'}
+                    {hasPlayedToday() ? t.settingsAlreadyPlayed : t.settingsAvailable}
                   </p>
                 </div>
               </div>
@@ -294,7 +294,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 }}
                 className={`${hasPlayedToday() ? 'border-wheel-border text-text-muted' : 'border-primary text-primary hover:bg-primary/10'}`}
               >
-                {hasPlayedToday() ? 'Demain' : 'Jouer'}
+                {hasPlayedToday() ? t.settingsTomorrow : t.settingsPlay}
               </Button>
             </div>
           )}
@@ -304,7 +304,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="flex items-center gap-3">
                 <Settings2 className="w-5 h-5 text-text-muted" />
                 <Label className="text-text-primary text-base">
-                  Autorisations de l'app
+                  {t.settingsAppPermissions}
                 </Label>
               </div>
               <Button
@@ -313,7 +313,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 onClick={openAppSettings}
                 className="border-wheel-border hover:bg-button-hover text-text-primary"
               >
-                Ouvrir
+                {t.settingsOpen}
               </Button>
             </div>
           )}

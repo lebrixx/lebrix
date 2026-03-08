@@ -5,6 +5,7 @@ import { Crown, Sparkles, X, Loader2 } from 'lucide-react';
 import { purchasePremiumNative } from '@/utils/purchaseService';
 import { restorePurchases } from '@/utils/restorePurchases';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface PremiumOfferProps {
   isOpen: boolean;
@@ -12,62 +13,24 @@ interface PremiumOfferProps {
   onAddCoins?: (amount: number) => void;
 }
 
-const REWARDS = [
-  {
-    emoji: '\u{1F6AB}',
-    title: 'Zero Pub',
-    description: 'Plus aucune pub interstitielle',
-    amount: '\u2205 Pubs',
-    tone: 'special' as const,
-  },
-  {
-    emoji: '✨',
-    title: 'Or Pulsé',
-    description: 'Effet doré pulsé sur ton pseudo',
-    amount: 'Exclusif',
-    tone: 'special' as const,
-  },
-  {
-    emoji: '\u{1F451}',
-    title: 'Pass Saison VIP',
-    description: 'Debloque les 9 paliers + toutes les decorations et couleurs',
-    amount: 'Tout inclus',
-    tone: 'secondary' as const,
-  },
-  {
-    emoji: '\u{1FA99}',
-    title: 'Coins',
-    description: 'Pour la boutique du jeu',
-    amount: '+1 000',
-    tone: 'secondary' as const,
-  },
-  {
-    emoji: '\u{1F6E1}\uFE0F',
-    title: 'Bouclier',
-    description: "Protege d'une erreur",
-    amount: 'x2',
-    tone: 'primary' as const,
-  },
-  {
-    emoji: '\u{1F3AF}',
-    title: 'Zone verte +',
-    description: 'Zone de reussite elargie',
-    amount: 'x2',
-    tone: 'primary' as const,
-  },
-  {
-    emoji: '\u{1F680}',
-    title: 'Demarrage 20',
-    description: 'Commence a 20 points',
-    amount: 'x2',
-    tone: 'primary' as const,
-  },
-];
+// REWARDS is now generated inside the component to use translations
 
 export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onAddCoins }) => {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const [isRestoring, setIsRestoring] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
+
+  const REWARDS = [
+    { emoji: '\u{1F6AB}', title: t.premiumZeroPub, description: t.premiumZeroPubDesc, amount: t.premiumNoPubs, tone: 'special' as const },
+    { emoji: '✨', title: t.premiumGoldPulsed, description: t.premiumGoldPulsedDesc, amount: t.premiumExclusive, tone: 'special' as const },
+    { emoji: '\u{1F451}', title: t.premiumSeasonVIP, description: t.premiumSeasonVIPDesc, amount: t.premiumAllIncluded, tone: 'secondary' as const },
+    { emoji: '\u{1FA99}', title: t.premiumCoins, description: t.premiumCoinsDesc, amount: '+1 000', tone: 'secondary' as const },
+    { emoji: '\u{1F6E1}\uFE0F', title: t.shopShieldLabel, description: t.shopShieldProtect, amount: 'x2', tone: 'primary' as const },
+    { emoji: '\u{1F3AF}', title: t.shopGreenZonePlus, description: t.shopGreenZoneDesc, amount: 'x2', tone: 'primary' as const },
+    { emoji: '\u{1F680}', title: t.premiumStartAt20, description: t.premiumStartAt20Desc, amount: 'x2', tone: 'primary' as const },
+  ];
 
   const handlePurchase = async () => {
     if (isPurchasing) return;
@@ -75,15 +38,15 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
     try {
       const result = await purchasePremiumNative(onAddCoins);
       if (result === 'purchased') {
-        toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
+        toast({ title: t.premiumPackActivated, description: t.premiumPackActivatedDesc });
         onClose();
       } else if (result === 'cancelled') {
         // User cancelled — do nothing
       } else {
-        toast({ title: 'Erreur lors de l\'achat', description: 'Veuillez réessayer.', variant: 'destructive' });
+        toast({ title: t.premiumPurchaseError, description: t.premiumPurchaseRetry, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Erreur lors de l\'achat', variant: 'destructive' });
+      toast({ title: t.premiumPurchaseError, variant: 'destructive' });
     } finally {
       setIsPurchasing(false);
     }
@@ -95,15 +58,15 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
     try {
       const result = await restorePurchases();
       if (result === 'restored') {
-        toast({ title: '✅ Achats restaurés avec succès' });
+        toast({ title: t.premiumRestored });
         onClose();
       } else if (result === 'none') {
-        toast({ title: 'Aucun achat à restaurer', variant: 'destructive' });
+        toast({ title: t.premiumNoPurchases, variant: 'destructive' });
       } else {
-        toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+        toast({ title: t.premiumRestoreError, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+      toast({ title: t.premiumRestoreError, variant: 'destructive' });
     } finally {
       setIsRestoring(false);
     }
@@ -129,7 +92,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 <Sparkles className="absolute -top-1 -right-3 w-4 h-4 text-primary animate-pulse" />
               </div>
               <h2 className="text-lg font-black text-text-primary tracking-tight">
-                PACK <span className="bg-gradient-primary bg-clip-text text-transparent">PREMIUM</span>
+                {t.premiumPackLabel} <span className="bg-gradient-primary bg-clip-text text-transparent">{t.premiumPremiumLabel}</span>
               </h2>
               <div className="w-14 h-0.5 bg-gradient-primary mx-auto mt-1.5 rounded-full opacity-60" />
             </div>
@@ -159,7 +122,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`text-lg ${isSpecial ? 'drop-shadow-[0_0_10px_hsl(0,85%,60%,0.5)]' : 'drop-shadow-[0_0_8px_hsl(var(--primary)/0.4)]'}`}>{reward.emoji}</span>
                           <div className="min-w-0">
-                            <p className={`text-[11px] font-black uppercase tracking-wide truncate ${reward.title === 'Or Pulsé' ? '' : 'text-text-primary'}`} style={reward.title === 'Or Pulsé' ? { animation: 'username-gold-pulse 2s ease-in-out infinite' } : undefined}>{reward.title}</p>
+                            <p className={`text-[11px] font-black uppercase tracking-wide truncate ${index === 1 ? '' : 'text-text-primary'}`} style={index === 1 ? { animation: 'username-gold-pulse 2s ease-in-out infinite' } : undefined}>{reward.title}</p>
                             <p className={`text-[10px] text-text-muted ${isSeasonPass ? 'whitespace-normal leading-tight' : 'truncate'}`}>{reward.description}</p>
                           </div>
                         </div>
@@ -188,7 +151,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
               <div>
                 <span className="text-xs text-text-muted line-through mr-2">6,99 &#8364;</span>
                 <span className="text-2xl font-black bg-gradient-primary bg-clip-text text-transparent drop-shadow-lg">3,99 &#8364;</span>
-                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d&apos;abonnement</div>
+                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">{t.premiumOneTimePurchase}</div>
               </div>
 
               <Button
@@ -197,10 +160,10 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 className="w-full py-3 text-sm font-extrabold bg-gradient-primary hover:opacity-90 shadow-glow-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-game-dark"
               >
                 {isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Crown className="w-4 h-4 mr-1.5" />}
-                {isPurchasing ? 'Achat en cours...' : 'Débloquer le Pack Premium'}
+                {isPurchasing ? t.premiumPurchasing : t.premiumUnlock}
               </Button>
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
-                🔒 Paiement sécurisé
+                {t.premiumSecurePayment}
               </p>
 
               <button
@@ -209,11 +172,11 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 className="text-[10px] text-text-muted/70 hover:text-text-secondary transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
               >
                 {isRestoring && <Loader2 className="w-3 h-3 animate-spin" />}
-                Restaurer les achats
+                {t.premiumRestorePurchases}
               </button>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
-                Non merci
+                {t.premiumNoThanks}
               </button>
             </div>
           </div>

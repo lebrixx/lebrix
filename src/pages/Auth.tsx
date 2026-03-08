@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Mail, User, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface AuthProps {
   onBack: () => void;
@@ -19,12 +20,14 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const handleAuth = async () => {
     if (!email || !password || (!isLogin && !username)) {
       toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs",
+        title: t.authError,
+        description: t.authFillAllFields,
         variant: "destructive"
       });
       return;
@@ -44,8 +47,8 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
         }
 
         toast({
-          title: "Connexion réussie !",
-          description: "Bienvenue dans Lucky Stop !",
+          title: t.authLoginSuccess,
+          description: t.authLoginSuccessDesc,
         });
       } else {
         const { error } = await supabase.auth.signUp({
@@ -64,25 +67,25 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
         }
 
         toast({
-          title: "Compte créé !",
-          description: "Vérifiez votre email pour confirmer votre inscription.",
+          title: t.authAccountCreated,
+          description: t.authAccountCreatedDesc,
         });
       }
     } catch (error: any) {
-      let message = "Une erreur s'est produite";
+      let message = t.authGenericError;
       
       if (error.message.includes('Invalid login credentials')) {
-        message = "Email ou mot de passe incorrect";
+        message = t.authInvalidCredentials;
       } else if (error.message.includes('User already registered')) {
-        message = "Cet email est déjà utilisé";
+        message = t.authAlreadyRegistered;
       } else if (error.message.includes('Password should be')) {
-        message = "Le mot de passe doit contenir au moins 6 caractères";
+        message = t.authPasswordTooShort;
       } else if (error.message.includes('Invalid email')) {
-        message = "Email invalide";
+        message = t.authInvalidEmail;
       }
 
       toast({
-        title: "Erreur",
+        title: t.authError,
         description: message,
         variant: "destructive"
       });
@@ -102,7 +105,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
           className="mb-6 border-wheel-border hover:bg-button-hover"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
+          {t.authBack}
         </Button>
 
         <div className="text-center">
@@ -110,7 +113,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
             LUCKY STOP
           </h1>
           <p className="text-text-secondary">
-            {isLogin ? 'Connectez-vous pour jouer' : 'Créez votre compte'}
+            {isLogin ? t.authLoginSubtitle : t.authSignupSubtitle}
           </p>
         </div>
       </div>
@@ -139,7 +142,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
             <div className="space-y-2">
               <Label htmlFor="username" className="text-text-primary flex items-center gap-2">
                 <User className="w-4 h-4" />
-                Pseudo
+                {t.authPseudo}
               </Label>
               <Input
                 id="username"
@@ -155,7 +158,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
           {/* Password */}
           <div className="space-y-2">
             <Label htmlFor="password" className="text-text-primary">
-              Mot de passe
+              {t.authPassword}
             </Label>
             <div className="relative">
               <Input
@@ -185,20 +188,20 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
             className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
             size="lg"
           >
-            {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'Créer le compte')}
+            {loading ? t.authLoading : (isLogin ? t.authLogin : t.authCreateAccount)}
           </Button>
 
           {/* Switch Mode */}
           <div className="text-center pt-4">
             <p className="text-text-muted text-sm">
-              {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
+              {isLogin ? t.authNoAccount : t.authHasAccount}
             </p>
             <Button
               onClick={() => setIsLogin(!isLogin)}
               variant="link"
               className="text-primary hover:text-primary/80 p-0"
             >
-              {isLogin ? "Créer un compte" : "Se connecter"}
+              {isLogin ? t.authSwitchToSignup : t.authSwitchToLogin}
             </Button>
           </div>
         </div>

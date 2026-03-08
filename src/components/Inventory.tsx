@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
   const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | null>(null); // preview locked color
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const identity = getLocalIdentity();
 
@@ -143,11 +146,11 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const handleSaveUsername = async () => {
     const trimmed = newUsername.trim();
     if (!trimmed || trimmed.length < 3) {
-      toast({ title: 'Pseudo trop court', description: 'Minimum 3 caractères.', variant: 'destructive' });
+      toast({ title: t.inventoryUsernameTooShort, description: t.inventoryUsernameTooShortDesc, variant: 'destructive' });
       return;
     }
     if (trimmed.length > 20) {
-      toast({ title: 'Pseudo trop long', description: 'Maximum 20 caractères.', variant: 'destructive' });
+      toast({ title: t.inventoryUsernameTooLong, description: t.inventoryUsernameTooLongDesc, variant: 'destructive' });
       return;
     }
     // Check availability
@@ -156,13 +159,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
         body: { username: trimmed }
       });
       if (result.data?.taken) {
-        toast({ title: 'Pseudo déjà pris', description: 'Choisis un autre pseudo.', variant: 'destructive' });
+        toast({ title: t.inventoryUsernameTaken, description: t.inventoryUsernameTakenDesc, variant: 'destructive' });
         return;
       }
     } catch {}
     setUsername(trimmed);
     setEditingUsername(false);
-    toast({ title: '✅ Pseudo mis à jour !', description: `Ton pseudo est maintenant "${trimmed}".` });
+    toast({ title: t.inventoryUsernameUpdated, description: t.inventoryUsernameUpdatedDesc.replace('{name}', trimmed) });
   };
 
   const unlockedDecorations = DECORATIONS.filter(d => passData.currentTier >= d.tier);
