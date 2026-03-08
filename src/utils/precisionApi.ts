@@ -55,7 +55,7 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
   }
 }
 
-/** Fetch today's leaderboard */
+/** Fetch today's leaderboard (top 1000) */
 export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
   const today = new Date().toISOString().slice(0, 10);
 
@@ -63,6 +63,21 @@ export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]
     .from('daily_precision_scores' as any)
     .select('id, username, target, result, gap, challenge_date, decorations')
     .eq('challenge_date', today)
+    .order('gap', { ascending: true })
+    .limit(1000);
+
+  if (error || !data) return [];
+  return data as unknown as PrecisionEntry[];
+}
+
+/** Fetch yesterday's leaderboard (top 50) */
+export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from('daily_precision_scores' as any)
+    .select('id, username, target, result, gap, challenge_date, decorations')
+    .eq('challenge_date', yesterday)
     .order('gap', { ascending: true })
     .limit(50);
 
