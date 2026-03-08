@@ -10,7 +10,7 @@ import {
   getSecondsUntilNextChallenge,
   formatCountdown,
 } from '@/utils/dailyChallenge';
-import { submitPrecisionScore, fetchDailyPrecisionLeaderboard, type PrecisionEntry } from '@/utils/precisionApi';
+import { submitPrecisionScore, fetchDailyPrecisionLeaderboard, fetchYesterdayPrecisionLeaderboard, type PrecisionEntry } from '@/utils/precisionApi';
 import { getUsername } from '@/utils/localIdentity';
 import { applyDecoration } from '@/utils/seasonPass';
 
