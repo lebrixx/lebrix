@@ -120,27 +120,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     };
   }, []);
   return (
-    <div className={`main-menu-container bg-gradient-game ${theme} pt-safe relative overflow-hidden`}>
-      {/* Animated background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Large pulsing orbs */}
-        <div
-          className="absolute w-[500px] h-[500px] rounded-full animate-[orb-drift_16s_ease-in-out_infinite] blur-[120px]"
-          style={{ top: '-15%', left: '-10%', background: 'hsl(var(--primary) / 0.18)' }}
-        />
-        <div
-          className="absolute w-[400px] h-[400px] rounded-full animate-[orb-drift_20s_ease-in-out_infinite_4s] blur-[100px]"
-          style={{ bottom: '-10%', right: '-15%', background: 'hsl(var(--secondary) / 0.15)' }}
-        />
-        <div
-          className="absolute w-[300px] h-[300px] rounded-full animate-[orb-drift_14s_ease-in-out_infinite_8s] blur-[80px]"
-          style={{ top: '40%', left: '50%', transform: 'translateX(-50%)', background: 'hsl(var(--primary) / 0.08)' }}
-        />
-        {/* Subtle scan line */}
-        <div className="absolute inset-0 animate-[scanline_8s_linear_infinite] opacity-[0.03]"
-          style={{ background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--primary) / 0.3) 2px, hsl(var(--primary) / 0.3) 4px)' }}
-        />
-      </div>
+    <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
       {/* Lucky Wheel Button */}
       <Button
         onClick={() => setShowLuckyWheel(true)}
