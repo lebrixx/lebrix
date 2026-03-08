@@ -172,7 +172,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 className="text-[10px] text-text-muted/70 hover:text-text-secondary transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
               >
                 {isRestoring && <Loader2 className="w-3 h-3 animate-spin" />}
-                Restaurer les achats
+                {t.premiumRestorePurchases}
               </button>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
