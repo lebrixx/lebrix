@@ -42,6 +42,8 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
   onBonusActivated,
 }) => {
   const [isSpinning, setIsSpinning] = useState(false);
+  const { language } = useLanguage();
+  const t = translations[language];
   const [canSpin, setCanSpin] = useState(true);
   const [result, setResult] = useState<ModeType | null>(null);
   const [showResult, setShowResult] = useState(false);
