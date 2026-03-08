@@ -316,7 +316,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             {notificationsEnabled ? (
               <>
                 <p className="text-text-secondary text-xs mb-3">
-                  Active les notifications dans les réglages pour recevoir 20 coins bonus chaque jour !
+                  {t.notifBonusDesc}
                 </p>
                 {canClaimNotifBonus ? (
                   <Button
