@@ -201,7 +201,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
               variant="link"
               className="text-primary hover:text-primary/80 p-0"
             >
-              {isLogin ? "Créer un compte" : "Se connecter"}
+              {isLogin ? t.authSwitchToSignup : t.authSwitchToLogin}
             </Button>
           </div>
         </div>
