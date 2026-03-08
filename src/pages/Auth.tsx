@@ -47,8 +47,8 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
         }
 
         toast({
-          title: "Connexion réussie !",
-          description: "Bienvenue dans Lucky Stop !",
+          title: t.authLoginSuccess,
+          description: t.authLoginSuccessDesc,
         });
       } else {
         const { error } = await supabase.auth.signUp({
