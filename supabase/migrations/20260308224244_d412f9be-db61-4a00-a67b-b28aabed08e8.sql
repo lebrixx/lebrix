@@ -1,0 +1,1 @@
+ALTER TABLE public.daily_precision_scores ADD COLUMN decorations text DEFAULT NULL;

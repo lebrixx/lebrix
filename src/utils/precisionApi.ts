@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getDeviceId, getUsername } from '@/utils/localIdentity';
+import { getEquippedDecorationId, getEquippedUsernameColor } from '@/utils/seasonPass';
 
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraHJ0dmduemN1ZnBsemhvcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NjU1NjgsImV4cCI6MjA3NDE0MTU2OH0.3mYkFLKEqJFllX8487LdqnkEFXUw5Y4cZnzlZyfJ-a4";
@@ -11,6 +12,19 @@ export interface PrecisionEntry {
   result: number;
   gap: number;
   challenge_date: string;
+  decorations: string | null;
+}
+
+/** Build decorations string from equipped items */
+function buildDecorationsString(): string | null {
+  const parts: string[] = [];
+  const decoId = getEquippedDecorationId();
+  if (decoId) parts.push(decoId);
+  const color = getEquippedUsernameColor();
+  if (color === 'violet') parts.push('purple_name');
+  else if (color === 'pulse') parts.push('pulse_name');
+  else if (color === 'gold_pulse') parts.push('gold_pulse_name');
+  return parts.length > 0 ? parts.join(',') : null;
 }
 
 /** Submit precision score to the edge function */
@@ -32,6 +46,7 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
         target,
         result,
         gap,
+        decorations: buildDecorationsString(),
       }),
     });
     return res.ok;
@@ -46,7 +61,7 @@ export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]
 
   const { data, error } = await supabase
     .from('daily_precision_scores' as any)
-    .select('id, username, target, result, gap, challenge_date')
+    .select('id, username, target, result, gap, challenge_date, decorations')
     .eq('challenge_date', today)
     .order('gap', { ascending: true })
     .limit(50);
