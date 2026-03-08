@@ -397,6 +397,11 @@ const Index = () => {
         onClose={() => setShowDailyRewards(false)}
         onRewardClaimed={handleDailyRewardClaimed}
       />
+
+      <RateAppDialog
+        isOpen={showRateDialog}
+        onClose={() => setShowRateDialog(false)}
+      />
     </div>
   );
 };
