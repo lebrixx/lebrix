@@ -1037,6 +1037,7 @@ export const translations = {
     precisionGoodLabel: 'GOOD',
     precisionNotBad: 'NOT BAD',
     precisionTryAgain: 'TRY AGAIN',
+    precisionTopForNow: 'for now — ranking in progress',
     precisionPlayers: 'player(s)',
   },
   es: {
