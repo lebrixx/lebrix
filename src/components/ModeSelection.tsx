@@ -47,6 +47,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onOpenShop
 }) => {
   const isGameRunning = gameStatus === 'running';
+  const { language } = useLanguage();
+  const t = translations[language];
   const [showSlotMachine, setShowSlotMachine] = useState(false);
   const [bonusMode, setBonusMode] = useState<ModeType | null>(getActiveBonusMode());
   const canSpin = canSpinSlotToday();
