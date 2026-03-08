@@ -183,20 +183,20 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
         {/* Rules panel (togglable) */}
         {showRules && (
-          <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3.5 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-[hsl(var(--primary))]" />
-              <p className="text-sm font-bold text-[hsl(var(--text-primary))]">Comment jouer</p>
+              <Info className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
+              <p className="text-xs font-bold text-[hsl(var(--text-primary))]">Comment jouer</p>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {RULES.map((rule, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] flex items-center justify-center shrink-0 mt-0.5">
-                    {rule.icon}
+                <div key={i} className="flex items-start gap-2.5">
+                  <div className="w-6 h-6 rounded-md bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] flex items-center justify-center shrink-0 mt-0.5">
+                    {React.cloneElement(rule.icon as React.ReactElement, { className: 'w-3 h-3' })}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-[hsl(var(--text-primary))]">{rule.title}</p>
-                    <p className="text-xs text-[hsl(var(--text-muted))] leading-relaxed">{rule.desc}</p>
+                    <p className="text-[11px] font-semibold text-[hsl(var(--text-primary))]">{rule.title}</p>
+                    <p className="text-[10px] text-[hsl(var(--text-muted))] leading-relaxed">{rule.desc}</p>
                   </div>
                 </div>
               ))}
@@ -205,22 +205,22 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         )}
 
         {/* Target card */}
-        <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-2xl p-5">
+        <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-[hsl(var(--text-muted))] uppercase tracking-widest mb-1">🎯 Cible du jour</p>
-              <p className="text-4xl font-mono font-black bg-gradient-primary bg-clip-text text-transparent">
+              <p className="text-[10px] text-[hsl(var(--text-muted))] uppercase tracking-widest mb-0.5">🎯 Cible du jour</p>
+              <p className="text-3xl font-mono font-black bg-gradient-primary bg-clip-text text-transparent">
                 {target.toFixed(3)}
               </p>
             </div>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[hsl(var(--primary)/0.15)] to-[hsl(var(--secondary)/0.15)] border border-[hsl(var(--primary)/0.2)] flex items-center justify-center">
-              <Target className="w-8 h-8 text-[hsl(var(--primary))]" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[hsl(var(--primary)/0.15)] to-[hsl(var(--secondary)/0.15)] border border-[hsl(var(--primary)/0.2)] flex items-center justify-center">
+              <Target className="w-6 h-6 text-[hsl(var(--primary))]" />
             </div>
           </div>
           {updatedBest !== null && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[hsl(var(--wheel-border)/0.3)]">
-              <Trophy className="w-3.5 h-3.5 text-[hsl(var(--secondary))]" />
-              <span className="text-xs text-[hsl(var(--text-muted))]">Record personnel : <strong className="text-[hsl(var(--secondary))]">{updatedBest.toFixed(3)}</strong></span>
+            <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-[hsl(var(--wheel-border)/0.3)]">
+              <Trophy className="w-3 h-3 text-[hsl(var(--secondary))]" />
+              <span className="text-[11px] text-[hsl(var(--text-muted))]">Record : <strong className="text-[hsl(var(--secondary))]">{updatedBest.toFixed(3)}</strong></span>
             </div>
           )}
         </div>
