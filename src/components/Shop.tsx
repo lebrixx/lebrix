@@ -479,7 +479,7 @@ export const Shop: React.FC<ShopProps> = ({
           <Card className="mt-8 border-2 border-dashed border-wheel-border bg-button-bg/50 p-5">
             <div className="flex items-center gap-2 mb-3">
               <Tag className="w-5 h-5 text-primary" />
-              <span className="text-text-primary font-bold">Entrer un code</span>
+              <span className="text-text-primary font-bold">{t.shopEnterCode}</span>
             </div>
             <div className="flex gap-2">
               <Input
