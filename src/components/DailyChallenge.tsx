@@ -227,53 +227,42 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
         {/* Result card */}
         {phase === 'result' && result && quality && (
-          <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-2xl p-5 space-y-4">
-            {/* Quality header */}
-            <div className="text-center space-y-1">
-              <span className="text-4xl">{quality.emoji}</span>
-              <p className={`text-2xl font-black tracking-wide ${quality.color}`}>{quality.label}</p>
+          <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-4 space-y-3">
+            <div className="text-center space-y-0.5">
+              <span className="text-2xl">{quality.emoji}</span>
+              <p className={`text-lg font-black tracking-wide ${quality.color}`}>{quality.label}</p>
             </div>
-
-            {/* Stats grid */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5">
               {[
                 { label: 'Cible', value: result.target.toFixed(3), color: 'text-[hsl(var(--primary))]' },
                 { label: 'Ton arrêt', value: result.result.toFixed(3), color: 'text-[hsl(var(--text-primary))]' },
                 { label: 'Écart', value: result.gap.toFixed(3), color: quality.color },
               ].map((stat, i) => (
-                <div key={i} className="bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] rounded-xl p-3 text-center">
-                  <p className="text-[10px] text-[hsl(var(--text-muted))] uppercase mb-1">{stat.label}</p>
-                  <p className={`text-base font-mono font-bold ${stat.color}`}>{stat.value}</p>
+                <div key={i} className="bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] rounded-lg p-2 text-center">
+                  <p className="text-[9px] text-[hsl(var(--text-muted))] uppercase mb-0.5">{stat.label}</p>
+                  <p className={`text-sm font-mono font-bold ${stat.color}`}>{stat.value}</p>
                 </div>
               ))}
             </div>
-
-            {/* Actions */}
-            <div className="flex gap-2">
-              {/* TEST: Retry button */}
-              <Button
-                onClick={handleRetry}
-                className="flex-1 py-5 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-xl"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Réessayer (test)
-              </Button>
-            </div>
-
-            {/* Countdown */}
-            <div className="bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] rounded-xl p-3 flex items-center justify-center gap-3">
-              <Clock className="w-4 h-4 text-[hsl(var(--text-muted))]" />
-              <span className="text-xs text-[hsl(var(--text-muted))]">Prochain défi dans</span>
-              <span className="text-base font-mono font-bold text-[hsl(var(--text-primary))]">{formatCountdown(countdown)}</span>
+            <Button
+              onClick={handleRetry}
+              className="w-full py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-lg"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Réessayer (test)
+            </Button>
+            <div className="bg-[hsl(var(--button-bg))] border border-[hsl(var(--wheel-border)/0.3)] rounded-lg p-2.5 flex items-center justify-center gap-2">
+              <Clock className="w-3.5 h-3.5 text-[hsl(var(--text-muted))]" />
+              <span className="text-[11px] text-[hsl(var(--text-muted))]">Prochain défi dans</span>
+              <span className="text-sm font-mono font-bold text-[hsl(var(--text-primary))]">{formatCountdown(countdown)}</span>
             </div>
           </div>
         )}
 
-        {/* Launch button */}
         {phase === 'intro' && (
           <Button
             onClick={startTimer}
-            className="w-full py-7 text-lg font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_24px_hsl(var(--primary)/0.4)] transition-all duration-300 rounded-2xl relative overflow-hidden group"
+            className="w-full py-5 text-base font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_24px_hsl(var(--primary)/0.4)] transition-all duration-300 rounded-xl relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <Target className="w-5 h-5 mr-2" />
