@@ -210,7 +210,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
           {/* Already active */}
           {!canSpin && !showResult && (
             <div className="text-center space-y-2">
-              <p className="text-text-muted text-sm">Bonus déjà activé aujourd'hui</p>
+              <p className="text-text-muted text-sm">{t.bonusAlreadyActive}</p>
               {result && (
                 <Badge variant="outline" className="border-secondary/50 text-secondary text-xs">
                   <Star className="w-3 h-3 mr-1" />
