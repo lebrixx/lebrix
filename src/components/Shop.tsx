@@ -284,7 +284,7 @@ export const Shop: React.FC<ShopProps> = ({
                     toast({ title: t.shopPurchaseError, description: t.shopPurchaseRetry, variant: "destructive" });
                   }
                 } catch {
-                  toast({ title: "Erreur lors de l'achat", variant: "destructive" });
+                  toast({ title: t.shopPurchaseError, variant: "destructive" });
                 } finally {
                   setIsEssentialPurchasing(false);
                 }
