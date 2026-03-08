@@ -276,7 +276,7 @@ export const Shop: React.FC<ShopProps> = ({
                   if (result === 'purchased') {
                     toast({ title: t.shopPackActivated, description: t.shopPackActivatedDesc });
                   } else if (result === 'unavailable') {
-                    toast({ title: "Produit temporairement indisponible sur le store.", variant: "destructive" });
+                    toast({ title: t.shopProductUnavailable, variant: "destructive" });
                     setShowEssentialPack(false);
                   } else if (result === 'cancelled') {
                     // User cancelled — do nothing
