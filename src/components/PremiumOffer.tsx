@@ -92,7 +92,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 <Sparkles className="absolute -top-1 -right-3 w-4 h-4 text-primary animate-pulse" />
               </div>
               <h2 className="text-lg font-black text-text-primary tracking-tight">
-                PACK <span className="bg-gradient-primary bg-clip-text text-transparent">PREMIUM</span>
+                {t.premiumPackLabel} <span className="bg-gradient-primary bg-clip-text text-transparent">{t.premiumPremiumLabel}</span>
               </h2>
               <div className="w-14 h-0.5 bg-gradient-primary mx-auto mt-1.5 rounded-full opacity-60" />
             </div>
