@@ -66,7 +66,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
         toast({ title: t.premiumRestoreError, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Impossible de restaurer les achats pour le moment', variant: 'destructive' });
+      toast({ title: t.premiumRestoreError, variant: 'destructive' });
     } finally {
       setIsRestoring(false);
     }
