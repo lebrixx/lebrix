@@ -313,7 +313,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 onClick={openAppSettings}
                 className="border-wheel-border hover:bg-button-hover text-text-primary"
               >
-                Ouvrir
+                {t.settingsOpen}
               </Button>
             </div>
           )}
