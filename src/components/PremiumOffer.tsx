@@ -38,7 +38,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
     try {
       const result = await purchasePremiumNative(onAddCoins);
       if (result === 'purchased') {
-        toast({ title: '🎉 Pack Premium activé !', description: 'Toutes les récompenses ont été débloquées !' });
+        toast({ title: t.premiumPackActivated, description: t.premiumPackActivatedDesc });
         onClose();
       } else if (result === 'cancelled') {
         // User cancelled — do nothing
