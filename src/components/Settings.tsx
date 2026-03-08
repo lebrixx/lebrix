@@ -269,28 +269,6 @@ export const Settings: React.FC<SettingsProps> = ({
             {t.notificationDesc}
           </div>
 
-          {/* Bouton Test Avis (debug) */}
-          {onOpenRateDialog && (
-            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
-              <div className="flex items-center gap-3">
-                <Star className="w-5 h-5 text-secondary" />
-                <Label className="text-text-primary text-base">
-                  Tester pop-up avis
-                </Label>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  onClose();
-                  setTimeout(() => onOpenRateDialog(), 300);
-                }}
-                className="border-wheel-border hover:bg-button-hover text-text-primary"
-              >
-                Test
-              </Button>
-            </div>
-          )}
 
           {/* Bouton Autorisations App */}
           {Capacitor.isNativePlatform() && (
