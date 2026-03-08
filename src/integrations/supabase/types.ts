@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_precision_scores: {
+        Row: {
+          challenge_date: string
+          created_at: string
+          device_id: string
+          gap: number
+          id: string
+          result: number
+          target: number
+          username: string
+        }
+        Insert: {
+          challenge_date?: string
+          created_at?: string
+          device_id: string
+          gap: number
+          id?: string
+          result: number
+          target: number
+          username: string
+        }
+        Update: {
+          challenge_date?: string
+          created_at?: string
+          device_id?: string
+          gap?: number
+          id?: string
+          result?: number
+          target?: number
+          username?: string
+        }
+        Relationships: []
+      }
       leaderboard: {
         Row: {
           coins: number
@@ -153,6 +186,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_daily_precision: { Args: never; Returns: undefined }
       cleanup_old_scores: { Args: never; Returns: undefined }
       update_leaderboard_secure: {
         Args: {
