@@ -165,7 +165,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     } catch {}
     setUsername(trimmed);
     setEditingUsername(false);
-    toast({ title: '✅ Pseudo mis à jour !', description: `Ton pseudo est maintenant "${trimmed}".` });
+    toast({ title: t.inventoryUsernameUpdated, description: t.inventoryUsernameUpdatedDesc.replace('{name}', trimmed) });
   };
 
   const unlockedDecorations = DECORATIONS.filter(d => passData.currentTier >= d.tier);
