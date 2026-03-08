@@ -146,7 +146,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const handleSaveUsername = async () => {
     const trimmed = newUsername.trim();
     if (!trimmed || trimmed.length < 3) {
-      toast({ title: 'Pseudo trop court', description: 'Minimum 3 caractères.', variant: 'destructive' });
+      toast({ title: t.inventoryUsernameTooShort, description: t.inventoryUsernameTooShortDesc, variant: 'destructive' });
       return;
     }
     if (trimmed.length > 20) {
