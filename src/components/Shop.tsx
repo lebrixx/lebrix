@@ -296,7 +296,7 @@ export const Shop: React.FC<ShopProps> = ({
               {isEssentialPurchasing ? t.shopPurchasing : t.shopBuyEssential}
             </Button>
 
-            <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
+            <p className="text-center text-text-muted text-xs">{t.shopSecurePayment}</p>
           </div>
         </DialogContent>
       </Dialog>
