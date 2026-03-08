@@ -158,7 +158,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
           {/* Password */}
           <div className="space-y-2">
             <Label htmlFor="password" className="text-text-primary">
-              Mot de passe
+              {t.authPassword}
             </Label>
             <div className="relative">
               <Input
