@@ -21,6 +21,7 @@ import { updateQuestScore, updateQuestBoostUsed } from '@/utils/seasonPass';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
+import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard';
 
