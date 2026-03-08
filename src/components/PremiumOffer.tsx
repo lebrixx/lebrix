@@ -160,7 +160,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
                 className="w-full py-3 text-sm font-extrabold bg-gradient-primary hover:opacity-90 shadow-glow-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-game-dark"
               >
                 {isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Crown className="w-4 h-4 mr-1.5" />}
-                {isPurchasing ? 'Achat en cours...' : 'Débloquer le Pack Premium'}
+                {isPurchasing ? t.premiumPurchasing : t.premiumUnlock}
               </Button>
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
                 🔒 Paiement sécurisé
