@@ -553,6 +553,7 @@ export const translations = {
     precisionGoodLabel: 'BIEN',
     precisionNotBad: 'PAS MAL',
     precisionTryAgain: 'À RÉESSAYER',
+    precisionTopForNow: 'pour le moment — classement en cours',
     precisionPlayers: 'joueur(s)',
   },
   en: {
@@ -1036,6 +1037,7 @@ export const translations = {
     precisionGoodLabel: 'GOOD',
     precisionNotBad: 'NOT BAD',
     precisionTryAgain: 'TRY AGAIN',
+    precisionTopForNow: 'for now — ranking in progress',
     precisionPlayers: 'player(s)',
   },
   es: {
@@ -1517,6 +1519,7 @@ export const translations = {
     precisionGoodLabel: 'BIEN',
     precisionNotBad: 'NO ESTÁ MAL',
     precisionTryAgain: 'A REINTENTAR',
+    precisionTopForNow: 'por ahora — clasificación en curso',
     precisionPlayers: 'jugador(es)',
   },
 };
