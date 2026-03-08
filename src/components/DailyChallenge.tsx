@@ -396,6 +396,33 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
           </Button>
         }
 
+        {/* My position bubble */}
+        {(() => {
+          const activeList = lbTab === 'today' ? leaderboard : yesterdayLb;
+          const myIndex = activeList.findIndex(e => currentUsername && e.username.toLowerCase() === currentUsername.toLowerCase());
+          if (myIndex < 0) return null;
+          const myRank = myIndex + 1;
+          const myEntry = activeList[myIndex];
+          const myQ = getQualityLabel(myEntry.gap);
+          return (
+            <div className="bg-gradient-to-r from-[hsl(var(--primary)/0.15)] to-[hsl(var(--secondary)/0.1)] border border-[hsl(var(--primary)/0.3)] rounded-xl p-3 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shrink-0">
+                <span className="text-sm font-black text-white">#{myRank}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-[hsl(var(--text-primary))] truncate">{t.precisionYourRank}</p>
+                <p className="text-[10px] text-[hsl(var(--text-muted))]">
+                  {t.precisionOutOf} {activeList.length} {t.precisionPlayers}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className={`text-sm font-mono font-bold ${myQ.color}`}>{myEntry.gap.toFixed(3)}</p>
+                <p className="text-[9px] text-[hsl(var(--text-muted))]">{t.precisionGap}</p>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Daily Leaderboard */}
         <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-2 border-b border-[hsl(var(--wheel-border)/0.3)] bg-gradient-to-r from-[hsl(var(--wheel-base))] to-[hsl(var(--button-bg))]">
