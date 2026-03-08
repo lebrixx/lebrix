@@ -73,8 +73,8 @@ export const Settings: React.FC<SettingsProps> = ({
       }
     } else {
       toast({
-        title: "Non disponible",
-        description: "Cette fonction est disponible uniquement sur mobile.",
+        title: t.settingsNotAvailable,
+        description: t.settingsNotAvailableDesc,
       });
     }
   };
