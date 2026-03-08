@@ -66,8 +66,8 @@ export const Settings: React.FC<SettingsProps> = ({
       } catch (error) {
         console.error('Error opening settings:', error);
         toast({
-          title: "Erreur",
-          description: "Impossible d'ouvrir les paramètres de l'application.",
+          title: t.settingsError,
+          description: t.settingsCannotOpenSettings,
           variant: "destructive",
         });
       }
