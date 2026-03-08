@@ -1519,6 +1519,7 @@ export const translations = {
     precisionGoodLabel: 'BIEN',
     precisionNotBad: 'NO ESTÁ MAL',
     precisionTryAgain: 'A REINTENTAR',
+    precisionTopForNow: 'por ahora — clasificación en curso',
     precisionPlayers: 'jugador(es)',
   },
 };
