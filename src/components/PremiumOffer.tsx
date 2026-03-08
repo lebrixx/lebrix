@@ -22,6 +22,16 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
   const [isRestoring, setIsRestoring] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
 
+  const REWARDS = [
+    { emoji: '\u{1F6AB}', title: t.premiumZeroPub, description: t.premiumZeroPubDesc, amount: t.premiumNoPubs, tone: 'special' as const },
+    { emoji: '✨', title: t.premiumGoldPulsed, description: t.premiumGoldPulsedDesc, amount: t.premiumExclusive, tone: 'special' as const },
+    { emoji: '\u{1F451}', title: t.premiumSeasonVIP, description: t.premiumSeasonVIPDesc, amount: t.premiumAllIncluded, tone: 'secondary' as const },
+    { emoji: '\u{1FA99}', title: t.premiumCoins, description: t.premiumCoinsDesc, amount: '+1 000', tone: 'secondary' as const },
+    { emoji: '\u{1F6E1}\uFE0F', title: t.shopShieldLabel, description: t.shopShieldProtect, amount: 'x2', tone: 'primary' as const },
+    { emoji: '\u{1F3AF}', title: t.shopGreenZonePlus, description: t.shopGreenZoneDesc, amount: 'x2', tone: 'primary' as const },
+    { emoji: '\u{1F680}', title: t.premiumStartAt20, description: t.premiumStartAt20Desc, amount: 'x2', tone: 'primary' as const },
+  ];
+
   const handlePurchase = async () => {
     if (isPurchasing) return;
     setIsPurchasing(true);
