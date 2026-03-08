@@ -188,7 +188,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
             className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
             size="lg"
           >
-            {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'Créer le compte')}
+            {loading ? t.authLoading : (isLogin ? t.authLogin : t.authCreateAccount)}
           </Button>
 
           {/* Switch Mode */}
