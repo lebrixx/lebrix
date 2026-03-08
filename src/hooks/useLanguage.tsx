@@ -1525,5 +1525,7 @@ export const translations = {
     precisionTryAgain: 'A REINTENTAR',
     precisionTopForNow: 'por ahora — clasificación en curso',
     precisionPlayers: 'jugador(es)',
+    precisionYourRank: 'Tu posición',
+    precisionOutOf: 'de',
   },
 };
