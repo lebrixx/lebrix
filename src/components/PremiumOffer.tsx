@@ -176,7 +176,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
               </button>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
-                Non merci
+                {t.premiumNoThanks}
               </button>
             </div>
           </div>
