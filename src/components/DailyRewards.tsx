@@ -307,7 +307,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 ) : (
                   <BellOff className="w-5 h-5 text-text-muted" />
                 )}
-                <span className="text-text-primary font-bold text-sm">Bonus Notifications</span>
+                <span className="text-text-primary font-bold text-sm">{t.notifBonus}</span>
               </div>
               <Badge variant="secondary" className={notificationsEnabled ? "bg-blue-500/20 text-blue-400" : "bg-gray-500/20 text-gray-400"}>
                 +20 coins/jour
