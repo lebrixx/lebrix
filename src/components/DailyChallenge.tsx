@@ -180,7 +180,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         Stoppe le chrono au plus près de la cible — une seule chance par jour !
       </p>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
         {/* Rules panel (togglable) */}
         {showRules && (
           <div className="bg-gradient-to-br from-[hsl(var(--wheel-base))] to-[hsl(var(--game-darker))] border border-[hsl(var(--wheel-border)/0.5)] rounded-2xl p-5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
