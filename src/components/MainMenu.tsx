@@ -262,7 +262,35 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             {t.playNow}
           </Button>
 
-          <Button
+          {/* Daily Precision Challenge */}
+          {onOpenDailyChallenge && (
+            <Button
+              onClick={onOpenDailyChallenge}
+              size="lg"
+              className={`relative py-3 text-sm font-bold transition-all duration-300 hover:scale-105 rounded-xl overflow-hidden group ${
+                hasPlayedToday()
+                  ? 'bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] text-[hsl(var(--text-muted))]'
+                  : 'bg-gradient-to-r from-[hsl(var(--secondary)/0.9)] to-[hsl(var(--primary)/0.9)] shadow-[0_4px_20px_hsl(var(--secondary)/0.3)] text-[hsl(var(--text-primary))]'
+              }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              <Crosshair className="w-4 h-4 mr-2" />
+              {hasPlayedToday() ? (
+                <span className="flex items-center gap-2">
+                  Défi Précision — <Clock className="w-3.5 h-3.5" /> Demain
+                </span>
+              ) : (
+                <span className="flex items-center gap-1">
+                  ⚡ Défi Précision du Jour
+                </span>
+              )}
+              {!hasPlayedToday() && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[hsl(var(--success))] rounded-full animate-pulse" />
+              )}
+            </Button>
+          )}
+
+
             onClick={onOpenModes}
             variant="outline"
             size="lg"
