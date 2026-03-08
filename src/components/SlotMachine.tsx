@@ -250,7 +250,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
               size="sm"
               className="text-text-muted hover:text-text-primary text-xs"
             >
-              Fermer
+              {t.close}
             </Button>
           </div>
         </div>
