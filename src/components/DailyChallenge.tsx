@@ -400,7 +400,23 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         {(() => {
           const activeList = lbTab === 'today' ? leaderboard : yesterdayLb;
           const myIndex = activeList.findIndex(e => currentUsername && e.username.toLowerCase() === currentUsername.toLowerCase());
-          if (myIndex < 0) return null;
+          if (myIndex < 0) {
+            // Player not in top 1000 — show explanation
+            if (result && phase === 'result') {
+              return (
+                <div className="bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-xl p-3 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[hsl(var(--game-dark))] border border-[hsl(var(--wheel-border)/0.3)] flex items-center justify-center shrink-0">
+                    <span className="text-sm">📊</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-[hsl(var(--text-secondary))]">{t.precisionNotInTop}</p>
+                    <p className="text-[10px] text-[hsl(var(--text-muted))]">{t.precisionNotInTopDesc}</p>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          }
           const myRank = myIndex + 1;
           const myEntry = activeList[myIndex];
           const myQ = getQualityLabel(myEntry.gap);
