@@ -497,7 +497,7 @@ export const Shop: React.FC<ShopProps> = ({
                   const code = promoCode.trim().toUpperCase();
                   
                   if (usedCodes.includes(code)) {
-                    toast({ title: "Code déjà utilisé", description: "Tu as déjà utilisé ce code.", variant: "destructive" });
+                    toast({ title: t.shopCodeAlreadyUsed, description: t.shopCodeAlreadyUsedDesc, variant: "destructive" });
                     setPromoCode('');
                     return;
                   }
