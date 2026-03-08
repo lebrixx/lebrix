@@ -454,6 +454,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClose={() => setShowSettings(false)}
         isSoundMuted={isSoundMuted}
         onToggleSound={onToggleSound}
+        onOpenRateDialog={onOpenRateDialog}
       />
 
       {/* Premium Offer */}

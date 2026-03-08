@@ -267,6 +267,7 @@ const Index = () => {
             onSpendCoins={spendCoins}
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
+            onOpenRateDialog={() => setShowRateDialog(true)}
           />
         );
         
