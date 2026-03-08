@@ -361,7 +361,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
               disabled={isShowing || !isReady() || cooldownRemaining > 0}
             >
               <Video className="w-4 h-4 mr-2" />
-              Regarder une pub
+              {t.dailyRewardsWatchAd}
               {cooldownRemaining > 0 && (
                 <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
               )}
