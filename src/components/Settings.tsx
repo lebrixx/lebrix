@@ -100,8 +100,8 @@ export const Settings: React.FC<SettingsProps> = ({
       const granted = await requestNotificationPermission();
       if (!granted) {
         toast({
-          title: "Notifications refusées",
-          description: "Tu dois autoriser les notifications pour les activer.",
+          title: t.settingsNotifDenied,
+          description: t.settingsNotifDeniedDesc,
           variant: "destructive",
         });
         setPermissionStatus('denied');
