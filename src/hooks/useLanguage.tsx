@@ -511,7 +511,7 @@ export const translations = {
     eideticDesc: 'Fais un score de 10 en Mémoire Expert',
     // Precision Challenge
     precisionTitle: 'Défi Précision',
-    precisionSubtitle: 'Stop le chrono au plus près de la cible — 1 essai par jour !',
+    precisionSubtitle: 'Stop le chrono au plus près de la cible journalière.\n1 seul essai par jour !',
     precisionTarget: 'Cible :',
     precisionTargetOfDay: '🎯 Cible du jour',
     precisionReady: 'Prêt ?',
