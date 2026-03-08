@@ -14,6 +14,7 @@ interface SettingsProps {
   onClose: () => void;
   isSoundMuted: boolean;
   onToggleSound: () => void;
+  onOpenRateDialog?: () => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({ 
