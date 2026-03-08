@@ -1045,6 +1045,8 @@ export const translations = {
     precisionPlayers: 'player(s)',
     precisionYourRank: 'Your rank',
     precisionOutOf: 'out of',
+    precisionNotInTop: 'Outside Top 1000',
+    precisionNotInTopDesc: 'Only the top 1000 scores of the day are shown. Try again tomorrow!',
   },
   es: {
     title: 'LUCKY STOP',
