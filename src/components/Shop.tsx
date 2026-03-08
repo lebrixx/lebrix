@@ -245,8 +245,8 @@ export const Shop: React.FC<ShopProps> = ({
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <span className="text-2xl">🚀</span>
                 <div className="flex-1">
-                  <p className="text-text-primary font-semibold text-sm">Démarrage à 20</p>
-                  <p className="text-text-muted text-xs">Commence avec 20 pts</p>
+                  <p className="text-text-primary font-semibold text-sm">{t.shopStartAt20}</p>
+                  <p className="text-text-muted text-xs">{t.shopStartAt20Desc}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs font-bold">×5</Badge>
               </div>
