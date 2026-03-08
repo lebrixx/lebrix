@@ -325,7 +325,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                     size="sm"
                   >
                     <Bell className="w-4 h-4 mr-2" />
-                    Récupérer +20 coins
+                    {t.claimNotifBonus}
                   </Button>
                 ) : (
                   <div className="text-center text-text-muted text-xs py-2">
