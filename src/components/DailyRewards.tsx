@@ -346,7 +346,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Coins className="w-6 h-6 text-green-400" />
-                <span className="text-text-primary font-bold">Bonus Publicité</span>
+                <span className="text-text-primary font-bold">{t.adBonus}</span>
               </div>
               <Badge variant="secondary" className="bg-green-500/20 text-green-400">
                 +100 coins
