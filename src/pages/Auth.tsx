@@ -194,7 +194,7 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
           {/* Switch Mode */}
           <div className="text-center pt-4">
             <p className="text-text-muted text-sm">
-              {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
+              {isLogin ? t.authNoAccount : t.authHasAccount}
             </p>
             <Button
               onClick={() => setIsLogin(!isLogin)}
