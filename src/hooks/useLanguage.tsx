@@ -555,6 +555,8 @@ export const translations = {
     precisionTryAgain: 'À RÉESSAYER',
     precisionTopForNow: 'pour le moment — classement en cours',
     precisionPlayers: 'joueur(s)',
+    precisionYourRank: 'Ta position',
+    precisionOutOf: 'sur',
   },
   en: {
     title: 'LUCKY STOP',
