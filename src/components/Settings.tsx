@@ -304,7 +304,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="flex items-center gap-3">
                 <Settings2 className="w-5 h-5 text-text-muted" />
                 <Label className="text-text-primary text-base">
-                  Autorisations de l'app
+                  {t.settingsAppPermissions}
                 </Label>
               </div>
               <Button
