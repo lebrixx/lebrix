@@ -67,8 +67,8 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
         }
 
         toast({
-          title: "Compte créé !",
-          description: "Vérifiez votre email pour confirmer votre inscription.",
+          title: t.authAccountCreated,
+          description: t.authAccountCreatedDesc,
         });
       }
     } catch (error: any) {
