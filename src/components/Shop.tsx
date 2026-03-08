@@ -293,7 +293,7 @@ export const Shop: React.FC<ShopProps> = ({
               className="w-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 hover:scale-105"
             >
               {isEssentialPurchasing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              {isEssentialPurchasing ? 'Achat en cours...' : 'Acheter — 1,99 €'}
+              {isEssentialPurchasing ? t.shopPurchasing : t.shopBuyEssential}
             </Button>
 
             <p className="text-center text-text-muted text-xs">🔒 Paiement sécurisé</p>
