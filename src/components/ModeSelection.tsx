@@ -137,8 +137,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-6 h-6 text-danger flex-shrink-0" />
               <div>
-                <p className="text-danger font-medium">Partie en cours</p>
-                <p className="text-text-muted text-sm">Termine ta partie actuelle pour changer de mode.</p>
+                <p className="text-danger font-medium">{t.modeGameInProgressLabel}</p>
+                <p className="text-text-muted text-sm">{t.modeGameInProgressDescLabel}</p>
               </div>
             </div>
           </Card>
