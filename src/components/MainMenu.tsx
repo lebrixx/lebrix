@@ -35,6 +35,7 @@ interface MainMenuProps {
   isSoundMuted?: boolean;
   onToggleSound?: () => void;
   onOpenRateDialog?: () => void;
+  onOpenDailyChallenge?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
