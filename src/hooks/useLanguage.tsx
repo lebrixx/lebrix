@@ -555,6 +555,8 @@ export const translations = {
     precisionTryAgain: 'À RÉESSAYER',
     precisionTopForNow: 'pour le moment — classement en cours',
     precisionPlayers: 'joueur(s)',
+    precisionYourRank: 'Ta position',
+    precisionOutOf: 'sur',
   },
   en: {
     title: 'LUCKY STOP',
@@ -1039,6 +1041,8 @@ export const translations = {
     precisionTryAgain: 'TRY AGAIN',
     precisionTopForNow: 'for now — ranking in progress',
     precisionPlayers: 'player(s)',
+    precisionYourRank: 'Your rank',
+    precisionOutOf: 'out of',
   },
   es: {
     title: 'LUCKY STOP',
@@ -1521,5 +1525,7 @@ export const translations = {
     precisionTryAgain: 'A REINTENTAR',
     precisionTopForNow: 'por ahora — clasificación en curso',
     precisionPlayers: 'jugador(es)',
+    precisionYourRank: 'Tu posición',
+    precisionOutOf: 'de',
   },
 };
