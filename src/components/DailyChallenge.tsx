@@ -286,7 +286,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
       {/* Subtitle — visible, gradient text like the main title */}
       <p className="text-sm font-bold bg-gradient-primary bg-clip-text text-transparent px-4 pl-[60px] pb-3">
-        Stoppe le chrono au plus près de la cible !
+        Stop le chrono au plus près de la cible — 1 essai par jour !
       </p>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-3">
