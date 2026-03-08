@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Target, RotateCcw, Clock, AlertTriangle, Brain, Star, Sparkles } from 'lucide-react';
 import { ModeType, ModeID, cfgModes } from '@/constants/modes';
 import { canSpinSlotToday, activateDailyBonus, getActiveBonusMode, getEligibleModes } from '@/utils/dailyBonusMode';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface SlotMachineProps {
   isOpen: boolean;
