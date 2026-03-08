@@ -20,6 +20,8 @@ export const Auth: React.FC<AuthProps> = ({ onBack }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const handleAuth = async () => {
     if (!email || !password || (!isLogin && !username)) {
