@@ -85,8 +85,10 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
               </>
             ) : (
               <>
-                <div className="flex justify-center mb-5">
-                  <Star className="w-8 h-8 text-secondary fill-secondary" />
+                <div className="flex justify-center gap-1.5 mb-5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-6 h-6 text-secondary fill-secondary opacity-90" />
+                  ))}
                 </div>
 
                 <AlertDialogTitle className="text-center">
@@ -94,8 +96,8 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
                     Merci !
                   </span>
                 </AlertDialogTitle>
-                <AlertDialogDescription className="text-center text-[hsl(var(--text-muted))] pt-2 text-xs leading-relaxed">
-                  Un avis sur le store nous aide à progresser.
+                <AlertDialogDescription className="text-center text-[hsl(var(--text-secondary))] pt-3 text-sm leading-relaxed font-medium">
+                  Chaque avis nous permet de rendre le jeu encore meilleur pour toi et toute la communauté.
                 </AlertDialogDescription>
               </>
             )}
