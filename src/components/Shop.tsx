@@ -203,8 +203,8 @@ export const Shop: React.FC<ShopProps> = ({
       >
         <div className="flex items-center gap-2.5">
           <Package className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-text-secondary">Pack Essentiel</span>
-          <span className="text-xs text-text-muted">• 5 boosts + 15 tickets</span>
+          <span className="text-sm font-medium text-text-secondary">{t.shopPackEssential}</span>
+          <span className="text-xs text-text-muted">• {t.shopPackEssentialItems}</span>
         </div>
         <ArrowLeft className="w-4 h-4 text-text-muted rotate-180" />
       </div>
