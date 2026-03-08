@@ -51,7 +51,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onAdRewardClaimed,
   onSpendCoins,
   isSoundMuted = false,
-  onToggleSound = () => {}
+  onToggleSound = () => {},
+  onOpenRateDialog
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
