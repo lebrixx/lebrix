@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, username, target, result, gap } = await req.json();
+    const { device_id, username, target, result, gap, decorations } = await req.json();
 
     // Validation
     if (!device_id || !username || typeof target !== 'number' || typeof result !== 'number' || typeof gap !== 'number') {
