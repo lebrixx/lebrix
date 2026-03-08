@@ -264,6 +264,7 @@ const Index = () => {
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
             onOpenRateDialog={() => setShowRateDialog(true)}
+            onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
           />
         );
         
