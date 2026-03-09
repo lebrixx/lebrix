@@ -293,26 +293,66 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
     previousSunday.setDate(previousMonday.getDate() + 6);
     previousSunday.setHours(23, 59, 59, 999);
 
-    const { data, error } = await supabase
-      .from('scores')
-      .select('username,previous_weekly_score,previous_weekly_updated_at')
-      .eq('mode', mode)
-      .gte('previous_weekly_updated_at', previousMonday.toISOString())
-      .lte('previous_weekly_updated_at', previousSunday.toISOString())
-      .gt('previous_weekly_score', 0)
-      .order('previous_weekly_score', { ascending: false })
-      .limit(limit);
+    // Source 1: Already archived previous week scores
+    const [archivedResult, unarchivedResult] = await Promise.all([
+      supabase
+        .from('scores')
+        .select('username,previous_weekly_score,previous_weekly_updated_at,decorations')
+        .eq('mode', mode)
+        .gte('previous_weekly_updated_at', previousMonday.toISOString())
+        .lte('previous_weekly_updated_at', previousSunday.toISOString())
+        .gt('previous_weekly_score', 0)
+        .order('previous_weekly_score', { ascending: false })
+        .limit(limit),
+      // Source 2: Not yet archived — weekly_updated_at is in previous week (player hasn't played this week yet)
+      supabase
+        .from('scores')
+        .select('username,weekly_score,weekly_updated_at,decorations')
+        .eq('mode', mode)
+        .gte('weekly_updated_at', previousMonday.toISOString())
+        .lte('weekly_updated_at', previousSunday.toISOString())
+        .gt('weekly_score', 0)
+        .order('weekly_score', { ascending: false })
+        .limit(limit)
+    ]);
 
-    if (error) {
-      console.error('Error fetching previous week leaderboard:', error);
-      return [];
+    if (archivedResult.error) {
+      console.error('Error fetching archived previous week:', archivedResult.error);
+    }
+    if (unarchivedResult.error) {
+      console.error('Error fetching unarchived previous week:', unarchivedResult.error);
     }
 
-    return (data || []).map(entry => ({
-      username: entry.username,
-      score: entry.previous_weekly_score,
-      created_at: entry.previous_weekly_updated_at || ''
-    }));
+    // Merge both sources, deduplicate by username (keep best score)
+    const seen = new Map<string, Score>();
+
+    for (const entry of (archivedResult.data || [])) {
+      const existing = seen.get(entry.username);
+      if (!existing || entry.previous_weekly_score > existing.score) {
+        seen.set(entry.username, {
+          username: entry.username,
+          score: entry.previous_weekly_score,
+          created_at: entry.previous_weekly_updated_at || '',
+          decorations: entry.decorations,
+        });
+      }
+    }
+
+    for (const entry of (unarchivedResult.data || [])) {
+      const existing = seen.get(entry.username);
+      if (!existing || entry.weekly_score > existing.score) {
+        seen.set(entry.username, {
+          username: entry.username,
+          score: entry.weekly_score,
+          created_at: entry.weekly_updated_at || '',
+          decorations: entry.decorations,
+        });
+      }
+    }
+
+    return Array.from(seen.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement de la semaine précédente:', error);
