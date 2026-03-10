@@ -45,7 +45,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
   const [boosts, setBoosts] = useState<Record<string, number>>(getStoredBoosts());
   const [tickets, setTickets] = useState(getTickets());
-  const [activeTab, setActiveTab] = useState<'items' | 'decos'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'decos'>('decos');
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
