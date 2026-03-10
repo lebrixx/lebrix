@@ -341,7 +341,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     <span className="text-[9px] text-yellow-400/80 font-semibold">🔒 Non débloqué — aperçu uniquement</span>
                   )}
                   {!isPreviewingLocked && (
-                    <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
+                    <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">⚡ Joue une partie pour appliquer les changements</span>
                   )}
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
