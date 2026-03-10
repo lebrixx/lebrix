@@ -63,6 +63,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   totalGamesPlayed,
   onReward,
   onBoostReward,
+  onOpenDailyChallenge,
 }) => {
   const [, forceUpdate] = useState(0);
   const [dailyChallenges, setDailyChallenges] = useState<DailyChallenge[]>([]);
