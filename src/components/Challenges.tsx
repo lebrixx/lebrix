@@ -522,57 +522,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
             })}
           </div>
 
-          {/* Défi Précision quotidien */}
-          {onOpenDailyChallenge && (() => {
-            const played = hasPlayedToday();
-            const todayResult = getTodayResult();
-            const target = getDailyTarget();
-            
-            return (
-              <Card className={`relative overflow-hidden border transition-all duration-300 ${
-                played 
-                  ? 'border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5' 
-                  : 'border-secondary/50 bg-gradient-to-r from-secondary/10 to-secondary/5 shadow-lg shadow-secondary/10'
-              }`}>
-                <div className="relative p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`relative p-2.5 rounded-xl ${played ? 'bg-primary/20' : 'bg-secondary/20'}`}>
-                      <Crosshair className={`w-5 h-5 ${played ? 'text-primary' : 'text-secondary'}`} />
-                      {!played && (
-                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full animate-ping" />
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="font-semibold text-sm text-text-primary">Défi Précision</h3>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-bold">QUOTIDIEN</span>
-                      </div>
-                      <p className="text-xs text-text-muted">
-                        {played 
-                          ? `Résultat : ${todayResult?.gap.toFixed(3)} d'écart` 
-                          : `Cible du jour : ${target.toFixed(3)}`
-                        }
-                      </p>
-                    </div>
 
-                    <Button
-                      size="sm"
-                      onClick={onOpenDailyChallenge}
-                      className={`text-xs px-4 ${
-                        played 
-                          ? 'bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30' 
-                          : 'bg-secondary hover:bg-secondary/80 shadow-lg shadow-secondary/20 animate-pulse'
-                      }`}
-                      variant={played ? 'outline' : 'default'}
-                    >
-                      {played ? 'Résultats' : 'Jouer'}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            );
-          })()}
+
         </TabsContent>
 
         {/* Global Challenges Tab */}
