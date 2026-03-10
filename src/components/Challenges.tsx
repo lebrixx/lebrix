@@ -39,6 +39,7 @@ interface ChallengesProps {
   totalGamesPlayed: number;
   onReward: (coins: number) => void;
   onBoostReward: (boost: BoostType) => void;
+  onOpenDailyChallenge?: () => void;
 }
 
 const MODE_INFO = {
