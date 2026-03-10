@@ -316,6 +316,92 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
         {/* Daily Challenges Tab */}
         <TabsContent value="daily" className="space-y-4 animate-fade-in">
+          {/* Défi Précision - Hero Card */}
+          {onOpenDailyChallenge && (() => {
+            const played = hasPlayedToday();
+            const todayResult = getTodayResult();
+            const target = getDailyTarget();
+            
+            return (
+              <div 
+                className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 cursor-pointer ${
+                  played 
+                    ? 'border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent' 
+                    : 'border-secondary/50 bg-gradient-to-br from-secondary/20 via-secondary/5 to-primary/10 shadow-xl shadow-secondary/15'
+                }`}
+                onClick={onOpenDailyChallenge}
+              >
+                {/* Effets décoratifs */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+                {!played && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/5 to-transparent animate-pulse" />
+                )}
+                
+                <div className="relative p-5">
+                  <div className="flex items-start gap-4">
+                    {/* Icône principale */}
+                    <div className={`relative p-3 rounded-2xl ${played ? 'bg-primary/20' : 'bg-secondary/20 shadow-lg shadow-secondary/20'}`}>
+                      <Crosshair className={`w-7 h-7 ${played ? 'text-primary' : 'text-secondary'}`} />
+                      {!played && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-ping" />
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-lg text-text-primary">Défi Précision</h3>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                          played ? 'bg-primary/20 text-primary' : 'bg-secondary/30 text-secondary'
+                        }`}>
+                          {played ? '✓ JOUÉ' : '1 ESSAI'}
+                        </span>
+                      </div>
+                      
+                      <p className="text-xs text-text-muted mb-3">
+                        Stoppe le chrono au plus près de la cible. Un seul essai par jour, chaque milliseconde compte !
+                      </p>
+                      
+                      {/* Infos */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-button-bg/80 border border-wheel-border/30">
+                          <Crosshair className="w-3 h-3 text-primary" />
+                          <span className="text-xs font-semibold text-text-primary">{target.toFixed(3)}</span>
+                        </div>
+                        
+                        {played && todayResult ? (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-button-bg/80 border border-wheel-border/30">
+                            <Clock className="w-3 h-3 text-secondary" />
+                            <span className="text-xs font-semibold text-text-primary">Écart : {todayResult.gap.toFixed(3)}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/10 border border-secondary/20">
+                            <Timer className="w-3 h-3 text-secondary" />
+                            <span className="text-xs font-semibold text-secondary">Prêt à jouer</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Bouton */}
+                  <Button
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); onOpenDailyChallenge(); }}
+                    className={`w-full mt-4 text-sm font-bold py-2.5 ${
+                      played 
+                        ? 'bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30' 
+                        : 'bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 shadow-lg shadow-secondary/25 text-white'
+                    }`}
+                    variant={played ? 'outline' : 'default'}
+                  >
+                    {played ? '📊 Voir le classement' : '🎯 Lancer le défi'}
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Header quotidien stylisé */}
           <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 p-4 border border-primary/20">
             <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/10 rounded-full blur-2xl" />
@@ -326,12 +412,12 @@ export const Challenges: React.FC<ChallengesProps> = ({
                 </div>
                 <div>
                   <h3 className="font-bold text-text-primary">Défis du jour</h3>
-                  <p className="text-xs text-text-muted">3 nouveaux défis chaque jour</p>
+                  <p className="text-xs text-text-muted">2 nouveaux défis chaque jour</p>
                 </div>
               </div>
               <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30">
                 <span className="text-lg font-bold text-secondary">{dailyCompleted}</span>
-                <span className="text-xs text-text-muted">/3</span>
+                <span className="text-xs text-text-muted">/2</span>
               </div>
             </div>
           </div>
