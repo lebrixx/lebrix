@@ -273,31 +273,6 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
 
 
-          {/* Défi Précision */}
-          {onOpenDailyChallenge && (
-            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
-              <div className="flex items-center gap-3">
-                <Crosshair className="w-5 h-5 text-primary" />
-                <div>
-                  <Label className="text-text-primary text-base">{t.settingsPrecisionChallenge}</Label>
-                  <p className="text-xs text-text-muted">
-                    {hasPlayedToday() ? t.settingsAlreadyPlayed : t.settingsAvailable}
-                  </p>
-                </div>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  onClose();
-                  setTimeout(() => onOpenDailyChallenge(), 300);
-                }}
-                className={`${hasPlayedToday() ? 'border-wheel-border text-text-muted' : 'border-primary text-primary hover:bg-primary/10'}`}
-              >
-                {hasPlayedToday() ? t.settingsTomorrow : t.settingsPlay}
-              </Button>
-            </div>
-          )}
 
           {Capacitor.isNativePlatform() && (
             <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
