@@ -227,16 +227,6 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
             {/* Tab switcher */}
             <div className="flex bg-game-dark/60 border border-wheel-border/50 rounded-xl p-1 gap-1">
               <button
-                onClick={() => setActiveTab('items')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                  activeTab === 'items'
-                    ? 'bg-gradient-to-r from-primary/80 to-secondary/80 text-text-primary shadow-sm'
-                    : 'text-text-muted hover:text-text-secondary'
-                }`}
-              >
-                <Zap className="w-3.5 h-3.5" /> Objets
-              </button>
-              <button
                 onClick={() => setActiveTab('decos')}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
                   activeTab === 'decos'
@@ -250,6 +240,16 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     {unlockedDecorations.length}
                   </span>
                 )}
+              </button>
+              <button
+                onClick={() => setActiveTab('items')}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
+                  activeTab === 'items'
+                    ? 'bg-gradient-to-r from-primary/80 to-secondary/80 text-text-primary shadow-sm'
+                    : 'text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5" /> Objets
               </button>
             </div>
           </div>
