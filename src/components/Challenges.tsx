@@ -15,6 +15,7 @@ import {
   DailyChallenge
 } from '@/utils/dailyChallenges';
 import { notifyChallengeUpdate } from '@/utils/challengeUtils';
+import { hasPlayedToday, getTodayResult, getDailyTarget } from '@/utils/dailyChallenge';
 
 interface ChallengeProgress {
   mode: string;
