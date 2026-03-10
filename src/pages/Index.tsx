@@ -331,6 +331,7 @@ const Index = () => {
             totalGamesPlayed={gameState.totalGamesPlayed}
             onReward={addCoins}
             onBoostReward={handleBoostReward}
+            onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
           />
         );
 
