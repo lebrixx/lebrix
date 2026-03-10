@@ -35,6 +35,7 @@ const Index = () => {
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   const [showRateDialog, setShowRateDialog] = useState(false);
+  const [pendingRateDialog, setPendingRateDialog] = useState(false);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
