@@ -35,6 +35,7 @@ const Index = () => {
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   const [showRateDialog, setShowRateDialog] = useState(false);
+  const [pendingRateDialog, setPendingRateDialog] = useState(false);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -87,6 +88,14 @@ const Index = () => {
     // Initialiser les notifications une seule fois
     initNotifications();
   }, []);
+
+  // Afficher la popup d'avis quand le joueur revient au menu
+  useEffect(() => {
+    if (currentScreen === 'menu' && pendingRateDialog) {
+      setPendingRateDialog(false);
+      setTimeout(() => setShowRateDialog(true), 800);
+    }
+  }, [currentScreen, pendingRateDialog]);
 
   const handleDailyRewardClaimed = (coins: number, theme?: string, boostId?: string) => {
     if (coins > 0) {
@@ -164,13 +173,13 @@ const Index = () => {
     }
 
 
-    // Afficher la popup d'avis si premier score >30 en mode non-classique
+    // Marquer la popup d'avis comme en attente si premier score >30 en mode non-classique
     if (finalScore > 30 && currentMode !== 'classic') {
       const rateData = JSON.parse(localStorage.getItem('ls_rate_app') || '{}');
       const alreadyTriggered = localStorage.getItem('ls_rate_triggered_30');
       if (!rateData.rated && !alreadyTriggered) {
         localStorage.setItem('ls_rate_triggered_30', 'true');
-        setTimeout(() => setShowRateDialog(true), 1500);
+        setPendingRateDialog(true);
       }
     }
 

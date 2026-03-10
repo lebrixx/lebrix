@@ -359,7 +359,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                       </div>
                       
                       <p className="text-xs text-text-muted mb-3">
-                        Stoppe le chrono au plus près de la cible. Un seul essai par jour, chaque milliseconde compte !
+                        Stop le chrono au plus près de la cible. Un seul essai par jour, chaque milliseconde compte !
                       </p>
                       
                       {/* Infos */}
