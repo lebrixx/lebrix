@@ -164,6 +164,16 @@ const Index = () => {
     }
 
 
+    // Afficher la popup d'avis si premier score >30 en mode non-classique
+    if (finalScore > 30 && currentMode !== 'classic') {
+      const rateData = JSON.parse(localStorage.getItem('ls_rate_app') || '{}');
+      const alreadyTriggered = localStorage.getItem('ls_rate_triggered_30');
+      if (!rateData.rated && !alreadyTriggered) {
+        localStorage.setItem('ls_rate_triggered_30', 'true');
+        setTimeout(() => setShowRateDialog(true), 1500);
+      }
+    }
+
     // Afficher une interstitielle si toutes les conditions sont remplies
     import('@/ads/InterstitialService').then(({ Interstitials }) => {
       Interstitials.showInterstitialIfReady().catch(error => {
@@ -321,6 +331,7 @@ const Index = () => {
             totalGamesPlayed={gameState.totalGamesPlayed}
             onReward={addCoins}
             onBoostReward={handleBoostReward}
+            onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
           />
         );
 
