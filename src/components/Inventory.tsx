@@ -369,7 +369,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       <X className="w-3 h-3" /> Retirer la décoration
                     </button>
                   ) : null}
-                  <p className="text-[8px] text-text-muted/60 mt-1.5 italic">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
+                  <p className="text-[10px] text-text-muted/80 mt-2 font-medium">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
                 </div>
               </div>
 
