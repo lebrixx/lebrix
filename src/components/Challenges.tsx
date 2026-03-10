@@ -438,7 +438,6 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
           {/* Défi Précision quotidien */}
           {onOpenDailyChallenge && (() => {
-            const { hasPlayedToday, getSecondsUntilNextChallenge, formatCountdown, getTodayResult, getDailyTarget } = require('@/utils/dailyChallenge');
             const played = hasPlayedToday();
             const todayResult = getTodayResult();
             const target = getDailyTarget();
