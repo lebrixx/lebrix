@@ -89,6 +89,14 @@ const Index = () => {
     initNotifications();
   }, []);
 
+  // Afficher la popup d'avis quand le joueur revient au menu
+  useEffect(() => {
+    if (currentScreen === 'menu' && pendingRateDialog) {
+      setPendingRateDialog(false);
+      setTimeout(() => setShowRateDialog(true), 800);
+    }
+  }, [currentScreen, pendingRateDialog]);
+
   const handleDailyRewardClaimed = (coins: number, theme?: string, boostId?: string) => {
     if (coins > 0) {
       addCoins(coins);
