@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins, Star, Crosshair, Clock } from 'lucide-react';
-import { hasPlayedToday, getSecondsUntilNextChallenge, formatCountdown } from '@/utils/dailyChallenge';
+
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
