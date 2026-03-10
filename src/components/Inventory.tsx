@@ -45,7 +45,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
   const [boosts, setBoosts] = useState<Record<string, number>>(getStoredBoosts());
   const [tickets, setTickets] = useState(getTickets());
-  const [activeTab, setActiveTab] = useState<'items' | 'decos'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'decos'>('decos');
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
@@ -227,16 +227,6 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
             {/* Tab switcher */}
             <div className="flex bg-game-dark/60 border border-wheel-border/50 rounded-xl p-1 gap-1">
               <button
-                onClick={() => setActiveTab('items')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
-                  activeTab === 'items'
-                    ? 'bg-gradient-to-r from-primary/80 to-secondary/80 text-text-primary shadow-sm'
-                    : 'text-text-muted hover:text-text-secondary'
-                }`}
-              >
-                <Zap className="w-3.5 h-3.5" /> Objets
-              </button>
-              <button
                 onClick={() => setActiveTab('decos')}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
                   activeTab === 'decos'
@@ -250,6 +240,16 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     {unlockedDecorations.length}
                   </span>
                 )}
+              </button>
+              <button
+                onClick={() => setActiveTab('items')}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
+                  activeTab === 'items'
+                    ? 'bg-gradient-to-r from-primary/80 to-secondary/80 text-text-primary shadow-sm'
+                    : 'text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5" /> Objets
               </button>
             </div>
           </div>
@@ -341,7 +341,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     <span className="text-[9px] text-yellow-400/80 font-semibold">🔒 Non débloqué — aperçu uniquement</span>
                   )}
                   {!isPreviewingLocked && (
-                    <span className="text-[9px] text-text-muted italic">⚡ Joue une partie pour appliquer les changements</span>
+                    <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">⚡ Joue une partie pour appliquer les changements</span>
                   )}
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
@@ -368,10 +368,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     >
                       <X className="w-3 h-3" /> Retirer la décoration
                     </button>
-                  ) : (
-                    <p className="text-[10px] text-text-muted mt-1">Sélectionne une décoration ci-dessous</p>
-                  )}
-                  <p className="text-[8px] text-text-muted/60 mt-1.5 italic">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
+                  ) : null}
+                  <p className="text-[10px] text-text-muted/80 mt-2 font-medium">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
                 </div>
               </div>
 
