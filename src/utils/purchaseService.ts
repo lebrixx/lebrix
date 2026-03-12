@@ -12,7 +12,7 @@ function activatePremium(onAddCoins?: (amount: number) => void): void {
   const result = purchasePremiumPack();
   localStorage.setItem(PREMIUM_FLAG, 'true');
   onAddCoins?.(result.coins);
-  console.log('[purchaseService] Premium activated — coins:', result.coins, 'diamonds:', result.diamonds);
+  console.log('[purchaseService] Premium activated — coins:', result.coins);
 }
 
 /**
