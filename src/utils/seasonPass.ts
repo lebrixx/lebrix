@@ -211,17 +211,17 @@ export function purchasePremiumPack(): { coins: number } {
   data.hasGoldPulse = true;
   savePassData(data);
 
-  // Give boosts: 2 of each
+  // Give boosts: 4 of each
   try {
     const saved = localStorage.getItem('luckyStopBoosts');
     const boosts: Record<string, number> = saved ? JSON.parse(saved) : {};
-    boosts['shield'] = (boosts['shield'] || 0) + 2;
-    boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 2;
-    boosts['start_20'] = (boosts['start_20'] || 0) + 2;
+    boosts['shield'] = (boosts['shield'] || 0) + 4;
+    boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 4;
+    boosts['start_20'] = (boosts['start_20'] || 0) + 4;
     localStorage.setItem('luckyStopBoosts', JSON.stringify(boosts));
   } catch {}
 
-  return { coins: 1000 };
+  return { coins: 1500 };
 }
 
 // ── Daily Quests ──
