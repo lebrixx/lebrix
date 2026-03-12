@@ -203,15 +203,12 @@ export function hasGoldPulseUnlocked(): boolean {
 }
 
 /** Purchase premium pack: unlock all 9 tiers, gold pulse, give diamonds + coins + boosts */
-export function purchasePremiumPack(): { diamonds: number; coins: number } {
+export function purchasePremiumPack(): { coins: number } {
   const data = getSeasonPassData();
   // Unlock all 9 tiers
   data.currentTier = 9;
   // Gold pulse
   data.hasGoldPulse = true;
-  // +30 diamonds
-  data.diamonds += 30;
-  data.totalDiamondsEarned += 30;
   savePassData(data);
 
   // Give boosts: 2 of each
@@ -224,7 +221,7 @@ export function purchasePremiumPack(): { diamonds: number; coins: number } {
     localStorage.setItem('luckyStopBoosts', JSON.stringify(boosts));
   } catch {}
 
-  return { diamonds: 30, coins: 1000 };
+  return { coins: 1000 };
 }
 
 // ── Daily Quests ──
