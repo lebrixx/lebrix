@@ -475,54 +475,6 @@ export const Shop: React.FC<ShopProps> = ({
             })}
           </div>
 
-          {/* Code promo section */}
-          <Card className="mt-8 border-2 border-dashed border-wheel-border bg-button-bg/50 p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Tag className="w-5 h-5 text-primary" />
-              <span className="text-text-primary font-bold">{t.shopEnterCode}</span>
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                placeholder="CODE..."
-                maxLength={20}
-                className="bg-game-dark border-wheel-border text-text-primary uppercase tracking-widest"
-              />
-              <Button
-                onClick={() => {
-                  if (!promoCode.trim()) return;
-                  const USED_CODES_KEY = 'lucky_stop_used_codes';
-                  const usedCodes: string[] = JSON.parse(localStorage.getItem(USED_CODES_KEY) || '[]');
-                  const code = promoCode.trim().toUpperCase();
-                  
-                  if (usedCodes.includes(code)) {
-                    toast({ title: t.shopCodeAlreadyUsed, description: t.shopCodeAlreadyUsedDesc, variant: "destructive" });
-                    setPromoCode('');
-                    return;
-                  }
-                  
-                  if (code === 'LEBRIX') {
-                    usedCodes.push(code);
-                    localStorage.setItem(USED_CODES_KEY, JSON.stringify(usedCodes));
-                    addDiamonds(50);
-                    onAddCoins?.(2000);
-                    unlockGoldPulse();
-                    toast({ title: t.shopCodeActivated, description: t.shopCodeActivatedDesc });
-                    setPromoCode('');
-                    return;
-                  }
-                  
-                  toast({ title: t.shopCodeInvalid, description: t.shopCodeInvalidDesc, variant: "destructive" });
-                  setPromoCode('');
-                }}
-                className="bg-gradient-primary px-6"
-                disabled={!promoCode.trim()}
-              >
-                OK
-              </Button>
-            </div>
-          </Card>
         </TabsContent>
 
         {/* Game Modes Tab */}
