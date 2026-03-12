@@ -15,7 +15,7 @@ import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
-import { addDiamonds, unlockGoldPulse } from '@/utils/seasonPass';
+import { addDiamonds } from '@/utils/seasonPass';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
