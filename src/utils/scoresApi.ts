@@ -184,6 +184,10 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       return [];
     }
 
+    const cacheKey = `top_${mode}_${limit}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('scores')
       .select('username,best_score,created_at,decorations')
