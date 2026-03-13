@@ -2,20 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Medal, Award, Crown, Target, Coins, Zap, ChevronsDown } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, Trophy, Medal, Award, Crown, Target, ChevronsDown } from 'lucide-react';
+import { fetchTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
 
 interface LeaderboardEntry {
-  id: string;
-  user_id: string;
   username: string;
-  mode: string;
   score: number;
-  coins: number;
-  games_played: number;
-  max_speed_reached: number;
-  direction_changes: number;
   created_at: string;
 }
 
@@ -43,37 +36,13 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   const fetchLeaderboard = async (mode: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('scores')
-        .select('id, username, mode, best_score, created_at')
-        .eq('mode', mode)
-        .order('best_score', { ascending: false })
-        .limit(50);
-
-      if (error) {
-        console.error('Leaderboard fetch error:', error);
-        throw error;
-      }
-
-      const formattedData = (data || []).map(entry => ({
-        id: entry.id,
-        user_id: entry.id,
-        username: entry.username || 'Anonyme',
-        mode: entry.mode,
-        score: entry.best_score,
-        coins: 0,
-        games_played: 0,
-        max_speed_reached: 0,
-        direction_changes: 0,
-        created_at: entry.created_at
-      }));
-
-      setLeaderboard(formattedData);
+      const data = await fetchTop(mode, 50);
+      setLeaderboard(data.map(e => ({ username: e.username, score: e.score, created_at: e.created_at })));
     } catch (error: any) {
       console.error('Error fetching leaderboard:', error);
       toast({
         title: "Erreur de connexion",
-        description: error.message || "Impossible de charger le classement. Vérifiez votre connexion.",
+        description: error.message || "Impossible de charger le classement.",
         variant: "destructive"
       });
     }
@@ -178,61 +147,29 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
         ) : (
           <div className="space-y-2">
             {leaderboard.map((entry, index) => (
-              <Card key={entry.id} 
+              <Card key={`${entry.username}-${index}`} 
                     className={`p-4 bg-button-bg border-wheel-border hover:scale-[1.02] transition-all duration-300 ${
                       index < 3 ? 'shadow-glow-primary' : ''
                     }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    {/* Rank */}
                     <div className="flex items-center gap-2">
                       {getRankIcon(index + 1)}
                       <Badge variant={getRankBadgeVariant(index + 1)} className="font-bold">
                         #{index + 1}
                       </Badge>
                     </div>
-
-                    {/* Username */}
                     <div>
                       <h3 className="font-bold text-text-primary text-lg">
                         {entry.username}
                       </h3>
-                      <p className="text-text-muted text-sm">
-                        {entry.games_played} partie{entry.games_played > 1 ? 's' : ''}
-                      </p>
                     </div>
                   </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 text-right">
-                    <div className="flex items-center gap-2">
-                      <Target className="w-4 h-4 text-primary" />
-                      <span className="font-bold text-primary text-xl">{entry.score}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Coins className="w-4 h-4 text-secondary" />
-                      <span className="text-secondary font-medium">{entry.coins}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-accent" />
-                      <span className="text-accent text-sm">
-                        {entry.max_speed_reached.toFixed(1)}x
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-2 text-right">
+                    <Target className="w-4 h-4 text-primary" />
+                    <span className="font-bold text-primary text-xl">{entry.score}</span>
                   </div>
                 </div>
-
-                {/* Additional stats for top 3 */}
-                {index < 3 && (
-                  <div className="mt-3 pt-3 border-t border-wheel-border/30">
-                    <div className="flex justify-between text-sm text-text-muted">
-                      <span>Vitesse max: {entry.max_speed_reached.toFixed(2)}</span>
-                      <span>Changements de direction: {entry.direction_changes}</span>
-                    </div>
-                  </div>
-                )}
               </Card>
             ))}
           </div>

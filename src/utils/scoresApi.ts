@@ -33,7 +33,26 @@ function buildDecorationsString(): string | null {
 // Constantes de configuration
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraHJ0dmduemN1ZnBsemhvcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NjU1NjgsImV4cCI6MjA3NDE0MTU2OH0.3mYkFLKEqJFllX8487LdqnkEFXUw5Y4cZnzlZyfJ-a4";
-const FETCH_LIMIT = 1000;
+const FETCH_LIMIT = 200; // Reduced from 1000 to limit egress
+
+// ─── Client-side cache for leaderboard queries ───
+const CACHE_TTL = 60_000; // 60 seconds
+interface CacheEntry<T> { data: T; ts: number; }
+const queryCache = new Map<string, CacheEntry<Score[]>>();
+
+function getCached(key: string): Score[] | null {
+  const entry = queryCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL) {
+    queryCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCache(key: string, data: Score[]) {
+  queryCache.set(key, { data, ts: Date.now() });
+}
 
 // Enhanced anti-spam
 let lastSubmitTime = 0;
@@ -145,6 +164,8 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     lastSubmitTime = now;
     hasSubmittedThisGame = true;
+    // Invalidate leaderboard cache so the player sees their new score
+    queryCache.clear();
     return true;
 
   } catch (error) {
@@ -164,6 +185,10 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       console.warn('Mode invalide pour fetchTop:', mode);
       return [];
     }
+
+    const cacheKey = `top_${mode}_${limit}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
 
     const { data, error } = await supabase
       .from('scores')
@@ -202,9 +227,11 @@ export async function fetchTop(mode: string, limit: number = FETCH_LIMIT): Promi
       }
     }
 
-    return Array.from(seen.values())
+    const result = Array.from(seen.values())
       .map(({ _latest_at, ...s }) => s)
       .sort((a, b) => b.score - a.score);
+    setCache(cacheKey, result);
+    return result;
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement:', error);
@@ -218,6 +245,10 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       console.warn('Mode invalide pour fetchWeeklyTop:', mode);
       return [];
     }
+
+    const cacheKey = `weekly_${mode}_${limit}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
 
     const now = new Date();
     const day = now.getDay();
@@ -262,9 +293,11 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       }
     }
 
-    return Array.from(seen.values())
+    const result = Array.from(seen.values())
       .map(({ _latest_at, ...s }) => s)
       .sort((a, b) => b.score - a.score);
+    setCache(cacheKey, result);
+    return result;
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement hebdomadaire:', error);
@@ -278,6 +311,10 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
       console.warn('Mode invalide pour fetchPreviousWeekTop:', mode);
       return [];
     }
+
+    const cacheKey = `prev_${mode}_${limit}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
 
     const now = new Date();
     const day = now.getDay();
@@ -350,9 +387,11 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
       }
     }
 
-    return Array.from(seen.values())
+    const result = Array.from(seen.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
+    setCache(cacheKey, result);
+    return result;
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement de la semaine précédente:', error);
