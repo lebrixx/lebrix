@@ -13,6 +13,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <ForceUpdate />
       <Toaster />
       <Sonner />
       <HashRouter>
