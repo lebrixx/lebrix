@@ -385,9 +385,11 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
       }
     }
 
-    return Array.from(seen.values())
+    const result = Array.from(seen.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
+    setCache(cacheKey, result);
+    return result;
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement de la semaine précédente:', error);
