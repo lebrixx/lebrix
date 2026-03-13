@@ -291,9 +291,11 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       }
     }
 
-    return Array.from(seen.values())
+    const result = Array.from(seen.values())
       .map(({ _latest_at, ...s }) => s)
       .sort((a, b) => b.score - a.score);
+    setCache(cacheKey, result);
+    return result;
 
   } catch (error) {
     console.error('Erreur lors de la récupération du classement hebdomadaire:', error);
