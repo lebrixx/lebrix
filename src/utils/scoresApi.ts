@@ -164,6 +164,8 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     lastSubmitTime = now;
     hasSubmittedThisGame = true;
+    // Invalidate leaderboard cache so the player sees their new score
+    queryCache.clear();
     return true;
 
   } catch (error) {
