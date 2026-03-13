@@ -244,6 +244,10 @@ export async function fetchWeeklyTop(mode: string, limit: number = FETCH_LIMIT):
       return [];
     }
 
+    const cacheKey = `weekly_${mode}_${limit}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     const now = new Date();
     const day = now.getDay();
     const diff = now.getDate() - day + (day === 0 ? -6 : 1);
