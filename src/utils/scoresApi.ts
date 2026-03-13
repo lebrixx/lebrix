@@ -33,7 +33,26 @@ function buildDecorationsString(): string | null {
 // Constantes de configuration
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraHJ0dmduemN1ZnBsemhvcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NjU1NjgsImV4cCI6MjA3NDE0MTU2OH0.3mYkFLKEqJFllX8487LdqnkEFXUw5Y4cZnzlZyfJ-a4";
-const FETCH_LIMIT = 1000;
+const FETCH_LIMIT = 200; // Reduced from 1000 to limit egress
+
+// ─── Client-side cache for leaderboard queries ───
+const CACHE_TTL = 60_000; // 60 seconds
+interface CacheEntry<T> { data: T; ts: number; }
+const queryCache = new Map<string, CacheEntry<Score[]>>();
+
+function getCached(key: string): Score[] | null {
+  const entry = queryCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL) {
+    queryCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCache(key: string, data: Score[]) {
+  queryCache.set(key, { data, ts: Date.now() });
+}
 
 // Enhanced anti-spam
 let lastSubmitTime = 0;
