@@ -6,12 +6,14 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Multiplayer from "./pages/Multiplayer";
+import { ForceUpdate } from "./components/ForceUpdate";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <ForceUpdate />
       <Toaster />
       <Sonner />
       <HashRouter>
