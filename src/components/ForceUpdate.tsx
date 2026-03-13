@@ -17,8 +17,8 @@ import { Download } from 'lucide-react';
 const CURRENT_APP_VERSION = '1.0.0';
 
 const STORE_URLS = {
-  ios: 'https://apps.apple.com/app/idTON_APP_ID', // TODO: remplace par ton vrai lien App Store
-  android: 'https://play.google.com/store/apps/details?id=com.bryangouzou.luckystop',
+  ios: 'https://apps.apple.com/fr/app/lucky-stop/id6753086875',
+  android: 'https://play.google.com/store/apps/details?id=com.bryangouzou.luckystop&pcampaignid=web_share',
 };
 
 function compareVersions(current: string, minimum: string): boolean {
