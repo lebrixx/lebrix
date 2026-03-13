@@ -2,20 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Medal, Award, Crown, Target, Coins, Zap, ChevronsDown } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, Trophy, Medal, Award, Crown, Target, ChevronsDown } from 'lucide-react';
+import { fetchTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
 
 interface LeaderboardEntry {
-  id: string;
-  user_id: string;
   username: string;
-  mode: string;
   score: number;
-  coins: number;
-  games_played: number;
-  max_speed_reached: number;
-  direction_changes: number;
   created_at: string;
 }
 
@@ -43,37 +36,13 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   const fetchLeaderboard = async (mode: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('scores')
-        .select('id, username, mode, best_score, created_at')
-        .eq('mode', mode)
-        .order('best_score', { ascending: false })
-        .limit(50);
-
-      if (error) {
-        console.error('Leaderboard fetch error:', error);
-        throw error;
-      }
-
-      const formattedData = (data || []).map(entry => ({
-        id: entry.id,
-        user_id: entry.id,
-        username: entry.username || 'Anonyme',
-        mode: entry.mode,
-        score: entry.best_score,
-        coins: 0,
-        games_played: 0,
-        max_speed_reached: 0,
-        direction_changes: 0,
-        created_at: entry.created_at
-      }));
-
-      setLeaderboard(formattedData);
+      const data = await fetchTop(mode, 50);
+      setLeaderboard(data.map(e => ({ username: e.username, score: e.score, created_at: e.created_at })));
     } catch (error: any) {
       console.error('Error fetching leaderboard:', error);
       toast({
         title: "Erreur de connexion",
-        description: error.message || "Impossible de charger le classement. Vérifiez votre connexion.",
+        description: error.message || "Impossible de charger le classement.",
         variant: "destructive"
       });
     }
