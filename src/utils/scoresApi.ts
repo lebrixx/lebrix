@@ -310,6 +310,10 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
       return [];
     }
 
+    const cacheKey = `prev_${mode}_${limit}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     const now = new Date();
     const day = now.getDay();
     const diff = now.getDate() - day + (day === 0 ? -6 : 1);
