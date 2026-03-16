@@ -39,7 +39,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
     const load = async () => {
       setLoading(true);
       try {
-        const data = await fetchGlobalLeaderboard(100);
+        const data = await fetchGlobalLeaderboard(1000);
         setLeaderboard(data);
       } catch (error: any) {
         toast({
