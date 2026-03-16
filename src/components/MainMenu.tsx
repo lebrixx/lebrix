@@ -264,10 +264,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
-          <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
-            <Trophy className="w-6 h-6 text-primary mx-auto mb-1" />
-            <div className="text-xl font-bold text-primary">{bestScore}</div>
-            <div className="text-xs text-text-muted">{t.bestScore}</div>
+          <Card 
+            className="bg-button-bg border-primary/30 p-3 text-center hover:scale-105 transition-transform duration-300 cursor-pointer hover:border-primary/50 hover:shadow-[0_0_15px_hsl(var(--primary)/0.15)]"
+            onClick={onOpenGlobalLeaderboard}
+          >
+            <Globe className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
+            <div className="text-xl font-bold text-primary">
+              {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
+            </div>
+            <div className="text-[10px] text-text-muted">Classement Global</div>
           </Card>
           
           <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
