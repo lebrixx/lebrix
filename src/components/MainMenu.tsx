@@ -124,6 +124,26 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       clearInterval(interval);
     };
   }, []);
+
+  // Fetch global rank
+  useEffect(() => {
+    const loadGlobalRank = async () => {
+      try {
+        const data = await fetchGlobalLeaderboard(100);
+        const identity = getLocalIdentity();
+        if (identity.username) {
+          const idx = data.findIndex(e => e.username.toLowerCase() === identity.username!.toLowerCase());
+          if (idx >= 0) {
+            setGlobalRank({ rank: idx + 1, total: data.length, score: data[idx].total_score });
+          } else {
+            setGlobalRank({ rank: 0, total: data.length, score: 0 });
+          }
+        }
+      } catch {}
+    };
+    loadGlobalRank();
+  }, []);
+
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
 
