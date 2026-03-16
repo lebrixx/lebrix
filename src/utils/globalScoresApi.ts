@@ -18,7 +18,7 @@ const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'z
 
 export async function fetchGlobalLeaderboard(limit = 1000): Promise<GlobalPlayerScore[]> {
   if (cachedData && Date.now() - cachedData.ts < CACHE_TTL) {
-    return cachedData.data;
+    return cachedData.data.slice(0, limit);
   }
 
   try {
@@ -49,12 +49,12 @@ export async function fetchGlobalLeaderboard(limit = 1000): Promise<GlobalPlayer
         player = { scores: new Map(), decorations: entry.decorations, latestAt: entry.created_at || '' };
         playerMap.set(key, player);
       }
-      
+
       const existing = player.scores.get(entry.mode) || 0;
       if (entry.best_score > existing) {
         player.scores.set(entry.mode, entry.best_score);
       }
-      
+
       // Keep latest decorations
       if ((entry.created_at || '') > player.latestAt) {
         player.decorations = entry.decorations;
@@ -74,10 +74,10 @@ export async function fetchGlobalLeaderboard(limit = 1000): Promise<GlobalPlayer
     });
 
     result.sort((a, b) => b.total_score - a.total_score);
-    const sliced = result.slice(0, limit);
-    
-    cachedData = { data: sliced, ts: Date.now() };
-    return sliced;
+
+    // Cache full aggregated leaderboard so different limits don't conflict (100 vs 1000)
+    cachedData = { data: result, ts: Date.now() };
+    return result.slice(0, limit);
   } catch (error) {
     console.error('Error in fetchGlobalLeaderboard:', error);
     return [];
