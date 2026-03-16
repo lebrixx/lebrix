@@ -52,6 +52,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenModes,
   onOpenLeaderboard,
   onOpenDailyRewards,
+  onOpenGlobalLeaderboard,
   hasAvailableReward,
   onAdRewardClaimed,
   onSpendCoins,
