@@ -278,6 +278,7 @@ const Index = () => {
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
             onOpenDailyRewards={() => setShowDailyRewards(true)}
+            onOpenGlobalLeaderboard={() => setCurrentScreen('global_leaderboard')}
             hasAvailableReward={hasAvailableReward}
             onAdRewardClaimed={addCoins}
             onSpendCoins={spendCoins}
