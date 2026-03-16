@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Trophy, Medal, Award, Crown, Globe, Target, ChevronsDown, Gamepad2, Info } from 'lucide-react';
 import { fetchGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
+import { applyDecoration } from '@/utils/seasonPass';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useToast } from '@/hooks/use-toast';
 
