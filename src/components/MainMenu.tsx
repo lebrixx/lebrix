@@ -31,6 +31,7 @@ interface MainMenuProps {
   onOpenModes: () => void;
   onOpenLeaderboard: () => void;
   onOpenDailyRewards: () => void;
+  onOpenGlobalLeaderboard: () => void;
   hasAvailableReward: boolean;
   onAdRewardClaimed: (coins: number) => void;
   onSpendCoins?: (amount: number) => boolean;
