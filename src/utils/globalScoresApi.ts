@@ -16,7 +16,7 @@ export function clearGlobalCache() {
 
 const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
 
-export async function fetchGlobalLeaderboard(limit = 100): Promise<GlobalPlayerScore[]> {
+export async function fetchGlobalLeaderboard(limit = 1000): Promise<GlobalPlayerScore[]> {
   if (cachedData && Date.now() - cachedData.ts < CACHE_TTL) {
     return cachedData.data;
   }
