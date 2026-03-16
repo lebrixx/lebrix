@@ -383,6 +383,13 @@ const Index = () => {
             />
           );
         
+        case 'global_leaderboard':
+          return (
+            <GlobalLeaderboard
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
+        
         default:
           return null;
     }
