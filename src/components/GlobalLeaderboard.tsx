@@ -204,7 +204,10 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
                       </div>
                       <div>
                         <h3 className={`text-sm ${getUsernameClass(entry.decorations)}`}>
-                          {entry.username}
+                          {(() => {
+                            const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
+                            return applyDecoration(displayName, entry.decorations || null);
+                          })()}
                           {isCurrentUser && <span className="text-[10px] text-primary ml-1">(toi)</span>}
                         </h3>
                         <div className="flex items-center gap-1 text-[10px] text-text-muted">
