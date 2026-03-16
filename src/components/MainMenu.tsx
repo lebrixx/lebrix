@@ -74,6 +74,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
+  const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
 
   // Timer pour la roue
