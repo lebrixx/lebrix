@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe } from 'lucide-react';
+import { fetchGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
+import { getLocalIdentity } from '@/utils/localIdentity';
 import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
@@ -29,6 +31,7 @@ interface MainMenuProps {
   onOpenModes: () => void;
   onOpenLeaderboard: () => void;
   onOpenDailyRewards: () => void;
+  onOpenGlobalLeaderboard: () => void;
   hasAvailableReward: boolean;
   onAdRewardClaimed: (coins: number) => void;
   onSpendCoins?: (amount: number) => boolean;
@@ -49,6 +52,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenModes,
   onOpenLeaderboard,
   onOpenDailyRewards,
+  onOpenGlobalLeaderboard,
   hasAvailableReward,
   onAdRewardClaimed,
   onSpendCoins,
@@ -70,6 +74,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
+  const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
 
   // Timer pour la roue
@@ -119,6 +124,26 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       clearInterval(interval);
     };
   }, []);
+
+  // Fetch global rank
+  useEffect(() => {
+    const loadGlobalRank = async () => {
+      try {
+        const data = await fetchGlobalLeaderboard(100);
+        const identity = getLocalIdentity();
+        if (identity.username) {
+          const idx = data.findIndex(e => e.username.toLowerCase() === identity.username!.toLowerCase());
+          if (idx >= 0) {
+            setGlobalRank({ rank: idx + 1, total: data.length, score: data[idx].total_score });
+          } else {
+            setGlobalRank({ rank: 0, total: data.length, score: 0 });
+          }
+        }
+      } catch {}
+    };
+    loadGlobalRank();
+  }, []);
+
   return (
     <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
 
@@ -239,10 +264,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
-          <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
-            <Trophy className="w-6 h-6 text-primary mx-auto mb-1" />
-            <div className="text-xl font-bold text-primary">{bestScore}</div>
-            <div className="text-xs text-text-muted">{t.bestScore}</div>
+          <Card 
+            className="bg-button-bg border-primary/30 p-3 text-center hover:scale-105 transition-transform duration-300 cursor-pointer hover:border-primary/50 hover:shadow-[0_0_15px_hsl(var(--primary)/0.15)]"
+            onClick={onOpenGlobalLeaderboard}
+          >
+            <Globe className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
+            <div className="text-xl font-bold text-primary">
+              {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
+            </div>
+            <div className="text-[10px] text-text-muted">Classement Global</div>
           </Card>
           
           <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">

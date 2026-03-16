@@ -5,6 +5,7 @@ import { Shop } from '@/components/Shop';
 import { Challenges } from '@/components/Challenges';
 import { ModeSelection } from '@/components/ModeSelection';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
+import { GlobalLeaderboard } from '@/components/GlobalLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
@@ -24,7 +25,7 @@ import { useSound } from '@/hooks/useSound';
 import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
@@ -277,6 +278,7 @@ const Index = () => {
             onOpenModes={() => setCurrentScreen('modes')}
             onOpenLeaderboard={() => setCurrentScreen('leaderboard')}
             onOpenDailyRewards={() => setShowDailyRewards(true)}
+            onOpenGlobalLeaderboard={() => setCurrentScreen('global_leaderboard')}
             hasAvailableReward={hasAvailableReward}
             onAdRewardClaimed={addCoins}
             onSpendCoins={spendCoins}
@@ -377,6 +379,13 @@ const Index = () => {
         case 'daily_challenge':
           return (
             <DailyChallenge
+              onBack={() => setCurrentScreen('menu')}
+            />
+          );
+        
+        case 'global_leaderboard':
+          return (
+            <GlobalLeaderboard
               onBack={() => setCurrentScreen('menu')}
             />
           );
