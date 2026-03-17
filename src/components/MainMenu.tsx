@@ -276,7 +276,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
             </div>
             <div className="text-[10px] text-text-muted">Classement Global</div>
-          </Card>
+            </Card>
+          </div>
           
           <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
             <Coins className="w-6 h-6 text-secondary mx-auto mb-1" />

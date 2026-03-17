@@ -44,7 +44,8 @@
     --gradient-danger: linear-gradient(135deg, hsl(var(--danger)), hsl(var(--danger-glow)));
 
     /* Shadows & Glows */
-    --glow-primary: 0 0 20px hsl(var(--primary) / 0.5);
+--glow-primary: 0 0 20px hsl(var(--primary) / 0.5);
+    --glow-orbit: hsl(var(--primary) / 0.6);
     --glow-success: 0 0 20px hsl(var(--success) / 0.8);
     --glow-danger: 0 0 20px hsl(var(--danger) / 0.6);
     --shadow-card: 0 8px 32px hsl(var(--game-darker) / 0.8);
