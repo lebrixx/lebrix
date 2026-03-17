@@ -270,6 +270,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const totalLevelsCompleted = Object.values(progress).reduce((sum, p) => sum + p.currentLevel, 0);
   const allModes = Object.keys(ModeID).map(key => ModeID[key as keyof typeof ModeID]);
   const hasDailyRewards = hasPendingDailyChallengeRewards();
+  const hasGlobalRewards = Object.values(progress).some(p => p.pendingRewards.length > 0) || gamesProgress.pendingRewards.length > 0;
   
   // Calculer combien de défis quotidiens sont complétés
   const dailyCompleted = dailyChallenges.filter(c => dailyProgress.challenges[c.id]?.claimed).length;
@@ -307,10 +308,13 @@ export const Challenges: React.FC<ChallengesProps> = ({
           </TabsTrigger>
           <TabsTrigger 
             value="global"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 rounded-lg transition-all"
+            className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 rounded-lg transition-all"
           >
             <Trophy className="w-4 h-4 mr-2" />
             Globaux
+            {hasGlobalRewards && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-lg shadow-secondary/50" />
+            )}
           </TabsTrigger>
         </TabsList>
 
