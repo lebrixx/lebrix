@@ -270,6 +270,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const totalLevelsCompleted = Object.values(progress).reduce((sum, p) => sum + p.currentLevel, 0);
   const allModes = Object.keys(ModeID).map(key => ModeID[key as keyof typeof ModeID]);
   const hasDailyRewards = hasPendingDailyChallengeRewards();
+  const hasGlobalRewards = Object.values(progress).some(p => p.pendingRewards.length > 0) || gamesProgress.pendingRewards.length > 0;
   
   // Calculer combien de défis quotidiens sont complétés
   const dailyCompleted = dailyChallenges.filter(c => dailyProgress.challenges[c.id]?.claimed).length;
