@@ -266,7 +266,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
           <div className="relative cursor-pointer" onClick={onOpenGlobalLeaderboard}>
             <div className="absolute -inset-[1px] rounded-xl overflow-hidden pointer-events-none">
-              <div className="absolute w-6 h-6 rounded-full bg-primary/60 blur-md animate-orbit" />
+              <div className="absolute w-8 h-8 rounded-full bg-primary/80 blur-lg animate-orbit" />
             </div>
             <Card 
               className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
