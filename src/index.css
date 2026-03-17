@@ -598,3 +598,17 @@
   0%, 100% { opacity: 1; color: hsl(45, 100%, 55%); text-shadow: 0 0 4px currentColor; }
   50% { opacity: 0.5; color: hsl(35, 100%, 45%); text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
 }
+
+@keyframes orbit {
+  0% { top: 0; left: 50%; }
+  25% { top: 50%; left: 100%; }
+  50% { top: 100%; left: 50%; }
+  75% { top: 50%; left: 0; }
+  100% { top: 0; left: 50%; }
+}
+
+.animate-orbit {
+  animation: orbit 3s linear infinite;
+  transform: translate(-50%, -50%);
+}
+}
