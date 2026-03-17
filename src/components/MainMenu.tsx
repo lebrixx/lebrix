@@ -264,10 +264,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
-          <Card 
-            className="bg-button-bg border-primary/30 p-3 text-center hover:scale-105 transition-transform duration-300 cursor-pointer hover:border-primary/50 hover:shadow-[0_0_15px_hsl(var(--primary)/0.15)]"
-            onClick={onOpenGlobalLeaderboard}
-          >
+          <div className="relative cursor-pointer" onClick={onOpenGlobalLeaderboard}>
+            <div className="absolute -inset-[1px] rounded-xl overflow-hidden pointer-events-none">
+              <div className="absolute w-6 h-6 rounded-full bg-primary/60 blur-md animate-orbit" />
+            </div>
+            <Card 
+              className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
+            >
             <Globe className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
             <div className="text-xl font-bold text-primary">
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
