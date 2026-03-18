@@ -632,30 +632,51 @@ export const Challenges: React.FC<ChallengesProps> = ({
                   key={mode}
                   className={`relative overflow-hidden border transition-all duration-300 ${
                     isCompleted 
-                      ? 'border-success/30 bg-gradient-to-br from-success/10 to-success/5' 
+                      ? 'border-emerald-400/50 bg-gradient-to-br from-emerald-500/15 via-emerald-400/5 to-yellow-500/10 shadow-lg shadow-emerald-500/15' 
                       : hasPending
                         ? 'border-secondary/50 bg-gradient-to-br from-secondary/10 to-secondary/5 shadow-lg shadow-secondary/10'
                         : `border-wheel-border/30 bg-gradient-to-br ${info.gradient}`
                   }`}
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <div className="p-3">
+                  {/* Effet de brillance pour les complétés */}
+                  {isCompleted && (
+                    <>
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-400/15 rounded-full blur-2xl" />
+                      <div className="absolute bottom-0 left-0 w-12 h-12 bg-yellow-400/10 rounded-full blur-xl" />
+                    </>
+                  )}
+                  <div className="relative p-3">
                     {/* Header avec icône */}
                     <div className="flex items-center gap-2 mb-3">
-                      <div className={`p-1.5 rounded-lg ${isCompleted ? 'bg-success/20' : hasPending ? 'bg-secondary/20' : 'bg-white/5'}`}>
-                        <Icon className={`w-4 h-4 ${isCompleted ? 'text-success' : info.color}`} />
+                      <div className={`p-1.5 rounded-lg ${isCompleted ? 'bg-emerald-400/20 shadow-sm shadow-emerald-400/20' : hasPending ? 'bg-secondary/20' : 'bg-white/5'}`}>
+                        {isCompleted ? (
+                          <CheckCircle className="w-4 h-4 text-emerald-400" />
+                        ) : (
+                          <Icon className={`w-4 h-4 ${info.color}`} />
+                        )}
                       </div>
-                      <span className={`text-xs font-semibold truncate ${isCompleted ? 'text-success' : 'text-text-primary'}`}>
+                      <span className={`text-xs font-semibold truncate ${isCompleted ? 'text-emerald-400' : 'text-text-primary'}`}>
                         {info.name}
                       </span>
+                      {isCompleted && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-400/15 text-emerald-400 font-bold ml-auto">
+                          ★ MAX
+                        </span>
+                      )}
                     </div>
                     
                     {/* Progression */}
                     <div className="mb-2">
                       {isCompleted ? (
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] text-success">✓ Terminé</span>
-                          <span className="text-[10px] font-bold text-success">{MAX_LEVEL}/{MAX_LEVEL}</span>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-emerald-400 font-medium">✓ Tous les paliers</span>
+                            <span className="text-[10px] font-bold text-emerald-400">{MAX_LEVEL}/{MAX_LEVEL}</span>
+                          </div>
+                          <div className="h-1.5 bg-button-bg rounded-full overflow-hidden">
+                            <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-300 w-full" />
+                          </div>
                         </div>
                       ) : (
                         <>
@@ -688,9 +709,9 @@ export const Challenges: React.FC<ChallengesProps> = ({
                         +{modeProgress.pendingRewards.reduce((s, r) => s + r, 0)}
                       </Button>
                     ) : isCompleted ? (
-                      <div className="flex items-center justify-center gap-1 py-1">
-                        <CheckCircle className="w-3 h-3 text-success" />
-                        <span className="text-[10px] text-success font-medium">Complété</span>
+                      <div className="flex items-center justify-center gap-1.5 py-1 px-2 rounded-md bg-emerald-400/10 border border-emerald-400/20">
+                        <Trophy className="w-3 h-3 text-emerald-400" />
+                        <span className="text-[10px] text-emerald-400 font-bold">Maîtrisé</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-1 py-1 px-2 rounded-md bg-white/5">
