@@ -244,8 +244,8 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
           </div>
           <p className="text-text-secondary text-sm max-w-xs mx-auto">
             {selectedTab === 'general'
-              ? 'Le score total de chaque joueur est la somme de ses meilleurs scores dans chaque mode de jeu'
-              : 'Classement basé sur les meilleurs scores du mois en cours — remis à zéro chaque 1er du mois'
+              ? 'Comment ça marche ? Ton meilleur score de chaque mode est additionné pour former ton Score Global. Joue à tous les modes pour monter dans le classement !'
+              : 'Comment ça marche ? Ton meilleur score de chaque mode ce mois-ci est additionné pour former ton Score Mensuel. Le classement se réinitialise le 1er de chaque mois !'
             }
           </p>
         </div>
