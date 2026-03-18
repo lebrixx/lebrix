@@ -34,6 +34,11 @@ function getMondayOfCurrentWeek(): Date {
   return monday;
 }
 
+function getFirstOfCurrentMonth(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -89,7 +94,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // In-memory rate limiting only (removed DB rate-limit query to save DB calls)
+    // In-memory rate limiting only
     const fingerprint = `${device_id}_${client_fingerprint || 'unknown'}`;
     const now = Date.now();
     const rateLimitData = rateLimitMap.get(fingerprint);
@@ -115,32 +120,30 @@ Deno.serve(async (req) => {
     if (username_changed) {
       console.log('Username changed — running consolidation for device', device_id);
 
-      // Find entries on THIS device with a DIFFERENT username (username change)
       const { data: oldUsernameEntries } = await supabase
         .from('scores')
-        .select('id, username, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, decorations')
+        .select('id, username, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, monthly_score, monthly_updated_at, decorations')
         .eq('device_id', device_id)
         .not('username', 'ilike', username);
 
       if (oldUsernameEntries && oldUsernameEntries.length > 0) {
-        // Find entries on THIS device with the CURRENT username
         const { data: currentEntries } = await supabase
           .from('scores')
-          .select('id, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, decorations')
+          .select('id, mode, best_score, weekly_score, weekly_updated_at, previous_weekly_score, previous_weekly_updated_at, monthly_score, monthly_updated_at, decorations')
           .eq('device_id', device_id)
           .ilike('username', username);
 
-        // Build consolidated map
         const consolidated = new Map<string, {
           best_score: number;
           weekly_score: number;
           weekly_updated_at: string | null;
           previous_weekly_score: number;
           previous_weekly_updated_at: string | null;
+          monthly_score: number;
+          monthly_updated_at: string | null;
           decorations: string | null;
         }>();
 
-        // Seed with current username entries
         for (const entry of (currentEntries || [])) {
           consolidated.set(entry.mode, {
             best_score: entry.best_score,
@@ -148,11 +151,12 @@ Deno.serve(async (req) => {
             weekly_updated_at: entry.weekly_updated_at,
             previous_weekly_score: entry.previous_weekly_score || 0,
             previous_weekly_updated_at: entry.previous_weekly_updated_at,
+            monthly_score: entry.monthly_score || 0,
+            monthly_updated_at: entry.monthly_updated_at,
             decorations: entry.decorations,
           });
         }
 
-        // Merge old username entries
         for (const entry of oldUsernameEntries) {
           const existing = consolidated.get(entry.mode);
           if (existing) {
@@ -165,6 +169,10 @@ Deno.serve(async (req) => {
             if (!existing.previous_weekly_updated_at || (entry.previous_weekly_updated_at && entry.previous_weekly_updated_at > existing.previous_weekly_updated_at)) {
               existing.previous_weekly_updated_at = entry.previous_weekly_updated_at;
             }
+            existing.monthly_score = Math.max(existing.monthly_score, entry.monthly_score || 0);
+            if (!existing.monthly_updated_at || (entry.monthly_updated_at && entry.monthly_updated_at > existing.monthly_updated_at)) {
+              existing.monthly_updated_at = entry.monthly_updated_at;
+            }
           } else {
             consolidated.set(entry.mode, {
               best_score: entry.best_score,
@@ -172,12 +180,13 @@ Deno.serve(async (req) => {
               weekly_updated_at: entry.weekly_updated_at,
               previous_weekly_score: entry.previous_weekly_score || 0,
               previous_weekly_updated_at: entry.previous_weekly_updated_at,
+              monthly_score: entry.monthly_score || 0,
+              monthly_updated_at: entry.monthly_updated_at,
               decorations: entry.decorations,
             });
           }
         }
 
-        // Upsert consolidated entries
         const idsToKeep = new Set<string>();
         for (const [entryMode, data] of consolidated.entries()) {
           const { data: upsertData, error: upsertError } = await supabase
@@ -191,6 +200,8 @@ Deno.serve(async (req) => {
               weekly_updated_at: data.weekly_updated_at || new Date().toISOString(),
               previous_weekly_score: data.previous_weekly_score,
               previous_weekly_updated_at: data.previous_weekly_updated_at,
+              monthly_score: data.monthly_score,
+              monthly_updated_at: data.monthly_updated_at,
               decorations: decorations !== undefined ? (decorations || null) : data.decorations,
             }, { onConflict: 'device_id,username,mode' })
             .select('id');
@@ -202,7 +213,6 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Delete old entries after successful upserts
         for (const entry of oldUsernameEntries) {
           if (!idsToKeep.has(entry.id)) {
             await supabase.from('scores').delete().eq('id', entry.id);
@@ -216,11 +226,12 @@ Deno.serve(async (req) => {
 
     // ===== Handle the current score submission =====
     const monday = getMondayOfCurrentWeek();
+    const firstOfMonth = getFirstOfCurrentMonth();
 
     // Fetch existing score for this mode
     const { data: existingScore } = await supabase
       .from('scores')
-      .select('best_score, weekly_score, weekly_updated_at')
+      .select('best_score, weekly_score, weekly_updated_at, monthly_score, monthly_updated_at')
       .eq('device_id', device_id)
       .ilike('username', username)
       .eq('mode', mode)
@@ -229,17 +240,18 @@ Deno.serve(async (req) => {
 
     let best_score = score;
     let weekly_score = score;
+    let monthly_score = score;
 
     if (existingScore) {
       best_score = Math.max(score, existingScore.best_score);
 
+      // Weekly logic (unchanged)
       const weeklyUpdatedAt = existingScore.weekly_updated_at ? new Date(existingScore.weekly_updated_at) : null;
       const isCurrentWeek = weeklyUpdatedAt && weeklyUpdatedAt >= monday;
 
       if (isCurrentWeek) {
         weekly_score = Math.max(score, existingScore.weekly_score || 0);
       } else {
-        // New week: archive previous weekly score
         if (existingScore.weekly_score > 0 && weeklyUpdatedAt) {
           await supabase
             .from('scores')
@@ -254,14 +266,25 @@ Deno.serve(async (req) => {
         weekly_score = score;
       }
 
+      // Monthly logic
+      const monthlyUpdatedAt = existingScore.monthly_updated_at ? new Date(existingScore.monthly_updated_at) : null;
+      const isCurrentMonth = monthlyUpdatedAt && monthlyUpdatedAt >= firstOfMonth;
+
+      if (isCurrentMonth) {
+        monthly_score = Math.max(score, existingScore.monthly_score || 0);
+      } else {
+        // New month: reset monthly score (no archiving needed, it just resets)
+        monthly_score = score;
+      }
+
       // Check if anything actually improved
       const bestImproved = score > existingScore.best_score;
       const weeklyImproved = !isCurrentWeek || score > (existingScore.weekly_score || 0);
+      const monthlyImproved = !isCurrentMonth || score > (existingScore.monthly_score || 0);
 
-      if (!bestImproved && !weeklyImproved) {
-        console.log(`No improvement for ${username}: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}, submitted=${score}`);
+      if (!bestImproved && !weeklyImproved && !monthlyImproved) {
+        console.log(`No improvement for ${username}: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}, monthly=${existingScore.monthly_score}, submitted=${score}`);
 
-        // Still sync decorations if needed
         if (decorations !== undefined) {
           await supabase
             .from('scores')
@@ -293,6 +316,8 @@ Deno.serve(async (req) => {
         best_score,
         weekly_score,
         weekly_updated_at: new Date().toISOString(),
+        monthly_score,
+        monthly_updated_at: new Date().toISOString(),
         mode,
         decorations: decorations || null,
         created_at: existingScore ? undefined : new Date().toISOString()
@@ -307,7 +332,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Score saved:', { username, mode, best_score, weekly_score });
+    console.log('Score saved:', { username, mode, best_score, weekly_score, monthly_score });
 
     // Track submission_id for idempotence
     if (submission_id) {
@@ -320,7 +345,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, updated: true, best_score, weekly_score }),
+      JSON.stringify({ success: true, updated: true, best_score, weekly_score, monthly_score }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
