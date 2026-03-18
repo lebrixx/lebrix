@@ -4,6 +4,7 @@ import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
 import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
 import { trackSent, trackSkipped } from './edgeFunctionMetrics';
+import { clearGlobalCache } from './globalScoresApi';
 
 // Track if username was recently changed (reset after first successful submission)
 let usernameRecentlyChanged = false;
