@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Medal, Award, Crown, Globe, Target, ChevronsDown, Gamepad2, Info } from 'lucide-react';
-import { fetchGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Trophy, Medal, Award, Crown, Globe, Target, ChevronsDown, Gamepad2, Info, Calendar } from 'lucide-react';
+import { fetchGlobalLeaderboard, fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { applyDecoration } from '@/utils/seasonPass';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useToast } from '@/hooks/use-toast';
+import { MonthlyTimer } from '@/components/MonthlyTimer';
 
 interface GlobalLeaderboardProps {
   onBack: () => void;
@@ -27,9 +29,131 @@ const hasGoldPulseName = (decorations: string | null | undefined): boolean => {
   return decorations.split(',').map(d => d.trim()).includes('gold_pulse_name');
 };
 
+const getRankIcon = (position: number) => {
+  switch (position) {
+    case 1: return <Crown className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />;
+    case 2: return <Medal className="w-6 h-6 text-gray-400 drop-shadow-[0_0_6px_rgba(156,163,175,0.5)]" />;
+    case 3: return <Award className="w-6 h-6 text-amber-600 drop-shadow-[0_0_6px_rgba(217,119,6,0.5)]" />;
+    default: return <Trophy className="w-5 h-5 text-primary" />;
+  }
+};
+
+const getRankStyle = (position: number) => {
+  switch (position) {
+    case 1: return 'border-yellow-500/40 bg-yellow-500/5 shadow-[0_0_20px_rgba(234,179,8,0.15)]';
+    case 2: return 'border-gray-400/40 bg-gray-400/5 shadow-[0_0_15px_rgba(156,163,175,0.1)]';
+    case 3: return 'border-amber-600/40 bg-amber-600/5 shadow-[0_0_15px_rgba(217,119,6,0.1)]';
+    default: return 'border-wheel-border bg-button-bg';
+  }
+};
+
+const getUsernameClass = (decorations: string | null | undefined) => {
+  if (hasGoldPulseName(decorations)) return 'font-bold text-yellow-400 animate-pulse';
+  if (hasPulseName(decorations)) return 'font-bold text-primary animate-pulse';
+  if (hasPurpleName(decorations)) return 'font-bold text-violet-400';
+  return 'font-bold text-text-primary';
+};
+
+interface LeaderboardListProps {
+  data: GlobalPlayerScore[];
+  loading: boolean;
+  currentUsername: string;
+  emptyIcon: React.ReactNode;
+  emptyText: string;
+  emptySubtext: string;
+  scoreLabel: string;
+}
+
+const LeaderboardList: React.FC<LeaderboardListProps> = ({
+  data, loading, currentUsername, emptyIcon, emptyText, emptySubtext, scoreLabel
+}) => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Card className="p-8 text-center bg-button-bg border-wheel-border">
+        {emptyIcon}
+        <p className="text-text-muted">{emptyText}</p>
+        <p className="text-text-muted text-sm">{emptySubtext}</p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {data.map((entry, index) => {
+        const isCurrentUser = currentUsername?.toLowerCase() === entry.username.toLowerCase();
+        return (
+          <Card
+            key={`${entry.username}-${index}`}
+            className={`p-3 transition-all duration-300 hover:scale-[1.02] ${getRankStyle(index + 1)} ${
+              isCurrentUser ? 'ring-1 ring-primary/50' : ''
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 min-w-[60px]">
+                  {getRankIcon(index + 1)}
+                  <Badge
+                    variant={index < 3 ? "default" : "outline"}
+                    className={`font-bold text-xs ${
+                      index === 0 ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' :
+                      index === 1 ? 'bg-gray-400/20 text-gray-400 border-gray-400/30' :
+                      index === 2 ? 'bg-amber-600/20 text-amber-600 border-amber-600/30' :
+                      ''
+                    }`}
+                  >
+                    #{index + 1}
+                  </Badge>
+                </div>
+                <div>
+                  <h3 className={`text-sm ${getUsernameClass(entry.decorations)}`}>
+                    {(() => {
+                      const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
+                      return applyDecoration(displayName, entry.decorations || null);
+                    })()}
+                    {isCurrentUser && <span className="text-[10px] text-primary ml-1">(toi)</span>}
+                  </h3>
+                  <div className="flex items-center gap-1 text-[10px] text-text-muted">
+                    <Gamepad2 className="w-3 h-3" />
+                    {entry.modes_played}/6 modes
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="flex items-center gap-1.5">
+                  <Target className="w-4 h-4 text-primary" />
+                  <span className={`font-bold text-lg ${
+                    index === 0 ? 'text-yellow-500' :
+                    index === 1 ? 'text-gray-400' :
+                    index === 2 ? 'text-amber-600' :
+                    'text-primary'
+                  }`}>
+                    {entry.total_score.toLocaleString()}
+                  </span>
+                </div>
+                <div className="text-[10px] text-text-muted">{scoreLabel}</div>
+              </div>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};
+
 export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) => {
+  const [selectedTab, setSelectedTab] = useState<string>('general');
   const [leaderboard, setLeaderboard] = useState<GlobalPlayerScore[]>([]);
+  const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<GlobalPlayerScore[]>([]);
   const [loading, setLoading] = useState(true);
+  const [monthlyLoading, setMonthlyLoading] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const { toast } = useToast();
@@ -41,7 +165,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
       try {
         const data = await fetchGlobalLeaderboard(1000);
         setLeaderboard(data);
-      } catch (error: any) {
+      } catch {
         toast({
           title: "Erreur de connexion",
           description: "Impossible de charger le classement global.",
@@ -54,6 +178,26 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
   }, []);
 
   useEffect(() => {
+    if (selectedTab === 'monthly' && monthlyLeaderboard.length === 0 && !monthlyLoading) {
+      const loadMonthly = async () => {
+        setMonthlyLoading(true);
+        try {
+          const data = await fetchMonthlyGlobalLeaderboard(1000);
+          setMonthlyLeaderboard(data);
+        } catch {
+          toast({
+            title: "Erreur de connexion",
+            description: "Impossible de charger le classement mensuel.",
+            variant: "destructive"
+          });
+        }
+        setMonthlyLoading(false);
+      };
+      loadMonthly();
+    }
+  }, [selectedTab]);
+
+  useEffect(() => {
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       setIsAtTop(scrollTop < 50);
@@ -62,7 +206,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
     window.addEventListener('scroll', handleScroll);
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [leaderboard]);
+  }, [leaderboard, monthlyLeaderboard]);
 
   const handleScrollButton = () => {
     if (isAtTop) {
@@ -72,34 +216,9 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
     }
   };
 
-  const getRankIcon = (position: number) => {
-    switch (position) {
-      case 1: return <Crown className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />;
-      case 2: return <Medal className="w-6 h-6 text-gray-400 drop-shadow-[0_0_6px_rgba(156,163,175,0.5)]" />;
-      case 3: return <Award className="w-6 h-6 text-amber-600 drop-shadow-[0_0_6px_rgba(217,119,6,0.5)]" />;
-      default: return <Trophy className="w-5 h-5 text-primary" />;
-    }
-  };
-
-  const getRankStyle = (position: number) => {
-    switch (position) {
-      case 1: return 'border-yellow-500/40 bg-yellow-500/5 shadow-[0_0_20px_rgba(234,179,8,0.15)]';
-      case 2: return 'border-gray-400/40 bg-gray-400/5 shadow-[0_0_15px_rgba(156,163,175,0.1)]';
-      case 3: return 'border-amber-600/40 bg-amber-600/5 shadow-[0_0_15px_rgba(217,119,6,0.1)]';
-      default: return 'border-wheel-border bg-button-bg';
-    }
-  };
-
-  const getUsernameClass = (decorations: string | null | undefined) => {
-    if (hasGoldPulseName(decorations)) return 'font-bold text-yellow-400 animate-pulse';
-    if (hasPulseName(decorations)) return 'font-bold text-primary animate-pulse';
-    if (hasPurpleName(decorations)) return 'font-bold text-violet-400';
-    return 'font-bold text-text-primary';
-  };
-
-  // Find current user rank
+  const activeData = selectedTab === 'general' ? leaderboard : monthlyLeaderboard;
   const userRank = currentUsername
-    ? leaderboard.findIndex(e => e.username.toLowerCase() === currentUsername.toLowerCase()) + 1
+    ? activeData.findIndex(e => e.username.toLowerCase() === currentUsername.toLowerCase()) + 1
     : 0;
 
   return (
@@ -124,16 +243,54 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
             </h1>
           </div>
           <p className="text-text-secondary text-sm max-w-xs mx-auto">
-            Le score total de chaque joueur est la somme de ses meilleurs scores dans chaque mode de jeu
+            {selectedTab === 'general'
+              ? 'Le score total de chaque joueur est la somme de ses meilleurs scores dans chaque mode de jeu'
+              : 'Classement basé sur les meilleurs scores du mois en cours — remis à zéro chaque 1er du mois'
+            }
           </p>
         </div>
+
+        {/* Tabs */}
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-4">
+          <TabsList className="grid w-full grid-cols-2 bg-button-bg border border-wheel-border">
+            <TabsTrigger
+              value="general"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+            >
+              <Globe className="w-4 h-4" />
+              Général
+            </TabsTrigger>
+            <TabsTrigger
+              value="monthly"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+            >
+              <Calendar className="w-4 h-4" />
+              Mensuel
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Monthly timer */}
+        {selectedTab === 'monthly' && (
+          <div className="flex justify-center mb-4">
+            <MonthlyTimer />
+          </div>
+        )}
 
         {/* Info banner */}
         <Card className="bg-primary/5 border-primary/20 p-3 mb-4">
           <div className="flex items-start gap-2">
             <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
             <div className="text-xs text-text-secondary">
-              <span className="text-primary font-semibold">Comment ça marche ?</span> Ton meilleur score de chaque mode (Classique, Arc Changeant, Survie, Zone Mobile, Zone Traîtresse, Mémoire) est additionné pour former ton <span className="text-primary font-semibold">Score Global</span>. Joue à tous les modes pour monter dans le classement !
+              {selectedTab === 'general' ? (
+                <>
+                  <span className="text-primary font-semibold">Comment ça marche ?</span> Ton meilleur score de chaque mode (Classique, Arc Changeant, Survie, Zone Mobile, Zone Traîtresse, Mémoire) est additionné pour former ton <span className="text-primary font-semibold">Score Global</span>. Joue à tous les modes pour monter dans le classement !
+                </>
+              ) : (
+                <>
+                  <span className="text-primary font-semibold">Classement mensuel</span> — Même principe que le général, mais seuls les scores du mois en cours comptent. Le classement se <span className="text-primary font-semibold">réinitialise le 1er de chaque mois</span>. Ton score global (général) n'est jamais affecté !
+                </>
+              )}
             </div>
           </div>
         </Card>
@@ -150,13 +307,15 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
                   <span className="text-text-primary font-bold text-sm">{currentUsername}</span>
                   <div className="flex items-center gap-1 text-xs text-text-muted">
                     <Gamepad2 className="w-3 h-3" />
-                    {leaderboard[userRank - 1]?.modes_played || 0}/6 modes joués
+                    {activeData[userRank - 1]?.modes_played || 0}/6 modes joués
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-primary font-bold text-lg">{leaderboard[userRank - 1]?.total_score || 0}</div>
-                <div className="text-[10px] text-text-muted">Score Global</div>
+                <div className="text-primary font-bold text-lg">{activeData[userRank - 1]?.total_score || 0}</div>
+                <div className="text-[10px] text-text-muted">
+                  {selectedTab === 'general' ? 'Score Global' : 'Score Mensuel'}
+                </div>
               </div>
             </div>
           </Card>
@@ -165,77 +324,30 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
 
       {/* Leaderboard */}
       <div className="flex-1 px-4 pb-4 overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : leaderboard.length === 0 ? (
-          <Card className="p-8 text-center bg-button-bg border-wheel-border">
-            <Globe className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
-            <p className="text-text-muted">Aucun score enregistré</p>
-            <p className="text-text-muted text-sm">Soyez le premier à jouer !</p>
-          </Card>
-        ) : (
-          <div className="space-y-2">
-            {leaderboard.map((entry, index) => {
-              const isCurrentUser = currentUsername?.toLowerCase() === entry.username.toLowerCase();
-              return (
-                <Card
-                  key={`${entry.username}-${index}`}
-                  className={`p-3 transition-all duration-300 hover:scale-[1.02] ${getRankStyle(index + 1)} ${
-                    isCurrentUser ? 'ring-1 ring-primary/50' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 min-w-[60px]">
-                        {getRankIcon(index + 1)}
-                        <Badge
-                          variant={index < 3 ? "default" : "outline"}
-                          className={`font-bold text-xs ${
-                            index === 0 ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' :
-                            index === 1 ? 'bg-gray-400/20 text-gray-400 border-gray-400/30' :
-                            index === 2 ? 'bg-amber-600/20 text-amber-600 border-amber-600/30' :
-                            ''
-                          }`}
-                        >
-                          #{index + 1}
-                        </Badge>
-                      </div>
-                      <div>
-                        <h3 className={`text-sm ${getUsernameClass(entry.decorations)}`}>
-                          {(() => {
-                            const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
-                            return applyDecoration(displayName, entry.decorations || null);
-                          })()}
-                          {isCurrentUser && <span className="text-[10px] text-primary ml-1">(toi)</span>}
-                        </h3>
-                        <div className="flex items-center gap-1 text-[10px] text-text-muted">
-                          <Gamepad2 className="w-3 h-3" />
-                          {entry.modes_played}/6 modes
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1.5">
-                        <Target className="w-4 h-4 text-primary" />
-                        <span className={`font-bold text-lg ${
-                          index === 0 ? 'text-yellow-500' :
-                          index === 1 ? 'text-gray-400' :
-                          index === 2 ? 'text-amber-600' :
-                          'text-primary'
-                        }`}>
-                          {entry.total_score.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-text-muted">pts cumulés</div>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+          <TabsContent value="general" className="mt-0">
+            <LeaderboardList
+              data={leaderboard}
+              loading={loading}
+              currentUsername={currentUsername || ''}
+              emptyIcon={<Globe className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />}
+              emptyText="Aucun score enregistré"
+              emptySubtext="Soyez le premier à jouer !"
+              scoreLabel="pts cumulés"
+            />
+          </TabsContent>
+          <TabsContent value="monthly" className="mt-0">
+            <LeaderboardList
+              data={monthlyLeaderboard}
+              loading={monthlyLoading}
+              currentUsername={currentUsername || ''}
+              emptyIcon={<Calendar className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />}
+              emptyText="Aucun score ce mois-ci"
+              emptySubtext="Joue une partie pour apparaître !"
+              scoreLabel="pts ce mois"
+            />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Scroll Button */}
