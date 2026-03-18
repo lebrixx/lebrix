@@ -244,8 +244,8 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
           </div>
           <p className="text-text-secondary text-sm max-w-xs mx-auto">
             {selectedTab === 'general'
-              ? 'Le score total de chaque joueur est la somme de ses meilleurs scores dans chaque mode de jeu'
-              : 'Classement basé sur les meilleurs scores du mois en cours — remis à zéro chaque 1er du mois'
+              ? 'Comment ça marche ? Ton meilleur score de chaque mode est additionné pour former ton Score Global. Joue à tous les modes pour monter dans le classement !'
+              : 'Comment ça marche ? Ton meilleur score de chaque mode ce mois-ci est additionné pour former ton Score Mensuel. Le classement se réinitialise le 1er de chaque mois !'
             }
           </p>
         </div>
@@ -277,23 +277,6 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
           </div>
         )}
 
-        {/* Info banner */}
-        <Card className="bg-primary/5 border-primary/20 p-3 mb-4">
-          <div className="flex items-start gap-2">
-            <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-text-secondary">
-              {selectedTab === 'general' ? (
-                <>
-                  <span className="text-primary font-semibold">Comment ça marche ?</span> Ton meilleur score de chaque mode (Classique, Arc Changeant, Survie, Zone Mobile, Zone Traîtresse, Mémoire) est additionné pour former ton <span className="text-primary font-semibold">Score Global</span>. Joue à tous les modes pour monter dans le classement !
-                </>
-              ) : (
-                <>
-                  <span className="text-primary font-semibold">Classement mensuel</span> — Même principe que le général, mais seuls les scores du mois en cours comptent. Le classement se <span className="text-primary font-semibold">réinitialise le 1er de chaque mois</span>. Ton score global (général) n'est jamais affecté !
-                </>
-              )}
-            </div>
-          </div>
-        </Card>
 
         {/* User rank bubble */}
         {currentUsername && userRank > 0 && (
