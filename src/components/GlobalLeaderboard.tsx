@@ -245,7 +245,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
     <div className="min-h-screen bg-gradient-game theme-neon flex flex-col pt-12">
       {/* Header */}
       <div className="p-4 pb-0">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center mb-4">
           <Button
             onClick={onBack}
             variant="outline"
@@ -254,16 +254,6 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour
-          </Button>
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            size="sm"
-            disabled={refreshing}
-            className="border-wheel-border hover:bg-button-hover"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Actualiser
           </Button>
         </div>
 
