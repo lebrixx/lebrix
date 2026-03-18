@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Trophy, Medal, Award, Crown, Globe, Target, ChevronsDown, Gamepad2, Info, Calendar } from 'lucide-react';
-import { fetchGlobalLeaderboard, fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
+import { ArrowLeft, Trophy, Medal, Award, Crown, Globe, Target, ChevronsDown, Gamepad2, Calendar, RefreshCw } from 'lucide-react';
+import { fetchGlobalLeaderboard, fetchMonthlyGlobalLeaderboard, clearGlobalCache, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { applyDecoration } from '@/utils/seasonPass';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useToast } from '@/hooks/use-toast';
@@ -154,48 +154,68 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
   const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<GlobalPlayerScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [monthlyLoading, setMonthlyLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const { toast } = useToast();
   const currentUsername = getLocalIdentity().username;
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchGlobalLeaderboard(1000);
-        setLeaderboard(data);
-      } catch {
-        toast({
-          title: "Erreur de connexion",
-          description: "Impossible de charger le classement global.",
-          variant: "destructive"
-        });
-      }
-      setLoading(false);
-    };
-    load();
+  const loadGeneral = useCallback(async (force = false) => {
+    if (force) clearGlobalCache();
+    setLoading(true);
+    try {
+      const data = await fetchGlobalLeaderboard(1000);
+      setLeaderboard(data);
+    } catch {
+      toast({
+        title: "Erreur de connexion",
+        description: "Impossible de charger le classement global.",
+        variant: "destructive"
+      });
+    }
+    setLoading(false);
+  }, []);
+
+  const loadMonthly = useCallback(async (force = false) => {
+    if (force) clearGlobalCache();
+    setMonthlyLoading(true);
+    try {
+      const data = await fetchMonthlyGlobalLeaderboard(1000);
+      setMonthlyLeaderboard(data);
+    } catch {
+      toast({
+        title: "Erreur de connexion",
+        description: "Impossible de charger le classement mensuel.",
+        variant: "destructive"
+      });
+    }
+    setMonthlyLoading(false);
   }, []);
 
   useEffect(() => {
-    if (selectedTab === 'monthly' && monthlyLeaderboard.length === 0 && !monthlyLoading) {
-      const loadMonthly = async () => {
-        setMonthlyLoading(true);
-        try {
-          const data = await fetchMonthlyGlobalLeaderboard(1000);
-          setMonthlyLeaderboard(data);
-        } catch {
-          toast({
-            title: "Erreur de connexion",
-            description: "Impossible de charger le classement mensuel.",
-            variant: "destructive"
-          });
-        }
-        setMonthlyLoading(false);
-      };
+    loadGeneral();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTab === 'monthly') {
       loadMonthly();
     }
   }, [selectedTab]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    clearGlobalCache();
+    if (selectedTab === 'general') {
+      await loadGeneral(true);
+    } else {
+      await loadMonthly(true);
+    }
+    setRefreshing(false);
+    toast({
+      title: "Classement actualisé",
+      description: "Les scores ont été mis à jour.",
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -225,15 +245,27 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
     <div className="min-h-screen bg-gradient-game theme-neon flex flex-col pt-12">
       {/* Header */}
       <div className="p-4 pb-0">
-        <Button
-          onClick={onBack}
-          variant="outline"
-          size="sm"
-          className="mb-4 border-wheel-border hover:bg-button-hover"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            onClick={onBack}
+            variant="outline"
+            size="sm"
+            className="border-wheel-border hover:bg-button-hover"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour
+          </Button>
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
+            size="sm"
+            disabled={refreshing}
+            className="border-wheel-border hover:bg-button-hover"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            Actualiser
+          </Button>
+        </div>
 
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -276,7 +308,6 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
             <MonthlyTimer />
           </div>
         )}
-
 
         {/* User rank bubble */}
         {currentUsername && userRank > 0 && (

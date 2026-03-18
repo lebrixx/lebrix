@@ -4,6 +4,7 @@ import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
 import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
 import { trackSent, trackSkipped } from './edgeFunctionMetrics';
+import { clearGlobalCache } from './globalScoresApi';
 
 // Track if username was recently changed (reset after first successful submission)
 let usernameRecentlyChanged = false;
@@ -166,6 +167,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     hasSubmittedThisGame = true;
     // Invalidate leaderboard cache so the player sees their new score
     queryCache.clear();
+    clearGlobalCache();
     return true;
 
   } catch (error) {
