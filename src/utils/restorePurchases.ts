@@ -1,7 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 import { purchasePremiumPack } from '@/utils/seasonPass';
+import { PREMIUM_PRODUCT_ID } from '@/utils/productIds';
 
-const PRODUCT_ID = 'com.luckystop.premium';
+const PRODUCT_ID = PREMIUM_PRODUCT_ID;
 
 /**
  * Restore purchases from the native store (iOS App Store / Google Play).
