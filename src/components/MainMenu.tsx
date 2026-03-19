@@ -271,16 +271,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <Card 
               className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
             >
-            <div className="flex items-center justify-center gap-1.5 mb-1">
-              <Calendar className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
-              <span className="text-[10px] text-text-muted">Mensuel</span>
-            </div>
+            <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
             <div className="text-xl font-bold text-primary">
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
             </div>
-            <div className="flex items-center justify-center gap-0.5 text-[9px] text-primary/50">
+            <div className="text-[10px] text-text-muted">Classement Mensuel</div>
+            <div className="absolute bottom-1 right-1.5 flex items-center gap-0.5 text-[8px] text-primary/60 pointer-events-none">
               <span>Voir le classement</span>
-              <ChevronRight className="w-2.5 h-2.5" />
+              <ChevronRight className="w-2 h-2" />
             </div>
             </Card>
           </div>
