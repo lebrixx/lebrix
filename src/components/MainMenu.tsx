@@ -86,7 +86,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     const count = parseInt(localStorage.getItem(launchKey) || '0', 10) + 1;
     localStorage.setItem(launchKey, String(count));
 
-    if (count % 5 === 0) {
+    if (count % 3 === 0) {
       setTimeout(() => setShowPremiumOffer(true), 1200);
     }
   }, []);
