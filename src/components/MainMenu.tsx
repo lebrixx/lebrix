@@ -269,16 +269,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               <div className="absolute w-12 h-12 rounded-full bg-primary blur-xl animate-orbit" />
             </div>
             <Card 
-              className="relative bg-button-bg border-primary/20 p-2.5 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
+              className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
             >
-            <div className="flex items-center justify-center gap-1.5 mb-0.5">
-              <Calendar className="w-4 h-4 text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
+            <div className="flex items-center justify-center gap-1.5 mb-1">
+              <Calendar className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
               <span className="text-[10px] text-text-muted">Mensuel</span>
             </div>
-            <div className="text-xl font-bold text-primary leading-tight">
+            <div className="text-xl font-bold text-primary">
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
             </div>
-            <div className="flex items-center justify-center gap-0.5 text-[9px] text-primary/50 mt-0.5">
+            <div className="flex items-center justify-center gap-0.5 text-[9px] text-primary/50">
               <span>Voir le classement</span>
               <ChevronRight className="w-2.5 h-2.5" />
             </div>
