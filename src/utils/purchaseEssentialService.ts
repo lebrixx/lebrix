@@ -1,7 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 import { addTickets } from '@/utils/ticketSystem';
+import { ESSENTIAL_PRODUCT_ID } from '@/utils/productIds';
 
-const PRODUCT_ID = 'com.luckystop.essentiel';
+const PRODUCT_ID = ESSENTIAL_PRODUCT_ID;
 
 /**
  * Apply Essential Pack rewards locally.
