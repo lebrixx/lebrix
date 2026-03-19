@@ -29,7 +29,15 @@ export const forceShowRate = true;
 export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = React.useState<'ask' | 'rate'>('ask');
 
-  const handleNo = () => { setStep('ask'); onClose(); };
+  const handleNo = () => {
+    // Mark as dismissed (not rated) so it can re-trigger at score 55+
+    const rateData = JSON.parse(localStorage.getItem(RATE_APP_KEY) || '{}');
+    if (!rateData.rated) {
+      localStorage.setItem(RATE_APP_KEY, JSON.stringify({ dismissed: true }));
+    }
+    setStep('ask');
+    onClose();
+  };
   const handleYes = () => { setStep('rate'); };
 
   const handleRate = () => {

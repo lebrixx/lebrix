@@ -174,13 +174,22 @@ const Index = () => {
     }
 
 
-    // Marquer la popup d'avis comme en attente si premier score >30 en mode non-classique
-    if (finalScore > 30 && currentMode !== 'classic') {
+    // Rate dialog logic:
+    // 1st trigger: score >30 in non-classic mode (if never triggered before)
+    // 2nd trigger: score >=55 in non-classic mode (only if user dismissed first time)
+    if (currentMode !== 'classic') {
       const rateData = JSON.parse(localStorage.getItem('ls_rate_app') || '{}');
-      const alreadyTriggered = localStorage.getItem('ls_rate_triggered_30');
-      if (!rateData.rated && !alreadyTriggered) {
-        localStorage.setItem('ls_rate_triggered_30', 'true');
-        setPendingRateDialog(true);
+      if (!rateData.rated) {
+        const alreadyTriggered30 = localStorage.getItem('ls_rate_triggered_30');
+        const alreadyTriggered55 = localStorage.getItem('ls_rate_triggered_55');
+
+        if (!alreadyTriggered30 && finalScore > 30) {
+          localStorage.setItem('ls_rate_triggered_30', 'true');
+          setPendingRateDialog(true);
+        } else if (alreadyTriggered30 && !alreadyTriggered55 && rateData.dismissed && finalScore >= 55) {
+          localStorage.setItem('ls_rate_triggered_55', 'true');
+          setPendingRateDialog(true);
+        }
       }
     }
 
