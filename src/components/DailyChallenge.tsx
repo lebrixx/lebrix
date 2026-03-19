@@ -361,13 +361,6 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
             )}
             </div>
 
-            <Button
-            onClick={handleRetry}
-            className="relative w-full py-4 text-sm font-bold bg-gradient-primary hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_hsl(var(--primary)/0.3)] transition-all duration-300 rounded-lg">
-            
-              <RotateCcw className="w-4 h-4 mr-2" />
-              {t.precisionRetry}
-            </Button>
 
             <div className="relative bg-[hsl(var(--game-dark)/0.5)] border border-[hsl(var(--wheel-border)/0.2)] rounded-lg p-2.5 flex items-center justify-center gap-2">
               <Clock className="w-3.5 h-3.5 text-[hsl(var(--text-muted))]" />
