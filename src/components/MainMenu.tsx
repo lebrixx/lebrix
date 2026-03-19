@@ -77,6 +77,20 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
 
+  // Auto-open premium offer every 5 app launches
+  useEffect(() => {
+    const isPremium = localStorage.getItem('ls_premium_no_ads') === 'true';
+    if (isPremium) return;
+
+    const launchKey = 'ls_app_launch_count';
+    const count = parseInt(localStorage.getItem(launchKey) || '0', 10) + 1;
+    localStorage.setItem(launchKey, String(count));
+
+    if (count % 5 === 0) {
+      setTimeout(() => setShowPremiumOffer(true), 1200);
+    }
+  }, []);
+
   // Timer pour la roue
   useEffect(() => {
     if (hasFreeSpin) return;
