@@ -193,12 +193,12 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
   }, []);
 
   useEffect(() => {
-    loadGeneral();
+    loadMonthly();
   }, []);
 
   useEffect(() => {
-    if (selectedTab === 'monthly') {
-      loadMonthly();
+    if (selectedTab === 'general') {
+      loadGeneral();
     }
   }, [selectedTab]);
 
