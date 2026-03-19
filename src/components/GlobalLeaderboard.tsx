@@ -149,7 +149,7 @@ const LeaderboardList: React.FC<LeaderboardListProps> = ({
 };
 
 export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) => {
-  const [selectedTab, setSelectedTab] = useState<string>('general');
+  const [selectedTab, setSelectedTab] = useState<string>('monthly');
   const [leaderboard, setLeaderboard] = useState<GlobalPlayerScore[]>([]);
   const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<GlobalPlayerScore[]>([]);
   const [loading, setLoading] = useState(true);
