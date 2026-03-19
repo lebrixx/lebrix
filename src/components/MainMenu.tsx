@@ -77,16 +77,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
 
-  // Auto-open premium offer every 5 app launches
+  // Auto-open premium offer every 3 app launches (flag set in main.tsx)
   useEffect(() => {
     const isPremium = localStorage.getItem('ls_premium_no_ads') === 'true';
     if (isPremium) return;
 
-    const launchKey = 'ls_app_launch_count';
-    const count = parseInt(localStorage.getItem(launchKey) || '0', 10) + 1;
-    localStorage.setItem(launchKey, String(count));
-
-    if (count % 3 === 0) {
+    const shouldShow = localStorage.getItem('ls_show_premium_this_launch');
+    if (shouldShow === 'true') {
+      localStorage.removeItem('ls_show_premium_this_launch');
       setTimeout(() => setShowPremiumOffer(true), 1200);
     }
   }, []);

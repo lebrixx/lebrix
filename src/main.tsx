@@ -34,4 +34,12 @@ initNotifications();
 // Verify premium purchase status on launch (silent, non-blocking)
 verifyPremiumOnLaunch();
 
+// Track app launch count for premium offer popup (every 3 launches)
+const launchKey = 'ls_app_launch_count';
+const launchCount = parseInt(localStorage.getItem(launchKey) || '0', 10) + 1;
+localStorage.setItem(launchKey, String(launchCount));
+if (launchCount % 3 === 0) {
+  localStorage.setItem('ls_show_premium_this_launch', 'true');
+}
+
 createRoot(document.getElementById("root")!).render(<App />);
