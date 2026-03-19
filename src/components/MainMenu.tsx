@@ -276,7 +276,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
             </div>
             <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-            <div className="flex items-center justify-center gap-0.5 mt-1 text-[9px] text-primary/60">
+            <div className="absolute -bottom-4 left-0 right-0 flex items-center justify-center gap-0.5 text-[9px] text-primary/60">
               <span>Voir le classement</span>
               <ChevronRight className="w-3 h-3" />
             </div>
