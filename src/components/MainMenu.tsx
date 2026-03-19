@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe } from 'lucide-react';
-import { fetchGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight } from 'lucide-react';
+import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -125,11 +125,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     };
   }, []);
 
-  // Fetch global rank
+  // Fetch monthly rank
   useEffect(() => {
-    const loadGlobalRank = async () => {
+    const loadMonthlyRank = async () => {
       try {
-        const data = await fetchGlobalLeaderboard(100);
+        const data = await fetchMonthlyGlobalLeaderboard(100);
         const identity = getLocalIdentity();
         if (identity.username) {
           const idx = data.findIndex(e => e.username.toLowerCase() === identity.username!.toLowerCase());
@@ -141,7 +141,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         }
       } catch {}
     };
-    loadGlobalRank();
+    loadMonthlyRank();
   }, []);
 
   return (
@@ -271,11 +271,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <Card 
               className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
             >
-            <Globe className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
+            <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
             <div className="text-xl font-bold text-primary">
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
             </div>
-            <div className="text-[10px] text-text-muted">Classement Global</div>
+            <div className="text-[10px] text-text-muted">Classement Mensuel</div>
+            <div className="flex items-center justify-center gap-0.5 mt-1 text-[9px] text-primary/60">
+              <span>Voir le classement</span>
+              <ChevronRight className="w-3 h-3" />
+            </div>
             </Card>
           </div>
           
