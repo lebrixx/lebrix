@@ -125,11 +125,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     };
   }, []);
 
-  // Fetch global rank
+  // Fetch monthly rank
   useEffect(() => {
-    const loadGlobalRank = async () => {
+    const loadMonthlyRank = async () => {
       try {
-        const data = await fetchGlobalLeaderboard(100);
+        const data = await fetchMonthlyGlobalLeaderboard(100);
         const identity = getLocalIdentity();
         if (identity.username) {
           const idx = data.findIndex(e => e.username.toLowerCase() === identity.username!.toLowerCase());
@@ -141,7 +141,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         }
       } catch {}
     };
-    loadGlobalRank();
+    loadMonthlyRank();
   }, []);
 
   return (
