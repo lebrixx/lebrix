@@ -374,7 +374,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         {phase === 'intro' && !currentUsername &&
           <div className="w-full text-center py-4 px-4 rounded-xl border border-[hsl(var(--wheel-border)/0.3)] bg-[hsl(var(--game-dark)/0.5)]">
             <p className="text-sm text-[hsl(var(--text-muted))]">
-              ✏️ {t.precisionNeedUsername || 'Choisis un pseudo avant de lancer le défi !'}
+              ✏️ Choisis un pseudo avant de lancer le défi !
             </p>
           </div>
         }
