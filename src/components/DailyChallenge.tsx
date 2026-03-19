@@ -371,7 +371,14 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         }
 
         {/* Launch button */}
-        {phase === 'intro' &&
+        {phase === 'intro' && !currentUsername &&
+          <div className="w-full text-center py-4 px-4 rounded-xl border border-[hsl(var(--wheel-border)/0.3)] bg-[hsl(var(--game-dark)/0.5)]">
+            <p className="text-sm text-[hsl(var(--text-muted))]">
+              ✏️ Choisis un pseudo avant de lancer le défi !
+            </p>
+          </div>
+        }
+        {phase === 'intro' && currentUsername &&
         <Button
           onClick={goToReady}
           className="w-full py-5 text-base font-bold bg-gradient-primary hover:scale-[1.03] active:scale-[0.98] shadow-[0_4px_24px_hsl(var(--primary)/0.4)] transition-all duration-300 rounded-xl relative overflow-hidden group">
