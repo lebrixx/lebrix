@@ -72,7 +72,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const existingResult = getTodayResult();
   const currentUsername = getUsername();
 
-  const [phase, setPhase] = useState<Phase>('intro');
+  const [phase, setPhase] = useState<Phase>(existingResult ? 'result' : 'intro');
   const [timerValue, setTimerValue] = useState(0);
   const [stoppedValue, setStoppedValue] = useState<number | null>(null);
   const [result, setResult] = useState(existingResult);
