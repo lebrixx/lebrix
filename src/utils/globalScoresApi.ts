@@ -7,7 +7,7 @@ export interface GlobalPlayerScore {
   decorations: string | null;
 }
 
-const CACHE_TTL = 60_000;
+const CACHE_TTL = 180_000; // 3 minutes
 let cachedData: { data: GlobalPlayerScore[]; ts: number } | null = null;
 let monthlyCachedData: { data: GlobalPlayerScore[]; ts: number } | null = null;
 
