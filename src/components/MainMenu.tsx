@@ -373,7 +373,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       </div>
 
       {/* Bottom Section */}
-      <div className="flex flex-col items-center space-y-2 mt-auto">
+      <div className="flex flex-col items-center space-y-2 mt-auto pt-3 shrink-0">
         {/* Current Theme & Mode - Caché sur iPad */}
         {!isTablet && (
           <div className="flex justify-center gap-4 animate-fade-in">
