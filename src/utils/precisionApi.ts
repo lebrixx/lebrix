@@ -15,6 +15,16 @@ export interface PrecisionEntry {
   decorations: string | null;
 }
 
+// ─── Cache ───
+const CACHE_TTL = 60_000; // 60 seconds
+let todayCache: { data: PrecisionEntry[]; ts: number } | null = null;
+let yesterdayCache: { data: PrecisionEntry[]; ts: number } | null = null;
+
+export function clearPrecisionCache() {
+  todayCache = null;
+  yesterdayCache = null;
+}
+
 /** Build decorations string from equipped items */
 function buildDecorationsString(): string | null {
   const parts: string[] = [];
@@ -49,14 +59,20 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
         decorations: buildDecorationsString(),
       }),
     });
+    // Invalidate today cache after submission
+    todayCache = null;
     return res.ok;
   } catch {
     return false;
   }
 }
 
-/** Fetch today's leaderboard (top 1000) */
+/** Fetch today's leaderboard (top 1000) — cached 60s */
 export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
+  if (todayCache && Date.now() - todayCache.ts < CACHE_TTL) {
+    return todayCache.data;
+  }
+
   const today = new Date().toISOString().slice(0, 10);
 
   const { data, error } = await supabase
@@ -67,11 +83,17 @@ export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]
     .limit(1000);
 
   if (error || !data) return [];
-  return data as unknown as PrecisionEntry[];
+  const result = data as unknown as PrecisionEntry[];
+  todayCache = { data: result, ts: Date.now() };
+  return result;
 }
 
-/** Fetch yesterday's leaderboard (top 50) */
+/** Fetch yesterday's leaderboard (top 50) — cached 60s */
 export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
+  if (yesterdayCache && Date.now() - yesterdayCache.ts < CACHE_TTL) {
+    return yesterdayCache.data;
+  }
+
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
   const { data, error } = await supabase
@@ -82,5 +104,7 @@ export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEnt
     .limit(50);
 
   if (error || !data) return [];
-  return data as unknown as PrecisionEntry[];
+  const result = data as unknown as PrecisionEntry[];
+  yesterdayCache = { data: result, ts: Date.now() };
+  return result;
 }
