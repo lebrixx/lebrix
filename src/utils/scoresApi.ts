@@ -37,7 +37,7 @@ const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const FETCH_LIMIT = 200; // Reduced from 1000 to limit egress
 
 // ─── Client-side cache for leaderboard queries ───
-const CACHE_TTL = 60_000; // 60 seconds
+const CACHE_TTL = 180_000; // 3 minutes
 interface CacheEntry<T> { data: T; ts: number; }
 const queryCache = new Map<string, CacheEntry<Score[]>>();
 
