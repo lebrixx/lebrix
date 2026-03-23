@@ -289,7 +289,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             </div>
             <div className="text-[10px] text-text-muted">Classement Mensuel</div>
             <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-0.5 text-[8px] text-primary/60 pointer-events-none">
-              <span>Voir le classement</span>
+              <span>Clic pour apercevoir</span>
               <ChevronRight className="w-2 h-2" />
             </div>
             </Card>
