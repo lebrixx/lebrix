@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb } from 'lucide-react';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useNavigate } from 'react-router-dom';
