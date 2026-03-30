@@ -546,6 +546,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClose={() => setShowPremiumOffer(false)}
         onAddCoins={(amount) => onAdRewardClaimed(amount)}
       />
+
+      {/* Daily Tip */}
+      <DailyTip
+        isOpen={showDailyTip}
+        onClose={() => setShowDailyTip(false)}
+      />
     </div>
   );
 };
