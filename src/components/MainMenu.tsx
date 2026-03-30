@@ -281,21 +281,23 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
-          <div className="relative cursor-pointer" onClick={onOpenGlobalLeaderboard}>
+          <div className="relative cursor-pointer group" onClick={onOpenGlobalLeaderboard}>
             <div className="absolute -inset-[1px] rounded-xl overflow-hidden pointer-events-none">
               <div className="absolute w-12 h-12 rounded-full bg-primary blur-xl animate-orbit" />
             </div>
             <Card 
-              className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
+              className="relative bg-button-bg border-primary/20 p-3 text-center group-hover:scale-105 transition-all duration-300 group-hover:border-primary/40 group-active:scale-95"
             >
             <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
             <div className="text-xl font-bold text-primary">
               {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
             </div>
             <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-            <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-0.5 text-[8px] text-primary/60 pointer-events-none">
-              <span>Clic pour apercevoir</span>
-              <ChevronRight className="w-2 h-2" />
+            <div className="absolute bottom-1.5 left-0 right-0 flex items-center justify-center pointer-events-none">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/15 border border-primary/25 text-[8px] font-medium text-primary shadow-[0_0_8px_hsl(var(--primary)/0.2)]">
+                <span>Voir le classement</span>
+                <ChevronRight className="w-2.5 h-2.5 animate-pulse" />
+              </span>
             </div>
             </Card>
           </div>
