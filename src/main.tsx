@@ -38,7 +38,7 @@ verifyPremiumOnLaunch();
 const launchKey = 'ls_app_launch_count';
 const launchCount = parseInt(localStorage.getItem(launchKey) || '0', 10) + 1;
 localStorage.setItem(launchKey, String(launchCount));
-if (launchCount % 3 === 0) {
+if (launchCount % 4 === 0) {
   localStorage.setItem('ls_show_premium_this_launch', 'true');
 }
 
