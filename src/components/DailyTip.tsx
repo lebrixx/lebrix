@@ -41,11 +41,13 @@ const TIPS = [
   },
 ];
 
-function getDailyTipIndex(): number {
-  const startDate = new Date('2025-01-01').getTime();
-  const now = new Date().getTime();
-  const daysSinceStart = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
-  return daysSinceStart % TIPS.length;
+function getLaunchTipIndex(): number {
+  const key = 'ls_tip_launch_index';
+  const current = parseInt(localStorage.getItem(key) || '0', 10);
+  const index = current % TIPS.length;
+  // Advance for next launch
+  localStorage.setItem(key, String(current + 1));
+  return index;
 }
 
 interface DailyTipProps {
@@ -54,11 +56,11 @@ interface DailyTipProps {
 }
 
 export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
-  const [currentIndex, setCurrentIndex] = useState(getDailyTipIndex());
+  const [currentIndex, setCurrentIndex] = useState(() => getLaunchTipIndex());
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentIndex(getDailyTipIndex());
+      // Don't re-advance on reopen, keep the launch index
     }
   }, [isOpen]);
 

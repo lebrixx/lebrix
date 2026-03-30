@@ -88,13 +88,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       localStorage.removeItem('ls_show_premium_this_launch');
       setTimeout(() => setShowPremiumOffer(true), 1200);
     } else {
-      // Show daily tip if premium popup isn't shown this launch
-      const today = new Date().toDateString();
-      const lastTipDay = localStorage.getItem('ls_daily_tip_last_day');
-      if (lastTipDay !== today) {
-        localStorage.setItem('ls_daily_tip_last_day', today);
-        setTimeout(() => setShowDailyTip(true), 800);
-      }
+      // Show daily tip every launch (except when premium offer is shown)
+      setTimeout(() => setShowDailyTip(true), 800);
     }
   }, []);
 
