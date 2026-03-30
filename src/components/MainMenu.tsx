@@ -14,6 +14,7 @@ import { PremiumOffer } from '@/components/PremiumOffer';
 import { LuckyWheel } from '@/components/LuckyWheel';
 import { SeasonPass } from '@/components/SeasonPass';
 import { Inventory } from '@/components/Inventory';
+import { DailyTip } from '@/components/DailyTip';
 import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
