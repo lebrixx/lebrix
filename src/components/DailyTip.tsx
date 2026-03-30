@@ -32,7 +32,12 @@ const TIPS = [
   {
     emoji: '🎯',
     title: 'Défi Précision',
-    tip: 'Un essai unique chaque jour : stoppe au plus près de la cible pour le classement !',
+    tip: 'N\'oublie pas le défi précision dans les défis, prouve que tu es le plus précis !',
+  },
+  {
+    emoji: '🎁',
+    title: 'Bonus quotidiens',
+    tip: 'Chaque jour : roue de la chance, roulette x2 pour les modes et récompenses journalières à récupérer !',
   },
 ];
 
