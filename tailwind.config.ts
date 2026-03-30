@@ -168,6 +168,10 @@ export default {
           "75%": { background: "linear-gradient(315deg, hsl(var(--primary)), hsl(var(--secondary)))" },
           "100%": { background: "linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)))" },
         },
+        "subtle-float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-3px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -185,6 +189,7 @@ export default {
         "particle-burst": "particle-burst 0.4s ease-out",
         "trail-fade": "trail-fade 0.3s ease-out",
         "animated-gradient": "animated-gradient var(--bg-animation-duration) ease-in-out infinite",
+        "subtle-float": "subtle-float 3s ease-in-out infinite",
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
