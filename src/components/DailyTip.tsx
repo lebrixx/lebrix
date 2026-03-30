@@ -7,12 +7,12 @@ const TIPS = [
   {
     emoji: '🏆',
     title: '2 classements',
-    tip: 'Classement par mode (hebdo) + classement global mensuel. Accède aux deux depuis l\'accueil !',
+    tip: 'Classement par mode (hebdo) + classement global mensuel depuis l\'accueil !',
   },
   {
     emoji: '📡',
     title: 'Joue en ligne',
-    tip: 'Sans internet, tes scores ne sont pas sauvegardés en ligne. Connecte-toi pour compter !',
+    tip: 'Sans internet, tes scores ne sont pas sauvegardés en ligne.',
   },
   {
     emoji: '🚀',
@@ -22,7 +22,17 @@ const TIPS = [
   {
     emoji: '👑',
     title: 'Cosmétiques de pseudo',
-    tip: 'Le Pass Saison permet de débloquer des couleurs et effets pour ton pseudo. Progresse pour les obtenir !',
+    tip: 'Débloque des couleurs et effets de pseudo dans le Pass Saison !',
+  },
+  {
+    emoji: '⭐',
+    title: 'Défis quotidiens & globaux',
+    tip: 'Complète 2 défis/jour + des défis globaux par paliers pour gagner des récompenses.',
+  },
+  {
+    emoji: '🎯',
+    title: 'Défi Précision',
+    tip: 'Un essai unique chaque jour : stoppe au plus près de la cible pour le classement !',
   },
 ];
 

@@ -308,12 +308,14 @@ export const Challenges: React.FC<ChallengesProps> = ({
           </TabsTrigger>
           <TabsTrigger 
             value="global"
-            className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 rounded-lg transition-all"
+            className={`relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 rounded-lg transition-all ${
+              hasGlobalRewards ? 'bg-gradient-to-r from-secondary/15 to-primary/10 border border-secondary/40 shadow-[0_0_12px_hsl(var(--secondary)/0.25)] animate-pulse-glow' : ''
+            }`}
           >
-            <Trophy className="w-4 h-4 mr-2" />
-            Globaux
+            <Trophy className={`w-4 h-4 mr-2 ${hasGlobalRewards ? 'text-secondary' : ''}`} />
+            <span className={hasGlobalRewards ? 'text-secondary font-bold' : ''}>Globaux</span>
             {hasGlobalRewards && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-lg shadow-secondary/50" />
+              <Gift className="w-3.5 h-3.5 ml-1.5 text-secondary animate-bounce" />
             )}
           </TabsTrigger>
         </TabsList>
