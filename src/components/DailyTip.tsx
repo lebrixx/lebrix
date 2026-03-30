@@ -5,79 +5,19 @@ import { ChevronLeft, ChevronRight, Lightbulb, X } from 'lucide-react';
 
 const TIPS = [
   {
-    emoji: '🎯',
-    title: 'Timing parfait',
-    tip: 'Appuie juste avant que l\'aiguille atteigne la zone verte. Anticipe le mouvement !',
-  },
-  {
-    emoji: '⚡',
-    title: 'La vitesse augmente',
-    tip: 'Plus ton score monte, plus l\'aiguille accélère. Reste concentré et adapte ton timing.',
-  },
-  {
-    emoji: '🔄',
-    title: 'Les changements de direction',
-    tip: 'L\'aiguille peut changer de sens ! Garde les yeux sur son mouvement, pas sur la zone.',
-  },
-  {
-    emoji: '🎮',
-    title: 'Explore les modes',
-    tip: 'Chaque mode de jeu a ses propres règles. Essaie-les tous pour varier le plaisir !',
-  },
-  {
     emoji: '🏆',
-    title: 'Classement hebdo',
-    tip: 'Ton meilleur score de la semaine compte pour le classement. Joue régulièrement pour rester au top !',
+    title: '2 classements disponibles',
+    tip: 'Depuis l\'écran principal, tu peux accéder au classement par mode (hebdomadaire) et au classement global mensuel qui cumule tes scores sur tous les modes. Explore les deux !',
   },
   {
-    emoji: '💰',
-    title: 'Gagne des coins',
-    tip: 'Chaque partie te rapporte des coins. Utilise-les pour débloquer des thèmes et des modes.',
-  },
-  {
-    emoji: '🎁',
-    title: 'Récompenses quotidiennes',
-    tip: 'Reviens chaque jour pour récupérer ta récompense gratuite. Les streaks donnent de meilleurs cadeaux !',
+    emoji: '📡',
+    title: 'Connexion requise',
+    tip: 'Si tu joues sans connexion internet, tes scores ne seront pas sauvegardés dans les classements en ligne. Assure-toi d\'être connecté pour que tes performances comptent !',
   },
   {
     emoji: '🚀',
-    title: 'Utilise tes boosts',
-    tip: 'Les boosts peuvent t\'aider en partie. Consulte ton inventaire avant de jouer !',
-  },
-  {
-    emoji: '🎡',
-    title: 'La roue de la chance',
-    tip: 'Tu as un tour gratuit toutes les quelques heures. N\'oublie pas de la faire tourner !',
-  },
-  {
-    emoji: '⭐',
-    title: 'Défis quotidiens',
-    tip: 'Complète les 2 défis du jour pour gagner des récompenses bonus. Ils changent chaque jour !',
-  },
-  {
-    emoji: '👑',
-    title: 'Pass Saison',
-    tip: 'Progresse dans le Pass Saison en jouant et en complétant des quêtes pour des récompenses exclusives.',
-  },
-  {
-    emoji: '🧠',
-    title: 'Mode Mémoire Expert',
-    tip: 'Dans ce mode, la zone disparaît ! Mémorise bien sa position avant qu\'elle ne s\'efface.',
-  },
-  {
-    emoji: '🏃',
-    title: 'Mode Survie 60s',
-    tip: 'En survie, chaque erreur coûte du temps. Sois précis plutôt que rapide !',
-  },
-  {
-    emoji: '📊',
-    title: 'Classement mensuel',
-    tip: 'Le classement mensuel cumule tes scores sur tous les modes. Joue varié pour grimper !',
-  },
-  {
-    emoji: '🎨',
-    title: 'Personnalise ton jeu',
-    tip: 'Débloque des thèmes dans la boutique pour changer l\'apparence du jeu. Trouve ton style !',
+    title: 'Pense aux boosts',
+    tip: 'Avant de lancer une partie, sélectionne des boosts depuis ton inventaire. Ils augmentent tes chances de faire un meilleur score. Utilise-les au bon moment !',
   },
 ];
 
@@ -114,55 +54,66 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-sm bg-button-bg border-wheel-border p-0 overflow-hidden gap-0 [&>button]:hidden">
-        {/* Header with gradient */}
-        <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/10 px-6 pt-6 pb-4">
+      <DialogContent className="max-w-[340px] rounded-3xl bg-gradient-to-b from-button-bg to-button-bg/95 border border-primary/20 shadow-[0_8px_40px_hsl(var(--primary)/0.15),0_0_0_1px_hsl(var(--wheel-border)/0.3)] p-0 overflow-hidden gap-0 [&>button]:hidden mx-auto">
+        {/* Decorative top bar */}
+        <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary" />
+
+        {/* Header */}
+        <div className="relative px-6 pt-5 pb-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="absolute top-3 right-3 w-8 h-8 hover:bg-white/10 rounded-full"
+            className="absolute top-3 right-3 w-7 h-7 hover:bg-primary/10 rounded-full"
           >
-            <X className="w-4 h-4 text-text-muted" />
+            <X className="w-3.5 h-3.5 text-text-muted" />
           </Button>
 
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-              <Lightbulb className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-primary/25 to-secondary/15 flex items-center justify-center shadow-[inset_0_1px_2px_hsl(var(--primary)/0.2)]">
+              <Lightbulb className="w-4.5 h-4.5 text-primary" />
             </div>
-            <span className="text-sm font-semibold text-primary tracking-wide uppercase">
-              Conseil du jour
-            </span>
+            <div>
+              <span className="text-xs font-bold text-primary/80 tracking-widest uppercase">
+                Conseil du jour
+              </span>
+              <div className="text-[10px] text-text-muted">
+                {currentIndex + 1} / {TIPS.length}
+              </div>
+            </div>
           </div>
 
-          <div className="text-4xl mt-3 mb-2">{tip.emoji}</div>
-          <h3 className="text-xl font-bold text-text-primary">{tip.title}</h3>
+          {/* Emoji + Title */}
+          <div className="bg-gradient-to-br from-primary/8 to-secondary/5 rounded-2xl p-4 border border-primary/10">
+            <div className="text-4xl mb-2">{tip.emoji}</div>
+            <h3 className="text-lg font-bold text-text-primary leading-tight">{tip.title}</h3>
+          </div>
         </div>
 
         {/* Tip content */}
-        <div className="px-6 py-5">
-          <p className="text-text-secondary text-sm leading-relaxed">{tip.tip}</p>
+        <div className="px-6 pb-4">
+          <p className="text-text-secondary text-[13px] leading-relaxed">{tip.tip}</p>
         </div>
 
-        {/* Navigation footer */}
-        <div className="px-6 pb-5 flex items-center justify-between">
+        {/* Navigation */}
+        <div className="px-6 pb-3 flex items-center justify-between">
           <Button
             variant="ghost"
             size="icon"
             onClick={goPrev}
-            className="w-10 h-10 rounded-full hover:bg-primary/10 transition-all"
+            className="w-9 h-9 rounded-full hover:bg-primary/10 transition-all"
           >
             <ChevronLeft className="w-5 h-5 text-text-muted" />
           </Button>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {TIPS.map((_, i) => (
               <div
                 key={i}
                 className={`rounded-full transition-all duration-300 ${
                   i === currentIndex
-                    ? 'w-6 h-2 bg-primary'
-                    : 'w-2 h-2 bg-text-muted/30'
+                    ? 'w-7 h-2 bg-gradient-to-r from-primary to-secondary shadow-[0_0_8px_hsl(var(--primary)/0.4)]'
+                    : 'w-2 h-2 bg-text-muted/25'
                 }`}
               />
             ))}
@@ -172,7 +123,7 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
             variant="ghost"
             size="icon"
             onClick={goNext}
-            className="w-10 h-10 rounded-full hover:bg-primary/10 transition-all"
+            className="w-9 h-9 rounded-full hover:bg-primary/10 transition-all"
           >
             <ChevronRight className="w-5 h-5 text-text-muted" />
           </Button>
@@ -182,7 +133,7 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
         <div className="px-6 pb-5">
           <Button
             onClick={onClose}
-            className="w-full bg-gradient-primary hover:opacity-90 font-semibold"
+            className="w-full rounded-2xl bg-gradient-primary hover:opacity-90 font-semibold py-5 shadow-[0_4px_16px_hsl(var(--primary)/0.3)]"
           >
             Compris ! 👍
           </Button>
