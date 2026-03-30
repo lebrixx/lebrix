@@ -56,11 +56,11 @@ interface DailyTipProps {
 }
 
 export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
-  const [currentIndex, setCurrentIndex] = useState(getDailyTipIndex());
+  const [currentIndex, setCurrentIndex] = useState(() => getLaunchTipIndex());
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentIndex(getDailyTipIndex());
+      // Don't re-advance on reopen, keep the launch index
     }
   }, [isOpen]);
 
