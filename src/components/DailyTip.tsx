@@ -6,18 +6,23 @@ import { ChevronLeft, ChevronRight, Lightbulb, X } from 'lucide-react';
 const TIPS = [
   {
     emoji: '🏆',
-    title: '2 classements disponibles',
-    tip: 'Depuis l\'écran principal, tu peux accéder au classement par mode (hebdomadaire) et au classement global mensuel qui cumule tes scores sur tous les modes. Explore les deux !',
+    title: '2 classements',
+    tip: 'Classement par mode (hebdo) + classement global mensuel. Accède aux deux depuis l\'accueil !',
   },
   {
     emoji: '📡',
-    title: 'Connexion requise',
-    tip: 'Si tu joues sans connexion internet, tes scores ne seront pas sauvegardés dans les classements en ligne. Assure-toi d\'être connecté pour que tes performances comptent !',
+    title: 'Joue en ligne',
+    tip: 'Sans internet, tes scores ne sont pas sauvegardés en ligne. Connecte-toi pour compter !',
   },
   {
     emoji: '🚀',
-    title: 'Pense aux boosts',
-    tip: 'Avant de lancer une partie, sélectionne des boosts depuis ton inventaire. Ils augmentent tes chances de faire un meilleur score. Utilise-les au bon moment !',
+    title: 'Utilise tes boosts',
+    tip: 'Sélectionne des boosts avant chaque partie pour maximiser ton score.',
+  },
+  {
+    emoji: '👑',
+    title: 'Cosmétiques de pseudo',
+    tip: 'Le Pass Saison permet de débloquer des couleurs et effets pour ton pseudo. Progresse pour les obtenir !',
   },
 ];
 
