@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb } from 'lucide-react';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ import { PremiumOffer } from '@/components/PremiumOffer';
 import { LuckyWheel } from '@/components/LuckyWheel';
 import { SeasonPass } from '@/components/SeasonPass';
 import { Inventory } from '@/components/Inventory';
+import { DailyTip } from '@/components/DailyTip';
 import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -70,6 +71,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [showSeasonPass, setShowSeasonPass] = useState(false);
   const [showPremiumOffer, setShowPremiumOffer] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
+  const [showDailyTip, setShowDailyTip] = useState(false);
   const [hasPassReward, setHasPassReward] = useState(hasDailyQuestReward());
   const [hasPendingChallenges, setHasPendingChallenges] = useState(false);
   const [hasFreeSpin, setHasFreeSpin] = useState(canSpinFree());
@@ -77,15 +79,22 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
 
-  // Auto-open premium offer every 3 app launches (flag set in main.tsx)
+  // Auto-open premium offer every 4 app launches OR daily tip (flag set in main.tsx)
   useEffect(() => {
     const isPremium = localStorage.getItem('ls_premium_no_ads') === 'true';
-    if (isPremium) return;
+    const shouldShowPremium = localStorage.getItem('ls_show_premium_this_launch');
 
-    const shouldShow = localStorage.getItem('ls_show_premium_this_launch');
-    if (shouldShow === 'true') {
+    if (!isPremium && shouldShowPremium === 'true') {
       localStorage.removeItem('ls_show_premium_this_launch');
       setTimeout(() => setShowPremiumOffer(true), 1200);
+    } else {
+      // Show daily tip if premium popup isn't shown this launch
+      const today = new Date().toDateString();
+      const lastTipDay = localStorage.getItem('ls_daily_tip_last_day');
+      if (lastTipDay !== today) {
+        localStorage.setItem('ls_daily_tip_last_day', today);
+        setTimeout(() => setShowDailyTip(true), 800);
+      }
     }
   }, []);
 
@@ -529,6 +538,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onToggleSound={onToggleSound}
         onOpenRateDialog={onOpenRateDialog}
         onOpenDailyChallenge={onOpenDailyChallenge}
+        onOpenDailyTip={() => setShowDailyTip(true)}
       />
 
       {/* Premium Offer */}
@@ -536,6 +546,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         isOpen={showPremiumOffer}
         onClose={() => setShowPremiumOffer(false)}
         onAddCoins={(amount) => onAdRewardClaimed(amount)}
+      />
+
+      {/* Daily Tip */}
+      <DailyTip
+        isOpen={showDailyTip}
+        onClose={() => setShowDailyTip(false)}
       />
     </div>
   );
