@@ -79,16 +79,17 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
 
-  // Auto-open premium offer every 4 app launches OR daily tip (flag set in main.tsx)
+  // Auto-open premium offer every 4 app launches OR daily tip (flags set in main.tsx)
   useEffect(() => {
     const isPremium = localStorage.getItem('ls_premium_no_ads') === 'true';
     const shouldShowPremium = localStorage.getItem('ls_show_premium_this_launch');
+    const shouldShowTip = localStorage.getItem('ls_show_tip_this_launch');
 
     if (!isPremium && shouldShowPremium === 'true') {
       localStorage.removeItem('ls_show_premium_this_launch');
       setTimeout(() => setShowPremiumOffer(true), 1200);
-    } else {
-      // Show daily tip every launch (except when premium offer is shown)
+    } else if (shouldShowTip === 'true') {
+      localStorage.removeItem('ls_show_tip_this_launch');
       setTimeout(() => setShowDailyTip(true), 800);
     }
   }, []);
