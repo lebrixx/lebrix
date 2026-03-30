@@ -17,6 +17,7 @@ interface SettingsProps {
   onToggleSound: () => void;
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
+  onOpenDailyTip?: () => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({ 
