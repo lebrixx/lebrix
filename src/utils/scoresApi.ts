@@ -2,7 +2,7 @@
 import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
 import { generateDeviceFingerprint } from './deviceFingerprint';
 import { supabase } from '@/integrations/supabase/client';
-import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass';
+import { buildDecorationsString } from './decorations';
 import { trackSent, trackSkipped } from './edgeFunctionMetrics';
 import { clearGlobalCache } from './globalScoresApi';
 
