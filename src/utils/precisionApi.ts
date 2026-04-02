@@ -17,6 +17,7 @@ export interface PrecisionEntry {
 
 // ─── Cache ───
 const CACHE_TTL = 60_000; // 60 seconds
+const CACHE_TTL_YESTERDAY = 3_600_000; // 1 hour (yesterday data never changes)
 let todayCache: { data: PrecisionEntry[]; ts: number } | null = null;
 let yesterdayCache: { data: PrecisionEntry[]; ts: number } | null = null;
 
