@@ -130,8 +130,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   };
 
   useEffect(() => {
-    loadScores(selectedMode);
-  }, [selectedMode]);
+    loadScores(selectedMode, selectedTab);
+  }, [selectedMode, selectedTab]);
 
   useEffect(() => {
     const handleOnlineStatus = () => {
