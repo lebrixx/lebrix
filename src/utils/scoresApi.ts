@@ -377,7 +377,7 @@ export async function fetchPreviousWeekTop(mode: string, limit: number = 50): Pr
     const result = Array.from(seen.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
-    setCache(cacheKey, result);
+    setCache(cacheKey, result, CACHE_TTL_PREV_WEEK);
     return result;
 
   } catch (error) {
