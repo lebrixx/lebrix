@@ -69,7 +69,7 @@ export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]
     .select('id, username, target, result, gap, challenge_date, decorations')
     .eq('challenge_date', today)
     .order('gap', { ascending: true })
-    .limit(1000);
+    .limit(300);
 
   if (error || !data) return [];
   const result = data as unknown as PrecisionEntry[];
