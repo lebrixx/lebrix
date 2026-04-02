@@ -175,6 +175,12 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     lastSubmitTime = now;
     hasSubmittedThisGame = true;
+    // Update local best for skip optimization
+    try {
+      const prev = (() => { try { const r = localStorage.getItem(`localBest_${mode}`); return r ? JSON.parse(r) : null; } catch { return null; } })();
+      const newBest = Math.max(score, prev?.best || 0);
+      localStorage.setItem(`localBest_${mode}`, JSON.stringify({ best: newBest, lastSubmitAt: now }));
+    } catch { /* ignore storage errors */ }
     // Invalidate leaderboard cache so the player sees their new score
     queryCache.clear();
     clearGlobalCache();
