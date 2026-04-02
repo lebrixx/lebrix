@@ -47,6 +47,7 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
         result,
         gap,
         decorations: buildDecorationsString(),
+        challenge_date: (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; })(),
       }),
     });
     // Invalidate today cache after submission
@@ -63,7 +64,8 @@ export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]
     return todayCache.data;
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   const { data, error } = await supabase
     .from('daily_precision_scores' as any)
@@ -84,7 +86,8 @@ export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEnt
     return yesterdayCache.data;
   }
 
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const yd = new Date(Date.now() - 86400000);
+  const yesterday = `${yd.getFullYear()}-${String(yd.getMonth() + 1).padStart(2, '0')}-${String(yd.getDate()).padStart(2, '0')}`;
 
   const { data, error } = await supabase
     .from('daily_precision_scores' as any)

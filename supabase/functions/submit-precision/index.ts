@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, username, target, result, gap, decorations } = await req.json();
+    const { device_id, username, target, result, gap, decorations, challenge_date: clientDate } = await req.json();
 
     // Validation
     if (!device_id || !username || typeof target !== 'number' || typeof result !== 'number' || typeof gap !== 'number') {
@@ -61,6 +61,18 @@ Deno.serve(async (req) => {
     // Cleanup old scores first
     await supabase.rpc('cleanup_old_daily_precision');
 
+    // Use client-provided date if valid (YYYY-MM-DD), else fallback to server UTC
+    let challengeDate = new Date().toISOString().slice(0, 10);
+    if (clientDate && /^\d{4}-\d{2}-\d{2}$/.test(clientDate)) {
+      // Only accept dates within ±1 day of server date to prevent abuse
+      const serverDate = new Date(challengeDate);
+      const clientParsed = new Date(clientDate);
+      const diffMs = Math.abs(serverDate.getTime() - clientParsed.getTime());
+      if (diffMs <= 86400000) {
+        challengeDate = clientDate;
+      }
+    }
+
     // Upsert score (one per device per day)
     const { error } = await supabase
       .from('daily_precision_scores')
@@ -70,7 +82,7 @@ Deno.serve(async (req) => {
         target: Math.round(target * 1000) / 1000,
         result: Math.round(result * 1000) / 1000,
         gap: Math.round(gap * 1000) / 1000,
-        challenge_date: new Date().toISOString().slice(0, 10),
+        challenge_date: challengeDate,
         decorations: decorations || null,
       }, { onConflict: 'device_id,challenge_date' });
 
