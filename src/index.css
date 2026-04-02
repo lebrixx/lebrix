@@ -4,6 +4,7 @@
 
 /* Lucky Stop Game Design System */
 
+@layer base {
   * {
     -webkit-user-select: none;
     user-select: none;
