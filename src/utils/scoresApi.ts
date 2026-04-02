@@ -105,13 +105,13 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     })();
     if (localBestData && score < localBestData.best) {
       // Check if we're still in the same week (allow first submit after weekly reset)
-      const now = new Date();
-      const day = now.getDay();
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-      const weekMonday = new Date(now);
+      const checkDate = new Date();
+      const day = checkDate.getDay();
+      const diff = checkDate.getDate() - day + (day === 0 ? -6 : 1);
+      const weekMonday = new Date(checkDate);
       weekMonday.setDate(diff);
       weekMonday.setHours(0, 0, 0, 0);
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+      const monthStart = new Date(checkDate.getFullYear(), checkDate.getMonth(), 1).getTime();
 
       if (localBestData.lastSubmitAt > weekMonday.getTime() && localBestData.lastSubmitAt > monthStart) {
         trackSkipped('submit-score', `below-local-best-${localBestData.best}`);
