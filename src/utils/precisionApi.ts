@@ -47,6 +47,7 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
         result,
         gap,
         decorations: buildDecorationsString(),
+        challenge_date: (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; })(),
       }),
     });
     // Invalidate today cache after submission
