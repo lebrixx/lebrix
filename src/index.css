@@ -4,7 +4,18 @@
 
 /* Lucky Stop Game Design System */
 
-@layer base {
+  * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   :root {
     /* Game Background & Base Colors - Fond violet fixe */
     --game-dark: 270 30% 8%;
