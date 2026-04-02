@@ -78,9 +78,9 @@ export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]
   return result;
 }
 
-/** Fetch yesterday's leaderboard (top 50) — cached 60s */
+/** Fetch yesterday's leaderboard (top 50) — cached 1h */
 export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
-  if (yesterdayCache && Date.now() - yesterdayCache.ts < CACHE_TTL) {
+  if (yesterdayCache && Date.now() - yesterdayCache.ts < CACHE_TTL_YESTERDAY) {
     return yesterdayCache.data;
   }
 
