@@ -94,6 +94,31 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
       return false;
     }
 
+    // Skip if score is below local best AND we already submitted this week
+    // (weekly/monthly resets require at least one submission to go through)
+    const localBestKey = `localBest_${mode}`;
+    const localBestData = (() => {
+      try {
+        const raw = localStorage.getItem(localBestKey);
+        return raw ? JSON.parse(raw) : null;
+      } catch { return null; }
+    })();
+    if (localBestData && score < localBestData.best) {
+      // Check if we're still in the same week (allow first submit after weekly reset)
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+      const weekMonday = new Date(now);
+      weekMonday.setDate(diff);
+      weekMonday.setHours(0, 0, 0, 0);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+      if (localBestData.lastSubmitAt > weekMonday.getTime() && localBestData.lastSubmitAt > monthStart) {
+        trackSkipped('submit-score', `below-local-best-${localBestData.best}`);
+        return false;
+      }
+    }
+
     // Enhanced anti-spam
     const now = Date.now();
     if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
@@ -150,6 +175,12 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
 
     lastSubmitTime = now;
     hasSubmittedThisGame = true;
+    // Update local best for skip optimization
+    try {
+      const prev = (() => { try { const r = localStorage.getItem(`localBest_${mode}`); return r ? JSON.parse(r) : null; } catch { return null; } })();
+      const newBest = Math.max(score, prev?.best || 0);
+      localStorage.setItem(`localBest_${mode}`, JSON.stringify({ best: newBest, lastSubmitAt: now }));
+    } catch { /* ignore storage errors */ }
     // Invalidate leaderboard cache so the player sees their new score
     queryCache.clear();
     clearGlobalCache();

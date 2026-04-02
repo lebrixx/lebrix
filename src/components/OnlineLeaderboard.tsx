@@ -83,15 +83,17 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
     });
   };
 
-  const loadScores = async (mode: string) => {
+  const loadScores = async (mode: string, tab?: string) => {
     setLoading(true);
     try {
-      const [globalData, weeklyData] = await Promise.all([
-        fetchTop(mode),
-        fetchWeeklyTop(mode)
-      ]);
-      setScores(globalData);
-      setWeeklyScores(weeklyData);
+      const activeTab = tab || selectedTab;
+      if (activeTab === 'global') {
+        const globalData = await fetchTop(mode);
+        setScores(globalData);
+      } else {
+        const weeklyData = await fetchWeeklyTop(mode);
+        setWeeklyScores(weeklyData);
+      }
     } catch (error) {
       toast({
         title: t.networkError,
@@ -99,8 +101,6 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
         variant: "destructive",
         duration: 3000
       });
-      setScores([]);
-      setWeeklyScores([]);
     }
     setLoading(false);
   };
@@ -130,8 +130,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   };
 
   useEffect(() => {
-    loadScores(selectedMode);
-  }, [selectedMode]);
+    loadScores(selectedMode, selectedTab);
+  }, [selectedMode, selectedTab]);
 
   useEffect(() => {
     const handleOnlineStatus = () => {
