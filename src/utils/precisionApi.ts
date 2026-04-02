@@ -56,7 +56,7 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
   }
 }
 
-/** Fetch today's leaderboard (top 1000) — cached 60s */
+/** Fetch today's leaderboard (top 300) — cached 60s */
 export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
   if (todayCache && Date.now() - todayCache.ts < CACHE_TTL) {
     return todayCache.data;
