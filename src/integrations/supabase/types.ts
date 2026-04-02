@@ -214,6 +214,7 @@ export type Database = {
     }
     Functions: {
       cleanup_old_daily_precision: { Args: never; Returns: undefined }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_scores: { Args: never; Returns: undefined }
       update_leaderboard_secure: {
         Args: {
