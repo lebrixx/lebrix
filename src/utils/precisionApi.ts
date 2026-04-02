@@ -25,17 +25,6 @@ export function clearPrecisionCache() {
   yesterdayCache = null;
 }
 
-/** Build decorations string from equipped items */
-function buildDecorationsString(): string | null {
-  const parts: string[] = [];
-  const decoId = getEquippedDecorationId();
-  if (decoId) parts.push(decoId);
-  const color = getEquippedUsernameColor();
-  if (color === 'violet') parts.push('purple_name');
-  else if (color === 'pulse') parts.push('pulse_name');
-  else if (color === 'gold_pulse') parts.push('gold_pulse_name');
-  return parts.length > 0 ? parts.join(',') : null;
-}
 
 /** Submit precision score to the edge function */
 export async function submitPrecisionScore(target: number, result: number, gap: number): Promise<boolean> {
