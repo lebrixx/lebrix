@@ -21,21 +21,23 @@ const FETCH_LIMIT = 200; // Reduced from 1000 to limit egress
 
 // ─── Client-side cache for leaderboard queries ───
 const CACHE_TTL = 180_000; // 3 minutes
-interface CacheEntry<T> { data: T; ts: number; }
+const CACHE_TTL_PREV_WEEK = 3_600_000; // 1 hour (previous week data never changes)
+interface CacheEntry<T> { data: T; ts: number; ttl?: number; }
 const queryCache = new Map<string, CacheEntry<Score[]>>();
 
 function getCached(key: string): Score[] | null {
   const entry = queryCache.get(key);
   if (!entry) return null;
-  if (Date.now() - entry.ts > CACHE_TTL) {
+  const ttl = entry.ttl ?? CACHE_TTL;
+  if (Date.now() - entry.ts > ttl) {
     queryCache.delete(key);
     return null;
   }
   return entry.data;
 }
 
-function setCache(key: string, data: Score[]) {
-  queryCache.set(key, { data, ts: Date.now() });
+function setCache(key: string, data: Score[], ttl?: number) {
+  queryCache.set(key, { data, ts: Date.now(), ttl });
 }
 
 // Enhanced anti-spam
