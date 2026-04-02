@@ -14,7 +14,7 @@ import {
 import { Download } from 'lucide-react';
 
 // ⚠️ INCRÉMENTE cette valeur à chaque nouvelle release soumise aux stores
-const CURRENT_APP_VERSION = '2.7.0';
+const CURRENT_APP_VERSION = '2.8.0';
 
 const STORE_URLS = {
   ios: 'https://apps.apple.com/fr/app/lucky-stop/id6753086875',
