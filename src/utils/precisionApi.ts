@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getDeviceId, getUsername } from '@/utils/localIdentity';
-import { getEquippedDecorationId, getEquippedUsernameColor } from '@/utils/seasonPass';
+import { buildDecorationsString } from '@/utils/decorations';
 
 const SUPABASE_URL = "https://zkhrtvgnzcufplzhophz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraHJ0dmduemN1ZnBsemhvcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1NjU1NjgsImV4cCI6MjA3NDE0MTU2OH0.3mYkFLKEqJFllX8487LdqnkEFXUw5Y4cZnzlZyfJ-a4";
