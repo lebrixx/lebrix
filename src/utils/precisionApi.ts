@@ -85,7 +85,8 @@ export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEnt
     return yesterdayCache.data;
   }
 
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const yd = new Date(Date.now() - 86400000);
+  const yesterday = `${yd.getFullYear()}-${String(yd.getMonth() + 1).padStart(2, '0')}-${String(yd.getDate()).padStart(2, '0')}`;
 
   const { data, error } = await supabase
     .from('daily_precision_scores' as any)
