@@ -300,6 +300,20 @@ const Index = () => {
         );
         
       case 'game':
+          if (currentMode === 'pong_circulaire') {
+            return (
+              <PongCirculaire
+                theme={currentTheme}
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playClick={playClick}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
           return (
             <CircleTap
               theme={currentTheme}
