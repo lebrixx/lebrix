@@ -5,6 +5,7 @@ import { THEMES } from '@/constants/themes';
 import { Capacitor } from '@capacitor/core';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
+import { startGameSession } from '@/utils/scoresApi';
 
 interface PongCirculaireProps {
   theme: string;
@@ -96,6 +97,7 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
     setScore(0);
     scoreRef.current = 0;
     startTimeRef.current = Date.now();
+    startGameSession();
     setStatus('running');
   }, [playClick]);
 
@@ -134,43 +136,41 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
       const dist = Math.hypot(ballPos.current.x, ballPos.current.y);
 
       if (dist >= IMPACT_DIST) {
-        // Angle d'impact (depuis centre)
         const impactAngle = Math.atan2(ballPos.current.y, ballPos.current.x);
+        const nx = Math.cos(impactAngle);
+        const ny = Math.sin(impactAngle);
+        const vx = ballVel.current.x;
+        const vy = ballVel.current.y;
+        const dot = vx * nx + vy * ny;
 
-        // Zone verte centrée sur zoneCenterRef.current, demi-arc ZONE_ARC/2
-        const halfArc = ZONE_ARC / 2;
-        const start = zoneCenterRef.current - halfArc;
-        const inZone = angleInArc(impactAngle, start, ZONE_ARC);
-
-        if (inZone) {
-          // Renvoyer: réflexion par rapport à la normale (qui est radiale = impactAngle)
-          const nx = Math.cos(impactAngle);
-          const ny = Math.sin(impactAngle);
-          const vx = ballVel.current.x;
-          const vy = ballVel.current.y;
-          const dot = vx * nx + vy * ny;
-          let rx = vx - 2 * dot * nx;
-          let ry = vy - 2 * dot * ny;
-
-          // Augmenter vitesse
-          speedRef.current = Math.min(speedRef.current * SPEED_GAIN, MAX_SPEED);
-          const mag = Math.hypot(rx, ry) || 1;
-          rx = (rx / mag) * speedRef.current;
-          ry = (ry / mag) * speedRef.current;
-          ballVel.current = { x: rx, y: ry };
-
-          // Repousser légèrement la bille à l'intérieur pour éviter collisions multiples
-          const safeDist = IMPACT_DIST - 1;
+        // Anti double-collision: si la bille va déjà vers l'intérieur, ne rien faire
+        if (dot <= 0) {
+          const safeDist = IMPACT_DIST - 2;
           ballPos.current.x = nx * safeDist;
           ballPos.current.y = ny * safeDist;
-
-          // Score
-          scoreRef.current += 1;
-          setScore(scoreRef.current);
-          playSuccess(scoreRef.current);
         } else {
-          handleGameOver();
-          return;
+          const halfArc = ZONE_ARC / 2;
+          const start = zoneCenterRef.current - halfArc;
+          const inZone = angleInArc(impactAngle, start, ZONE_ARC);
+
+          if (inZone) {
+            let rx = vx - 2 * dot * nx;
+            let ry = vy - 2 * dot * ny;
+            speedRef.current = Math.min(speedRef.current * SPEED_GAIN, MAX_SPEED);
+            const mag = Math.hypot(rx, ry) || 1;
+            rx = (rx / mag) * speedRef.current;
+            ry = (ry / mag) * speedRef.current;
+            ballVel.current = { x: rx, y: ry };
+            const safeDist = IMPACT_DIST - 3;
+            ballPos.current.x = nx * safeDist;
+            ballPos.current.y = ny * safeDist;
+            scoreRef.current += 1;
+            setScore(scoreRef.current);
+            playSuccess(scoreRef.current);
+          } else {
+            handleGameOver();
+            return;
+          }
         }
       }
 
