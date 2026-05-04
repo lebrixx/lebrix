@@ -154,13 +154,39 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
           const inZone = angleInArc(impactAngle, start, ZONE_ARC);
 
           if (inZone) {
+            // Réflexion de base
             let rx = vx - 2 * dot * nx;
             let ry = vy - 2 * dot * ny;
+
+            // Influence selon le point d'impact sur la zone (style Pong) :
+            // plus on touche près du bord de la zone, plus l'angle est dévié vers la tangente.
+            let offset = impactAngle - zoneCenterRef.current;
+            // Normaliser dans [-π, π]
+            if (offset > Math.PI) offset -= TAU;
+            else if (offset < -Math.PI) offset += TAU;
+            const normalized = Math.max(-1, Math.min(1, offset / (ZONE_ARC / 2))); // -1..1
+            const MAX_DEFLECT = Math.PI / 3; // jusqu'à ±60° de déviation
+            const deflect = normalized * MAX_DEFLECT;
+
+            // Vecteur tangent (perpendiculaire à la normale, sens horaire)
+            const tx = -ny;
+            const ty = nx;
+            // Direction de base = -normale (vers le centre), puis rotation par "deflect" autour de la normale
+            // Construire la nouvelle direction : mélange entre réflexion pure et direction inward déviée
+            const inwardX = -nx * Math.cos(deflect) + tx * Math.sin(deflect);
+            const inwardY = -ny * Math.cos(deflect) + ty * Math.sin(deflect);
+
+            // Mélange 50/50 réflexion physique + déviation positionnelle pour un rendu naturel
+            const reflMag = Math.hypot(rx, ry) || 1;
+            const blendX = (rx / reflMag) * 0.4 + inwardX * 0.6;
+            const blendY = (ry / reflMag) * 0.4 + inwardY * 0.6;
+
             speedRef.current = Math.min(speedRef.current * SPEED_GAIN, MAX_SPEED);
-            const mag = Math.hypot(rx, ry) || 1;
-            rx = (rx / mag) * speedRef.current;
-            ry = (ry / mag) * speedRef.current;
-            ballVel.current = { x: rx, y: ry };
+            const mag = Math.hypot(blendX, blendY) || 1;
+            ballVel.current = {
+              x: (blendX / mag) * speedRef.current,
+              y: (blendY / mag) * speedRef.current,
+            };
             const safeDist = IMPACT_DIST - 3;
             ballPos.current.x = nx * safeDist;
             ballPos.current.y = ny * safeDist;
@@ -185,7 +211,7 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
   // Gestion tactile : déplacer la zone verte le long du cercle (drag relatif)
   // - Sensibilité légèrement augmentée
   // - Pas de téléportation : on bouge en relatif depuis le point de contact
-  const SENSITIVITY = 1.35;
+  const SENSITIVITY = 1.10;
   const lastPointerAngleRef = useRef<number | null>(null);
 
   const pointerAngle = (clientX: number, clientY: number): number | null => {
