@@ -122,7 +122,7 @@ const LeaderboardList: React.FC<LeaderboardListProps> = ({
                   </h3>
                   <div className="flex items-center gap-1 text-[10px] text-text-muted">
                     <Gamepad2 className="w-3 h-3" />
-                    {entry.modes_played}/6 modes
+                    {entry.modes_played}/7 modes
                   </div>
                 </div>
               </div>
@@ -311,7 +311,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
                   <span className="text-text-primary font-bold text-sm">{currentUsername}</span>
                   <div className="flex items-center gap-1 text-xs text-text-muted">
                     <Gamepad2 className="w-3 h-3" />
-                    {activeData[userRank - 1]?.modes_played || 0}/6 modes joués
+                    {activeData[userRank - 1]?.modes_played || 0}/7 modes joués
                   </div>
                 </div>
               </div>
