@@ -301,6 +301,9 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
           className={`${isAndroid ? '' : 'drop-shadow-2xl'} max-w-full h-auto touch-none`}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          onPointerLeave={onPointerUp}
           style={{ touchAction: 'none' }}
         >
           <circle
