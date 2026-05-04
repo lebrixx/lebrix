@@ -5,6 +5,7 @@ import { THEMES } from '@/constants/themes';
 import { Capacitor } from '@capacitor/core';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
+import { startGameSession } from '@/utils/scoresApi';
 
 interface PongCirculaireProps {
   theme: string;
@@ -96,6 +97,7 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
     setScore(0);
     scoreRef.current = 0;
     startTimeRef.current = Date.now();
+    startGameSession();
     setStatus('running');
   }, [playClick]);
 
