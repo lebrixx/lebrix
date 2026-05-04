@@ -25,7 +25,7 @@ const CENTER = RADIUS + PADDING;
 const BALL_RADIUS = 8;
 const ZONE_ARC = Math.PI / 4; // ~45°
 const BASE_SPEED = 110; // px/s
-const SPEED_GAIN = 1.06; // +6% par renvoi
+const SPEED_GAIN = 1.035; // +3.5% par renvoi
 const MAX_SPEED = 700;
 
 // Distance d'impact (centre cercle → centre bille) à laquelle on teste la collision
