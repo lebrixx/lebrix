@@ -1,0 +1,326 @@
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { THEMES } from '@/constants/themes';
+import { Capacitor } from '@capacitor/core';
+import { useLanguage, translations } from '@/hooks/useLanguage';
+
+interface PongCirculaireProps {
+  theme: string;
+  onBack?: () => void;
+  onGameOver?: (score: number, gameDuration: number) => void;
+  isSoundMuted?: boolean;
+  onToggleSound?: () => void;
+  playClick?: () => void;
+  playSuccess?: (combo?: number) => void;
+  playFailure?: () => void;
+}
+
+const RADIUS = 130;
+const PADDING = 40;
+const SVG_SIZE = RADIUS * 2 + PADDING * 2;
+const CENTER = RADIUS + PADDING;
+const BALL_RADIUS = 8;
+const ZONE_ARC = Math.PI / 4; // ~45°
+const BASE_SPEED = 110; // px/s
+const SPEED_GAIN = 1.06; // +6% par renvoi
+const MAX_SPEED = 700;
+
+// Distance d'impact (centre cercle → centre bille) à laquelle on teste la collision
+const IMPACT_DIST = RADIUS - BALL_RADIUS;
+
+const TAU = Math.PI * 2;
+
+function angleInArc(angle: number, start: number, arc: number): boolean {
+  const norm = (a: number) => ((a % TAU) + TAU) % TAU;
+  const a = norm(angle);
+  const s = norm(start);
+  const e = norm(start + arc);
+  if (s <= e) return a >= s && a <= e;
+  return a >= s || a <= e;
+}
+
+export const PongCirculaire: React.FC<PongCirculaireProps> = ({
+  theme,
+  onBack,
+  onGameOver,
+  isSoundMuted = false,
+  onToggleSound = () => {},
+  playClick = () => {},
+  playSuccess = () => {},
+  playFailure = () => {},
+}) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  const themeDef = THEMES.find((th) => th.id === theme) || THEMES[0];
+  const zoneColor = themeDef.preview.successZone;
+  const barColor = themeDef.preview.circle;
+  const backgroundCss = themeDef.preview.background;
+  const isAndroid = useMemo(() => Capacitor.getPlatform() === 'android', []);
+
+  const [status, setStatus] = useState<'idle' | 'running' | 'gameover'>('idle');
+  const [score, setScore] = useState(0);
+  const [bestScore, setBestScore] = useState<number>(() => {
+    const saved = localStorage.getItem('luckyStopGame');
+    if (!saved) return 0;
+    try { return JSON.parse(saved).bestScore_pong_circulaire || 0; } catch { return 0; }
+  });
+
+  // Refs pour le moteur
+  const ballPos = useRef({ x: 0, y: 0 }); // relatif au centre
+  const ballVel = useRef({ x: 0, y: 0 });
+  const speedRef = useRef(BASE_SPEED);
+  const zoneCenterRef = useRef(-Math.PI / 2); // angle (top par défaut)
+  const lastFrameRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const startTimeRef = useRef(0);
+  const scoreRef = useRef(0);
+
+  // État dérivé pour le rendu
+  const [, forceTick] = useState(0);
+
+  const startGame = useCallback(() => {
+    playClick();
+    // Position initiale: centre, direction aléatoire
+    ballPos.current = { x: 0, y: 0 };
+    const angle = Math.random() * TAU;
+    speedRef.current = BASE_SPEED;
+    ballVel.current = {
+      x: Math.cos(angle) * BASE_SPEED,
+      y: Math.sin(angle) * BASE_SPEED,
+    };
+    zoneCenterRef.current = -Math.PI / 2;
+    setScore(0);
+    scoreRef.current = 0;
+    startTimeRef.current = Date.now();
+    setStatus('running');
+  }, [playClick]);
+
+  const handleGameOver = useCallback(() => {
+    playFailure();
+    cancelAnimationFrame(rafRef.current);
+    const finalScore = scoreRef.current;
+    const duration = (Date.now() - startTimeRef.current) / 1000;
+    // Sauvegarder best
+    if (finalScore > bestScore) {
+      setBestScore(finalScore);
+      try {
+        const saved = localStorage.getItem('luckyStopGame');
+        const data = saved ? JSON.parse(saved) : {};
+        data.bestScore_pong_circulaire = finalScore;
+        localStorage.setItem('luckyStopGame', JSON.stringify(data));
+      } catch {}
+    }
+    setStatus('gameover');
+    onGameOver?.(finalScore, duration);
+  }, [bestScore, onGameOver, playFailure]);
+
+  // Boucle animation
+  useEffect(() => {
+    if (status !== 'running') return;
+    lastFrameRef.current = performance.now();
+
+    const loop = (now: number) => {
+      const dt = Math.min((now - lastFrameRef.current) / 1000, 0.033);
+      lastFrameRef.current = now;
+
+      // Avancer la bille
+      ballPos.current.x += ballVel.current.x * dt;
+      ballPos.current.y += ballVel.current.y * dt;
+
+      const dist = Math.hypot(ballPos.current.x, ballPos.current.y);
+
+      if (dist >= IMPACT_DIST) {
+        // Angle d'impact (depuis centre)
+        const impactAngle = Math.atan2(ballPos.current.y, ballPos.current.x);
+
+        // Zone verte centrée sur zoneCenterRef.current, demi-arc ZONE_ARC/2
+        const halfArc = ZONE_ARC / 2;
+        const start = zoneCenterRef.current - halfArc;
+        const inZone = angleInArc(impactAngle, start, ZONE_ARC);
+
+        if (inZone) {
+          // Renvoyer: réflexion par rapport à la normale (qui est radiale = impactAngle)
+          const nx = Math.cos(impactAngle);
+          const ny = Math.sin(impactAngle);
+          const vx = ballVel.current.x;
+          const vy = ballVel.current.y;
+          const dot = vx * nx + vy * ny;
+          let rx = vx - 2 * dot * nx;
+          let ry = vy - 2 * dot * ny;
+
+          // Augmenter vitesse
+          speedRef.current = Math.min(speedRef.current * SPEED_GAIN, MAX_SPEED);
+          const mag = Math.hypot(rx, ry) || 1;
+          rx = (rx / mag) * speedRef.current;
+          ry = (ry / mag) * speedRef.current;
+          ballVel.current = { x: rx, y: ry };
+
+          // Repousser légèrement la bille à l'intérieur pour éviter collisions multiples
+          const safeDist = IMPACT_DIST - 1;
+          ballPos.current.x = nx * safeDist;
+          ballPos.current.y = ny * safeDist;
+
+          // Score
+          scoreRef.current += 1;
+          setScore(scoreRef.current);
+          playSuccess(scoreRef.current);
+        } else {
+          handleGameOver();
+          return;
+        }
+      }
+
+      forceTick((v) => (v + 1) % 1000000);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [status, handleGameOver, playSuccess]);
+
+  // Gestion tactile : déplacer la zone verte
+  const updateZoneFromPointer = useCallback((clientX: number, clientY: number) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    // Coordonnées dans le svg
+    const sx = ((clientX - rect.left) / rect.width) * SVG_SIZE;
+    const sy = ((clientY - rect.top) / rect.height) * SVG_SIZE;
+    const dx = sx - CENTER;
+    const dy = sy - CENTER;
+    if (dx === 0 && dy === 0) return;
+    zoneCenterRef.current = Math.atan2(dy, dx);
+    forceTick((v) => (v + 1) % 1000000);
+  }, []);
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (status !== 'running') return;
+    updateZoneFromPointer(e.clientX, e.clientY);
+  };
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (status !== 'running') return;
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    updateZoneFromPointer(e.clientX, e.clientY);
+  };
+
+  // Calcul rendu
+  const ballRenderX = CENTER + ballPos.current.x;
+  const ballRenderY = CENTER + ballPos.current.y;
+  const halfArc = ZONE_ARC / 2;
+  const startAngle = zoneCenterRef.current - halfArc;
+  const endAngle = zoneCenterRef.current + halfArc;
+  const sx = CENTER + Math.cos(startAngle) * RADIUS;
+  const sy = CENTER + Math.sin(startAngle) * RADIUS;
+  const ex = CENTER + Math.cos(endAngle) * RADIUS;
+  const ey = CENTER + Math.sin(endAngle) * RADIUS;
+  const largeArc = ZONE_ARC > Math.PI ? 1 : 0;
+
+  return (
+    <div
+      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
+      style={{ background: backgroundCss }}
+    >
+      {/* Header */}
+      {(status === 'idle' || status === 'gameover') && onBack && (
+        <Button
+          onClick={onBack}
+          variant="outline"
+          className="absolute top-12 left-4 border-wheel-border hover:bg-button-hover z-10"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          {t.backToMenu}
+        </Button>
+      )}
+      <Button
+        onClick={onToggleSound}
+        variant="outline"
+        size="icon"
+        className="absolute top-12 right-4 border-wheel-border hover:bg-button-hover z-10"
+      >
+        {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      </Button>
+
+      {/* HUD */}
+      <div className="text-center mb-6 mt-12">
+        <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">{score}</div>
+        <div className="text-text-secondary text-lg font-semibold">
+          {t.bestScore}: {bestScore}
+        </div>
+      </div>
+
+      {/* Cercle de jeu */}
+      <div className="relative mb-6 select-none touch-none">
+        <svg
+          ref={svgRef}
+          width={SVG_SIZE}
+          height={SVG_SIZE}
+          className="max-w-full h-auto touch-none"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          style={{ touchAction: 'none' }}
+        >
+          {/* Cercle */}
+          <circle
+            cx={CENTER}
+            cy={CENTER}
+            r={RADIUS}
+            fill="none"
+            stroke={barColor}
+            strokeWidth={12}
+            className="opacity-90"
+            style={{ filter: isAndroid ? 'none' : `drop-shadow(0 0 5px ${barColor})` }}
+          />
+          {/* Zone verte mobile */}
+          <path
+            d={`M ${sx} ${sy} A ${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${ex} ${ey}`}
+            fill="none"
+            stroke={zoneColor}
+            strokeWidth={20}
+            strokeLinecap="round"
+            style={{ filter: isAndroid ? 'none' : `drop-shadow(0 0 15px ${zoneColor})` }}
+          />
+          {/* Bille */}
+          {status === 'running' && (
+            <circle
+              cx={ballRenderX}
+              cy={ballRenderY}
+              r={BALL_RADIUS}
+              fill={barColor}
+              style={{ filter: isAndroid ? 'none' : `drop-shadow(0 0 8px ${barColor})` }}
+            />
+          )}
+        </svg>
+
+        {status === 'gameover' && (
+          <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+            <div className="px-6 py-3 rounded-full text-white font-bold text-xl animate-scale-in bg-gradient-danger shadow-glow-danger">
+              {t.gameOver}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Contrôles */}
+      <div className="flex gap-4 items-center">
+        {status === 'idle' && (
+          <Button onClick={startGame} size="lg" className="bg-gradient-primary">
+            <Play className="w-5 h-5 mr-2" />
+            {t.startGame}
+          </Button>
+        )}
+        {status === 'gameover' && (
+          <Button onClick={startGame} size="lg" className="bg-gradient-primary">
+            <RotateCcw className="w-5 h-5 mr-2" />
+            {t.retry || 'Rejouer'}
+          </Button>
+        )}
+        {status === 'running' && (
+          <p className="text-text-muted text-sm text-center max-w-xs">
+            Glisse ton doigt autour du cercle pour déplacer la zone verte et renvoyer la bille !
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
