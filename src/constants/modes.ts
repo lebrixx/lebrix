@@ -7,6 +7,7 @@ export const ModeID = {
   ZONE_MOBILE: "zone_mobile",
   ZONE_TRAITRESSE: "zone_traitresse",
   MEMOIRE_EXPERT: "memoire_expert",
+  PONG_CIRCULAIRE: "pong_circulaire",
 } as const;
 
 export type ModeType = typeof ModeID[keyof typeof ModeID];
@@ -94,6 +95,15 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     name: "Mémoire (Expert)",
     desc: "Une zone verte apparaît 1 seconde, mémorise sa position et clique au bon endroit ! La difficulté augmente à chaque niveau.",
     zoneArc: Math.PI / 5,
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.PONG_CIRCULAIRE]: {
+    name: "Pong Circulaire",
+    desc: "Déplace la zone verte avec ton doigt pour renvoyer la bille. À chaque renvoi, elle accélère ! Si elle touche le bord hors de la zone verte, c'est perdu.",
+    zoneArc: Math.PI / 4,
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,

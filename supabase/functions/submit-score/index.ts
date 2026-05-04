@@ -12,7 +12,8 @@ const SCORE_LIMITS: Record<string, number> = {
   survie_60s: 6000,
   zone_mobile: 7000,
   zone_traitresse: 8000,
-  memoire_expert: 5000
+  memoire_expert: 5000,
+  pong_circulaire: 5000
 };
 
 const RATE_LIMIT_WINDOW = 15000;
@@ -22,7 +23,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const processedSubmissions = new Set<string>();
 const SUBMISSION_ID_TTL = 60000;
 
-const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
+const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert', 'pong_circulaire'];
 
 function getMondayOfCurrentWeek(): Date {
   const now = new Date();

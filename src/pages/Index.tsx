@@ -10,6 +10,7 @@ import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
+import { PongCirculaire } from '@/components/PongCirculaire';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -52,7 +53,7 @@ const Index = () => {
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
+    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert', 'pong_circulaire']; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
     
     if (saved) {
@@ -299,6 +300,20 @@ const Index = () => {
         );
         
       case 'game':
+          if (currentMode === 'pong_circulaire') {
+            return (
+              <PongCirculaire
+                theme={currentTheme}
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playClick={playClick}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
           return (
             <CircleTap
               theme={currentTheme}
@@ -364,6 +379,7 @@ const Index = () => {
             zone_mobile: savedData[`bestScore_zone_mobile`] || 0,
             zone_traitresse: savedData[`bestScore_zone_traitresse`] || 0,
             memoire_expert: savedData[`bestScore_memoire_expert`] || 0,
+            pong_circulaire: savedData[`bestScore_pong_circulaire`] || 0,
           };
           
           return (

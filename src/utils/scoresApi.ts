@@ -63,7 +63,7 @@ export interface SubmitScoreParams {
   mode: string;
 }
 
-const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
+const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert', 'pong_circulaire'];
 
 function generateSubmissionId(): string {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
