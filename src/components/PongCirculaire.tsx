@@ -182,28 +182,50 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
     return () => cancelAnimationFrame(rafRef.current);
   }, [status, handleGameOver, playSuccess]);
 
-  // Gestion tactile : déplacer la zone verte
-  const updateZoneFromPointer = useCallback((clientX: number, clientY: number) => {
-    if (!svgRef.current) return;
+  // Gestion tactile : déplacer la zone verte le long du cercle (drag relatif)
+  // - Sensibilité légèrement augmentée
+  // - Pas de téléportation : on bouge en relatif depuis le point de contact
+  const SENSITIVITY = 1.35;
+  const lastPointerAngleRef = useRef<number | null>(null);
+
+  const pointerAngle = (clientX: number, clientY: number): number | null => {
+    if (!svgRef.current) return null;
     const rect = svgRef.current.getBoundingClientRect();
-    // Coordonnées dans le svg
     const sx = ((clientX - rect.left) / rect.width) * SVG_SIZE;
     const sy = ((clientY - rect.top) / rect.height) * SVG_SIZE;
     const dx = sx - CENTER;
     const dy = sy - CENTER;
-    if (dx === 0 && dy === 0) return;
-    zoneCenterRef.current = Math.atan2(dy, dx);
-    forceTick((v) => (v + 1) % 1000000);
-  }, []);
+    if (dx === 0 && dy === 0) return null;
+    return Math.atan2(dy, dx);
+  };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (status !== 'running') return;
-    updateZoneFromPointer(e.clientX, e.clientY);
+    const a = pointerAngle(e.clientX, e.clientY);
+    if (a === null) return;
+    const last = lastPointerAngleRef.current;
+    if (last === null) {
+      lastPointerAngleRef.current = a;
+      return;
+    }
+    // Plus court chemin angulaire
+    let delta = a - last;
+    if (delta > Math.PI) delta -= TAU;
+    else if (delta < -Math.PI) delta += TAU;
+    lastPointerAngleRef.current = a;
+    zoneCenterRef.current += delta * SENSITIVITY;
+    forceTick((v) => (v + 1) % 1000000);
   };
   const onPointerDown = (e: React.PointerEvent) => {
     if (status !== 'running') return;
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    updateZoneFromPointer(e.clientX, e.clientY);
+    // Ancrage du doigt — pas de saut de la zone
+    const a = pointerAngle(e.clientX, e.clientY);
+    lastPointerAngleRef.current = a;
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    (e.target as Element).releasePointerCapture?.(e.pointerId);
+    lastPointerAngleRef.current = null;
   };
 
   // Calcul rendu
