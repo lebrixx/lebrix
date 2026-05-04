@@ -41,7 +41,8 @@ const modeNames = {
   survie_60s: 'Survie 30s',
   zone_mobile: 'Zone Mobile',
   zone_traitresse: 'Zone Traîtresse',
-  memoire_expert: 'Mémoire (Expert)'
+  memoire_expert: 'Mémoire (Expert)',
+  pong_circulaire: 'Pong Circulaire'
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {
