@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Volume2, VolumeX, Zap } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { Capacitor } from '@capacitor/core';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
 
 interface PongCirculaireProps {
   theme: string;
@@ -52,6 +53,7 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const { toast } = useToast();
   const themeDef = THEMES.find((th) => th.id === theme) || THEMES[0];
   const zoneColor = themeDef.preview.successZone;
   const barColor = themeDef.preview.circle;
@@ -216,12 +218,39 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
   const ey = CENTER + Math.sin(endAngle) * RADIUS;
   const largeArc = ZONE_ARC > Math.PI ? 1 : 0;
 
+  const handleScreenTap = (e: React.MouseEvent | React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[role="button"]') || target.closest('a')) return;
+    if (status === 'idle' || status === 'gameover') {
+      playClick();
+      startGame();
+    }
+  };
+
+  const handleReset = () => {
+    playClick();
+    cancelAnimationFrame(rafRef.current);
+    setStatus('idle');
+    setScore(0);
+    scoreRef.current = 0;
+  };
+
+  const handleBoostsInfo = () => {
+    playClick();
+    toast({
+      title: 'Boosts indisponibles',
+      description: 'Les boosts ne sont pas utilisables dans ce mode.',
+      duration: 2000,
+    });
+  };
+
   return (
     <div
-      className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
-      style={{ background: backgroundCss }}
+      className={`circle-tap-game min-h-screen flex flex-col items-center justify-center p-4 ${theme}`}
+      style={{ background: backgroundCss, cursor: status === 'running' ? 'pointer' : 'default' }}
+      onClick={handleScreenTap}
     >
-      {/* Header */}
+      {/* Bouton retour au menu */}
       {(status === 'idle' || status === 'gameover') && onBack && (
         <Button
           onClick={onBack}
@@ -232,17 +261,9 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
           {t.backToMenu}
         </Button>
       )}
-      <Button
-        onClick={onToggleSound}
-        variant="outline"
-        size="icon"
-        className="absolute top-12 right-4 border-wheel-border hover:bg-button-hover z-10"
-      >
-        {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-      </Button>
 
       {/* HUD */}
-      <div className="text-center mb-6 mt-12">
+      <div className="text-center mb-8 animate-fade-in mt-16">
         <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">{score}</div>
         <div className="text-text-secondary text-lg font-semibold">
           {t.bestScore}: {bestScore}
@@ -250,17 +271,16 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
       </div>
 
       {/* Cercle de jeu */}
-      <div className="relative mb-6 select-none touch-none">
+      <div className="game-circle relative mb-8 select-none touch-none">
         <svg
           ref={svgRef}
           width={SVG_SIZE}
           height={SVG_SIZE}
-          className="max-w-full h-auto touch-none"
+          className={`${isAndroid ? '' : 'drop-shadow-2xl'} max-w-full h-auto touch-none`}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           style={{ touchAction: 'none' }}
         >
-          {/* Cercle */}
           <circle
             cx={CENTER}
             cy={CENTER}
@@ -271,7 +291,6 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
             className="opacity-90"
             style={{ filter: isAndroid ? 'none' : `drop-shadow(0 0 5px ${barColor})` }}
           />
-          {/* Zone verte mobile */}
           <path
             d={`M ${sx} ${sy} A ${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${ex} ${ey}`}
             fill="none"
@@ -280,7 +299,6 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
             strokeLinecap="round"
             style={{ filter: isAndroid ? 'none' : `drop-shadow(0 0 15px ${zoneColor})` }}
           />
-          {/* Bille */}
           {status === 'running' && (
             <circle
               cx={ballRenderX}
@@ -301,25 +319,58 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
         )}
       </div>
 
-      {/* Contrôles */}
-      <div className="flex gap-4 items-center">
-        {status === 'idle' && (
-          <Button onClick={startGame} size="lg" className="bg-gradient-primary">
-            <Play className="w-5 h-5 mr-2" />
-            Commencer
-          </Button>
+      {/* Contrôles - identiques aux autres modes */}
+      <div className="flex gap-4 items-center animate-fade-in">
+        {(status === 'idle' || status === 'gameover') && (
+          <div className="text-center w-full">
+            <div className="flex flex-col gap-3 mb-3">
+              <Button
+                onClick={handleBoostsInfo}
+                variant="outline"
+                className="relative border-primary/40 bg-primary/5 hover:bg-primary/15 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
+              >
+                <span className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/10 via-transparent to-primary/10 pointer-events-none" />
+                <Zap className="w-5 h-5 mr-2 text-primary" />
+                {t.boosts}
+              </Button>
+            </div>
+            <div
+              className="text-2xl font-bold text-primary mb-2 cursor-pointer select-none animate-pulse"
+              onClick={(e) => { e.stopPropagation(); playClick(); startGame(); }}
+            >
+              🎯 {t.tapOnScreen}
+            </div>
+          </div>
         )}
-        {status === 'gameover' && (
-          <Button onClick={startGame} size="lg" className="bg-gradient-primary">
-            <RotateCcw className="w-5 h-5 mr-2" />
-            Rejouer
-          </Button>
-        )}
-        {status === 'running' && (
-          <p className="text-text-muted text-sm text-center max-w-xs">
-            Glisse ton doigt autour du cercle pour déplacer la zone verte et renvoyer la bille !
-          </p>
-        )}
+
+        <Button
+          onClick={(e) => { e.stopPropagation(); handleReset(); }}
+          variant="outline"
+          size="lg"
+          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+        >
+          <RotateCcw className="w-5 h-5" />
+        </Button>
+
+        <Button
+          onClick={(e) => { e.stopPropagation(); onToggleSound(); }}
+          variant="outline"
+          size="lg"
+          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+        >
+          {isSoundMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+        </Button>
+      </div>
+
+      {/* Instructions */}
+      <div className="text-center mt-8 text-text-muted animate-fade-in">
+        <p className="text-sm">
+          {status === 'running'
+            ? 'Glisse ton doigt autour du cercle pour renvoyer la bille !'
+            : status === 'idle'
+              ? t.tapToStartGame
+              : ''}
+        </p>
       </div>
     </div>
   );
