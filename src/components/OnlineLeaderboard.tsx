@@ -305,20 +305,9 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           ))}
         </div>
 
-        {/* Refresh Button + Previous Week Button */}
-        <div className="flex flex-col items-center gap-2 mb-4">
-          <Button
-            onClick={() => loadScores(selectedMode)}
-            variant="outline"
-            size="sm"
-            disabled={loading || !isOnline}
-            className="border-wheel-border hover:bg-button-hover"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            {t.refresh}
-          </Button>
-          
-          {selectedTab === 'weekly' && (
+        {/* Previous Week Button */}
+        {selectedTab === 'weekly' && (
+          <div className="flex justify-center mb-4">
             <Button
               onClick={() => loadPreviousWeekScores(selectedMode)}
               variant="outline"
@@ -329,8 +318,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <History className={`w-4 h-4 ${loadingPreviousWeek ? 'animate-spin' : ''}`} />
               {language === 'fr' ? 'Top 50 semaine précédente' : 'Previous week Top 50'}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Leaderboard */}
