@@ -12,7 +12,8 @@ const SCORE_LIMITS: Record<string, number> = {
   survie_60s: 6000,
   zone_mobile: 7000,
   zone_traitresse: 8000,
-  memoire_expert: 5000
+  memoire_expert: 5000,
+  pong_circulaire: 5000
 };
 
 const RATE_LIMIT_WINDOW = 15000;
