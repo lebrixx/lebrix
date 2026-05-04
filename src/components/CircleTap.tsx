@@ -188,6 +188,9 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         description: t.reviveActivatedDesc,
       });
       setReviveUsed(true);
+      // Permettre la soumission du nouveau score (plus élevé) au prochain game over
+      const { resetSubmissionAfterRevive } = await import('@/utils/scoresApi');
+      resetSubmissionAfterRevive();
       reviveGame();
     }
   };

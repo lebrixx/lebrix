@@ -428,3 +428,9 @@ export function startGameSession(): void {
   hasSubmittedThisGame = false;
   currentSubmissionId = generateSubmissionId();
 }
+
+// Reset submission flag after a revive so the next (higher) final score can be submitted
+export function resetSubmissionAfterRevive(): void {
+  hasSubmittedThisGame = false;
+  currentSubmissionId = generateSubmissionId();
+}
