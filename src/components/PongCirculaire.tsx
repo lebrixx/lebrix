@@ -306,13 +306,13 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
         {status === 'idle' && (
           <Button onClick={startGame} size="lg" className="bg-gradient-primary">
             <Play className="w-5 h-5 mr-2" />
-            {t.startGame}
+            Commencer
           </Button>
         )}
         {status === 'gameover' && (
           <Button onClick={startGame} size="lg" className="bg-gradient-primary">
             <RotateCcw className="w-5 h-5 mr-2" />
-            {t.retry || 'Rejouer'}
+            Rejouer
           </Button>
         )}
         {status === 'running' && (
