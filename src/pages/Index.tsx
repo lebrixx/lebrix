@@ -379,6 +379,7 @@ const Index = () => {
             zone_mobile: savedData[`bestScore_zone_mobile`] || 0,
             zone_traitresse: savedData[`bestScore_zone_traitresse`] || 0,
             memoire_expert: savedData[`bestScore_memoire_expert`] || 0,
+            pong_circulaire: savedData[`bestScore_pong_circulaire`] || 0,
           };
           
           return (
