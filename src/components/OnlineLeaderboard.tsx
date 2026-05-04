@@ -203,16 +203,28 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
   return (
     <div className="min-h-screen bg-gradient-game theme-neon flex flex-col">
       {/* Header */}
-      <div className="pt-12 px-4 pb-0">
-        <Button
-          onClick={onBack}
-          variant="outline"
-          size="sm"
-          className="mb-4 border-wheel-border hover:bg-button-hover"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {t.back}
-        </Button>
+      <div className="pt-12 px-4 pb-0 relative">
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            onClick={onBack}
+            variant="outline"
+            size="sm"
+            className="border-wheel-border hover:bg-button-hover"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t.back}
+          </Button>
+          <Button
+            onClick={() => loadScores(selectedMode)}
+            variant="outline"
+            size="sm"
+            disabled={loading || !isOnline}
+            className="border-wheel-border hover:bg-button-hover"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            {t.refresh}
+          </Button>
+        </div>
 
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
