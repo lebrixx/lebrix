@@ -159,6 +159,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           const isLocked = !unlockedModes.includes(modeId);
           const canSelect = !isGameRunning && !isLocked;
           const hasBonus = isBonusActive(modeId as ModeType);
+          const isPongChallenge = modeId === ModeID.PONG_CIRCULAIRE && isLocked;
+          const pongUnlock = isPongChallenge ? getPongUnlockCount() : null;
 
           return (
             <Card
