@@ -32,8 +32,10 @@ const getRankIcon = (rank: number) => {
 const hasPurpleName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('purple_name') ?? false;
 const hasPulseName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('pulse_name') ?? false;
 const hasGoldPulseName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('gold_pulse_name') ?? false;
+const hasRainbowName = (d: string | null | undefined) => d?.split(',').map((s) => s.trim()).includes('rainbow_name') ?? false;
 
-const getNameColor = (decorations: string | null | undefined): string => {
+const getNameColor = (decorations: string | null | undefined): string | undefined => {
+  if (hasRainbowName(decorations)) return undefined;
   if (hasGoldPulseName(decorations)) return 'hsl(45, 100%, 55%)';
   if (hasPulseName(decorations)) return 'hsl(var(--primary))';
   if (hasPurpleName(decorations)) return '#a855f7';
@@ -41,6 +43,7 @@ const getNameColor = (decorations: string | null | undefined): string => {
 };
 
 const getNameAnimation = (decorations: string | null | undefined): string => {
+  if (hasRainbowName(decorations)) return 'animate-[username-rainbow_3s_linear_infinite]';
   if (hasGoldPulseName(decorations)) return 'animate-[username-gold-pulse_3s_ease-in-out_infinite]';
   if (hasPulseName(decorations)) return 'animate-[username-pulse_3s_ease-in-out_infinite]';
   return '';
