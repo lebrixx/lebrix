@@ -156,7 +156,9 @@ export function equipUsernameColor(color: UsernameColor): void {
     data.equippedDecoration = 'pulse_name';
   } else if (color === 'gold_pulse') {
     data.equippedDecoration = 'gold_pulse_name';
-  } else if (data.equippedDecoration === 'purple_name' || data.equippedDecoration === 'pulse_name' || data.equippedDecoration === 'gold_pulse_name') {
+  } else if (color === 'rainbow') {
+    data.equippedDecoration = 'rainbow_name';
+  } else if (data.equippedDecoration === 'purple_name' || data.equippedDecoration === 'pulse_name' || data.equippedDecoration === 'gold_pulse_name' || data.equippedDecoration === 'rainbow_name') {
     data.equippedDecoration = null;
   }
   savePassData(data);
