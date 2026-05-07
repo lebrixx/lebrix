@@ -498,7 +498,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     isRainbowEquipped
                       ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]'
                       : !hasRainbowUnlocked
-                        ? 'border-pink-400/50 animate-pulse shadow-[0_0_14px_rgba(236,72,153,0.25)]'
+                        ? 'border-pink-400/50 shadow-[0_0_14px_rgba(236,72,153,0.25)]'
                         : 'border-wheel-border/40'
                   }`}
                 >
