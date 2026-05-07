@@ -179,6 +179,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
+  const isRainbowEquipped = passData.equippedUsernameColor === 'rainbow';
 
   // Preview state: if previewing something locked, show it in the preview area
   const isPreviewingLocked = previewDeco !== null || previewColor !== null;
@@ -187,6 +188,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const displayViolet = previewColor === 'violet' || (previewColor === null && isVioletEquipped);
   const displayPulse = previewColor === 'pulse' || (previewColor === null && isPulseEquipped);
   const displayGoldPulse = previewColor === 'gold_pulse' || (previewColor === null && isGoldPulseEquipped);
+  const displayRainbow = previewColor === 'rainbow' || (previewColor === null && isRainbowEquipped);
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
