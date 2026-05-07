@@ -1,0 +1,105 @@
+import React, { useState } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { X, Loader2, Sparkles } from 'lucide-react';
+import { purchaseRainbowNative } from '@/utils/purchaseRainbowService';
+import { useToast } from '@/hooks/use-toast';
+
+interface RainbowOfferProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onPurchased?: () => void;
+}
+
+export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onPurchased }) => {
+  const { toast } = useToast();
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  const handlePurchase = async () => {
+    if (isPurchasing) return;
+    setIsPurchasing(true);
+    try {
+      const result = await purchaseRainbowNative();
+      if (result === 'purchased') {
+        toast({ title: 'Multicolore débloqué !', description: 'Ta nouvelle couleur de pseudo est prête.' });
+        onPurchased?.();
+        onClose();
+      } else if (result === 'cancelled') {
+        // silent
+      } else if (result === 'unavailable') {
+        toast({ title: 'Indisponible', description: 'Le produit n\'est pas encore disponible sur le store.', variant: 'destructive' });
+      } else {
+        toast({ title: 'Erreur d\'achat', description: 'Réessaie plus tard.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Erreur d\'achat', variant: 'destructive' });
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[300px] max-w-[290px] bg-transparent border-none p-0 overflow-hidden shadow-none [&>button]:hidden">
+        <div className="relative rounded-2xl overflow-hidden border border-pink-400/40 shadow-[0_0_40px_rgba(236,72,153,0.25)]">
+          <div className="absolute inset-0 bg-gradient-to-b from-game-darker via-button-bg to-game-darker" />
+          <div
+            className="absolute inset-0 opacity-25"
+            style={{ background: 'linear-gradient(135deg, hsl(0,95%,60%), hsl(40,100%,55%), hsl(120,80%,55%), hsl(180,90%,55%), hsl(220,95%,65%), hsl(285,90%,65%))' }}
+          />
+
+          <div className="relative">
+            <button
+              onClick={onClose}
+              className="absolute top-2.5 right-2.5 z-10 rounded-full p-1 bg-game-darker/60 border border-wheel-border/20 text-text-muted hover:text-text-primary transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="text-center pt-5 pb-2 px-4">
+              <div className="relative inline-block mb-1.5">
+                <Sparkles className="w-6 h-6 text-pink-300 animate-pulse" />
+              </div>
+              <h2 className="text-lg font-black text-text-primary tracking-tight">
+                Pseudo <span className="animate-[username-rainbow_3s_linear_infinite]">Multicolore</span>
+              </h2>
+              <p className="text-[10px] text-text-muted mt-1.5 px-2 leading-snug">
+                Ton pseudo s'anime avec toutes les couleurs de l'arc-en-ciel dans le classement.
+              </p>
+            </div>
+
+            <div className="px-4 pb-2">
+              <div className="rounded-xl border border-pink-400/30 bg-game-darker/50 p-3 flex items-center justify-center">
+                <span className="text-2xl font-black animate-[username-rainbow_3s_linear_infinite]">
+                  TonPseudo
+                </span>
+              </div>
+            </div>
+
+            <div className="mx-4 mt-3 h-px bg-gradient-to-r from-transparent via-wheel-border to-transparent" />
+
+            <div className="px-4 py-3 text-center space-y-2.5">
+              <div>
+                <span className="text-2xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">1,99 €</span>
+                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique</div>
+              </div>
+
+              <Button
+                onClick={handlePurchase}
+                disabled={isPurchasing}
+                className="w-full py-3 text-sm font-extrabold bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white"
+              >
+                {isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
+                {isPurchasing ? 'Achat en cours…' : 'Débloquer'}
+              </Button>
+
+              <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
+                Plus tard
+              </button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
