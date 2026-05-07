@@ -9,3 +9,7 @@ export const ESSENTIAL_PRODUCT_ID = isAndroid()
 export const PREMIUM_PRODUCT_ID = isAndroid()
   ? 'com-luckystop-premium'
   : 'com.luckystop.premium';
+
+export const RAINBOW_PRODUCT_ID = isAndroid()
+  ? 'com-luckystop-rainbow'
+  : 'com.luckystop.rainbow';
