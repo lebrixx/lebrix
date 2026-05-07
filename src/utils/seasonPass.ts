@@ -37,6 +37,7 @@ export interface SeasonPassData {
   totalDiamondsEarned: number;
   dailyQuests: DailyQuestState | null;
   hasGoldPulse?: boolean; // Unlocked via Premium Pack or promo code only
+  hasRainbow?: boolean; // Unlocked via separate IAP (Multicolore — 1.99€)
 }
 
 const STORAGE_KEY = 'ls_season_pass';
@@ -202,6 +203,16 @@ export function unlockGoldPulse(): void {
 
 export function hasGoldPulseUnlocked(): boolean {
   return getSeasonPassData().hasGoldPulse === true;
+}
+
+export function unlockRainbow(): void {
+  const data = getSeasonPassData();
+  data.hasRainbow = true;
+  savePassData(data);
+}
+
+export function hasRainbowUnlocked(): boolean {
+  return getSeasonPassData().hasRainbow === true;
 }
 
 /** Purchase premium pack: unlock all 9 tiers, gold pulse, give diamonds + coins + boosts */

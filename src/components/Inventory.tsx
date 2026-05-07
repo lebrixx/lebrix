@@ -15,8 +15,10 @@ import {
   equipDecoration,
   equipUsernameColor,
   hasGoldPulseUnlocked as checkGoldPulse,
+  hasRainbowUnlocked as checkRainbow,
   type SeasonPassData,
 } from '@/utils/seasonPass';
+import { RainbowOffer } from '@/components/RainbowOffer';
 import { getLocalIdentity, setUsername } from '@/utils/localIdentity';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +52,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [newUsername, setNewUsername] = useState('');
   const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
   const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null>(null); // preview locked color
+  const [rainbowOfferOpen, setRainbowOfferOpen] = useState(false);
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
@@ -176,6 +179,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const hasVioletUnlocked = passData.currentTier >= 4;
   const hasPulseUnlocked = passData.currentTier >= 9;
   const hasGoldPulseUnlocked = checkGoldPulse();
+  const hasRainbowUnlocked = checkRainbow();
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
@@ -483,14 +487,22 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
 
                 {/* Rainbow — fine wide row below */}
                 <button
-                  onClick={() => handleEquipColor('rainbow')}
+                  onClick={() => {
+                    if (hasRainbowUnlocked) {
+                      handleEquipColor('rainbow');
+                    } else {
+                      setRainbowOfferOpen(true);
+                    }
+                  }}
                   className={`mt-2.5 w-full relative overflow-hidden rounded-2xl border-2 py-2 px-3 transition-all duration-300 active:scale-[0.98] ${
                     isRainbowEquipped
                       ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]'
-                      : 'border-wheel-border/40'
+                      : !hasRainbowUnlocked
+                        ? 'border-pink-400/50 animate-pulse shadow-[0_0_14px_rgba(236,72,153,0.25)]'
+                        : 'border-wheel-border/40'
                   }`}
                 >
-                  {isRainbowEquipped && (
+                  {(isRainbowEquipped || !hasRainbowUnlocked) && (
                     <div
                       className="absolute inset-0 opacity-20"
                       style={{ background: 'linear-gradient(90deg, hsl(0,95%,60%), hsl(40,100%,55%), hsl(120,80%,55%), hsl(180,90%,55%), hsl(220,95%,65%), hsl(285,90%,65%))' }}
@@ -503,6 +515,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                           <Check className="w-2.5 h-2.5 text-white" />
                         </div>
                       )}
+                      {!hasRainbowUnlocked && (
+                        <Lock className="w-3 h-3 text-pink-300 shrink-0" />
+                      )}
                       <span className={`text-[11px] font-black uppercase tracking-wider ${isRainbowEquipped ? 'text-pink-300' : 'text-text-primary'}`}>
                         Multicolore
                       </span>
@@ -510,8 +525,21 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     <span className="text-base font-black leading-none animate-[username-rainbow_3s_linear_infinite]">
                       Aa Bb Cc
                     </span>
-                    <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">Nouveau</span>
+                    {hasRainbowUnlocked ? (
+                      <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">{isRainbowEquipped ? 'Équipé' : 'Nouveau'}</span>
+                    ) : (
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md animate-pulse">
+                        1,99 €
+                      </span>
+                    )}
                   </div>
+                  {!hasRainbowUnlocked && (
+                    <div className="relative mt-1 text-[9px] text-pink-300/90 font-semibold tracking-wide flex items-center justify-center gap-1">
+                      <span>✨</span>
+                      <span>Touche pour débloquer</span>
+                      <span>✨</span>
+                    </div>
+                  )}
                 </button>
               </div>
               <div className="px-4">
@@ -574,6 +602,19 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
           )}
         </div>
       </DialogContent>
+
+      <RainbowOffer
+        isOpen={rainbowOfferOpen}
+        onClose={() => setRainbowOfferOpen(false)}
+        onPurchased={() => {
+          const updated = getSeasonPassData();
+          setPassData(updated);
+          equipUsernameColor('rainbow');
+          const after = getSeasonPassData();
+          setPassData(after);
+          syncDecorationToServer(after);
+        }}
+      />
     </Dialog>
   );
 };
