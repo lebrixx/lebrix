@@ -178,6 +178,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const hasVioletUnlocked = passData.currentTier >= 4;
   const hasPulseUnlocked = passData.currentTier >= 9;
   const hasGoldPulseUnlocked = checkGoldPulse();
+  const hasRainbowUnlocked = checkRainbow();
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
