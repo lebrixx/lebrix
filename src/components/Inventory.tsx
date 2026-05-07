@@ -602,6 +602,19 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
           )}
         </div>
       </DialogContent>
+
+      <RainbowOffer
+        isOpen={rainbowOfferOpen}
+        onClose={() => setRainbowOfferOpen(false)}
+        onPurchased={() => {
+          const updated = getSeasonPassData();
+          setPassData(updated);
+          equipUsernameColor('rainbow');
+          const after = getSeasonPassData();
+          setPassData(after);
+          syncDecorationToServer(after);
+        }}
+      />
     </Dialog>
   );
 };
