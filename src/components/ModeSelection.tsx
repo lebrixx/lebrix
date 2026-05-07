@@ -34,6 +34,8 @@ const getModeIcon = (modeId: ModeType) => {
       return <AlertTriangle className="w-8 h-8" />;
     case ModeID.MEMOIRE_EXPERT:
       return <Brain className="w-8 h-8" />;
+    case ModeID.PONG_CIRCULAIRE:
+      return <Gamepad2 className="w-8 h-8" />;
     default:
       return <Target className="w-8 h-8" />;
   }
@@ -46,7 +48,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   unlockedModes,
   onSelectMode,
   onBack,
-  onOpenShop
+  onOpenShop,
+  onOpenChallenges,
 }) => {
   const isGameRunning = gameStatus === 'running';
   const { language } = useLanguage();
