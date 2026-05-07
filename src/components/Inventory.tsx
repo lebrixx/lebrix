@@ -127,7 +127,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     syncDecorationToServer(updated);
   };
 
-  const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | null) => {
+  const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null) => {
     setPreviewDeco(null);
     setPreviewColor(null);
     equipUsernameColor(color);
@@ -141,7 +141,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     // Don't reset previewColor — allow combining color + emoji in preview
   };
 
-  const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse') => {
+  const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse' | 'rainbow') => {
     setPreviewColor(color);
     // Don't reset previewDeco — allow combining emoji + color in preview
   };
