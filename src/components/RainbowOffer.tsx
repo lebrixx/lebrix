@@ -41,12 +41,10 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[300px] max-w-[290px] bg-transparent border-none p-0 overflow-hidden shadow-none [&>button]:hidden">
-        <div className="relative rounded-2xl overflow-hidden border border-pink-400/40 shadow-[0_0_40px_rgba(236,72,153,0.25)]">
+        <div className="relative rounded-2xl overflow-hidden border border-primary/30 shadow-[0_0_40px_hsl(var(--primary)/0.2)]">
           <div className="absolute inset-0 bg-gradient-to-b from-game-darker via-button-bg to-game-darker" />
-          <div
-            className="absolute inset-0 opacity-25"
-            style={{ background: 'linear-gradient(135deg, hsl(0,95%,60%), hsl(40,100%,55%), hsl(120,80%,55%), hsl(180,90%,55%), hsl(220,95%,65%), hsl(285,90%,65%))' }}
-          />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.15),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,hsl(var(--secondary)/0.1),transparent_60%)]" />
 
           <div className="relative">
             <button
