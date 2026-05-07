@@ -37,6 +37,7 @@ export interface SeasonPassData {
   totalDiamondsEarned: number;
   dailyQuests: DailyQuestState | null;
   hasGoldPulse?: boolean; // Unlocked via Premium Pack or promo code only
+  hasRainbow?: boolean; // Unlocked via separate IAP (Multicolore — 1.99€)
 }
 
 const STORAGE_KEY = 'ls_season_pass';
