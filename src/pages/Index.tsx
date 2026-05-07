@@ -410,6 +410,7 @@ const Index = () => {
               onSelectMode={handleModeChange}
               onBack={() => setCurrentScreen('menu')}
               onOpenShop={() => setCurrentScreen('shop')}
+              onOpenChallenges={() => setCurrentScreen('challenges')}
             />
           );
           
