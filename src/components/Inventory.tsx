@@ -49,7 +49,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
-  const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | null>(null); // preview locked color
+  const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null>(null); // preview locked color
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
