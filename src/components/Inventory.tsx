@@ -525,13 +525,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     <span className="text-base font-black leading-none animate-[username-rainbow_3s_linear_infinite]">
                       Aa Bb Cc
                     </span>
-                    {hasRainbowUnlocked ? (
-                      <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">{isRainbowEquipped ? 'Équipé' : 'Nouveau'}</span>
-                    ) : (
-                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-black bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md animate-pulse">
-                        1,99 €
-                      </span>
-                    )}
+                    <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">
+                      {isRainbowEquipped ? 'Équipé' : 'Nouveau'}
+                    </span>
                   </div>
                   {!hasRainbowUnlocked && (
                     <div className="relative mt-1 text-[9px] text-pink-300/90 font-semibold tracking-wide flex items-center justify-center gap-1">
