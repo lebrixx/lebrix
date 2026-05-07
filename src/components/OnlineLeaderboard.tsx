@@ -424,8 +424,8 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
                           </Badge>
                         </div>
                         <div>
-                          <h3 className={`font-bold text-lg ${hasGoldPulseName(entry.decorations) ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : hasPulseName(entry.decorations) ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`} style={{
-                            color: hasGoldPulseName(entry.decorations) ? 'hsl(45, 100%, 55%)' : hasPulseName(entry.decorations) ? 'hsl(var(--primary))' : hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
+                          <h3 className={`font-bold text-lg ${hasRainbowName(entry.decorations) ? 'animate-[username-rainbow_3s_linear_infinite]' : hasGoldPulseName(entry.decorations) ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : hasPulseName(entry.decorations) ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''}`} style={{
+                            color: hasRainbowName(entry.decorations) ? undefined : hasGoldPulseName(entry.decorations) ? 'hsl(45, 100%, 55%)' : hasPulseName(entry.decorations) ? 'hsl(var(--primary))' : hasPurpleName(entry.decorations) ? '#a855f7' : 'hsl(var(--text-primary))'
                           }}>
                             {(() => {
                               const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
