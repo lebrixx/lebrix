@@ -23,6 +23,7 @@ import { updateDailyChallengeProgress } from '@/utils/dailyChallenges';
 import { updateQuestScore, updateQuestBoostUsed } from '@/utils/seasonPass';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
+import { isPongUnlocked } from '@/utils/pongUnlock';
 import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 
