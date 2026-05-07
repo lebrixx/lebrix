@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles, HelpCircle, Infinity, Crosshair, Clock } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles, HelpCircle, Infinity, Crosshair, Clock, Lock } from 'lucide-react';
+import { getPongUnlockProgress, isPongUnlocked, PONG_UNLOCK_TARGET } from '@/utils/pongUnlock';
 import { ModeID } from '@/constants/modes';
 import { toast } from 'sonner';
 import { BOOSTS, BoostType } from '@/types/boosts';
@@ -529,7 +530,92 @@ export const Challenges: React.FC<ChallengesProps> = ({
             })}
           </div>
 
+          {/* Défi de déblocage : Pong Circulaire */}
+          {(() => {
+            const pongProgress = getPongUnlockProgress();
+            const pongUnlocked = isPongUnlocked();
+            const done = pongProgress.filter(p => p.completed).length;
+            const total = pongProgress.length;
 
+            return (
+              <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+                pongUnlocked
+                  ? 'border-emerald-400/50 bg-gradient-to-br from-emerald-500/15 via-emerald-400/5 to-transparent'
+                  : 'border-pink-500/40 bg-gradient-to-br from-pink-500/15 via-pink-500/5 to-primary/5'
+              }`}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl" />
+                <div className="relative p-5">
+                  <div className="flex items-start gap-4">
+                    <div className={`relative p-3 rounded-2xl ${pongUnlocked ? 'bg-emerald-400/20' : 'bg-pink-500/20'}`}>
+                      {pongUnlocked ? (
+                        <Gamepad2 className="w-7 h-7 text-emerald-400" />
+                      ) : (
+                        <>
+                          <Lock className="w-7 h-7 text-pink-400" />
+                          <Gamepad2 className="w-3.5 h-3.5 text-pink-400 absolute -bottom-1 -right-1" />
+                        </>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-lg text-text-primary">Débloquer Pong Circulaire</h3>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                          pongUnlocked ? 'bg-emerald-400/20 text-emerald-400' : 'bg-pink-500/20 text-pink-400'
+                        }`}>
+                          {pongUnlocked ? '✓ DÉBLOQUÉ' : 'DÉFI'}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-text-muted mb-3">
+                        Atteins un score de <strong>{PONG_UNLOCK_TARGET} ou plus</strong> dans chacun des autres modes pour débloquer ce nouveau mode de jeu.
+                      </p>
+
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex-1 h-2 bg-button-bg rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              pongUnlocked ? 'bg-emerald-400' : 'bg-gradient-to-r from-pink-500 to-pink-400'
+                            }`}
+                            style={{ width: `${(done / total) * 100}%` }}
+                          />
+                        </div>
+                        <span className={`text-xs font-bold ${pongUnlocked ? 'text-emerald-400' : 'text-pink-400'}`}>
+                          {done}/{total}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {pongProgress.map(({ mode, score, completed }) => {
+                          const info = MODE_INFO[mode];
+                          return (
+                            <div
+                              key={mode}
+                              className={`flex items-center gap-1.5 px-2 py-1 rounded-md border text-[10px] ${
+                                completed
+                                  ? 'bg-emerald-400/10 border-emerald-400/30 text-emerald-400'
+                                  : 'bg-button-bg/60 border-wheel-border/30 text-text-muted'
+                              }`}
+                            >
+                              {completed ? (
+                                <CheckCircle className="w-3 h-3 flex-shrink-0" />
+                              ) : (
+                                <info.icon className={`w-3 h-3 flex-shrink-0 ${info.color}`} />
+                              )}
+                              <span className="truncate font-medium">{info.name}</span>
+                              <span className="ml-auto font-bold">
+                                {Math.min(score, PONG_UNLOCK_TARGET)}/{PONG_UNLOCK_TARGET}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
         </TabsContent>
 

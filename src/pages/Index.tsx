@@ -23,6 +23,7 @@ import { updateDailyChallengeProgress } from '@/utils/dailyChallenges';
 import { updateQuestScore, updateQuestBoostUsed } from '@/utils/seasonPass';
 import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
+import { isPongUnlocked } from '@/utils/pongUnlock';
 import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 
@@ -53,17 +54,26 @@ const Index = () => {
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert', 'pong_circulaire']; // Modes gratuits
+    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
-    
+    let base: string[] = freeModes;
+
     if (saved) {
-      const savedModes = JSON.parse(saved);
-      // Fusionner les modes sauvegardés avec les modes gratuits (pour les utilisateurs existants)
-      const allUnlocked = [...new Set([...freeModes, ...savedModes])];
-      return allUnlocked;
+      try {
+        const savedModes = JSON.parse(saved);
+        base = [...new Set([...freeModes, ...savedModes])];
+      } catch {
+        base = freeModes;
+      }
     }
-    
-    return freeModes;
+
+    // Pong Circulaire est débloqué uniquement via le défi (score >= 20 dans tous les autres modes)
+    if (isPongUnlocked() && !base.includes('pong_circulaire')) {
+      base = [...base, 'pong_circulaire'];
+    } else if (!isPongUnlocked()) {
+      base = base.filter((m) => m !== 'pong_circulaire');
+    }
+    return base;
   });
 
   const { gameState, startGame, onTap, resetGame, cfg, spendCoins, addCoins, purchaseTheme } = useGameLogic(currentMode);
@@ -174,6 +184,15 @@ const Index = () => {
       setShowUsernameModal(true);
     }
 
+    // Vérifier si Pong Circulaire vient d'être débloqué
+    if (isPongUnlocked() && !unlockedModes.includes('pong_circulaire')) {
+      const newUnlocked = [...unlockedModes, 'pong_circulaire'];
+      setUnlockedModes(newUnlocked);
+      toast({
+        title: '🎉 Mode débloqué !',
+        description: 'Pong Circulaire est maintenant disponible !',
+      });
+    }
 
     // Rate dialog logic:
     // 1st trigger: score >30 in non-classic mode (if never triggered before)
@@ -391,6 +410,7 @@ const Index = () => {
               onSelectMode={handleModeChange}
               onBack={() => setCurrentScreen('menu')}
               onOpenShop={() => setCurrentScreen('shop')}
+              onOpenChallenges={() => setCurrentScreen('challenges')}
             />
           );
           
