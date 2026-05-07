@@ -254,13 +254,35 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
 
                 {/* Select Button */}
                 {isLocked ? (
-                  <Button
-                    onClick={onOpenShop}
-                    className="w-full bg-danger hover:bg-danger/90 transition-all"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Acheter en Boutique
-                  </Button>
+                  isPongChallenge ? (
+                    <div className="space-y-2">
+                      <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30 text-xs text-text-secondary">
+                        <div className="flex items-center gap-2 mb-1 text-secondary font-semibold">
+                          <Trophy className="w-3.5 h-3.5" />
+                          Défi de déblocage
+                        </div>
+                        <p>Atteins un score de {PONG_UNLOCK_TARGET}+ dans chacun des autres modes.</p>
+                        {pongUnlock && (
+                          <p className="mt-1 font-bold text-secondary">Progression : {pongUnlock.done}/{pongUnlock.total}</p>
+                        )}
+                      </div>
+                      <Button
+                        onClick={onOpenChallenges}
+                        className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-white shadow-lg shadow-secondary/20"
+                      >
+                        <Trophy className="w-4 h-4 mr-2" />
+                        Voir le défi
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={onOpenShop}
+                      className="w-full bg-danger hover:bg-danger/90 transition-all"
+                    >
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      Acheter en Boutique
+                    </Button>
+                  )
                 ) : (
                   <Button
                     onClick={() => onSelectMode(modeId as ModeType)}
