@@ -188,9 +188,9 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               {/* Locked Badge */}
               {isLocked && (
                 <div className="absolute top-4 right-4 z-10">
-                  <Badge className="bg-danger/90 text-white border-danger">
+                  <Badge className={isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
                     <Lock className="w-3 h-3 mr-1" />
-                    Verrouillé
+                    {isPongChallenge ? 'Défi requis' : 'Verrouillé'}
                   </Badge>
                 </div>
               )}
