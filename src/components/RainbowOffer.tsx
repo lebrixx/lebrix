@@ -80,8 +80,9 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
 
             <div className="px-4 py-3 text-center space-y-2.5">
               <div>
+                <span className="text-xs text-text-muted line-through mr-2">3,99 €</span>
                 <span className="text-2xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">1,99 €</span>
-                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique</div>
+                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d'abonnement</div>
               </div>
 
               <Button
@@ -90,11 +91,14 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
                 className="w-full py-3 text-sm font-extrabold bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white"
               >
                 {isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
-                {isPurchasing ? 'Achat en cours…' : 'Débloquer'}
+                {isPurchasing ? 'Achat en cours…' : 'Débloquer le Multicolore'}
               </Button>
+              <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
+                🔒 Paiement sécurisé
+              </p>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
-                Plus tard
+                Non merci
               </button>
             </div>
           </div>
