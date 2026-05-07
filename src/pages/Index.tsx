@@ -68,7 +68,6 @@ const Index = () => {
     }
 
     // Pong Circulaire est débloqué uniquement via le défi (score >= 20 dans tous les autres modes)
-    const { isPongUnlocked } = require('@/utils/pongUnlock');
     if (isPongUnlocked() && !base.includes('pong_circulaire')) {
       base = [...base, 'pong_circulaire'];
     } else if (!isPongUnlocked()) {
