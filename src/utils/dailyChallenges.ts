@@ -13,40 +13,40 @@ export interface DailyChallenge {
 // UNIQUEMENT des défis de score dans un mode spécifique
 export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   // Classique
-  { id: 'classic_score_10', title: 'Classique Débutant', description: 'Fais un score de 10 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 15 } },
-  { id: 'classic_score_15', title: 'Classique Apprenti', description: 'Fais un score de 15 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 15, reward: { coins: 20 } },
-  { id: 'classic_score_20', title: 'Classique Confirmé', description: 'Fais un score de 20 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 30 } },
-  { id: 'classic_score_25', title: 'Classique Pro', description: 'Fais un score de 25 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 25, reward: { coins: 40 } },
+  { id: 'classic_score_10', title: 'Classique Débutant', description: 'Fais un score de 10 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 8 } },
+  { id: 'classic_score_15', title: 'Classique Apprenti', description: 'Fais un score de 15 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 15, reward: { coins: 10 } },
+  { id: 'classic_score_20', title: 'Classique Confirmé', description: 'Fais un score de 20 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 15 } },
+  { id: 'classic_score_25', title: 'Classique Pro', description: 'Fais un score de 25 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 25, reward: { coins: 20 } },
   
   // Arc changeant
-  { id: 'arc_score_8', title: 'Arc Débutant', description: 'Fais un score de 8 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 8, reward: { coins: 15 } },
-  { id: 'arc_score_12', title: 'Arc Intermédiaire', description: 'Fais un score de 12 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 12, reward: { coins: 20 } },
-  { id: 'arc_score_15', title: 'Arc Confirmé', description: 'Fais un score de 15 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 15, reward: { coins: 30 } },
-  { id: 'arc_score_20', title: 'Arc Expert', description: 'Fais un score de 20 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 45 } },
+  { id: 'arc_score_8', title: 'Arc Débutant', description: 'Fais un score de 8 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 8, reward: { coins: 8 } },
+  { id: 'arc_score_12', title: 'Arc Intermédiaire', description: 'Fais un score de 12 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 12, reward: { coins: 10 } },
+  { id: 'arc_score_15', title: 'Arc Confirmé', description: 'Fais un score de 15 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 15, reward: { coins: 15 } },
+  { id: 'arc_score_20', title: 'Arc Expert', description: 'Fais un score de 20 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 23 } },
   
   // Survie 30s
-  { id: 'survie_score_5', title: 'Survivant Débutant', description: 'Fais un score de 5 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 15 } },
-  { id: 'survie_score_8', title: 'Survivant', description: 'Fais un score de 8 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 25 } },
-  { id: 'survie_score_12', title: 'Survie Confirmé', description: 'Fais un score de 12 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 35 } },
-  { id: 'survie_score_15', title: 'Maître Survie', description: 'Fais un score de 15 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
+  { id: 'survie_score_5', title: 'Survivant Débutant', description: 'Fais un score de 5 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 8 } },
+  { id: 'survie_score_8', title: 'Survivant', description: 'Fais un score de 8 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 13 } },
+  { id: 'survie_score_12', title: 'Survie Confirmé', description: 'Fais un score de 12 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 18 } },
+  { id: 'survie_score_15', title: 'Maître Survie', description: 'Fais un score de 15 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 25 } },
   
   // Zone mobile
-  { id: 'mobile_score_8', title: 'Zone Nomade', description: 'Fais un score de 8 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 20 } },
-  { id: 'mobile_score_12', title: 'Chasseur Mobile', description: 'Fais un score de 12 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 12, reward: { coins: 30 } },
-  { id: 'mobile_score_15', title: 'Mobile Confirmé', description: 'Fais un score de 15 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 40 } },
-  { id: 'mobile_score_20', title: 'Expert Mobile', description: 'Fais un score de 20 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 50 } },
+  { id: 'mobile_score_8', title: 'Zone Nomade', description: 'Fais un score de 8 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 10 } },
+  { id: 'mobile_score_12', title: 'Chasseur Mobile', description: 'Fais un score de 12 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 12, reward: { coins: 15 } },
+  { id: 'mobile_score_15', title: 'Mobile Confirmé', description: 'Fais un score de 15 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 20 } },
+  { id: 'mobile_score_20', title: 'Expert Mobile', description: 'Fais un score de 20 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 25 } },
   
   // Zone traîtresse
-  { id: 'traitresse_score_5', title: 'Détecteur', description: 'Fais un score de 5 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 20 } },
-  { id: 'traitresse_score_8', title: 'Démineur', description: 'Fais un score de 8 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 8, reward: { coins: 30 } },
-  { id: 'traitresse_score_10', title: 'Traîtresse Confirmé', description: 'Fais un score de 10 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 40 } },
-  { id: 'traitresse_score_15', title: 'Expert Démineur', description: 'Fais un score de 15 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 55 } },
+  { id: 'traitresse_score_5', title: 'Détecteur', description: 'Fais un score de 5 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 10 } },
+  { id: 'traitresse_score_8', title: 'Démineur', description: 'Fais un score de 8 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 8, reward: { coins: 15 } },
+  { id: 'traitresse_score_10', title: 'Traîtresse Confirmé', description: 'Fais un score de 10 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 20 } },
+  { id: 'traitresse_score_15', title: 'Expert Démineur', description: 'Fais un score de 15 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 28 } },
   
   // Mémoire Expert
-  { id: 'memoire_score_3', title: 'Mémoire courte', description: 'Fais un score de 3 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
-  { id: 'memoire_score_5', title: 'Bonne mémoire', description: 'Fais un score de 5 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 35 } },
-  { id: 'memoire_score_8', title: 'Mémoire Confirmé', description: 'Fais un score de 8 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 8, reward: { coins: 50 } },
-  { id: 'memoire_score_10', title: 'Mémoire eidétique', description: 'Fais un score de 10 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 60 } },
+  { id: 'memoire_score_3', title: 'Mémoire courte', description: 'Fais un score de 3 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 10 } },
+  { id: 'memoire_score_5', title: 'Bonne mémoire', description: 'Fais un score de 5 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 18 } },
+  { id: 'memoire_score_8', title: 'Mémoire Confirmé', description: 'Fais un score de 8 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 8, reward: { coins: 25 } },
+  { id: 'memoire_score_10', title: 'Mémoire eidétique', description: 'Fais un score de 10 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 30 } },
 ];
 
 export interface DailyChallengeProgress {

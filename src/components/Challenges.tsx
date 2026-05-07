@@ -220,7 +220,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     const modeProgress = progress[mode];
     
     if (modeProgress.pendingRewards.length > 0) {
-      const totalCoins = modeProgress.pendingRewards.reduce((sum, target) => sum + target, 0);
+      const totalCoins = Math.floor(modeProgress.pendingRewards.reduce((sum, target) => sum + target, 0) / 2);
       modeProgress.pendingRewards = [];
       saveChallengeProgress(progress);
       onReward(totalCoins);
@@ -547,7 +547,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
           {showHowItWorks && (
             <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-text-muted space-y-1">
               <p>• <strong>Parties jouées (∞) :</strong> toutes les 50 parties → 1 boost.</p>
-              <p>• <strong>Défis par mode :</strong> paliers de score 10 → 100. Chaque palier atteint débloque des coins à réclamer (10, 20, 30...).</p>
+              <p>• <strong>Défis par mode :</strong> paliers de score 10 → 100. Chaque palier atteint débloque des coins à réclamer (5, 10, 15...).</p>
               <p>• Les récompenses restent en attente jusqu'à réclamation.</p>
             </div>
           )}
@@ -709,7 +709,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                         className="w-full bg-secondary hover:bg-secondary/80 text-[10px] h-7 shadow-md shadow-secondary/20"
                       >
                         <Coins className="w-3 h-3 mr-1" />
-                        +{modeProgress.pendingRewards.reduce((s, r) => s + r, 0)}
+                        +{Math.floor(modeProgress.pendingRewards.reduce((s, r) => s + r, 0) / 2)}
                       </Button>
                     ) : isCompleted ? (
                       <div className="flex items-center justify-center gap-1.5 py-1 px-2 rounded-md bg-emerald-400/10 border border-emerald-400/20">
@@ -719,7 +719,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     ) : (
                       <div className="flex items-center justify-center gap-1 py-1 px-2 rounded-md bg-white/5">
                         <Coins className="w-3 h-3 text-secondary" />
-                        <span className="text-[10px] text-text-muted">+{currentTarget} coins</span>
+                        <span className="text-[10px] text-text-muted">+{Math.floor(currentTarget / 2)} coins</span>
                       </div>
                     )}
                   </div>
