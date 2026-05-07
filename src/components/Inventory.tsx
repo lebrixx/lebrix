@@ -349,9 +349,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">⚡ Joue une partie pour appliquer les changements</span>
                   )}
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${displayRainbow ? 'animate-[username-rainbow_3s_linear_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
                     style={{
-                      color: displayViolet ? '#a855f7' : displayPulse ? 'hsl(var(--primary))' : displayGoldPulse ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
+                      color: displayRainbow ? undefined : displayViolet ? '#a855f7' : displayPulse ? 'hsl(var(--primary))' : displayGoldPulse ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
                     }}
                   >
                     {displayDeco && !displayDeco.isColorReward
