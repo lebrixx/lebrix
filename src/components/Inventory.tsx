@@ -480,9 +480,40 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     </div>
                   </button>
                 </div>
-              </div>
 
-              {/* ── Décorations list ── */}
+                {/* Rainbow — fine wide row below */}
+                <button
+                  onClick={() => handleEquipColor('rainbow')}
+                  className={`mt-2.5 w-full relative overflow-hidden rounded-2xl border-2 py-2 px-3 transition-all duration-300 active:scale-[0.98] ${
+                    isRainbowEquipped
+                      ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]'
+                      : 'border-wheel-border/40'
+                  }`}
+                >
+                  {isRainbowEquipped && (
+                    <div
+                      className="absolute inset-0 opacity-20"
+                      style={{ background: 'linear-gradient(90deg, hsl(0,95%,60%), hsl(40,100%,55%), hsl(120,80%,55%), hsl(180,90%,55%), hsl(220,95%,65%), hsl(285,90%,65%))' }}
+                    />
+                  )}
+                  <div className="relative flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      {isRainbowEquipped && (
+                        <div className="w-4 h-4 rounded-full bg-pink-500 flex items-center justify-center shrink-0">
+                          <Check className="w-2.5 h-2.5 text-white" />
+                        </div>
+                      )}
+                      <span className={`text-[11px] font-black uppercase tracking-wider ${isRainbowEquipped ? 'text-pink-300' : 'text-text-primary'}`}>
+                        Multicolore
+                      </span>
+                    </div>
+                    <span className="text-base font-black leading-none animate-[username-rainbow_3s_linear_infinite]">
+                      Aa Bb Cc
+                    </span>
+                    <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">Nouveau</span>
+                  </div>
+                </button>
+              </div>
               <div className="px-4">
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-bold flex items-center gap-1.5">
                   <Star className="w-3 h-3 text-yellow-400" />
