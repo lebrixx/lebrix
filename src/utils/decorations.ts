@@ -4,7 +4,7 @@ import { getEquippedDecorationId, getEquippedUsernameColor } from './seasonPass'
 export function buildDecorationsString(): string | null {
   const parts: string[] = [];
   const decoId = getEquippedDecorationId();
-  if (decoId && decoId !== 'purple_name' && decoId !== 'pulse_name' && decoId !== 'gold_pulse_name') {
+  if (decoId && decoId !== 'purple_name' && decoId !== 'pulse_name' && decoId !== 'gold_pulse_name' && decoId !== 'rainbow_name') {
     parts.push(decoId);
   }
   const color = getEquippedUsernameColor();
@@ -14,6 +14,8 @@ export function buildDecorationsString(): string | null {
     parts.push('pulse_name');
   } else if (color === 'gold_pulse') {
     parts.push('gold_pulse_name');
+  } else if (color === 'rainbow') {
+    parts.push('rainbow_name');
   }
   return parts.length > 0 ? parts.join(',') : null;
 }
