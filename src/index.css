@@ -611,6 +611,16 @@
   50% { opacity: 0.5; color: hsl(35, 100%, 45%); text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
 }
 
+@keyframes username-rainbow {
+  0%   { color: hsl(0, 95%, 60%);   text-shadow: 0 0 8px hsl(0, 95%, 60%); }
+  16%  { color: hsl(40, 100%, 55%); text-shadow: 0 0 8px hsl(40, 100%, 55%); }
+  33%  { color: hsl(120, 80%, 55%); text-shadow: 0 0 8px hsl(120, 80%, 55%); }
+  50%  { color: hsl(180, 90%, 55%); text-shadow: 0 0 8px hsl(180, 90%, 55%); }
+  66%  { color: hsl(220, 95%, 65%); text-shadow: 0 0 8px hsl(220, 95%, 65%); }
+  83%  { color: hsl(285, 90%, 65%); text-shadow: 0 0 8px hsl(285, 90%, 65%); }
+  100% { color: hsl(0, 95%, 60%);   text-shadow: 0 0 8px hsl(0, 95%, 60%); }
+}
+
 @keyframes orbit {
   0% { top: 0; left: 50%; }
   25% { top: 50%; left: 100%; }

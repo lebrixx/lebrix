@@ -49,7 +49,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const [editingUsername, setEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [previewDeco, setPreviewDeco] = useState<string | null>(null); // preview locked deco
-  const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | null>(null); // preview locked color
+  const [previewColor, setPreviewColor] = useState<'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null>(null); // preview locked color
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
@@ -75,7 +75,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     const { username, deviceId } = getLocalIdentity();
     if (!username) return;
     const parts: string[] = [];
-    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name' && data.equippedDecoration !== 'gold_pulse_name') {
+    if (data.equippedDecoration && data.equippedDecoration !== 'purple_name' && data.equippedDecoration !== 'pulse_name' && data.equippedDecoration !== 'gold_pulse_name' && data.equippedDecoration !== 'rainbow_name') {
       parts.push(data.equippedDecoration);
     }
     if (data.equippedUsernameColor === 'violet') {
@@ -86,6 +86,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     }
     if (data.equippedUsernameColor === 'gold_pulse') {
       parts.push('gold_pulse_name');
+    }
+    if (data.equippedUsernameColor === 'rainbow') {
+      parts.push('rainbow_name');
     }
     const decorations = parts.length > 0 ? parts.join(',') : null;
 
@@ -124,7 +127,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     syncDecorationToServer(updated);
   };
 
-  const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | null) => {
+  const handleEquipColor = (color: 'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null) => {
     setPreviewDeco(null);
     setPreviewColor(null);
     equipUsernameColor(color);
@@ -138,7 +141,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
     // Don't reset previewColor — allow combining color + emoji in preview
   };
 
-  const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse') => {
+  const handlePreviewColor = (color: 'violet' | 'pulse' | 'gold_pulse' | 'rainbow') => {
     setPreviewColor(color);
     // Don't reset previewDeco — allow combining emoji + color in preview
   };
@@ -176,6 +179,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const isVioletEquipped = passData.equippedUsernameColor === 'violet';
   const isPulseEquipped = passData.equippedUsernameColor === 'pulse';
   const isGoldPulseEquipped = passData.equippedUsernameColor === 'gold_pulse';
+  const isRainbowEquipped = passData.equippedUsernameColor === 'rainbow';
 
   // Preview state: if previewing something locked, show it in the preview area
   const isPreviewingLocked = previewDeco !== null || previewColor !== null;
@@ -184,6 +188,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const displayViolet = previewColor === 'violet' || (previewColor === null && isVioletEquipped);
   const displayPulse = previewColor === 'pulse' || (previewColor === null && isPulseEquipped);
   const displayGoldPulse = previewColor === 'gold_pulse' || (previewColor === null && isGoldPulseEquipped);
+  const displayRainbow = previewColor === 'rainbow' || (previewColor === null && isRainbowEquipped);
 
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
@@ -344,9 +349,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">⚡ Joue une partie pour appliquer les changements</span>
                   )}
                   <div
-                    className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
+                    className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${displayRainbow ? 'animate-[username-rainbow_3s_linear_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
                     style={{
-                      color: displayViolet ? '#a855f7' : displayPulse ? 'hsl(var(--primary))' : displayGoldPulse ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
+                      color: displayRainbow ? undefined : displayViolet ? '#a855f7' : displayPulse ? 'hsl(var(--primary))' : displayGoldPulse ? 'hsl(45, 100%, 55%)' : 'hsl(var(--text-primary))'
                     }}
                   >
                     {displayDeco && !displayDeco.isColorReward
@@ -361,7 +366,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     >
                       <X className="w-3 h-3" /> Fermer l'aperçu
                     </button>
-                  ) : (equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped) ? (
+                  ) : (equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped || isRainbowEquipped) ? (
                     <button
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
@@ -383,14 +388,14 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   <button
                     onClick={() => handleEquipColor(null)}
                     className={`flex-1 relative overflow-hidden rounded-2xl border-2 py-3.5 transition-all duration-300 active:scale-95 ${
-                      !isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped
+                      !isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && !isRainbowEquipped
                         ? 'border-primary shadow-[0_0_16px_hsl(var(--primary)/0.35)]'
                         : 'border-wheel-border/40'
                     }`}
                   >
-                    {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && <div className="absolute inset-0 bg-primary/10" />}
+                    {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && !isRainbowEquipped && <div className="absolute inset-0 bg-primary/10" />}
                     <div className="relative flex flex-col items-center gap-1">
-                      {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && (
+                      {!isVioletEquipped && !isPulseEquipped && !isGoldPulseEquipped && !isRainbowEquipped && (
                         <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-game-darker" />
                         </div>
@@ -475,9 +480,40 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     </div>
                   </button>
                 </div>
-              </div>
 
-              {/* ── Décorations list ── */}
+                {/* Rainbow — fine wide row below */}
+                <button
+                  onClick={() => handleEquipColor('rainbow')}
+                  className={`mt-2.5 w-full relative overflow-hidden rounded-2xl border-2 py-2 px-3 transition-all duration-300 active:scale-[0.98] ${
+                    isRainbowEquipped
+                      ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]'
+                      : 'border-wheel-border/40'
+                  }`}
+                >
+                  {isRainbowEquipped && (
+                    <div
+                      className="absolute inset-0 opacity-20"
+                      style={{ background: 'linear-gradient(90deg, hsl(0,95%,60%), hsl(40,100%,55%), hsl(120,80%,55%), hsl(180,90%,55%), hsl(220,95%,65%), hsl(285,90%,65%))' }}
+                    />
+                  )}
+                  <div className="relative flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      {isRainbowEquipped && (
+                        <div className="w-4 h-4 rounded-full bg-pink-500 flex items-center justify-center shrink-0">
+                          <Check className="w-2.5 h-2.5 text-white" />
+                        </div>
+                      )}
+                      <span className={`text-[11px] font-black uppercase tracking-wider ${isRainbowEquipped ? 'text-pink-300' : 'text-text-primary'}`}>
+                        Multicolore
+                      </span>
+                    </div>
+                    <span className="text-base font-black leading-none animate-[username-rainbow_3s_linear_infinite]">
+                      Aa Bb Cc
+                    </span>
+                    <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">Nouveau</span>
+                  </div>
+                </button>
+              </div>
               <div className="px-4">
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-bold flex items-center gap-1.5">
                   <Star className="w-3 h-3 text-yellow-400" />
