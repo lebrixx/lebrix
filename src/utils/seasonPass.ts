@@ -205,6 +205,16 @@ export function hasGoldPulseUnlocked(): boolean {
   return getSeasonPassData().hasGoldPulse === true;
 }
 
+export function unlockRainbow(): void {
+  const data = getSeasonPassData();
+  data.hasRainbow = true;
+  savePassData(data);
+}
+
+export function hasRainbowUnlocked(): boolean {
+  return getSeasonPassData().hasRainbow === true;
+}
+
 /** Purchase premium pack: unlock all 9 tiers, gold pulse, give diamonds + coins + boosts */
 export function purchasePremiumPack(): { coins: number } {
   const data = getSeasonPassData();
