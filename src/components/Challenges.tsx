@@ -547,7 +547,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
           {showHowItWorks && (
             <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-text-muted space-y-1">
               <p>• <strong>Parties jouées (∞) :</strong> toutes les 50 parties → 1 boost.</p>
-              <p>• <strong>Défis par mode :</strong> paliers de score 10 → 100. Chaque palier atteint débloque des coins à réclamer (10, 20, 30...).</p>
+              <p>• <strong>Défis par mode :</strong> paliers de score 10 → 100. Chaque palier atteint débloque des coins à réclamer (5, 10, 15...).</p>
               <p>• Les récompenses restent en attente jusqu'à réclamation.</p>
             </div>
           )}
