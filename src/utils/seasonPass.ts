@@ -1,6 +1,6 @@
 // Season Pass System - Diamonds, Tiers, Daily Challenges, Decorations
 
-export type UsernameColor = 'violet' | 'pulse' | 'gold_pulse' | null;
+export type UsernameColor = 'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null;
 
 export interface Decoration {
   id: string;
