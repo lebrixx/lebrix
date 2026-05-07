@@ -29,6 +29,11 @@ const hasGoldPulseName = (decorations: string | null | undefined): boolean => {
   return decorations.split(',').map(d => d.trim()).includes('gold_pulse_name');
 };
 
+const hasRainbowName = (decorations: string | null | undefined): boolean => {
+  if (!decorations) return false;
+  return decorations.split(',').map(d => d.trim()).includes('rainbow_name');
+};
+
 const getRankIcon = (position: number) => {
   switch (position) {
     case 1: return <Crown className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />;
@@ -48,6 +53,7 @@ const getRankStyle = (position: number) => {
 };
 
 const getUsernameClass = (decorations: string | null | undefined) => {
+  if (hasRainbowName(decorations)) return 'font-bold animate-[username-rainbow_3s_linear_infinite]';
   if (hasGoldPulseName(decorations)) return 'font-bold text-yellow-400 animate-pulse';
   if (hasPulseName(decorations)) return 'font-bold text-primary animate-pulse';
   if (hasPurpleName(decorations)) return 'font-bold text-violet-400';
