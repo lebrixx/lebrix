@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Loader2, Sparkles } from 'lucide-react';
-import { purchaseRainbowNative } from '@/utils/purchaseRainbowService';
+import { X, Loader2, Sparkles, Check } from 'lucide-react';
+import { purchaseRainbowNative, loadRainbowProduct } from '@/utils/purchaseRainbowService';
+import { hasRainbowUnlocked } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
 
 interface RainbowOfferProps {
@@ -14,9 +15,21 @@ interface RainbowOfferProps {
 export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onPurchased }) => {
   const { toast } = useToast();
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [storePrice, setStorePrice] = useState<string | null>(null);
+  const [alreadyOwned, setAlreadyOwned] = useState<boolean>(hasRainbowUnlocked());
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setAlreadyOwned(hasRainbowUnlocked());
+    let active = true;
+    loadRainbowProduct().then((p) => {
+      if (active && p?.price) setStorePrice(p.price);
+    });
+    return () => { active = false; };
+  }, [isOpen]);
 
   const handlePurchase = async () => {
-    if (isPurchasing) return;
+    if (isPurchasing || alreadyOwned) return;
     setIsPurchasing(true);
     try {
       const result = await purchaseRainbowNative();
@@ -24,6 +37,10 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
         toast({ title: 'Multicolore débloqué !', description: 'Ta nouvelle couleur de pseudo est prête.' });
         onPurchased?.();
         onClose();
+      } else if (result === 'already_owned') {
+        toast({ title: 'Déjà débloqué', description: 'Tu possèdes déjà cette couleur.' });
+        setAlreadyOwned(true);
+        onPurchased?.();
       } else if (result === 'cancelled') {
         // silent
       } else if (result === 'unavailable') {
@@ -78,18 +95,19 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
 
             <div className="px-4 py-3 text-center space-y-2.5">
               <div>
-                <span className="text-xs text-text-muted line-through mr-2">3,99 €</span>
-                <span className="text-2xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">1,99 €</span>
+                <span className="text-2xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
+                  {storePrice ?? '1,99 €'}
+                </span>
                 <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d'abonnement</div>
               </div>
 
               <Button
                 onClick={handlePurchase}
-                disabled={isPurchasing}
-                className="w-full py-3 text-sm font-extrabold bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white"
+                disabled={isPurchasing || alreadyOwned}
+                className="w-full py-3 text-sm font-extrabold bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white disabled:opacity-70"
               >
-                {isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
-                {isPurchasing ? 'Achat en cours…' : 'Débloquer le Multicolore'}
+                {alreadyOwned ? <Check className="w-4 h-4 mr-1.5" /> : isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
+                {alreadyOwned ? 'Déjà débloqué' : isPurchasing ? 'Achat en cours…' : 'Débloquer le Multicolore'}
               </Button>
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
                 🔒 Paiement sécurisé
