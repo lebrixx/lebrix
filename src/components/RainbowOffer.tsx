@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Loader2, Sparkles } from 'lucide-react';
-import { purchaseRainbowNative } from '@/utils/purchaseRainbowService';
+import { X, Loader2, Sparkles, Check } from 'lucide-react';
+import { purchaseRainbowNative, loadRainbowProduct } from '@/utils/purchaseRainbowService';
+import { hasRainbowUnlocked } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
 
 interface RainbowOfferProps {
@@ -14,9 +15,21 @@ interface RainbowOfferProps {
 export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onPurchased }) => {
   const { toast } = useToast();
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [storePrice, setStorePrice] = useState<string | null>(null);
+  const [alreadyOwned, setAlreadyOwned] = useState<boolean>(hasRainbowUnlocked());
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setAlreadyOwned(hasRainbowUnlocked());
+    let active = true;
+    loadRainbowProduct().then((p) => {
+      if (active && p?.price) setStorePrice(p.price);
+    });
+    return () => { active = false; };
+  }, [isOpen]);
 
   const handlePurchase = async () => {
-    if (isPurchasing) return;
+    if (isPurchasing || alreadyOwned) return;
     setIsPurchasing(true);
     try {
       const result = await purchaseRainbowNative();
@@ -24,6 +37,10 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
         toast({ title: 'Multicolore débloqué !', description: 'Ta nouvelle couleur de pseudo est prête.' });
         onPurchased?.();
         onClose();
+      } else if (result === 'already_owned') {
+        toast({ title: 'Déjà débloqué', description: 'Tu possèdes déjà cette couleur.' });
+        setAlreadyOwned(true);
+        onPurchased?.();
       } else if (result === 'cancelled') {
         // silent
       } else if (result === 'unavailable') {
