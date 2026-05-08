@@ -380,7 +380,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   ) : null}
                 </div>
               </div>
-              <p className="text-[12px] text-text-muted/90 mt-2 font-semibold text-center">👆 Clique sur un élément verrouillé pour le prévisualiser</p>
+              <p className="text-[13px] text-text-muted/90 mt-2 font-semibold text-center">👇 Clique sur un élément verrouillé pour le prévisualiser 👇</p>
 
               {/* ── Couleur pseudo ── */}
               <div className="px-4">
