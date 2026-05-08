@@ -17,6 +17,7 @@ import { Interstitials } from '@/ads/InterstitialService';
 import { initNotifications } from '@/utils/notifications';
 import { installNativeUiGuards, restoreNativeUi } from '@/utils/nativeUi';
 import { verifyPremiumOnLaunch } from '@/utils/purchaseService';
+import { verifyRainbowOnLaunch } from '@/utils/purchaseRainbowService';
 
 // Configuration pour iOS - seulement sur les plateformes mobiles
 if (Capacitor.isNativePlatform()) {
@@ -33,6 +34,7 @@ initNotifications();
 
 // Verify premium purchase status on launch (silent, non-blocking)
 verifyPremiumOnLaunch();
+verifyRainbowOnLaunch();
 
 // Track app launch count for premium offer popup (every 4 launches)
 const launchKey = 'ls_app_launch_count';
