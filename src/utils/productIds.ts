@@ -11,5 +11,5 @@ export const PREMIUM_PRODUCT_ID = isAndroid()
   : 'com.luckystop.premium';
 
 export const RAINBOW_PRODUCT_ID = isAndroid()
-  ? 'com-luckystop-rainbow'
-  : 'com.luckystop.rainbow';
+  ? 'com-luckystop-multicolore'
+  : 'com.luckystop.multicolore';
