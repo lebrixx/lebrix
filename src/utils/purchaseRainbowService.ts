@@ -83,7 +83,8 @@ export async function purchaseRainbowNative(): Promise<'purchased' | 'cancelled'
     }
 
     const loadedIds = products.map((p: any) => p.identifier ?? p.productIdentifier ?? p.productId ?? p.id);
-    console.log(`${TAG} Loaded product IDs:`, loadedIds);
+    const platformLabel = Capacitor.getPlatform() === 'android' ? 'Android' : 'iOS';
+    console.log(`${TAG} Loaded ${platformLabel} products:`, loadedIds);
 
     if (!loadedIds.includes(PRODUCT_ID)) {
       console.error(`${TAG} Product not found:`, PRODUCT_ID, '— available:', loadedIds);
