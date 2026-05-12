@@ -640,8 +640,8 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
   const handlePurchaseWithCoins = (boostId: any, price: number) => {
     if (!canAfford(price)) {
       toast({
-        title: "Coins insuffisants",
-        description: `Il te faut ${price} coins pour acheter ce boost.`,
+        title: t.insufficientCoins,
+        description: t.insufficientCoinsDesc.replace('{amount}', String(price)),
         variant: "destructive"
       });
       return;
@@ -652,8 +652,8 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
       addBoost(boostId);
       
       toast({
-        title: "Boost acheté !",
-        description: `Tu as acheté un boost ${BOOSTS[boostId].name}.`,
+        title: t.boostPurchased,
+        description: t.boostPurchasedDesc.replace('{name}', BOOSTS[boostId].name),
       });
     }
   };
