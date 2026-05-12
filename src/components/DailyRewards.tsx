@@ -162,7 +162,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl text-text-primary">
             <Gift className="w-6 h-6 text-primary animate-pulse" />
-            Récompenses Journalières
+            {t.dailyRewardsHeader}
             <Sparkles className="w-5 h-5 text-secondary ml-auto" />
           </DialogTitle>
         </DialogHeader>
