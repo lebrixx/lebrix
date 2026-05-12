@@ -5,6 +5,7 @@ import { X, Loader2, Sparkles, Check } from 'lucide-react';
 import { purchaseRainbowNative, loadRainbowProduct } from '@/utils/purchaseRainbowService';
 import { hasRainbowUnlocked } from '@/utils/seasonPass';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface RainbowOfferProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ interface RainbowOfferProps {
 
 export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onPurchased }) => {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [storePrice, setStorePrice] = useState<string | null>(null);
   const [alreadyOwned, setAlreadyOwned] = useState<boolean>(hasRainbowUnlocked());
@@ -34,22 +37,22 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
     try {
       const result = await purchaseRainbowNative();
       if (result === 'purchased') {
-        toast({ title: 'Multicolore débloqué !', description: 'Ta nouvelle couleur de pseudo est prête.' });
+        toast({ title: t.rainbowUnlockedTitle, description: t.rainbowUnlockedDesc });
         onPurchased?.();
         onClose();
       } else if (result === 'already_owned') {
-        toast({ title: 'Déjà débloqué', description: 'Tu possèdes déjà cette couleur.' });
+        toast({ title: t.alreadyUnlocked, description: t.alreadyUnlockedDesc });
         setAlreadyOwned(true);
         onPurchased?.();
       } else if (result === 'cancelled') {
         // silent
       } else if (result === 'unavailable') {
-        toast({ title: 'Indisponible', description: 'Le produit n\'est pas encore disponible sur le store.', variant: 'destructive' });
+        toast({ title: t.purchaseError, description: t.tryAgainLater, variant: 'destructive' });
       } else {
-        toast({ title: 'Erreur d\'achat', description: 'Réessaie plus tard.', variant: 'destructive' });
+        toast({ title: t.purchaseError, description: t.tryAgainLater, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Erreur d\'achat', variant: 'destructive' });
+      toast({ title: t.purchaseError, variant: 'destructive' });
     } finally {
       setIsPurchasing(false);
     }
@@ -107,10 +110,10 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
                 className="w-full py-3 text-sm font-extrabold bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white disabled:opacity-70"
               >
                 {alreadyOwned ? <Check className="w-4 h-4 mr-1.5" /> : isPurchasing ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1.5" />}
-                {alreadyOwned ? 'Déjà débloqué' : isPurchasing ? 'Achat en cours…' : 'Débloquer le Multicolore'}
+                {alreadyOwned ? t.alreadyUnlocked : isPurchasing ? t.purchasing : t.unlockMulticolor}
               </Button>
               <p className="text-[9px] text-text-muted flex items-center justify-center gap-1">
-                🔒 Paiement sécurisé
+                {t.securePayment}
               </p>
 
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
