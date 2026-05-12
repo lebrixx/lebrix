@@ -368,7 +368,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       onClick={() => { setPreviewDeco(null); setPreviewColor(null); }}
                       className="mt-2 text-[10px] text-yellow-400/70 hover:text-yellow-400 transition-colors flex items-center gap-1"
                     >
-                      <X className="w-3 h-3" /> Fermer l'aperçu
+                      <X className="w-3 h-3" /> {t.closePreview}
                     </button>
                   ) : (equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped || isRainbowEquipped) ? (
                     <button
