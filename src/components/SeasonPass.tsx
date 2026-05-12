@@ -20,6 +20,7 @@ import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { supabase } from '@/integrations/supabase/client';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 
 
@@ -31,6 +32,8 @@ interface SeasonPassProps {
 }
 
 export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins = 0, onSpendCoins }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
   const { toast } = useToast();
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
@@ -54,7 +57,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
   const handleClaimDaily = () => {
     if (claimDailyQuestReward()) {
       setPassData(getSeasonPassData());
-      toast({ title: '💎 Diamant obtenu !', description: 'Tu as gagné 1 diamant en complétant les 2 quêtes !' });
+      toast({ title: t.diamondObtained, description: t.diamondQuestReward });
     }
   };
 
@@ -64,7 +67,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
       const newData = getSeasonPassData();
       setPassData(newData);
       const deco = DECORATIONS.find(d => d.tier === tier);
-      toast({ title: '🎉 Décoration débloquée !', description: `Tu as débloqué "${deco?.name}" !` });
+      toast({ title: t.decorationUnlocked, description: t.decorationUnlockedDesc.replace('{name}', deco?.name ?? '') });
     }
   };
 
@@ -138,7 +141,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
     if (onSpendCoins && onSpendCoins(1)) {
       const newData = addDiamonds(1);
       setPassData(newData);
-      toast({ title: '💎 Diamant acheté !', description: '1 coin → 1 diamant' });
+      toast({ title: t.diamondPurchased, description: t.coinToDiamond });
     } else {
       toast({ title: 'Coins insuffisants', description: 'Il te faut au moins 1 coin.', variant: 'destructive' });
     }
@@ -149,7 +152,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
     if (success) {
       const newData = addDiamonds(1);
       setPassData(newData);
-      toast({ title: '💎 Diamant obtenu !', description: 'Tu as gagné 1 diamant en regardant une pub !' });
+      toast({ title: t.diamondObtained, description: t.diamondAdReward });
     }
   };
 
@@ -238,7 +241,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                       <span className="font-bold text-sm text-text-primary">Quêtes du jour</span>
                     </div>
                     <span className="text-xs font-bold bg-secondary/20 text-secondary border border-secondary/30 rounded-full px-2 py-0.5">
-                      +1 💎 les 2 complétées
+                      {t.bothQuestsReward}
                     </span>
                   </div>
 
@@ -309,7 +312,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                   )}
                   {!bothCompleted && !dailyQuests.claimed && (
                     <p className="text-center text-[10px] text-text-muted">
-                      {[dailyQuests.quest1Completed, dailyQuests.quest2Completed].filter(Boolean).length}/2 quêtes complétées
+                      {[dailyQuests.quest1Completed, dailyQuests.quest2Completed].filter(Boolean).length}/2 {t.questsCompletedLabel}
                     </p>
                   )}
                 </div>

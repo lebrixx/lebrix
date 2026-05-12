@@ -74,7 +74,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
     if (usernameCache.has(normalizedUsername)) {
       const cached = usernameCache.get(normalizedUsername)!;
       setIsUsernameAvailable(cached);
-      setError(cached ? '' : 'Ce pseudo est déjà pris par un autre joueur');
+      setError(cached ? '' : t.usernameTakenByOther);
       lastCheckedRef.current = normalizedUsername;
       trackSkipped('check-username', 'cache-hit');
       return;
@@ -145,17 +145,17 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
     }
 
     if (currentUsername && username === currentUsername) {
-      setError('Ce pseudo est déjà le tien');
+      setError(t.usernameSameAsCurrent);
       return;
     }
 
     if (isUsernameAvailable === false) {
-      setError('Ce pseudo est déjà pris par un autre joueur');
+      setError(t.usernameTakenByOther);
       return;
     }
 
     if (!isFirstUsername && !canChange) {
-      setError('Tu as atteint la limite de changements de pseudo (1 max)');
+      setError(t.usernameLimitReached);
       return;
     }
 
@@ -173,12 +173,12 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
         title: t.usernameRegistered,
         description: isFirstUsername 
           ? t.usernameRegisteredDesc
-          : `${t.usernameRegisteredDesc} (${newRemainingChanges} changement(s) restant(s))`,
+          : `${t.usernameRegisteredDesc} (${t.usernameRemaining.replace('{n}', String(newRemainingChanges))})`,
       });
       onUsernameSet();
     } catch (err) {
       if (err instanceof Error && err.message === 'LIMIT_REACHED') {
-        setError('Tu as atteint la limite de changements de pseudo (1 max)');
+        setError(t.usernameLimitReached);
       } else {
         setError(t.saveError);
       }
@@ -213,7 +213,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             </p>
             {!isFirstUsername && (
               <p className="text-[10px] text-text-muted/70 mt-1.5 italic">
-                ⏳ Après un changement de pseudo, il faut parfois quelques parties avant que le nouveau nom apparaisse dans le classement.
+                {t.usernameDelayInfo}
               </p>
             )}
           </div>
@@ -222,9 +222,9 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
             <div className={`flex items-center gap-2 p-2 rounded-lg ${remainingChanges === 0 ? 'bg-red-500/20' : 'bg-yellow-500/20'}`}>
               <AlertTriangle className={`w-4 h-4 ${remainingChanges === 0 ? 'text-red-400' : 'text-yellow-400'}`} />
               <p className={`text-xs ${remainingChanges === 0 ? 'text-red-400' : 'text-yellow-400'}`}>
-                {remainingChanges === 0 
-                  ? 'Tu ne peux plus changer de pseudo'
-                  : `${remainingChanges} changement(s) restant(s)`}
+                {remainingChanges === 0
+                  ? t.usernameRemainingZero
+                  : t.usernameRemaining.replace('{n}', String(remainingChanges))}
               </p>
             </div>
           )}
@@ -296,12 +296,12 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
               </p>
               {!isFirstUsername && (
                 <p className="text-sm text-yellow-400 font-medium">
-                  ⚠️ Après cette confirmation, il te restera {remainingChanges - 1} changement(s) de pseudo.
+                  ⚠️ {t.usernameAfterChangeWarning.replace('{n}', String(remainingChanges - 1))}
                 </p>
               )}
               <p className="text-sm text-text-primary">
-                {isFirstUsername 
-                  ? 'Tu pourras changer ton pseudo 1 fois maximum après cette première inscription.'
+                {isFirstUsername
+                  ? t.usernameFirstTimeWarning
                   : t.dontChangeUsername}
               </p>
             </AlertDialogDescription>

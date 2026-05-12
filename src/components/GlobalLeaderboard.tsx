@@ -9,6 +9,7 @@ import { applyDecoration } from '@/utils/seasonPass';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useToast } from '@/hooks/use-toast';
 import { MonthlyTimer } from '@/components/MonthlyTimer';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface GlobalLeaderboardProps {
   onBack: () => void;
@@ -155,6 +156,8 @@ const LeaderboardList: React.FC<LeaderboardListProps> = ({
 };
 
 export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [selectedTab, setSelectedTab] = useState<string>('monthly');
   const [leaderboard, setLeaderboard] = useState<GlobalPlayerScore[]>([]);
   const [monthlyLeaderboard, setMonthlyLeaderboard] = useState<GlobalPlayerScore[]>([]);
@@ -218,8 +221,8 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
     }
     setRefreshing(false);
     toast({
-      title: "Classement actualisé",
-      description: "Les scores ont été mis à jour.",
+      title: t.leaderboardRefreshed,
+      description: t.leaderboardRefreshedDesc,
     });
   };
 
@@ -272,8 +275,8 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
           </div>
           <p className="text-text-secondary text-sm max-w-xs mx-auto">
             {selectedTab === 'general'
-              ? 'Comment ça marche ? Ton meilleur score de chaque mode est additionné pour former ton Score Global. Joue à tous les modes pour monter dans le classement !'
-              : 'Comment ça marche ? Ton meilleur score de chaque mode ce mois-ci est additionné pour former ton Score Mensuel. Le classement se réinitialise le 1er de chaque mois !'
+              ? t.globalRankingHowItWorks
+              : t.monthlyRankingHowItWorks
             }
           </p>
         </div>
@@ -293,7 +296,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
               className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
             >
               <Globe className="w-4 h-4" />
-              Général
+              {t.globalTab}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -317,7 +320,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
                   <span className="text-text-primary font-bold text-sm">{currentUsername}</span>
                   <div className="flex items-center gap-1 text-xs text-text-muted">
                     <Gamepad2 className="w-3 h-3" />
-                    {activeData[userRank - 1]?.modes_played || 0}/7 modes joués
+                    {activeData[userRank - 1]?.modes_played || 0}/7 {t.modesPlayedShort}
                   </div>
                 </div>
               </div>
@@ -341,9 +344,9 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
               loading={loading}
               currentUsername={currentUsername || ''}
               emptyIcon={<Globe className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />}
-              emptyText="Aucun score enregistré"
-              emptySubtext="Soyez le premier à jouer !"
-              scoreLabel="pts cumulés"
+              emptyText={t.noScoreYet}
+              emptySubtext={t.beTheFirst}
+              scoreLabel={t.pointsCumulated}
             />
           </TabsContent>
           <TabsContent value="monthly" className="mt-0">
@@ -353,7 +356,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
               currentUsername={currentUsername || ''}
               emptyIcon={<Calendar className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />}
               emptyText="Aucun score ce mois-ci"
-              emptySubtext="Joue une partie pour apparaître !"
+              emptySubtext={t.playToAppear}
               scoreLabel="pts ce mois"
             />
           </TabsContent>
