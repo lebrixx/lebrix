@@ -27,10 +27,13 @@ import { useSound } from '@/hooks/useSound';
 import { isPongUnlocked } from '@/utils/pongUnlock';
 import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard';
 
 const Index = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showSubmitScoreModal, setShowSubmitScoreModal] = useState(false);
@@ -118,8 +121,8 @@ const Index = () => {
     if (boostId) {
       addBoost(boostId as BoostType);
       toast({
-        title: "🎁 Boost reçu !",
-        description: `Tu as obtenu un boost gratuit !`,
+        title: t.boostReceivedTitle,
+        description: t.boostReceivedTitle,
       });
     }
     
@@ -134,11 +137,11 @@ const Index = () => {
       }
       
       toast({
-        title: "🎉 Récompense spéciale !",
-        description: `Tu as débloqué le thème exclusif "Majesté Royale" !`,
+        title: t.specialReward,
+        description: t.royalThemeUnlockedDesc,
       });
     }
-    
+
     setHasAvailableReward(false);
   };
 
@@ -190,8 +193,8 @@ const Index = () => {
       const newUnlocked = [...unlockedModes, 'pong_circulaire'];
       setUnlockedModes(newUnlocked);
       toast({
-        title: '🎉 Mode débloqué !',
-        description: 'Pong Circulaire est maintenant disponible !',
+        title: t.modeUnlockedToast,
+        description: 'Pong Circulaire',
       });
     }
 
@@ -226,8 +229,8 @@ const Index = () => {
     setCurrentTheme(theme);
     localStorage.setItem('currentTheme', theme);
     toast({
-      title: "Thème équipé!",
-      description: `Le thème a été équipé avec succès.`,
+      title: t.themeEquippedToast,
+      description: t.themeEquippedDesc,
     });
   };
 
@@ -244,8 +247,8 @@ const Index = () => {
     // Vérifier si le mode est débloqué
     if (!unlockedModes.includes(mode)) {
       toast({
-        title: "Mode verrouillé",
-        description: "Débloquez ce mode dans la boutique !",
+        title: t.modeLocked,
+        description: t.modeLockedDesc,
         variant: "destructive"
       });
       return;
@@ -271,14 +274,14 @@ const Index = () => {
       localStorage.setItem('unlockedModes', JSON.stringify(newUnlockedModes));
       
       toast({
-        title: "Mode débloqué !",
-        description: "Le nouveau mode de jeu est maintenant disponible.",
+        title: t.modeUnlockedShort,
+        description: t.modeUnlockedShort,
       });
       return true;
     } else {
       toast({
-        title: "Coins insuffisants",
-        description: `Il te faut ${price} coins pour débloquer ce mode.`,
+        title: t.notEnoughCoins,
+        description: t.notEnoughCoinsForMode.replace('{n}', String(price)),
         variant: "destructive"
       });
       return false;
