@@ -321,7 +321,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               className="border-wheel-border hover:bg-button-hover flex items-center gap-2"
             >
               <History className={`w-4 h-4 ${loadingPreviousWeek ? 'animate-spin' : ''}`} />
-              {language === 'fr' ? 'Top 50 semaine précédente' : 'Previous week Top 50'}
+              {t.previousWeekTop50}
             </Button>
           </div>
         )}
