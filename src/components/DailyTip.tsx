@@ -30,18 +30,19 @@ interface DailyTipProps {
 
 export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(() => getLaunchTipIndex());
-
-  // Index is set once on mount via getLaunchTipIndex
+  const { language } = useLanguage();
+  const t = translations[language] as any;
 
   const goNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % TIPS.length);
+    setCurrentIndex((prev) => (prev + 1) % TIP_KEYS.length);
   };
 
   const goPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + TIPS.length) % TIPS.length);
+    setCurrentIndex((prev) => (prev - 1 + TIP_KEYS.length) % TIP_KEYS.length);
   };
 
-  const tip = TIPS[currentIndex];
+  const tipMeta = TIP_KEYS[currentIndex];
+  const tip = { emoji: tipMeta.emoji, title: t[tipMeta.titleKey], tip: t[tipMeta.bodyKey] };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -66,10 +67,10 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <span className="text-xs font-bold text-primary/80 tracking-widest uppercase">
-                Conseil du jour
+                {t.tipOfTheDay}
               </span>
               <div className="text-[10px] text-text-muted">
-                {currentIndex + 1} / {TIPS.length}
+                {currentIndex + 1} / {TIP_KEYS.length}
               </div>
             </div>
           </div>
