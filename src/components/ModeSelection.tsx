@@ -97,7 +97,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
 
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-            SÉLECTION DU MODE
+            {t.modeSelectionTitle}
           </h1>
           
           {/* Slot Machine Button */}
@@ -190,7 +190,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 <div className="absolute top-4 right-4 z-10">
                   <Badge className={isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
                     <Lock className="w-3 h-3 mr-1" />
-                    {isPongChallenge ? 'Défi requis' : 'Verrouillé'}
+                    {isPongChallenge ? t.challengeRequired : t.locked}
                   </Badge>
                 </div>
               )}
@@ -209,7 +209,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     </h3>
                     {isCurrentMode && (
                       <Badge variant="secondary" className="mt-1">
-                        Équipé
+                        {t.equipped}
                       </Badge>
                     )}
                   </div>
@@ -225,7 +225,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                   {config.survival && (
                     <div className="flex items-center gap-2 text-sm text-text-muted">
                       <Clock className="w-4 h-4" />
-                      <span>Durée: {config.survivalTime}s</span>
+                      <span>{t.durationLabel}: {config.survivalTime}s</span>
                     </div>
                   )}
                   {config.variableArc && (
@@ -259,7 +259,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                       <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30 text-xs text-text-secondary">
                         <div className="flex items-center gap-2 mb-1 text-secondary font-semibold">
                           <Trophy className="w-3.5 h-3.5" />
-                          Défi de déblocage
+                          {t.unlockChallenge}
                         </div>
                         <p>Atteins un score de {PONG_UNLOCK_TARGET}+ dans chacun des autres modes.</p>
                         {pongUnlock && (
@@ -271,7 +271,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                         className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-white shadow-lg shadow-secondary/20"
                       >
                         <Trophy className="w-4 h-4 mr-2" />
-                        Voir le défi
+                        {t.viewChallenge}
                       </Button>
                     </div>
                   ) : (
@@ -315,7 +315,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
       {/* Footer Info */}
       <div className="mt-8 text-center">
         <p className="text-text-muted text-sm">
-          Les meilleurs scores sont sauvegardés séparément pour chaque mode
+          {t.separateScoresInfo}
         </p>
       </div>
     </div>

@@ -174,10 +174,10 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         <div className="w-14 h-14 rounded-xl bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] flex items-center justify-center mb-4">
           <RefreshCw className="w-6 h-6 text-[hsl(var(--primary))]" />
         </div>
-        <p className="text-base font-bold text-[hsl(var(--text-primary))] mb-2">Défi indisponible</p>
-        <p className="text-sm text-[hsl(var(--text-muted))] mb-5">Réessaie dans quelques secondes.</p>
+        <p className="text-base font-bold text-[hsl(var(--text-primary))] mb-2">{t.dailyChallengeUnavailable}</p>
+        <p className="text-sm text-[hsl(var(--text-muted))] mb-5">{t.dailyChallengeRetryHint}</p>
         <Button onClick={() => { setHasFatalError(false); loadLeaderboard(); }} className="bg-gradient-primary rounded-xl px-6">
-          Réessayer
+          {t.retry}
         </Button>
       </div>
     );
@@ -430,7 +430,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         {phase === 'intro' && !currentUsername &&
           <div className="w-full text-center py-4 px-4 rounded-xl border border-[hsl(var(--wheel-border)/0.3)] bg-[hsl(var(--game-dark)/0.5)]">
             <p className="text-sm text-[hsl(var(--text-muted))]">
-              ✏️ Choisis un pseudo avant de lancer le défi !
+              {t.chooseUsernameBeforeChallenge}
             </p>
           </div>
         }
