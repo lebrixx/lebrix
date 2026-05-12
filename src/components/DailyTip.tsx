@@ -17,7 +17,7 @@ const TIP_KEYS = [
 function getLaunchTipIndex(): number {
   const key = 'ls_tip_launch_index';
   const current = parseInt(localStorage.getItem(key) || '0', 10);
-  const index = current % TIPS.length;
+  const index = current % TIP_KEYS.length;
   // Advance for next launch
   localStorage.setItem(key, String(current + 1));
   return index;
