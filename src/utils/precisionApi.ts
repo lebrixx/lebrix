@@ -60,44 +60,54 @@ export async function submitPrecisionScore(target: number, result: number, gap: 
 
 /** Fetch today's leaderboard (top 300) — cached 60s */
 export async function fetchDailyPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
-  if (todayCache && Date.now() - todayCache.ts < CACHE_TTL) {
-    return todayCache.data;
+  try {
+    if (todayCache && Date.now() - todayCache.ts < CACHE_TTL) {
+      return todayCache.data;
+    }
+
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+    const { data, error } = await supabase
+      .from('daily_precision_scores' as any)
+      .select('id, username, target, result, gap, challenge_date, decorations')
+      .eq('challenge_date', today)
+      .order('gap', { ascending: true })
+      .limit(300);
+
+    if (error || !data) return [];
+    const result = data as unknown as PrecisionEntry[];
+    todayCache = { data: result, ts: Date.now() };
+    return result;
+  } catch (error) {
+    console.warn('[DailyPrecision] Unable to load today leaderboard:', error);
+    return [];
   }
-
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-  const { data, error } = await supabase
-    .from('daily_precision_scores' as any)
-    .select('id, username, target, result, gap, challenge_date, decorations')
-    .eq('challenge_date', today)
-    .order('gap', { ascending: true })
-    .limit(300);
-
-  if (error || !data) return [];
-  const result = data as unknown as PrecisionEntry[];
-  todayCache = { data: result, ts: Date.now() };
-  return result;
 }
 
 /** Fetch yesterday's leaderboard (top 50) — cached 1h */
 export async function fetchYesterdayPrecisionLeaderboard(): Promise<PrecisionEntry[]> {
-  if (yesterdayCache && Date.now() - yesterdayCache.ts < CACHE_TTL_YESTERDAY) {
-    return yesterdayCache.data;
+  try {
+    if (yesterdayCache && Date.now() - yesterdayCache.ts < CACHE_TTL_YESTERDAY) {
+      return yesterdayCache.data;
+    }
+
+    const yd = new Date(Date.now() - 86400000);
+    const yesterday = `${yd.getFullYear()}-${String(yd.getMonth() + 1).padStart(2, '0')}-${String(yd.getDate()).padStart(2, '0')}`;
+
+    const { data, error } = await supabase
+      .from('daily_precision_scores' as any)
+      .select('id, username, target, result, gap, challenge_date, decorations')
+      .eq('challenge_date', yesterday)
+      .order('gap', { ascending: true })
+      .limit(50);
+
+    if (error || !data) return [];
+    const result = data as unknown as PrecisionEntry[];
+    yesterdayCache = { data: result, ts: Date.now() };
+    return result;
+  } catch (error) {
+    console.warn('[DailyPrecision] Unable to load yesterday leaderboard:', error);
+    return [];
   }
-
-  const yd = new Date(Date.now() - 86400000);
-  const yesterday = `${yd.getFullYear()}-${String(yd.getMonth() + 1).padStart(2, '0')}-${String(yd.getDate()).padStart(2, '0')}`;
-
-  const { data, error } = await supabase
-    .from('daily_precision_scores' as any)
-    .select('id, username, target, result, gap, challenge_date, decorations')
-    .eq('challenge_date', yesterday)
-    .order('gap', { ascending: true })
-    .limit(50);
-
-  if (error || !data) return [];
-  const result = data as unknown as PrecisionEntry[];
-  yesterdayCache = { data: result, ts: Date.now() };
-  return result;
 }
