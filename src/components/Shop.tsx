@@ -608,7 +608,7 @@ export const Shop: React.FC<ShopProps> = ({
 
       {/* Footer Info */}
       <div className="text-center mt-8 text-text-muted">
-        <p>Gagnez des coins en jouant pour débloquer de nouveaux thèmes !</p>
+        <p>{t.earnCoinsHint}</p>
       </div>
     </div>
   );
