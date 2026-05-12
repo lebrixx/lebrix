@@ -520,7 +520,7 @@ export const Shop: React.FC<ShopProps> = ({
 
                     {/* Description */}
                     <p className="text-text-secondary mb-6 leading-relaxed text-sm">
-                      {mode.description}
+                      {mode.description === '__memoryExpertDesc__' ? t.memoryExpertDesc : mode.description}
                     </p>
 
                     {/* Tickets disponibles pour le pack de tickets */}
