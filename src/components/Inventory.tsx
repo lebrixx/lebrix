@@ -359,8 +359,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     }}
                   >
                     {displayDeco && !displayDeco.isColorReward
-                      ? `${displayDeco.prefix}${identity.username || 'TonPseudo'}${displayDeco.suffix}`
-                      : (identity.username || 'TonPseudo')
+                      ? `${displayDeco.prefix}${identity.username || t.yourNicknamePlaceholder}${displayDeco.suffix}`
+                      : (identity.username || t.yourNicknamePlaceholder)
                     }
                   </div>
                   {isPreviewingLocked ? (
