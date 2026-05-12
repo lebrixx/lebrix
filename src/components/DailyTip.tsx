@@ -2,44 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Lightbulb, X } from 'lucide-react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
-const TIPS = [
-  {
-    emoji: '🏆',
-    title: '2 classements',
-    tip: 'Classement par mode (hebdo) + classement global mensuel depuis l\'accueil !',
-  },
-  {
-    emoji: '📡',
-    title: 'Joue en ligne',
-    tip: 'Sans internet, tes scores ne sont pas sauvegardés en ligne.',
-  },
-  {
-    emoji: '🚀',
-    title: 'Utilise tes boosts',
-    tip: 'Sélectionne des boosts avant chaque partie pour maximiser ton score.',
-  },
-  {
-    emoji: '👑',
-    title: 'Cosmétiques de pseudo',
-    tip: 'Débloque des couleurs et effets de pseudo dans le Pass Saison !',
-  },
-  {
-    emoji: '⭐',
-    title: 'Défis quotidiens & globaux',
-    tip: 'Complète 2 défis/jour + des défis globaux par paliers pour gagner des récompenses.',
-  },
-  {
-    emoji: '🎯',
-    title: 'Défi Précision',
-    tip: 'N\'oublie pas le défi précision dans les défis, prouve que tu es le plus précis !',
-  },
-  {
-    emoji: '🎁',
-    title: 'Bonus quotidiens',
-    tip: 'Chaque jour : roue de la chance, roulette x2 pour les modes et récompenses journalières à récupérer !',
-  },
-];
+const TIP_KEYS = [
+  { emoji: '🏆', titleKey: 'tip1Title', bodyKey: 'tip1Body' },
+  { emoji: '📡', titleKey: 'tip2Title', bodyKey: 'tip2Body' },
+  { emoji: '🚀', titleKey: 'tip3Title', bodyKey: 'tip3Body' },
+  { emoji: '👑', titleKey: 'tip4Title', bodyKey: 'tip4Body' },
+  { emoji: '⭐', titleKey: 'tip5Title', bodyKey: 'tip5Body' },
+  { emoji: '🎯', titleKey: 'tip6Title', bodyKey: 'tip6Body' },
+  { emoji: '🎁', titleKey: 'tip7Title', bodyKey: 'tip7Body' },
+] as const;
 
 function getLaunchTipIndex(): number {
   const key = 'ls_tip_launch_index';
