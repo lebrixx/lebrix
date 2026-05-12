@@ -280,7 +280,7 @@ const Index = () => {
       return true;
     } else {
       toast({
-        title: t.notEnoughCoins,
+        title: t.modeLocked,
         description: t.notEnoughCoinsForMode.replace('{n}', String(price)),
         variant: "destructive"
       });
