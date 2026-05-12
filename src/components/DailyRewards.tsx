@@ -82,8 +82,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
     
     if (success) {
       toast({
-        title: "Coins reçus !",
-        description: "Tu as reçu 100 coins ! 🪙",
+        title: t.coinsReceivedAd,
+        description: t.coinsReceivedAdDesc,
       });
       onRewardClaimed(100);
     }
