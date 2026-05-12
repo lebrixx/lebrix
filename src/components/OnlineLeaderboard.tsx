@@ -493,7 +493,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <div className="text-center py-6">
                 <Trophy className="w-12 h-12 mx-auto mb-3 text-text-muted opacity-50" />
                 <p className="text-text-muted">
-                  {language === 'fr' ? 'Aucun score la semaine dernière' : 'No scores last week'}
+                  {t.noScoresLastWeek}
                 </p>
               </div>
             ) : (
