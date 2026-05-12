@@ -764,13 +764,11 @@ export const translations = {
     equippedShortLabel: 'Équipé',
     newShortLabel: 'Nouveau',
     // DailyRewards
-    notifBonusDesc: '+20 coins pour avoir activé les notifications ! 🔔',
+    notifBonusToastDesc: '+20 coins pour avoir activé les notifications ! 🔔',
     daysLabel: 'jours',
     // PostGameBoostMenu
     boostsActivatedTitle: 'Boosts activés !',
     boostsActivatedDesc: '{n} boost(s) consommé(s)',
-    // Shop boost
-    boostReceivedDesc: 'Tu as reçu {name} {icon}',
     // ForceUpdate
     updateAvailableTitle: 'Nouvelle mise à jour disponible',
     updateAvailableDesc: 'Une nouvelle version du jeu est disponible. Mets à jour pour continuer à jouer !',
@@ -807,14 +805,9 @@ export const translations = {
     viewRankingBtn: '📊 Voir le classement',
     launchChallengeBtn: '🎯 Lancer le défi',
     dailyChallengesTitle: 'Défis du jour',
-    dailyChallengesSubtitle: '2 nouveaux défis chaque jour',
     unlockPongTitle: 'Débloquer Pong Circulaire',
     unlockedBadge: '✓ DÉBLOQUÉ',
     challengeBadge: 'DÉFI',
-    howItWorksGames: 'Parties jouées (∞) :',
-    howItWorksGamesDesc: 'toutes les 50 parties → 1 boost.',
-    howItWorksModes: 'Défis par mode :',
-    howItWorksModesDesc: 'paliers de score 10 → 100. Chaque palier atteint débloque des coins à réclamer (5, 10, 15...).',
     howItWorksPending: 'Les récompenses restent en attente jusqu\'à réclamation.',
     masteredBadge: 'Maîtrisé',
   },
