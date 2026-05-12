@@ -569,7 +569,7 @@ export const Shop: React.FC<ShopProps> = ({
                             disabled={isAdShowing || !isAdReady() || cooldownRemaining > 0}
                         >
                           <Video className="w-4 h-4 mr-2" />
-                          Obtenir 5 via pub
+                          {t.get5ByAd}
                           {cooldownRemaining > 0 && (
                             <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                           )}
