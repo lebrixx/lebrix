@@ -375,7 +375,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
                     >
-                      <X className="w-3 h-3" /> Retirer la décoration
+                      <X className="w-3 h-3" /> {t.removeDecoration}
                     </button>
                   ) : null}
                 </div>
