@@ -483,7 +483,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             <div className="text-center mb-4">
               <h2 className="text-xl font-bold text-text-primary flex items-center justify-center gap-2">
                 <History className="w-5 h-5 text-secondary" />
-                {language === 'fr' ? 'Semaine précédente' : 'Previous Week'}
+                {t.previousWeekTab}
               </h2>
               <p className="text-text-muted text-sm mt-1">{formatPreviousWeekDates()}</p>
               <Badge variant="outline" className="mt-2">{modeNames[selectedMode as keyof typeof modeNames]}</Badge>
