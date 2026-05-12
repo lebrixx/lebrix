@@ -99,7 +99,7 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
           </Button>
 
           <div className="flex items-center gap-2">
-            {TIPS.map((_, i) => (
+            {TIP_KEYS.map((_, i) => (
               <div
                 key={i}
                 className={`rounded-full transition-all duration-300 ${
@@ -127,7 +127,7 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="w-full rounded-2xl bg-gradient-primary hover:opacity-90 font-semibold py-5 shadow-[0_4px_16px_hsl(var(--primary)/0.3)]"
           >
-            Compris ! 👍
+            {t.gotItButton}
           </Button>
         </div>
       </DialogContent>
