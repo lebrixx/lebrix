@@ -9,6 +9,7 @@ import { applyDecoration } from '@/utils/seasonPass';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useToast } from '@/hooks/use-toast';
 import { MonthlyTimer } from '@/components/MonthlyTimer';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface GlobalLeaderboardProps {
   onBack: () => void;

@@ -3,6 +3,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, A
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface RateAppDialogProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ export const incrementRateGameCount = () => {
 export const forceShowRate = true;
 
 export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [step, setStep] = React.useState<'ask' | 'rate'>('ask');
 
   const handleNo = () => {
@@ -82,11 +85,11 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
 
                 <AlertDialogTitle className="text-center">
                   <span className="text-lg font-semibold text-[hsl(var(--text-primary))] tracking-tight">
-                    Tu apprécies Lucky Stop ?
+                    {t.ratingTitle}
                   </span>
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-center text-[hsl(var(--text-muted))] pt-2 text-xs leading-relaxed">
-                  Aide-nous à nous améliorer en partageant ton avis.
+                  {t.ratingSubtitle}
                 </AlertDialogDescription>
               </>
             ) : (
@@ -103,7 +106,7 @@ export const RateAppDialog: React.FC<RateAppDialogProps> = ({ isOpen, onClose })
                   </span>
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-center text-[hsl(var(--text-secondary))] pt-3 text-sm leading-relaxed font-medium">
-                  Chaque avis nous permet de rendre le jeu encore meilleur pour toi et toute la communauté.
+                  {t.ratingFooter}
                 </AlertDialogDescription>
               </>
             )}
