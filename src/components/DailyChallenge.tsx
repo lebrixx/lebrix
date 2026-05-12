@@ -192,8 +192,20 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
       <div
         className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
         onPointerDown={stopTimer}>
-        
-        <div className="absolute top-20 bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-full px-4 py-2 flex items-center gap-2">
+
+        <button
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            cancelAnimationFrame(animRef.current);
+            setPhase('intro');
+          }}
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Fermer"
+          className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 z-10 w-10 h-10 rounded-full bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] flex items-center justify-center text-[hsl(var(--text-primary))] active:scale-95">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+
+        <div className="absolute top-[max(5rem,calc(env(safe-area-inset-top)+3.5rem))] bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] rounded-full px-4 py-2 flex items-center gap-2">
           <Target className="w-4 h-4 text-[hsl(var(--primary))]" />
           <span className="text-sm text-[hsl(var(--text-muted))]">{t.precisionTarget}</span>
           <span className="text-sm font-mono font-bold text-[hsl(var(--primary))]">{target.toFixed(3)}</span>
