@@ -428,9 +428,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         </div>
                       )}
                       {!hasVioletUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
-                      <span className={`text-[10px] font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>Violet</span>
+                      <span className={`text-[10px] font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>{t.colorViolet}</span>
                       <span className="text-sm font-black leading-none" style={{ color: '#a855f7' }}>Aa</span>
-                      {!hasVioletUnlocked && <span className="text-[8px] text-text-muted">Tier 5</span>}
+                      {!hasVioletUnlocked && <span className="text-[8px] text-text-muted">{t.tier5Label}</span>}
                     </div>
                   </button>
 
