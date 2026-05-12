@@ -554,7 +554,7 @@ export const Shop: React.FC<ShopProps> = ({
                           disabled={coins < mode.price}
                         >
                           <Ticket className="w-4 h-4 mr-2" />
-                          Acheter 4 tickets ({mode.price} coins)
+                          {t.buy4Tickets.replace('{price}', String(mode.price))}
                         </Button>
                           <Button 
                             onClick={async () => {
