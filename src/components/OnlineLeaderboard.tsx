@@ -261,9 +261,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
 
           {/* Pass promo hint */}
           <p className="text-text-muted text-xs text-center italic opacity-70">
-            {language === 'es' ? '🎨 Desbloquea decoraciones de pseudo en el Pase' :
-             language === 'en' ? '🎨 Unlock username decorations in the Pass' :
-             '🎨 Débloque les décos de pseudo dans le Pass'}
+            {t.unlockNicknameDecosInPass}
           </p>
         </div>
 
@@ -323,7 +321,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               className="border-wheel-border hover:bg-button-hover flex items-center gap-2"
             >
               <History className={`w-4 h-4 ${loadingPreviousWeek ? 'animate-spin' : ''}`} />
-              {language === 'fr' ? 'Top 50 semaine précédente' : 'Previous week Top 50'}
+              {t.previousWeekTop50}
             </Button>
           </div>
         )}
@@ -485,7 +483,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
             <div className="text-center mb-4">
               <h2 className="text-xl font-bold text-text-primary flex items-center justify-center gap-2">
                 <History className="w-5 h-5 text-secondary" />
-                {language === 'fr' ? 'Semaine précédente' : 'Previous Week'}
+                {t.previousWeekTab}
               </h2>
               <p className="text-text-muted text-sm mt-1">{formatPreviousWeekDates()}</p>
               <Badge variant="outline" className="mt-2">{modeNames[selectedMode as keyof typeof modeNames]}</Badge>
@@ -495,7 +493,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
               <div className="text-center py-6">
                 <Trophy className="w-12 h-12 mx-auto mb-3 text-text-muted opacity-50" />
                 <p className="text-text-muted">
-                  {language === 'fr' ? 'Aucun score la semaine dernière' : 'No scores last week'}
+                  {t.noScoresLastWeek}
                 </p>
               </div>
             ) : (

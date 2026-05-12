@@ -344,13 +344,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
                 <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">
-                    {isPreviewingLocked ? '👁️ Prévisualisation' : 'Aperçu dans le classement'}
+                    {isPreviewingLocked ? t.previewLabel : t.previewInRanking}
                   </span>
                   {isPreviewingLocked && (
-                    <span className="text-[9px] text-yellow-400/80 font-semibold">🔒 Non débloqué — aperçu uniquement</span>
+                    <span className="text-[9px] text-yellow-400/80 font-semibold">{t.notUnlockedPreviewOnly}</span>
                   )}
                   {!isPreviewingLocked && (
-                    <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">⚡ Joue une partie pour appliquer les changements</span>
+                    <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">{t.playGameToApply}</span>
                   )}
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${displayRainbow ? 'animate-[username-rainbow_3s_linear_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
@@ -359,8 +359,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                     }}
                   >
                     {displayDeco && !displayDeco.isColorReward
-                      ? `${displayDeco.prefix}${identity.username || 'TonPseudo'}${displayDeco.suffix}`
-                      : (identity.username || 'TonPseudo')
+                      ? `${displayDeco.prefix}${identity.username || t.yourNicknamePlaceholder}${displayDeco.suffix}`
+                      : (identity.username || t.yourNicknamePlaceholder)
                     }
                   </div>
                   {isPreviewingLocked ? (
@@ -368,24 +368,24 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                       onClick={() => { setPreviewDeco(null); setPreviewColor(null); }}
                       className="mt-2 text-[10px] text-yellow-400/70 hover:text-yellow-400 transition-colors flex items-center gap-1"
                     >
-                      <X className="w-3 h-3" /> Fermer l'aperçu
+                      <X className="w-3 h-3" /> {t.closePreview}
                     </button>
                   ) : (equippedDeco || isVioletEquipped || isPulseEquipped || isGoldPulseEquipped || isRainbowEquipped) ? (
                     <button
                       onClick={() => { handleEquip(null); handleEquipColor(null); }}
                       className="mt-2 text-[10px] text-text-muted hover:text-red-400 transition-colors flex items-center gap-1"
                     >
-                      <X className="w-3 h-3" /> Retirer la décoration
+                      <X className="w-3 h-3" /> {t.removeDecoration}
                     </button>
                   ) : null}
                 </div>
               </div>
-              <p className="text-[13px] text-text-muted/90 mt-2 font-semibold text-center">👇 Clique sur un élément verrouillé pour le prévisualiser 👇</p>
+              <p className="text-[13px] text-text-muted/90 mt-2 font-semibold text-center">{t.clickLockedToPreview}</p>
 
               {/* ── Couleur pseudo ── */}
               <div className="px-4">
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
-                  <Palette className="w-3 h-3" /> Couleur du pseudo
+                  <Palette className="w-3 h-3" /> {t.nicknameColorLabel}
                 </p>
                 <div className="flex gap-2.5">
                   {/* Default */}
@@ -404,7 +404,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                           <Check className="w-2.5 h-2.5 text-game-darker" />
                         </div>
                       )}
-                      <span className="text-[10px] font-black text-text-primary">Défaut</span>
+                      <span className="text-[10px] font-black text-text-primary">{t.defaultStyle}</span>
                       <span className="text-sm font-black text-text-primary leading-none">Aa</span>
                     </div>
                   </button>
@@ -428,9 +428,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         </div>
                       )}
                       {!hasVioletUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
-                      <span className={`text-[10px] font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>Violet</span>
+                      <span className={`text-[10px] font-black ${isVioletEquipped ? 'text-purple-300' : 'text-text-muted'}`}>{t.colorViolet}</span>
                       <span className="text-sm font-black leading-none" style={{ color: '#a855f7' }}>Aa</span>
-                      {!hasVioletUnlocked && <span className="text-[8px] text-text-muted">Tier 5</span>}
+                      {!hasVioletUnlocked && <span className="text-[8px] text-text-muted">{t.tier5Label}</span>}
                     </div>
                   </button>
 
@@ -453,9 +453,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         </div>
                       )}
                       {!hasPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
-                      <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>Pulsé</span>
+                      <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>{t.pulseStyle}</span>
                       <span className="text-base font-black leading-none animate-[username-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]" style={{ color: 'hsl(var(--primary))' }}>Aa</span>
-                      {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
+                      {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">{t.tier10Label}</span>}
                     </div>
                   </button>
 
@@ -478,9 +478,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         </div>
                       )}
                       {!hasGoldPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
-                      <span className={`text-[10px] font-black ${isGoldPulseEquipped ? 'text-yellow-400' : 'text-text-muted'}`}>Or Pulsé</span>
+                      <span className={`text-[10px] font-black ${isGoldPulseEquipped ? 'text-yellow-400' : 'text-text-muted'}`}>{t.goldPulseStyle}</span>
                       <span className="text-base font-black leading-none animate-[username-gold-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_rgba(234,179,8,0.6)]" style={{ color: 'hsl(45, 100%, 55%)' }}>Aa</span>
-                      {!hasGoldPulseUnlocked && <span className="text-[8px] text-yellow-400/60 font-bold">Pack Premium</span>}
+                      {!hasGoldPulseUnlocked && <span className="text-[8px] text-yellow-400/60 font-bold">{t.premiumPackLabelShort}</span>}
                     </div>
                   </button>
                 </div>
@@ -519,20 +519,20 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         <Lock className="w-3 h-3 text-pink-300 shrink-0" />
                       )}
                       <span className={`text-[11px] font-black uppercase tracking-wider ${isRainbowEquipped ? 'text-pink-300' : 'text-text-primary'}`}>
-                        Multicolore
+                        {t.colorMulticolor}
                       </span>
                     </div>
                     <span className="text-base font-black leading-none animate-[username-rainbow_3s_linear_infinite]">
                       Aa Bb Cc
                     </span>
                     <span className="text-[8px] font-bold text-pink-400/80 uppercase tracking-wide">
-                      {isRainbowEquipped ? 'Équipé' : 'Nouveau'}
+                      {isRainbowEquipped ? t.equippedShortLabel : t.newShortLabel}
                     </span>
                   </div>
                   {!hasRainbowUnlocked && (
                     <div className="relative mt-1 text-[9px] text-pink-300/90 font-semibold tracking-wide flex items-center justify-center gap-1">
                       <span>✨</span>
-                      <span>Touche pour débloquer</span>
+                      <span>{t.tapToUnlock}</span>
                       <span>✨</span>
                     </div>
                   )}

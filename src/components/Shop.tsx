@@ -47,7 +47,7 @@ const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
     name: 'Pack de Tickets Expert',
-    description: '4 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
+    description: '__memoryExpertDesc__',
     price: 100,
     icon: Star,
     isTicketPack: true,
@@ -419,7 +419,7 @@ export const Shop: React.FC<ShopProps> = ({
                       <div className="mb-4 p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-lg">
                         <p className="text-xs text-yellow-400 flex items-center gap-2">
                           <Crown className="w-4 h-4" />
-                          <span>Complétez 7 jours de récompenses quotidiennes pour débloquer ce thème légendaire !</span>
+                          <span>{t.sevenDaysLockedHint}</span>
                         </p>
                       </div>
                     )}
@@ -520,7 +520,7 @@ export const Shop: React.FC<ShopProps> = ({
 
                     {/* Description */}
                     <p className="text-text-secondary mb-6 leading-relaxed text-sm">
-                      {mode.description}
+                      {mode.description === '__memoryExpertDesc__' ? t.memoryExpertDesc : mode.description}
                     </p>
 
                     {/* Tickets disponibles pour le pack de tickets */}
@@ -554,13 +554,13 @@ export const Shop: React.FC<ShopProps> = ({
                           disabled={coins < mode.price}
                         >
                           <Ticket className="w-4 h-4 mr-2" />
-                          Acheter 4 tickets ({mode.price} coins)
+                          {t.buy4Tickets.replace('{price}', String(mode.price))}
                         </Button>
                           <Button 
                             onClick={async () => {
                               const success = await showRewardedAd('ticket');
                               if (success) {
-                                toast({ title: "Tickets reçus !", description: "Tu as reçu 5 tickets ! 🎫" });
+                                toast({ title: t.ticketsReceived, description: t.ticketsReceivedDesc });
                                 addTickets(5);
                                 setCurrentTickets(getTickets());
                               }
@@ -569,7 +569,7 @@ export const Shop: React.FC<ShopProps> = ({
                             disabled={isAdShowing || !isAdReady() || cooldownRemaining > 0}
                         >
                           <Video className="w-4 h-4 mr-2" />
-                          Obtenir 5 via pub
+                          {t.get5ByAd}
                           {cooldownRemaining > 0 && (
                             <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                           )}
@@ -608,7 +608,7 @@ export const Shop: React.FC<ShopProps> = ({
 
       {/* Footer Info */}
       <div className="text-center mt-8 text-text-muted">
-        <p>Gagnez des coins en jouant pour débloquer de nouveaux thèmes !</p>
+        <p>{t.earnCoinsHint}</p>
       </div>
     </div>
   );
@@ -623,6 +623,8 @@ interface BoostsSectionProps {
 const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) => {
   const { addBoost, getBoostCount } = useBoosts();
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
@@ -638,8 +640,8 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
   const handlePurchaseWithCoins = (boostId: any, price: number) => {
     if (!canAfford(price)) {
       toast({
-        title: "Coins insuffisants",
-        description: `Il te faut ${price} coins pour acheter ce boost.`,
+        title: t.insufficientCoins,
+        description: t.insufficientCoinsDesc.replace('{amount}', String(price)),
         variant: "destructive"
       });
       return;
@@ -650,8 +652,8 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
       addBoost(boostId);
       
       toast({
-        title: "Boost acheté !",
-        description: `Tu as acheté un boost ${BOOSTS[boostId].name}.`,
+        title: t.boostPurchased,
+        description: t.boostPurchasedDesc.replace('{name}', BOOSTS[boostId].name),
       });
     }
   };
@@ -669,7 +671,7 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
     if (success) {
       const boostMap = { boost1: 'shield', boost2: 'bigger_zone', boost3: 'start_20' };
       addBoost(boostMap[kind] as any);
-      toast({ title: "Boost reçu !", description: `Tu as reçu ${BOOSTS[boostId].name} ${BOOSTS[boostId].icon}` });
+      toast({ title: t.boostReceivedShort, description: t.boostReceivedDesc.replace('{name}', BOOSTS[boostId].name).replace('{icon}', BOOSTS[boostId].icon) });
     }
   };
 

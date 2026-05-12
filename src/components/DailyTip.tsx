@@ -2,49 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Lightbulb, X } from 'lucide-react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
-const TIPS = [
-  {
-    emoji: '🏆',
-    title: '2 classements',
-    tip: 'Classement par mode (hebdo) + classement global mensuel depuis l\'accueil !',
-  },
-  {
-    emoji: '📡',
-    title: 'Joue en ligne',
-    tip: 'Sans internet, tes scores ne sont pas sauvegardés en ligne.',
-  },
-  {
-    emoji: '🚀',
-    title: 'Utilise tes boosts',
-    tip: 'Sélectionne des boosts avant chaque partie pour maximiser ton score.',
-  },
-  {
-    emoji: '👑',
-    title: 'Cosmétiques de pseudo',
-    tip: 'Débloque des couleurs et effets de pseudo dans le Pass Saison !',
-  },
-  {
-    emoji: '⭐',
-    title: 'Défis quotidiens & globaux',
-    tip: 'Complète 2 défis/jour + des défis globaux par paliers pour gagner des récompenses.',
-  },
-  {
-    emoji: '🎯',
-    title: 'Défi Précision',
-    tip: 'N\'oublie pas le défi précision dans les défis, prouve que tu es le plus précis !',
-  },
-  {
-    emoji: '🎁',
-    title: 'Bonus quotidiens',
-    tip: 'Chaque jour : roue de la chance, roulette x2 pour les modes et récompenses journalières à récupérer !',
-  },
-];
+const TIP_KEYS = [
+  { emoji: '🏆', titleKey: 'tip1Title', bodyKey: 'tip1Body' },
+  { emoji: '📡', titleKey: 'tip2Title', bodyKey: 'tip2Body' },
+  { emoji: '🚀', titleKey: 'tip3Title', bodyKey: 'tip3Body' },
+  { emoji: '👑', titleKey: 'tip4Title', bodyKey: 'tip4Body' },
+  { emoji: '⭐', titleKey: 'tip5Title', bodyKey: 'tip5Body' },
+  { emoji: '🎯', titleKey: 'tip6Title', bodyKey: 'tip6Body' },
+  { emoji: '🎁', titleKey: 'tip7Title', bodyKey: 'tip7Body' },
+] as const;
 
 function getLaunchTipIndex(): number {
   const key = 'ls_tip_launch_index';
   const current = parseInt(localStorage.getItem(key) || '0', 10);
-  const index = current % TIPS.length;
+  const index = current % TIP_KEYS.length;
   // Advance for next launch
   localStorage.setItem(key, String(current + 1));
   return index;
@@ -57,18 +30,19 @@ interface DailyTipProps {
 
 export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(() => getLaunchTipIndex());
-
-  // Index is set once on mount via getLaunchTipIndex
+  const { language } = useLanguage();
+  const t = translations[language] as any;
 
   const goNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % TIPS.length);
+    setCurrentIndex((prev) => (prev + 1) % TIP_KEYS.length);
   };
 
   const goPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + TIPS.length) % TIPS.length);
+    setCurrentIndex((prev) => (prev - 1 + TIP_KEYS.length) % TIP_KEYS.length);
   };
 
-  const tip = TIPS[currentIndex];
+  const tipMeta = TIP_KEYS[currentIndex];
+  const tip = { emoji: tipMeta.emoji, title: t[tipMeta.titleKey], tip: t[tipMeta.bodyKey] };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -93,10 +67,10 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <span className="text-xs font-bold text-primary/80 tracking-widest uppercase">
-                Conseil du jour
+                {t.tipOfTheDay}
               </span>
               <div className="text-[10px] text-text-muted">
-                {currentIndex + 1} / {TIPS.length}
+                {currentIndex + 1} / {TIP_KEYS.length}
               </div>
             </div>
           </div>
@@ -125,7 +99,7 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
           </Button>
 
           <div className="flex items-center gap-2">
-            {TIPS.map((_, i) => (
+            {TIP_KEYS.map((_, i) => (
               <div
                 key={i}
                 className={`rounded-full transition-all duration-300 ${
@@ -153,7 +127,7 @@ export const DailyTip: React.FC<DailyTipProps> = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="w-full rounded-2xl bg-gradient-primary hover:opacity-90 font-semibold py-5 shadow-[0_4px_16px_hsl(var(--primary)/0.3)]"
           >
-            Compris ! 👍
+            {t.gotItButton}
           </Button>
         </div>
       </DialogContent>

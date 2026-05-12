@@ -82,8 +82,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
     
     if (success) {
       toast({
-        title: "Coins reçus !",
-        description: "Tu as reçu 100 coins ! 🪙",
+        title: t.coinsReceivedAd,
+        description: t.coinsReceivedAdDesc,
       });
       onRewardClaimed(100);
     }
@@ -96,8 +96,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
     if (claimed) {
       setCanClaimNotifBonus(false);
       toast({
-        title: "Bonus Notifications !",
-        description: "+20 coins pour avoir activé les notifications ! 🔔",
+        title: t.notifBonusTitle,
+        description: t.notifBonusToast,
       });
       onRewardClaimed(20);
     }
@@ -162,7 +162,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl text-text-primary">
             <Gift className="w-6 h-6 text-primary animate-pulse" />
-            Récompenses Journalières
+            {t.dailyRewardsHeader}
             <Sparkles className="w-5 h-5 text-secondary ml-auto" />
           </DialogTitle>
         </DialogHeader>
@@ -171,7 +171,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
           <div className="text-center">
             <div className="text-sm text-text-muted mb-2 flex items-center justify-center gap-2">
               <Star className="w-4 h-4 text-primary" />
-              <span>Série actuelle: <span className="text-primary font-bold">{rewardState.currentStreak}</span>/7 jours</span>
+              <span>{t.currentStreak} <span className="text-primary font-bold">{rewardState.currentStreak}</span>/7 {t.daysLabel}</span>
               <Star className="w-4 h-4 text-primary" />
             </div>
             <div className="w-full bg-game-bg rounded-full h-3 shadow-inner border border-wheel-border/50">
@@ -283,7 +283,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 ) : claimedReward.theme ? (
                   <span className="flex items-center justify-center gap-2">
                     <Crown className="w-6 h-6 text-yellow-400" />
-                    <span className="text-yellow-400">{claimedReward.coins} coins + Thème Royal</span>
+                    <span className="text-yellow-400">{t.royalTheme.replace('{coins}', String(claimedReward.coins))}</span>
                   </span>
                 ) : (
                   <span className="text-green-400">+{claimedReward.coins} coins</span>

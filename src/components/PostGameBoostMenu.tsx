@@ -61,8 +61,8 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
     
     if (selectedBoosts.length > 0) {
       toast({
-        title: "Boosts activés !",
-        description: `${selectedBoosts.length} boost(s) consommé(s)`,
+        title: t.boostsActivatedTitle,
+        description: t.boostsActivatedDesc.replace('{n}', String(selectedBoosts.length)),
       });
     }
     
