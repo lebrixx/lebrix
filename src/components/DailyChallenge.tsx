@@ -172,7 +172,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         </div>
 
         <div className="text-center space-y-4">
-          <p className="text-6xl sm:text-7xl font-mono font-black text-[hsl(var(--text-muted)/0.3)] tabular-nums">
+          <p className="text-6xl sm:text-7xl font-mono font-black text-[hsl(var(--text-muted)/0.6)] tabular-nums">
             0.000
           </p>
           <div className="space-y-2">
