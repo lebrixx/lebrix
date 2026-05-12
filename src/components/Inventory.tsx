@@ -453,9 +453,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                         </div>
                       )}
                       {!hasPulseUnlocked && <Lock className="w-3 h-3 text-text-muted" />}
-                      <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>Pulsé</span>
+                      <span className={`text-[10px] font-black ${isPulseEquipped ? 'text-primary' : 'text-text-muted'}`}>{t.pulseStyle}</span>
                       <span className="text-base font-black leading-none animate-[username-pulse_3s_ease-in-out_infinite] drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]" style={{ color: 'hsl(var(--primary))' }}>Aa</span>
-                      {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">Tier 10</span>}
+                      {!hasPulseUnlocked && <span className="text-[8px] text-text-muted">{t.tier10Label}</span>}
                     </div>
                   </button>
 
