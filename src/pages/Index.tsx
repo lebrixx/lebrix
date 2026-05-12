@@ -424,9 +424,11 @@ const Index = () => {
 
         case 'daily_challenge':
           return (
-            <DailyChallenge
-              onBack={() => setCurrentScreen('menu')}
-            />
+            <DailyChallengeBoundary onBack={() => setCurrentScreen('menu')}>
+              <DailyChallenge
+                onBack={() => setCurrentScreen('menu')}
+              />
+            </DailyChallengeBoundary>
           );
         
         case 'global_leaderboard':
