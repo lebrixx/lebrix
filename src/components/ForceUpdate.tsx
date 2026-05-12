@@ -70,23 +70,9 @@ export const ForceUpdate: React.FC = () => {
 
   if (!needsUpdate) return null;
 
-  const updateTitle = language === 'fr'
-    ? 'Nouvelle mise à jour disponible'
-    : language === 'es'
-      ? 'Nueva actualización disponible'
-      : 'New update available';
-
-  const updateDesc = language === 'fr'
-    ? 'Une nouvelle version du jeu est disponible. Mets à jour pour continuer à jouer !'
-    : language === 'es'
-      ? '¡Una nueva versión del juego está disponible. Actualiza para seguir jugando!'
-      : 'A new version of the game is available. Update to keep playing!';
-
-  const updateBtn = language === 'fr'
-    ? 'Mettre à jour'
-    : language === 'es'
-      ? 'Actualizar'
-      : 'Update';
+  const updateTitle = t.updateAvailableTitle;
+  const updateDesc = t.updateAvailableDesc;
+  const updateBtn = t.updateButton;
 
   return (
     <AlertDialog open={true}>
