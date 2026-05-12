@@ -205,15 +205,17 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <div className="text-center mb-3">
-            <p className="text-base text-primary font-semibold">
+            <p className="text-lg text-primary font-bold">
               📸 {t.useInstagram}
             </p>
-            <p className="text-xs text-text-muted mt-1">
+            <p className="text-sm text-text-muted mt-1.5 font-medium">
               {t.contestsSoon}
             </p>
-            <p className="text-[10px] text-text-muted/70 mt-1.5 italic">
-              ⏳ Après un changement de pseudo, il faut parfois quelques parties avant que le nouveau nom apparaisse dans le classement.
-            </p>
+            {!isFirstUsername && (
+              <p className="text-[10px] text-text-muted/70 mt-1.5 italic">
+                ⏳ Après un changement de pseudo, il faut parfois quelques parties avant que le nouveau nom apparaisse dans le classement.
+              </p>
+            )}
           </div>
           
           {!isFirstUsername && (
