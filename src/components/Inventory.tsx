@@ -344,13 +344,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
                 <div className="relative px-4 pt-5 pb-4 flex flex-col items-center gap-1">
                   <span className="text-[9px] uppercase tracking-[0.2em] text-text-muted font-bold mb-1">
-                    {isPreviewingLocked ? '👁️ Prévisualisation' : 'Aperçu dans le classement'}
+                    {isPreviewingLocked ? t.previewLabel : t.previewInRanking}
                   </span>
                   {isPreviewingLocked && (
-                    <span className="text-[9px] text-yellow-400/80 font-semibold">🔒 Non débloqué — aperçu uniquement</span>
+                    <span className="text-[9px] text-yellow-400/80 font-semibold">{t.notUnlockedPreviewOnly}</span>
                   )}
                   {!isPreviewingLocked && (
-                    <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">⚡ Joue une partie pour appliquer les changements</span>
+                    <span className="text-[11px] text-text-muted/80 font-medium mt-0.5">{t.playGameToApply}</span>
                   )}
                   <div
                     className={`text-[28px] font-black leading-tight tracking-wide ${displayPulse ? 'animate-[username-pulse_3s_ease-in-out_infinite]' : ''} ${displayGoldPulse ? 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' : ''} ${displayRainbow ? 'animate-[username-rainbow_3s_linear_infinite]' : ''} ${isPreviewingLocked ? 'opacity-70' : ''}`}
