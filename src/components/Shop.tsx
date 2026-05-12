@@ -47,7 +47,7 @@ const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
     name: 'Pack de Tickets Expert',
-    description: '4 tickets pour jouer au mode Mémoire (Expert). 1 ticket = 1 partie.',
+    description: '__memoryExpertDesc__',
     price: 100,
     icon: Star,
     isTicketPack: true,
