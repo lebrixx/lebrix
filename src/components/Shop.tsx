@@ -560,7 +560,7 @@ export const Shop: React.FC<ShopProps> = ({
                             onClick={async () => {
                               const success = await showRewardedAd('ticket');
                               if (success) {
-                                toast({ title: "Tickets reçus !", description: "Tu as reçu 5 tickets ! 🎫" });
+                                toast({ title: t.ticketsReceived, description: t.ticketsReceivedDesc });
                                 addTickets(5);
                                 setCurrentTickets(getTickets());
                               }
