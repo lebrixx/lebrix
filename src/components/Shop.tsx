@@ -623,6 +623,8 @@ interface BoostsSectionProps {
 const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) => {
   const { addBoost, getBoostCount } = useBoosts();
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
