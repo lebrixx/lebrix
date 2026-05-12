@@ -10,6 +10,7 @@ import { UsernameModal } from '@/components/UsernameModal';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
+import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
@@ -423,9 +424,11 @@ const Index = () => {
 
         case 'daily_challenge':
           return (
-            <DailyChallenge
-              onBack={() => setCurrentScreen('menu')}
-            />
+            <DailyChallengeBoundary onBack={() => setCurrentScreen('menu')}>
+              <DailyChallenge
+                onBack={() => setCurrentScreen('menu')}
+              />
+            </DailyChallengeBoundary>
           );
         
         case 'global_leaderboard':
