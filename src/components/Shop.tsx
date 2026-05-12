@@ -671,7 +671,7 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
     if (success) {
       const boostMap = { boost1: 'shield', boost2: 'bigger_zone', boost3: 'start_20' };
       addBoost(boostMap[kind] as any);
-      toast({ title: "Boost reçu !", description: `Tu as reçu ${BOOSTS[boostId].name} ${BOOSTS[boostId].icon}` });
+      toast({ title: t.boostReceivedShort, description: t.boostReceivedDesc.replace('{name}', BOOSTS[boostId].name).replace('{icon}', BOOSTS[boostId].icon) });
     }
   };
 
