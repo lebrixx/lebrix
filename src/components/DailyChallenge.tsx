@@ -52,6 +52,7 @@ const getNameAnimation = (decorations: string | null | undefined): string => {
 export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const [hasFatalError, setHasFatalError] = useState(false);
 
   const getQualityLabel = (gap: number): {label: string;color: string;emoji: string;} => {
     if (gap <= 0.005) return { label: t.precisionPerfect, color: 'text-[hsl(var(--success))]', emoji: '🎯' };
@@ -90,17 +91,31 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const startTimeRef = useRef<number>(0);
 
   const loadLeaderboard = useCallback(async () => {
-    setLoadingLb(true);
-    const [todayData, yesterdayData] = await Promise.all([
-    fetchDailyPrecisionLeaderboard(),
-    fetchYesterdayPrecisionLeaderboard()]
-    );
-    setLeaderboard(todayData);
-    setYesterdayLb(yesterdayData);
-    setLoadingLb(false);
+    try {
+      setLoadingLb(true);
+      const [todayData, yesterdayData] = await Promise.all([
+      fetchDailyPrecisionLeaderboard(),
+      fetchYesterdayPrecisionLeaderboard()]
+      );
+      setLeaderboard(Array.isArray(todayData) ? todayData : []);
+      setYesterdayLb(Array.isArray(yesterdayData) ? yesterdayData : []);
+    } catch (error) {
+      console.warn('[DailyChallenge] Leaderboard loading failed:', error);
+      setLeaderboard([]);
+      setYesterdayLb([]);
+    } finally {
+      setLoadingLb(false);
+    }
   }, []);
 
-  useEffect(() => {loadLeaderboard();}, [loadLeaderboard]);
+  useEffect(() => {
+    try {
+      loadLeaderboard();
+    } catch (error) {
+      console.error('[DailyChallenge] Opening failed:', error);
+      setHasFatalError(true);
+    }
+  }, [loadLeaderboard]);
 
   useEffect(() => {
     if (phase !== 'result' && phase !== 'stopped') return;
