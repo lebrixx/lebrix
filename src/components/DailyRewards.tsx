@@ -171,7 +171,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
           <div className="text-center">
             <div className="text-sm text-text-muted mb-2 flex items-center justify-center gap-2">
               <Star className="w-4 h-4 text-primary" />
-              <span>Série actuelle: <span className="text-primary font-bold">{rewardState.currentStreak}</span>/7 jours</span>
+              <span>{t.currentStreak} <span className="text-primary font-bold">{rewardState.currentStreak}</span>/7 {t.daysLabel}</span>
               <Star className="w-4 h-4 text-primary" />
             </div>
             <div className="w-full bg-game-bg rounded-full h-3 shadow-inner border border-wheel-border/50">
