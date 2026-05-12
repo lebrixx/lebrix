@@ -404,7 +404,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                           <Check className="w-2.5 h-2.5 text-game-darker" />
                         </div>
                       )}
-                      <span className="text-[10px] font-black text-text-primary">Défaut</span>
+                      <span className="text-[10px] font-black text-text-primary">{t.defaultStyle}</span>
                       <span className="text-sm font-black text-text-primary leading-none">Aa</span>
                     </div>
                   </button>
