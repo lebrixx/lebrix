@@ -417,85 +417,100 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
       {/* Social Media Dialog */}
       <AlertDialog open={showComingSoon} onOpenChange={setShowComingSoon}>
-        <AlertDialogContent className="bg-button-bg border-wheel-border">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-primary text-center flex flex-col items-center gap-3">
-              <Sparkles className="w-6 h-6 text-secondary" />
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                {t.joinUs}
-              </span>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-text-secondary pt-2 pb-4 text-sm leading-relaxed">
-              {t.socialDesc}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          
-          <div className="flex gap-3 pb-2">
-            <Button 
-              onClick={() => {
-                window.open('https://www.instagram.com/luckystop_?igsh=a3lmanFkeWdwc3F2', '_blank');
-              }}
-              className="flex-1 bg-button-bg border border-button-border hover:bg-button-hover hover:border-primary/50 transition-all duration-300 flex items-center justify-center gap-2 py-6"
-            >
-              <Instagram className="w-5 h-5 text-primary" />
-              <span className="font-semibold text-text-primary">Instagram</span>
-            </Button>
-            
-            <Button 
-              onClick={() => {
-                window.open('https://www.tiktok.com/@luckystop_?is_from_webapp=1&sender_device=pc', '_blank');
-              }}
-              className="flex-1 bg-button-bg border border-button-border hover:bg-button-hover hover:border-secondary/50 transition-all duration-300 flex items-center justify-center gap-2 py-6"
-            >
-              <svg className="w-5 h-5 text-secondary" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-              </svg>
-              <span className="font-semibold text-text-primary">TikTok</span>
-            </Button>
-          </div>
+        <AlertDialogContent className="bg-gradient-to-b from-button-bg via-button-bg to-button-bg/95 border border-primary/25 shadow-[0_12px_48px_hsl(var(--primary)/0.18),0_0_0_1px_hsl(var(--wheel-border)/0.4)] rounded-3xl p-0 overflow-hidden gap-0 max-w-[400px]">
+          {/* Top decorative bar */}
+          <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary" />
 
-          <div className="mt-4 pt-4 border-t border-wheel-border">
-            <p className="text-center mb-4">
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                {t.newsAndContest}
-              </span>
-            </p>
-            <Button 
-              onClick={() => {
-                window.open('https://luckystop.fr', '_blank');
-              }}
-              className="w-full bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-6"
-            >
-              <Trophy className="w-5 h-5 mr-2" />
-              <span className="font-bold">{t.contest}</span>
-            </Button>
-          </div>
+          <div className="px-6 pt-6 pb-5">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-primary text-center flex flex-col items-center gap-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/25 to-secondary/15 flex items-center justify-center shadow-[inset_0_1px_2px_hsl(var(--primary)/0.25)]">
+                  <Sparkles className="w-6 h-6 text-secondary" />
+                </div>
+                <span className="text-xl font-black bg-gradient-primary bg-clip-text text-transparent tracking-tight">
+                  {t.joinUs}
+                </span>
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-center text-text-secondary pt-1 text-[13px] leading-relaxed">
+                {t.socialDesc}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
 
-          {/* Rate App Button */}
-          {onOpenRateDialog && (
-            <div className="mt-4 pt-4 border-t border-wheel-border/30">
+            {/* Concours / News block — top priority */}
+            <div className="mt-5 rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 border border-primary/20 p-4">
+              <p className="text-center mb-3">
+                <span className="text-[15px] font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  {t.newsAndContest}
+                </span>
+              </p>
               <Button
                 onClick={() => {
-                  setShowComingSoon(false);
-                  setTimeout(() => onOpenRateDialog(), 300);
+                  window.open('https://luckystop.fr', '_blank');
                 }}
-                className="w-full py-6 rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-secondary/80 hover:from-primary/90 hover:via-primary hover:to-secondary shadow-[0_6px_24px_hsl(var(--primary)/0.4),0_2px_8px_hsl(var(--secondary)/0.2)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.55),0_4px_12px_hsl(var(--secondary)/0.3)] hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden group"
+                className="w-full rounded-xl bg-gradient-to-r from-primary via-primary to-secondary hover:from-primary hover:via-secondary hover:to-secondary shadow-[0_4px_16px_hsl(var(--primary)/0.35)] hover:shadow-[0_6px_24px_hsl(var(--primary)/0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 py-5 flex items-center justify-center gap-2 relative overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <Star className="w-5 h-5 fill-current drop-shadow-sm" />
-                <span className="font-bold text-base tracking-wide drop-shadow-sm">Laisse-nous un avis !</span>
-                <Star className="w-5 h-5 fill-current drop-shadow-sm" />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <Trophy className="w-5 h-5 drop-shadow-sm" />
+                <span className="font-bold text-[15px] tracking-wide drop-shadow-sm">{t.contest}</span>
               </Button>
             </div>
-          )}
-          
-          <Button 
-            onClick={() => setShowComingSoon(false)}
-            variant="ghost"
-            className="mt-2 hover:bg-primary/10"
-          >
-            {t.close}
-          </Button>
+
+            {/* Rate App Button */}
+            {onOpenRateDialog && (
+              <div className="mt-4">
+                <Button
+                  onClick={() => {
+                    setShowComingSoon(false);
+                    setTimeout(() => onOpenRateDialog(), 300);
+                  }}
+                  className="w-full py-5 rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-secondary/80 hover:from-primary/90 hover:via-primary hover:to-secondary shadow-[0_6px_24px_hsl(var(--primary)/0.4),0_2px_8px_hsl(var(--secondary)/0.2)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.55),0_4px_12px_hsl(var(--secondary)/0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <Star className="w-5 h-5 fill-current drop-shadow-sm" />
+                  <span className="font-bold text-[15px] tracking-wide drop-shadow-sm">Laisse-nous un avis !</span>
+                  <Star className="w-5 h-5 fill-current drop-shadow-sm" />
+                </Button>
+              </div>
+            )}
+
+            {/* Social networks — at the bottom */}
+            <div className="mt-5 pt-4 border-t border-wheel-border/40">
+              <p className="text-center text-[10px] uppercase tracking-[0.2em] text-text-muted/80 font-bold mb-3">
+                {t.followUs ?? 'Suivez-nous'}
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    window.open('https://www.instagram.com/luckystop_?igsh=a3lmanFkeWdwc3F2', '_blank');
+                  }}
+                  className="flex-1 bg-button-bg/60 border border-button-border hover:bg-button-hover hover:border-primary/50 transition-all duration-300 flex items-center justify-center gap-2 py-4 rounded-xl"
+                >
+                  <Instagram className="w-4 h-4 text-primary" />
+                  <span className="font-semibold text-text-primary text-sm">Instagram</span>
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    window.open('https://www.tiktok.com/@luckystop_?is_from_webapp=1&sender_device=pc', '_blank');
+                  }}
+                  className="flex-1 bg-button-bg/60 border border-button-border hover:bg-button-hover hover:border-secondary/50 transition-all duration-300 flex items-center justify-center gap-2 py-4 rounded-xl"
+                >
+                  <svg className="w-4 h-4 text-secondary" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                  </svg>
+                  <span className="font-semibold text-text-primary text-sm">TikTok</span>
+                </Button>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setShowComingSoon(false)}
+              variant="ghost"
+              className="mt-3 w-full hover:bg-primary/10 text-text-muted text-sm"
+            >
+              {t.close}
+            </Button>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
