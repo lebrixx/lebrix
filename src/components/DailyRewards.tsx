@@ -96,8 +96,8 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
     if (claimed) {
       setCanClaimNotifBonus(false);
       toast({
-        title: "Bonus Notifications !",
-        description: "+20 coins pour avoir activé les notifications ! 🔔",
+        title: t.notifBonusTitle,
+        description: t.notifBonusToast,
       });
       onRewardClaimed(20);
     }
