@@ -165,6 +165,24 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
     setPhase('result');
   };
 
+  if (hasFatalError) {
+    return (
+      <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 text-center">
+        <Button onClick={onBack} variant="ghost" size="icon" className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div className="w-14 h-14 rounded-xl bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] flex items-center justify-center mb-4">
+          <RefreshCw className="w-6 h-6 text-[hsl(var(--primary))]" />
+        </div>
+        <p className="text-base font-bold text-[hsl(var(--text-primary))] mb-2">Défi indisponible</p>
+        <p className="text-sm text-[hsl(var(--text-muted))] mb-5">Réessaie dans quelques secondes.</p>
+        <Button onClick={() => { setHasFatalError(false); loadLeaderboard(); }} className="bg-gradient-primary rounded-xl px-6">
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
+
   // ────── READY SCREEN ──────
   if (phase === 'ready') {
     return (
