@@ -476,7 +476,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             {/* Social networks — at the bottom */}
             <div className="mt-5 pt-4 border-t border-wheel-border/40">
               <p className="text-center text-[10px] uppercase tracking-[0.2em] text-text-muted/80 font-bold mb-3">
-                {t.followUs ?? 'Suivez-nous'}
+                {language === 'es' ? 'Síguenos' : language === 'en' ? 'Follow us' : 'Suivez-nous'}
               </p>
               <div className="flex gap-3">
                 <Button
