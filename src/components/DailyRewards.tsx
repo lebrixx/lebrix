@@ -283,7 +283,7 @@ export const DailyRewards: React.FC<DailyRewardsProps> = ({
                 ) : claimedReward.theme ? (
                   <span className="flex items-center justify-center gap-2">
                     <Crown className="w-6 h-6 text-yellow-400" />
-                    <span className="text-yellow-400">{claimedReward.coins} coins + Thème Royal</span>
+                    <span className="text-yellow-400">{t.royalTheme.replace('{coins}', String(claimedReward.coins))}</span>
                   </span>
                 ) : (
                   <span className="text-green-400">+{claimedReward.coins} coins</span>
