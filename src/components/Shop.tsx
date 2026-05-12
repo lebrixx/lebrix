@@ -419,7 +419,7 @@ export const Shop: React.FC<ShopProps> = ({
                       <div className="mb-4 p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-lg">
                         <p className="text-xs text-yellow-400 flex items-center gap-2">
                           <Crown className="w-4 h-4" />
-                          <span>Complétez 7 jours de récompenses quotidiennes pour débloquer ce thème légendaire !</span>
+                          <span>{t.sevenDaysLockedHint}</span>
                         </p>
                       </div>
                     )}
