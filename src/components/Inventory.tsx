@@ -380,12 +380,12 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
                   ) : null}
                 </div>
               </div>
-              <p className="text-[13px] text-text-muted/90 mt-2 font-semibold text-center">👇 Clique sur un élément verrouillé pour le prévisualiser 👇</p>
+              <p className="text-[13px] text-text-muted/90 mt-2 font-semibold text-center">{t.clickLockedToPreview}</p>
 
               {/* ── Couleur pseudo ── */}
               <div className="px-4">
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-3 font-bold flex items-center gap-1.5">
-                  <Palette className="w-3 h-3" /> Couleur du pseudo
+                  <Palette className="w-3 h-3" /> {t.nicknameColorLabel}
                 </p>
                 <div className="flex gap-2.5">
                   {/* Default */}
