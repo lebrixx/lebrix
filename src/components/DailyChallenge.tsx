@@ -52,6 +52,7 @@ const getNameAnimation = (decorations: string | null | undefined): string => {
 export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const [hasFatalError, setHasFatalError] = useState(false);
 
   const getQualityLabel = (gap: number): {label: string;color: string;emoji: string;} => {
     if (gap <= 0.005) return { label: t.precisionPerfect, color: 'text-[hsl(var(--success))]', emoji: '🎯' };
@@ -90,17 +91,31 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const startTimeRef = useRef<number>(0);
 
   const loadLeaderboard = useCallback(async () => {
-    setLoadingLb(true);
-    const [todayData, yesterdayData] = await Promise.all([
-    fetchDailyPrecisionLeaderboard(),
-    fetchYesterdayPrecisionLeaderboard()]
-    );
-    setLeaderboard(todayData);
-    setYesterdayLb(yesterdayData);
-    setLoadingLb(false);
+    try {
+      setLoadingLb(true);
+      const [todayData, yesterdayData] = await Promise.all([
+      fetchDailyPrecisionLeaderboard(),
+      fetchYesterdayPrecisionLeaderboard()]
+      );
+      setLeaderboard(Array.isArray(todayData) ? todayData : []);
+      setYesterdayLb(Array.isArray(yesterdayData) ? yesterdayData : []);
+    } catch (error) {
+      console.warn('[DailyChallenge] Leaderboard loading failed:', error);
+      setLeaderboard([]);
+      setYesterdayLb([]);
+    } finally {
+      setLoadingLb(false);
+    }
   }, []);
 
-  useEffect(() => {loadLeaderboard();}, [loadLeaderboard]);
+  useEffect(() => {
+    try {
+      loadLeaderboard();
+    } catch (error) {
+      console.error('[DailyChallenge] Opening failed:', error);
+      setHasFatalError(true);
+    }
+  }, [loadLeaderboard]);
 
   useEffect(() => {
     if (phase !== 'result' && phase !== 'stopped') return;
@@ -149,6 +164,24 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   const handleSeeResults = () => {
     setPhase('result');
   };
+
+  if (hasFatalError) {
+    return (
+      <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 text-center">
+        <Button onClick={onBack} variant="ghost" size="icon" className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div className="w-14 h-14 rounded-xl bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] flex items-center justify-center mb-4">
+          <RefreshCw className="w-6 h-6 text-[hsl(var(--primary))]" />
+        </div>
+        <p className="text-base font-bold text-[hsl(var(--text-primary))] mb-2">Défi indisponible</p>
+        <p className="text-sm text-[hsl(var(--text-muted))] mb-5">Réessaie dans quelques secondes.</p>
+        <Button onClick={() => { setHasFatalError(false); loadLeaderboard(); }} className="bg-gradient-primary rounded-xl px-6">
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
 
   // ────── READY SCREEN ──────
   if (phase === 'ready') {

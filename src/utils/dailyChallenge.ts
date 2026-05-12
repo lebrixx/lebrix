@@ -45,9 +45,9 @@ export function getDailyTarget(): number {
 
 /** Check if the player has already played today */
 export function hasPlayedToday(): boolean {
-  const raw = localStorage.getItem(DAILY_CHALLENGE_KEY);
-  if (!raw) return false;
   try {
+    const raw = localStorage.getItem(DAILY_CHALLENGE_KEY);
+    if (!raw) return false;
     const state: DailyChallengeState = JSON.parse(raw);
     return state.date === getTodayKey() && state.played;
   } catch {
@@ -57,14 +57,25 @@ export function hasPlayedToday(): boolean {
 
 /** Get today's result if played */
 export function getTodayResult(): { result: number; gap: number; target: number } | null {
-  const raw = localStorage.getItem(DAILY_CHALLENGE_KEY);
-  if (!raw) return null;
   try {
+    const raw = localStorage.getItem(DAILY_CHALLENGE_KEY);
+    if (!raw) return null;
     const state: DailyChallengeState = JSON.parse(raw);
-    if (state.date === getTodayKey() && state.played && state.result !== undefined && state.gap !== undefined) {
+    if (
+      state.date === getTodayKey() &&
+      state.played &&
+      typeof state.result === 'number' &&
+      Number.isFinite(state.result) &&
+      typeof state.gap === 'number' &&
+      Number.isFinite(state.gap) &&
+      typeof state.target === 'number' &&
+      Number.isFinite(state.target)
+    ) {
       return { result: state.result, gap: state.gap, target: state.target };
     }
-  } catch {}
+  } catch (error) {
+    console.warn('[DailyChallenge] Invalid saved daily result ignored:', error);
+  }
   return null;
 }
 
@@ -81,21 +92,35 @@ export function recordDailyResult(stoppedAt: number): { gap: number; target: num
     result: stoppedAt,
     gap: roundedGap,
   };
-  localStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.warn('[DailyChallenge] Unable to save daily result:', error);
+  }
   return { gap: roundedGap, target };
 }
 
 /** Get best ever daily challenge gap */
 export function getDailyBestGap(): number | null {
-  const raw = localStorage.getItem('ls_daily_challenge_best');
-  if (!raw) return null;
-  return parseFloat(raw);
+  try {
+    const raw = localStorage.getItem('ls_daily_challenge_best');
+    if (!raw) return null;
+    const parsed = parseFloat(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 export function updateDailyBest(gap: number) {
+  if (!Number.isFinite(gap)) return;
   const current = getDailyBestGap();
   if (current === null || gap < current) {
-    localStorage.setItem('ls_daily_challenge_best', String(gap));
+    try {
+      localStorage.setItem('ls_daily_challenge_best', String(gap));
+    } catch (error) {
+      console.warn('[DailyChallenge] Unable to save best gap:', error);
+    }
   }
 }
 
