@@ -92,7 +92,11 @@ export function recordDailyResult(stoppedAt: number): { gap: number; target: num
     result: stoppedAt,
     gap: roundedGap,
   };
-  localStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.warn('[DailyChallenge] Unable to save daily result:', error);
+  }
   return { gap: roundedGap, target };
 }
 
