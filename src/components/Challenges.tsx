@@ -56,6 +56,33 @@ const MODE_INFO = {
 
 const MAX_LEVEL = 10;
 
+const createInitialChallengeProgress = (): Record<string, ChallengeProgress> => {
+  const initial: Record<string, ChallengeProgress> = {};
+  Object.keys(ModeID).forEach(key => {
+    const mode = ModeID[key as keyof typeof ModeID];
+    initial[mode] = { mode, currentLevel: 0, pendingRewards: [], lastCheckedScore: 0 };
+  });
+  return initial;
+};
+
+const normalizeChallengeProgress = (value: unknown): Record<string, ChallengeProgress> => {
+  const initial = createInitialChallengeProgress();
+  if (!value || typeof value !== 'object') return initial;
+
+  Object.keys(initial).forEach(mode => {
+    const entry = (value as Record<string, Partial<ChallengeProgress> | undefined>)[mode];
+    if (!entry || typeof entry !== 'object') return;
+    initial[mode] = {
+      mode,
+      currentLevel: Number.isFinite(entry.currentLevel) ? Number(entry.currentLevel) : 0,
+      pendingRewards: Array.isArray(entry.pendingRewards) ? entry.pendingRewards.filter((reward): reward is number => typeof reward === 'number' && Number.isFinite(reward)) : [],
+      lastCheckedScore: Number.isFinite(entry.lastCheckedScore) ? Number(entry.lastCheckedScore) : 0,
+    };
+  });
+
+  return initial;
+};
+
 export const Challenges: React.FC<ChallengesProps> = ({
   onBack,
   currentScore,
@@ -74,16 +101,16 @@ export const Challenges: React.FC<ChallengesProps> = ({
   
   // Lire le nombre de parties directement depuis localStorage à chaque rendu
   const getActualGamesPlayed = (): number => {
-    const saved = localStorage.getItem('luckyStopGame');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('luckyStopGame');
+      if (saved) {
         const data = JSON.parse(saved);
-        return data.totalGamesPlayed || 0;
-      } catch (e) {
-        return totalGamesPlayed;
+        return typeof data.totalGamesPlayed === 'number' && Number.isFinite(data.totalGamesPlayed) ? data.totalGamesPlayed : 0;
       }
+    } catch (e) {
+      console.warn('[Challenges] Unable to read games played:', e);
     }
-    return totalGamesPlayed;
+    return typeof totalGamesPlayed === 'number' && Number.isFinite(totalGamesPlayed) ? totalGamesPlayed : 0;
   };
   
   const actualGamesPlayed = getActualGamesPlayed();
@@ -93,51 +120,61 @@ export const Challenges: React.FC<ChallengesProps> = ({
   }, []);
 
   const getChallengeProgress = (): Record<string, ChallengeProgress> => {
-    const saved = localStorage.getItem('challengeProgress');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      Object.keys(parsed).forEach(key => {
-        if (!parsed[key].pendingRewards) {
-          parsed[key].pendingRewards = [];
-          parsed[key].lastCheckedScore = 0;
-        }
-      });
-      return parsed;
+    try {
+      const saved = localStorage.getItem('challengeProgress');
+      if (saved) return normalizeChallengeProgress(JSON.parse(saved));
+    } catch (e) {
+      console.warn('[Challenges] Invalid challenge progress ignored:', e);
     }
-    const initial: Record<string, ChallengeProgress> = {};
-    Object.keys(ModeID).forEach(key => {
-      const mode = ModeID[key as keyof typeof ModeID];
-      initial[mode] = { mode, currentLevel: 0, pendingRewards: [], lastCheckedScore: 0 };
-    });
-    return initial;
+    return createInitialChallengeProgress();
   };
 
   const saveChallengeProgress = (progress: Record<string, ChallengeProgress>) => {
-    localStorage.setItem('challengeProgress', JSON.stringify(progress));
+    try {
+      localStorage.setItem('challengeProgress', JSON.stringify(progress));
+    } catch (e) {
+      console.warn('[Challenges] Unable to save challenge progress:', e);
+    }
   };
 
   const getBestScoreForMode = (mode: string): number => {
-    const saved = localStorage.getItem('luckyStopGame');
-    if (!saved) return 0;
-    const data = JSON.parse(saved);
-    return data[`bestScore_${mode}`] || 0;
+    try {
+      const saved = localStorage.getItem('luckyStopGame');
+      if (!saved) return 0;
+      const data = JSON.parse(saved);
+      const value = data[`bestScore_${mode}`];
+      return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+    } catch (e) {
+      console.warn('[Challenges] Unable to read best score:', e);
+      return 0;
+    }
   };
 
   const getGamesPlayedProgress = (): GamesPlayedProgress => {
-    const saved = localStorage.getItem('gamesPlayedProgress');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (!parsed.pendingRewards) {
-        parsed.pendingRewards = [];
-        parsed.lastCheckedGames = 0;
+    try {
+      const saved = localStorage.getItem('gamesPlayedProgress');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          currentLevel: Number.isFinite(parsed?.currentLevel) ? Number(parsed.currentLevel) : 0,
+          pendingRewards: Array.isArray(parsed?.pendingRewards)
+            ? parsed.pendingRewards.filter((boost): boost is BoostType => typeof boost === 'string' && boost in BOOSTS)
+            : [],
+          lastCheckedGames: Number.isFinite(parsed?.lastCheckedGames) ? Number(parsed.lastCheckedGames) : 0,
+        };
       }
-      return parsed;
+    } catch (e) {
+      console.warn('[Challenges] Invalid games played progress ignored:', e);
     }
     return { currentLevel: 0, pendingRewards: [], lastCheckedGames: 0 };
   };
 
   const saveGamesPlayedProgress = (progress: GamesPlayedProgress) => {
-    localStorage.setItem('gamesPlayedProgress', JSON.stringify(progress));
+    try {
+      localStorage.setItem('gamesPlayedProgress', JSON.stringify(progress));
+    } catch (e) {
+      console.warn('[Challenges] Unable to save games played progress:', e);
+    }
   };
 
   const getRandomBoost = (): BoostType => {
