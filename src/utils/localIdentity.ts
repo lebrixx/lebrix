@@ -10,18 +10,30 @@ export interface LocalIdentity {
 }
 
 export function getDeviceId(): string {
-  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
-  
-  if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem(DEVICE_ID_KEY, deviceId);
+  try {
+    let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+    
+    if (!deviceId) {
+      deviceId = typeof crypto?.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `device_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem(DEVICE_ID_KEY, deviceId);
+    }
+    
+    return deviceId;
+  } catch (error) {
+    console.warn('[LocalIdentity] Unable to persist device id:', error);
+    return `device_fallback_${Date.now()}`;
   }
-  
-  return deviceId;
 }
 
 export function getUsername(): string | null {
-  return localStorage.getItem(USERNAME_KEY);
+  try {
+    return localStorage.getItem(USERNAME_KEY);
+  } catch (error) {
+    console.warn('[LocalIdentity] Unable to read username:', error);
+    return null;
+  }
 }
 
 export function getUsernameChangesCount(): number {
