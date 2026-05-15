@@ -56,6 +56,33 @@ const MODE_INFO = {
 
 const MAX_LEVEL = 10;
 
+const createInitialChallengeProgress = (): Record<string, ChallengeProgress> => {
+  const initial: Record<string, ChallengeProgress> = {};
+  Object.keys(ModeID).forEach(key => {
+    const mode = ModeID[key as keyof typeof ModeID];
+    initial[mode] = { mode, currentLevel: 0, pendingRewards: [], lastCheckedScore: 0 };
+  });
+  return initial;
+};
+
+const normalizeChallengeProgress = (value: unknown): Record<string, ChallengeProgress> => {
+  const initial = createInitialChallengeProgress();
+  if (!value || typeof value !== 'object') return initial;
+
+  Object.keys(initial).forEach(mode => {
+    const entry = (value as Record<string, Partial<ChallengeProgress> | undefined>)[mode];
+    if (!entry || typeof entry !== 'object') return;
+    initial[mode] = {
+      mode,
+      currentLevel: Number.isFinite(entry.currentLevel) ? Number(entry.currentLevel) : 0,
+      pendingRewards: Array.isArray(entry.pendingRewards) ? entry.pendingRewards.filter((reward): reward is number => typeof reward === 'number' && Number.isFinite(reward)) : [],
+      lastCheckedScore: Number.isFinite(entry.lastCheckedScore) ? Number(entry.lastCheckedScore) : 0,
+    };
+  });
+
+  return initial;
+};
+
 export const Challenges: React.FC<ChallengesProps> = ({
   onBack,
   currentScore,
