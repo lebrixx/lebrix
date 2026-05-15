@@ -147,12 +147,20 @@ export function getDailyChallengeProgress(): DailyChallengeProgress {
   
   // Créer une nouvelle progression vide
   const empty = createEmptyProgress(today);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(empty));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(empty));
+  } catch (e) {
+    console.warn('[DailyChallenges] Unable to save fresh progress:', e);
+  }
   return empty;
 }
 
 function saveProgress(progress: DailyChallengeProgress): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (e) {
+    console.warn('[DailyChallenges] Unable to save progress:', e);
+  }
 }
 
 // FONCTION PRINCIPALE - appelée après chaque partie terminée
@@ -257,6 +265,10 @@ export function hasPendingDailyChallengeRewards(): boolean {
 export function resetDailyChallenges(): void {
   const today = getTodayDate();
   const empty = createEmptyProgress(today);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(empty));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(empty));
+  } catch (e) {
+    console.warn('[DailyChallenges] Unable to reset progress:', e);
+  }
   console.log('[DailyChallenges] Reset effectué');
 }
