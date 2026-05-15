@@ -151,20 +151,30 @@ export const Challenges: React.FC<ChallengesProps> = ({
   };
 
   const getGamesPlayedProgress = (): GamesPlayedProgress => {
-    const saved = localStorage.getItem('gamesPlayedProgress');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (!parsed.pendingRewards) {
-        parsed.pendingRewards = [];
-        parsed.lastCheckedGames = 0;
+    try {
+      const saved = localStorage.getItem('gamesPlayedProgress');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          currentLevel: Number.isFinite(parsed?.currentLevel) ? Number(parsed.currentLevel) : 0,
+          pendingRewards: Array.isArray(parsed?.pendingRewards)
+            ? parsed.pendingRewards.filter((boost): boost is BoostType => typeof boost === 'string' && boost in BOOSTS)
+            : [],
+          lastCheckedGames: Number.isFinite(parsed?.lastCheckedGames) ? Number(parsed.lastCheckedGames) : 0,
+        };
       }
-      return parsed;
+    } catch (e) {
+      console.warn('[Challenges] Invalid games played progress ignored:', e);
     }
     return { currentLevel: 0, pendingRewards: [], lastCheckedGames: 0 };
   };
 
   const saveGamesPlayedProgress = (progress: GamesPlayedProgress) => {
-    localStorage.setItem('gamesPlayedProgress', JSON.stringify(progress));
+    try {
+      localStorage.setItem('gamesPlayedProgress', JSON.stringify(progress));
+    } catch (e) {
+      console.warn('[Challenges] Unable to save games played progress:', e);
+    }
   };
 
   const getRandomBoost = (): BoostType => {
