@@ -75,9 +75,40 @@ export const Shop: React.FC<ShopProps> = ({
   
   const [showEssentialPack, setShowEssentialPack] = useState(false);
   const [isEssentialPurchasing, setIsEssentialPurchasing] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [redeemingCode, setRedeemingCode] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
+
+  const handleRedeemCode = () => {
+    if (redeemingCode) return;
+    const code = promoCode.trim().toUpperCase();
+    if (!code) return;
+    setRedeemingCode(true);
+    try {
+      const usedRaw = localStorage.getItem('ls_used_promo_codes');
+      const used: string[] = usedRaw ? JSON.parse(usedRaw) : [];
+      if (used.includes(code)) {
+        toast({ title: 'Code déjà utilisé', description: 'Ce code a déjà été échangé.', variant: 'destructive' });
+        return;
+      }
+      if (code === 'LEBRIX2026') {
+        purchasePremiumPack();
+        onAddCoins?.(1150);
+        used.push(code);
+        localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
+        setPromoCode('');
+        toast({ title: '🎁 Code activé !', description: 'Passe de combat débloqué + 1150 coins reçus !' });
+      } else {
+        toast({ title: 'Code invalide', description: 'Vérifie ton code et réessaie.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Erreur', description: 'Impossible d\'activer le code.', variant: 'destructive' });
+    } finally {
+      setRedeemingCode(false);
+    }
+  };
 
   useEffect(() => {
     const updateCooldown = () => {
