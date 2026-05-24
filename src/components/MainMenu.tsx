@@ -281,24 +281,30 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
-          <div className="relative cursor-pointer animate-[subtle-float_3s_ease-in-out_infinite]" onClick={onOpenGlobalLeaderboard}>
+          <button
+            type="button"
+            onClick={onOpenGlobalLeaderboard}
+            className="relative group text-left animate-[subtle-float_3s_ease-in-out_infinite] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-xl"
+          >
             <div className="absolute -inset-[1px] rounded-xl overflow-hidden pointer-events-none">
               <div className="absolute w-12 h-12 rounded-full bg-primary blur-xl animate-orbit" />
             </div>
-            <Card 
-              className="relative bg-button-bg border-primary/20 p-3 text-center hover:scale-105 transition-transform duration-300 hover:border-primary/40"
+            <Card
+              className="relative bg-gradient-to-br from-primary/15 via-button-bg to-button-bg border-primary/50 p-3 pb-5 text-center transition-all duration-300 group-hover:scale-105 group-hover:border-primary group-active:scale-[0.98] shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_4px_18px_-6px_hsl(var(--primary)/0.45)]"
             >
-            <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
-            <div className="text-xl font-bold text-primary">
-              {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
-            </div>
-            <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-            <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-0.5 text-[8px] text-primary/60 pointer-events-none">
-              <span>Clic pour apercevoir</span>
-              <ChevronRight className="w-2 h-2" />
-            </div>
+              <div className="absolute top-1.5 right-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 border border-primary/40 text-primary">
+                <ChevronRight className="w-3 h-3" />
+              </div>
+              <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
+              <div className="text-xl font-bold text-primary">
+                {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
+              </div>
+              <div className="text-[10px] text-text-muted">Classement Mensuel</div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-primary/15 border border-primary/40 backdrop-blur-sm">
+                <span className="text-[8px] font-semibold uppercase tracking-wider text-primary">Voir le classement</span>
+              </div>
             </Card>
-          </div>
+          </button>
           
           <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
             <Coins className="w-6 h-6 text-secondary mx-auto mb-1" />
