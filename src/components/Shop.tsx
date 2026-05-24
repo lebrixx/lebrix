@@ -507,7 +507,38 @@ export const Shop: React.FC<ShopProps> = ({
             })}
           </div>
 
+          {/* Promo Code Section */}
+          <Card className="mt-8 p-5 border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary">
+                <Gift className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-text-primary">Code promo</h3>
+                <p className="text-xs text-text-muted">Entre un code pour débloquer des récompenses</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                placeholder="LEBRIX2026"
+                maxLength={32}
+                className="bg-button-bg border-wheel-border uppercase tracking-wider font-mono"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleRedeemCode(); }}
+              />
+              <Button
+                onClick={handleRedeemCode}
+                disabled={redeemingCode || !promoCode.trim()}
+                className="bg-gradient-primary hover:scale-105 transition-all duration-200 shrink-0"
+              >
+                {redeemingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Activer'}
+              </Button>
+            </div>
+          </Card>
+
         </TabsContent>
+
 
         {/* Game Modes Tab */}
         <TabsContent value="modes">
