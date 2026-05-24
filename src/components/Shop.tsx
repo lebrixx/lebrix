@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Package, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Package, Loader2, Gift } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { THEMES } from '@/constants/themes';
 import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
@@ -15,7 +16,7 @@ import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
-import { addDiamonds } from '@/utils/seasonPass';
+import { addDiamonds, purchasePremiumPack } from '@/utils/seasonPass';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -74,9 +75,40 @@ export const Shop: React.FC<ShopProps> = ({
   
   const [showEssentialPack, setShowEssentialPack] = useState(false);
   const [isEssentialPurchasing, setIsEssentialPurchasing] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [redeemingCode, setRedeemingCode] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
+
+  const handleRedeemCode = () => {
+    if (redeemingCode) return;
+    const code = promoCode.trim().toUpperCase();
+    if (!code) return;
+    setRedeemingCode(true);
+    try {
+      const usedRaw = localStorage.getItem('ls_used_promo_codes');
+      const used: string[] = usedRaw ? JSON.parse(usedRaw) : [];
+      if (used.includes(code)) {
+        toast({ title: 'Code déjà utilisé', description: 'Ce code a déjà été échangé.', variant: 'destructive' });
+        return;
+      }
+      if (code === 'LEBRIX2026') {
+        purchasePremiumPack();
+        onAddCoins?.(1150);
+        used.push(code);
+        localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
+        setPromoCode('');
+        toast({ title: '🎁 Code activé !', description: 'Passe de combat débloqué + 1150 coins reçus !' });
+      } else {
+        toast({ title: 'Code invalide', description: 'Vérifie ton code et réessaie.', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Erreur', description: 'Impossible d\'activer le code.', variant: 'destructive' });
+    } finally {
+      setRedeemingCode(false);
+    }
+  };
 
   useEffect(() => {
     const updateCooldown = () => {
@@ -475,7 +507,38 @@ export const Shop: React.FC<ShopProps> = ({
             })}
           </div>
 
+          {/* Promo Code Section */}
+          <Card className="mt-8 p-5 border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary">
+                <Gift className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-text-primary">Code promo</h3>
+                <p className="text-xs text-text-muted">Entre un code pour débloquer des récompenses</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                placeholder="LEBRIX2026"
+                maxLength={32}
+                className="bg-button-bg border-wheel-border uppercase tracking-wider font-mono"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleRedeemCode(); }}
+              />
+              <Button
+                onClick={handleRedeemCode}
+                disabled={redeemingCode || !promoCode.trim()}
+                className="bg-gradient-primary hover:scale-105 transition-all duration-200 shrink-0"
+              >
+                {redeemingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Activer'}
+              </Button>
+            </div>
+          </Card>
+
         </TabsContent>
+
 
         {/* Game Modes Tab */}
         <TabsContent value="modes">
