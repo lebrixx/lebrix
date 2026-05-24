@@ -522,7 +522,7 @@ export const Shop: React.FC<ShopProps> = ({
               <Input
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                placeholder="LEBRIX2026"
+                placeholder="CODE PROMO"
                 maxLength={32}
                 className="bg-button-bg border-wheel-border uppercase tracking-wider font-mono"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleRedeemCode(); }}
