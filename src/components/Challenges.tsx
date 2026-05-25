@@ -43,6 +43,7 @@ interface ChallengesProps {
   onReward: (coins: number) => void;
   onBoostReward: (boost: BoostType) => void;
   onOpenDailyChallenge?: () => void;
+  onSpendCoins?: (amount: number) => boolean;
 }
 
 const MODE_INFO = {
