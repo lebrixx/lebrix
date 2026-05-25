@@ -390,6 +390,7 @@ const Index = () => {
             onReward={addCoins}
             onBoostReward={handleBoostReward}
             onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
+            onSpendCoins={spendCoins}
           />
         );
 
