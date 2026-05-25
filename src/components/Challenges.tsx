@@ -871,6 +871,14 @@ export const Challenges: React.FC<ChallengesProps> = ({
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Season Pass Dialog */}
+      <SeasonPass
+        isOpen={showSeasonPass}
+        onClose={() => setShowSeasonPass(false)}
+        coins={coins}
+        onSpendCoins={onSpendCoins}
+      />
     </div>
   );
 };
