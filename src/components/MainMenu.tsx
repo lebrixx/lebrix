@@ -290,7 +290,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               <div className="absolute w-12 h-12 rounded-full bg-primary blur-xl animate-orbit" />
             </div>
             <Card
-              className="relative bg-gradient-to-br from-primary/15 via-button-bg to-button-bg border-primary/50 p-3 pb-5 text-center transition-all duration-300 group-hover:scale-105 group-hover:border-primary group-active:scale-[0.98] shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_4px_18px_-6px_hsl(var(--primary)/0.45)]"
+              className="relative bg-gradient-to-br from-primary/15 via-button-bg to-button-bg border-primary/50 p-3 text-center transition-all duration-300 group-hover:scale-105 group-hover:border-primary group-active:scale-[0.98] shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_4px_18px_-6px_hsl(var(--primary)/0.45)]"
             >
               <div className="absolute top-1.5 right-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 border border-primary/40 text-primary">
                 <ChevronRight className="w-3 h-3" />
@@ -300,9 +300,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
               </div>
               <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-primary/15 border border-primary/40 backdrop-blur-sm">
-                <span className="text-[8px] font-semibold uppercase tracking-wider text-primary">Voir le classement</span>
-              </div>
+              <div className="text-[9px] text-primary mt-0.5">Voir le classement</div>
             </Card>
           </button>
           
