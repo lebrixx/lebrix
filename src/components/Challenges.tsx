@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles, HelpCircle, Infinity, Crosshair, Clock, Lock } from 'lucide-react';
+import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles, HelpCircle, Infinity, Crosshair, Clock, Lock, Crown, ChevronRight } from 'lucide-react';
 import { getPongUnlockProgress, isPongUnlocked, PONG_UNLOCK_TARGET } from '@/utils/pongUnlock';
 import { ModeID } from '@/constants/modes';
 import { toast } from 'sonner';
