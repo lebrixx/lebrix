@@ -101,6 +101,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const [, forceUpdate] = useState(0);
   const [dailyChallenges, setDailyChallenges] = useState<DailyChallenge[]>([]);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [showSeasonPass, setShowSeasonPass] = useState(false);
+  
   
   // Lire le nombre de parties directement depuis localStorage à chaque rendu
   const getActualGamesPlayed = (): number => {
