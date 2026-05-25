@@ -300,7 +300,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
               </div>
               <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-              <div className="text-[9px] text-primary mt-0.5">Voir le classement</div>
+              <div className="absolute bottom-0.5 left-0 right-0 text-[8px] text-primary/80">clic pour apercevoir</div>
             </Card>
           </button>
           
