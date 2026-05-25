@@ -572,6 +572,20 @@ export const Challenges: React.FC<ChallengesProps> = ({
             })}
           </div>
 
+          {/* Lien vers Défis du Passe de Combat */}
+          <button
+            onClick={() => setShowSeasonPass(true)}
+            className="w-full flex items-center justify-between rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 px-4 py-3 cursor-pointer hover:border-primary/40 hover:from-primary/10 hover:via-secondary/10 hover:to-primary/10 transition-all active:scale-[0.98] group"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-primary/15">
+                <Crown className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-sm font-medium text-text-primary">Défis du Passe de Combat</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-primary transition-colors" />
+          </button>
+
           {/* Défi de déblocage : Pong Circulaire */}
           {(() => {
             const pongProgress = getPongUnlockProgress();
