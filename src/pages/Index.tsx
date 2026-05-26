@@ -12,6 +12,7 @@ import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
+import { Reflex3DMode } from '@/components/Reflex3DMode';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -29,7 +30,7 @@ import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard' | 'reflex_3d';
 
 const Index = () => {
   const { language } = useLanguage();
