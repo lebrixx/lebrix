@@ -417,6 +417,20 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
               onOpenShop={() => setCurrentScreen('shop')}
               onOpenChallenges={() => setCurrentScreen('challenges')}
+              onSelectReflex3D={() => setCurrentScreen('reflex_3d')}
+            />
+          );
+
+        case 'reflex_3d':
+          return (
+            <Reflex3DMode
+              theme={currentTheme}
+              onBack={() => setCurrentScreen('modes')}
+              isSoundMuted={isMuted}
+              onToggleSound={toggleMute}
+              playClick={playClick}
+              playSuccess={playSuccess}
+              playFailure={playFailure}
             />
           );
           
