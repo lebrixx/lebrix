@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2 } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
@@ -18,6 +18,7 @@ interface ModeSelectionProps {
   onBack: () => void;
   onOpenShop: () => void;
   onOpenChallenges?: () => void;
+  onSelectReflex3D?: () => void;
 }
 
 const getModeIcon = (modeId: ModeType) => {
@@ -50,6 +51,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onBack,
   onOpenShop,
   onOpenChallenges,
+  onSelectReflex3D,
 }) => {
   const isGameRunning = gameStatus === 'running';
   const { language } = useLanguage();
