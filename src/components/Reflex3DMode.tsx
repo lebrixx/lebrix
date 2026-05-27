@@ -46,6 +46,19 @@ const angleInArc = (a: number, start: number, arc: number) => {
   return x >= s || x <= e;
 };
 
+const pointerHitsZone = (event: React.PointerEvent<HTMLDivElement>, start: number, arc: number) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = event.clientX - cx;
+  const dy = cy - event.clientY;
+  const dist = Math.hypot(dx, dy);
+  const shortSide = Math.min(rect.width, rect.height);
+
+  if (dist < shortSide * 0.18 || dist > shortSide * 0.46) return false;
+  return angleInArc(Math.atan2(dy, dx), start - 0.08, arc + 0.16);
+};
+
 interface EngineRefs {
   ballAngle: { current: number };
   ballDir: { current: number };
@@ -362,7 +375,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
     try { (navigator as any).vibrate?.(80); } catch {}
   }, [engine, playFailure]);
 
-  const handleTap = useCallback(() => {
+  const handleTap = useCallback((forceSuccess = false) => {
     const now = performance.now();
     if (now - lastTapRef.current < DEBOUNCE_MS) return;
     lastTapRef.current = now;
@@ -373,7 +386,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
       return;
     }
 
-    const inZone = angleInArc(
+    const inZone = forceSuccess || angleInArc(
       engine.ballAngle.current,
       engine.zoneStart.current,
       engine.zoneArc.current
@@ -409,7 +422,12 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
 
   const handleArenaPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
-    handleTap();
+    const clickedGreenZone = status === 'running' && pointerHitsZone(
+      event,
+      engine.zoneStart.current,
+      engine.zoneArc.current
+    );
+    handleTap(clickedGreenZone);
   }, [handleTap]);
 
   const handleReset = useCallback(() => {
