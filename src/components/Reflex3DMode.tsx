@@ -59,6 +59,10 @@ const pointerHitsZone = (event: React.PointerEvent<HTMLDivElement>, start: numbe
   return angleInArc(Math.atan2(dy, dx), start - 0.08, arc + 0.16);
 };
 
+const getTorusArc = (geometry: THREE.BufferGeometry) => {
+  return (geometry as THREE.TorusGeometry).parameters.arc;
+};
+
 interface EngineRefs {
   ballAngle: { current: number };
   ballDir: { current: number };
@@ -136,7 +140,7 @@ const ArenaScene: React.FC<{
     if (zoneMeshRef.current) {
       const geom = zoneMeshRef.current.geometry as THREE.TorusGeometry;
       const arc = e.zoneArc.current;
-      if (Math.abs((geom.parameters as any).arc - arc) > 0.005) {
+      if (Math.abs(getTorusArc(geom) - arc) > 0.005) {
         geom.dispose();
         zoneMeshRef.current.geometry = new THREE.TorusGeometry(RING_R, 0.18, 16, 64, arc);
       }
@@ -156,7 +160,7 @@ const ArenaScene: React.FC<{
       if (m) {
         const geom = m.geometry as THREE.TorusGeometry;
         const arc = e.zoneArc.current * 0.85;
-        if (Math.abs((geom.parameters as any).arc - arc) > 0.005) {
+        if (Math.abs(getTorusArc(geom) - arc) > 0.005) {
           geom.dispose();
           m.geometry = new THREE.TorusGeometry(RING_R, 0.14, 12, 48, arc);
         }
@@ -369,10 +373,12 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         const data = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
         data[BEST_KEY] = next;
         localStorage.setItem('luckyStopGame', JSON.stringify(data));
-      } catch {}
+      } catch {
+        return next;
+      }
       return next;
     });
-    try { (navigator as any).vibrate?.(80); } catch {}
+    navigator.vibrate?.(80);
   }, [engine, playFailure]);
 
   const handleTap = useCallback((forceSuccess = false) => {
@@ -401,7 +407,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
       engine.flash.current = 1;
       engine.flashTime.current = now / 1000;
       setTimeout(() => setFlashOverlay(null), 160);
-      try { (navigator as any).vibrate?.(15); } catch {}
+      navigator.vibrate?.(15);
 
       if (newScore > 5) {
         engine.speed.current = Math.min(MAX_SPEED, engine.speed.current * SPEED_GAIN);
