@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,9 @@ interface Reflex3DModeProps {
   playFailure?: () => void;
 }
 
-const RING_R = 2.4;
-const BALL_R = 0.18;
+const RING_R = 1.9;
+const BALL_R = 0.16;
+const CAMERA_FOV = 50;
 const BASE_ZONE_ARC = Math.PI / 4;
 const MIN_ZONE_ARC = Math.PI / 11;
 const BASE_SPEED = 1.5;
@@ -57,6 +58,26 @@ interface EngineRefs {
   flash: { current: 0 | 1 | -1 };
   flashTime: { current: number };
 }
+
+const ResponsiveCamera = () => {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    const aspect = Math.max(0.1, size.width / Math.max(1, size.height));
+    const visibleRadius = RING_R + 0.55;
+    const fov = THREE.MathUtils.degToRad(camera.fov);
+    const margin = 1.22;
+    const distanceForHeight = (visibleRadius * margin) / Math.tan(fov / 2);
+    const distanceForWidth = (visibleRadius * margin) / (Math.tan(fov / 2) * aspect);
+
+    camera.position.set(0, 0, Math.max(7.2, distanceForHeight, distanceForWidth));
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [camera, size.height, size.width]);
+
+  return null;
+};
 
 const ArenaScene: React.FC<{
   engine: EngineRefs;
