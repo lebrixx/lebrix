@@ -407,27 +407,48 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
     }
   }, [engine, endGame, placeZone, playClick, playSuccess, startGame, status]);
 
+  const handleArenaPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    handleTap();
+  }, [handleTap]);
+
   const handleReset = useCallback(() => {
     setStatus('idle');
     setScore(0);
     engine.score.current = 0;
+    engine.status.current = 'idle';
     engine.flash.current = 0;
+    engine.flashTime.current = 0;
+    lastTapRef.current = 0;
     resetEngine();
     setFlashOverlay(null);
   }, [engine, resetEngine]);
+
+  const replayGame = useCallback(() => {
+    lastTapRef.current = 0;
+    setScore(0);
+    engine.score.current = 0;
+    engine.status.current = 'running';
+    engine.flash.current = 0;
+    engine.flashTime.current = 0;
+    resetEngine();
+    setFlashOverlay(null);
+    setStatus('running');
+    playClick();
+  }, [engine, playClick, resetEngine]);
 
   return (
     <div
       className="fixed inset-0 w-full h-full flex flex-col items-center justify-start overflow-hidden select-none"
       style={{ background: backgroundCss, touchAction: 'none' }}
-      onPointerDown={handleTap}
     >
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" onPointerDown={handleArenaPointerDown}>
         <Canvas
-          camera={{ position: [0, 0, 6.2], fov: 55 }}
+          camera={{ position: [0, 0, 8], fov: CAMERA_FOV }}
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
+          <ResponsiveCamera />
           <Suspense fallback={null}>
             <ArenaScene
               engine={engine}
@@ -519,7 +540,8 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
           </p>
           <div className="flex gap-3 mt-2">
             <Button
-              onClick={(e) => { e.stopPropagation(); handleReset(); startGame(); }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); replayGame(); }}
               className="bg-gradient-primary hover:scale-105 transition-transform shadow-glow-primary"
             >
               <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
