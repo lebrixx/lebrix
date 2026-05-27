@@ -150,14 +150,12 @@ const ArenaScene: React.FC<{
       }
     });
 
-    // Arena tilt: subtle breathing for 3D feel, no off-screen drift
+    // Arena tilt: subtle 3D feel without moving the ring out of frame.
     if (tiltRef.current) {
-      const sc = e.score.current;
-      const baseTilt = -0.55;
-      const breathe = Math.sin(t * 0.6) * 0.04;
-      const dynamic = sc >= 15 ? Math.sin(t * 0.8) * 0.08 : 0;
-      tiltRef.current.rotation.x = baseTilt + breathe + dynamic;
-      tiltRef.current.rotation.z = sc >= 25 ? Math.sin(t * 0.5) * 0.06 : 0;
+      const breathe = Math.sin(t * 0.6) * 0.025;
+      tiltRef.current.rotation.x = -0.32 + breathe;
+      tiltRef.current.rotation.y = Math.sin(t * 0.45) * 0.035;
+      tiltRef.current.rotation.z = 0;
     }
 
     // Failure shake on group, not camera (keeps things on-screen)
@@ -179,7 +177,7 @@ const ArenaScene: React.FC<{
       <pointLight position={[3, -2, 3]} intensity={0.6} color={zoneColor} distance={15} />
       <pointLight position={[-3, 2, 2]} intensity={0.4} color="#ff5470" distance={15} />
 
-      <Stars radius={50} depth={30} count={900} factor={2.5} fade speed={0.4} />
+      <Stars radius={42} depth={24} count={650} factor={2.2} fade speed={0.25} />
 
       <group ref={tiltRef}>
         {/* Glow disc behind ring */}
@@ -234,7 +232,7 @@ const ArenaScene: React.FC<{
           </group>
         ))}
 
-        <Sparkles count={30} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={2} speed={0.3} color={ringColor} opacity={0.5} />
+        <Sparkles count={22} scale={[RING_R * 2.2, RING_R * 2.2, 1]} size={1.6} speed={0.25} color={ringColor} opacity={0.45} />
 
 
         {/* Ball */}
