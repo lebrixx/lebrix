@@ -70,8 +70,6 @@ const ArenaScene: React.FC<{
   const zoneMeshRef = useRef<THREE.Mesh>(null);
   const decoyGroupRefs = useRef<(THREE.Group | null)[]>([]);
   const decoyMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const trailPointsRef = useRef<THREE.Vector3[]>([]);
-  const trailLineRef = useRef<THREE.Line>(null);
 
   useFrame((state, delta) => {
     const dt = Math.min(0.05, delta);
@@ -95,14 +93,6 @@ const ArenaScene: React.FC<{
       const since = t - e.flashTime.current;
       const pulse = e.flash.current && since < 0.25 ? 1 + (0.25 - since) * 2 : 1;
       ballRef.current.scale.setScalar(pulse);
-
-      // Trail
-      trailPointsRef.current.push(new THREE.Vector3(x, y, 0));
-      if (trailPointsRef.current.length > 14) trailPointsRef.current.shift();
-      if (trailLineRef.current) {
-        const geom = trailLineRef.current.geometry as THREE.BufferGeometry;
-        geom.setFromPoints(trailPointsRef.current);
-      }
     }
 
     // Zone rotation (around Z = around arena normal)
@@ -225,12 +215,6 @@ const ArenaScene: React.FC<{
 
         <Sparkles count={30} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={2} speed={0.3} color={ringColor} opacity={0.5} />
 
-        {/* Trail line */}
-        {/* @ts-ignore - line is a valid three element */}
-        <line ref={trailLineRef as any}>
-          <bufferGeometry />
-          <lineBasicMaterial color={ballColor} transparent opacity={0.6} linewidth={2} />
-        </line>
 
         {/* Ball */}
         <mesh ref={ballRef}>
