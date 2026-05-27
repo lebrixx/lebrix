@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Stars, Trail, Sparkles } from '@react-three/drei';
+import { Stars, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, RotateCcw, Volume2, VolumeX, Sparkles as SparkIcon } from 'lucide-react';
@@ -8,8 +8,9 @@ import { THEMES } from '@/constants/themes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
 /**
- * Reflex 3D — real Three.js arena.
- * Self-contained. No leaderboard. No mode registry impact.
+ * Reflex 3D — Three.js arena (stable build).
+ * Arena lives in the XY plane, tilted by a parent group for a 3D feel.
+ * Camera is fixed: no orbit, no off-screen drift.
  */
 
 interface Reflex3DModeProps {
@@ -22,12 +23,11 @@ interface Reflex3DModeProps {
   playFailure?: () => void;
 }
 
-// ─── Tunables ───
-const RING_R = 3;                 // ring radius (world units)
+const RING_R = 2.4;
 const BALL_R = 0.18;
 const BASE_ZONE_ARC = Math.PI / 4;
 const MIN_ZONE_ARC = Math.PI / 11;
-const BASE_SPEED = 1.5;           // rad/s
+const BASE_SPEED = 1.5;
 const SPEED_GAIN = 1.045;
 const MAX_SPEED = 7.5;
 const SHRINK_EVERY = 5;
@@ -45,7 +45,6 @@ const angleInArc = (a: number, start: number, arc: number) => {
   return x >= s || x <= e;
 };
 
-// ─── Shared engine state via mutable ref bag ───
 interface EngineRefs {
   ballAngle: { current: number };
   ballDir: { current: number };
@@ -55,210 +54,199 @@ interface EngineRefs {
   fakeZones: { current: number[] };
   status: { current: 'idle' | 'running' | 'gameover' };
   score: { current: number };
-  flash: { current: 0 | 1 | -1 }; // 0 none, 1 success, -1 failure
+  flash: { current: 0 | 1 | -1 };
   flashTime: { current: number };
 }
 
-// ─── 3D Scene ───
 const ArenaScene: React.FC<{
   engine: EngineRefs;
   zoneColor: string;
   ballColor: string;
   ringColor: string;
 }> = ({ engine, zoneColor, ballColor, ringColor }) => {
-  const groupRef = useRef<THREE.Group>(null);
+  const tiltRef = useRef<THREE.Group>(null);
   const ballRef = useRef<THREE.Mesh>(null);
-  const zoneRef = useRef<THREE.Mesh>(null);
-  const decoyRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const cameraOrbitRef = useRef(0);
-
-  const zoneColorObj = useMemo(() => new THREE.Color(zoneColor), [zoneColor]);
-  const ballColorObj = useMemo(() => new THREE.Color(ballColor), [ballColor]);
+  const zoneGroupRef = useRef<THREE.Group>(null);
+  const zoneMeshRef = useRef<THREE.Mesh>(null);
+  const decoyGroupRefs = useRef<(THREE.Group | null)[]>([]);
+  const decoyMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const trailPointsRef = useRef<THREE.Vector3[]>([]);
+  const trailLineRef = useRef<THREE.Line>(null);
 
   useFrame((state, delta) => {
     const dt = Math.min(0.05, delta);
     const e = engine;
+    const t = state.clock.elapsedTime;
 
-    // Update ball position
+    // Update ball angle
     if (e.status.current === 'running') {
       e.ballAngle.current = norm(
         e.ballAngle.current + e.ballDir.current * e.speed.current * dt
       );
     }
 
-    // Ball pos (on ring in XZ plane, slight Y bob)
+    // Ball position in XY plane (arena plane)
     if (ballRef.current) {
       const a = e.ballAngle.current;
-      ballRef.current.position.set(
-        Math.cos(a) * RING_R,
-        Math.sin(state.clock.elapsedTime * 6) * 0.04,
-        Math.sin(a) * RING_R
-      );
-      // pulse on flash
-      const since = state.clock.elapsedTime - e.flashTime.current;
+      const x = Math.cos(a) * RING_R;
+      const y = Math.sin(a) * RING_R;
+      ballRef.current.position.set(x, y, 0);
+
+      const since = t - e.flashTime.current;
       const pulse = e.flash.current && since < 0.25 ? 1 + (0.25 - since) * 2 : 1;
       ballRef.current.scale.setScalar(pulse);
+
+      // Trail
+      trailPointsRef.current.push(new THREE.Vector3(x, y, 0));
+      if (trailPointsRef.current.length > 14) trailPointsRef.current.shift();
+      if (trailLineRef.current) {
+        const geom = trailLineRef.current.geometry as THREE.BufferGeometry;
+        geom.setFromPoints(trailPointsRef.current);
+      }
     }
 
-    // Update green zone geometry transform
-    if (zoneRef.current) {
-      zoneRef.current.rotation.z = e.zoneStart.current;
+    // Zone rotation (around Z = around arena normal)
+    if (zoneGroupRef.current) {
+      zoneGroupRef.current.rotation.z = e.zoneStart.current;
+    }
+    if (zoneMeshRef.current) {
+      const geom = zoneMeshRef.current.geometry as THREE.TorusGeometry;
       const arc = e.zoneArc.current;
-      const geom = zoneRef.current.geometry as THREE.TorusGeometry;
-      // Rebuild geometry only if arc changed meaningfully
-      const targetArc = arc;
-      if (Math.abs((geom.parameters as any).arc - targetArc) > 0.005) {
-        geom.dispose();
-        zoneRef.current.geometry = new THREE.TorusGeometry(RING_R, 0.22, 16, 64, targetArc);
-      }
-    }
-
-    // Decoy zones
-    decoyRefs.current.forEach((m, i) => {
-      if (!m) return;
-      const start = e.fakeZones.current[i];
-      if (start === undefined) {
-        m.visible = false;
-        return;
-      }
-      m.visible = true;
-      m.rotation.z = start;
-      const geom = m.geometry as THREE.TorusGeometry;
-      const arc = e.zoneArc.current * 0.85;
       if (Math.abs((geom.parameters as any).arc - arc) > 0.005) {
         geom.dispose();
-        m.geometry = new THREE.TorusGeometry(RING_R, 0.16, 12, 48, arc);
+        zoneMeshRef.current.geometry = new THREE.TorusGeometry(RING_R, 0.18, 16, 64, arc);
+      }
+    }
+
+    // Decoys
+    decoyGroupRefs.current.forEach((g, i) => {
+      const start = e.fakeZones.current[i];
+      if (!g) return;
+      if (start === undefined) {
+        g.visible = false;
+        return;
+      }
+      g.visible = true;
+      g.rotation.z = start;
+      const m = decoyMeshRefs.current[i];
+      if (m) {
+        const geom = m.geometry as THREE.TorusGeometry;
+        const arc = e.zoneArc.current * 0.85;
+        if (Math.abs((geom.parameters as any).arc - arc) > 0.005) {
+          geom.dispose();
+          m.geometry = new THREE.TorusGeometry(RING_R, 0.14, 12, 48, arc);
+        }
       }
     });
 
-    // Camera orbit (kicks in after score 10)
-    if (e.status.current === 'running' && e.score.current >= 10) {
-      cameraOrbitRef.current += dt * 0.15;
-    }
-    const orbit = cameraOrbitRef.current;
-    const camRadius = 7.2;
-    const camHeight = 4.2;
-    state.camera.position.x = Math.sin(orbit) * camRadius;
-    state.camera.position.z = Math.cos(orbit) * camRadius;
-    state.camera.position.y = camHeight + Math.sin(state.clock.elapsedTime * 0.3) * 0.2;
-    state.camera.lookAt(0, 0, 0);
-
-    // Tilt the arena (oscillates after 15 pts)
-    if (groupRef.current) {
+    // Arena tilt: subtle breathing for 3D feel, no off-screen drift
+    if (tiltRef.current) {
       const sc = e.score.current;
-      const tilt = sc >= 15 ? Math.sin(state.clock.elapsedTime * 0.5) * Math.min(0.25, (sc - 15) * 0.01) : 0;
-      groupRef.current.rotation.x = tilt;
-      groupRef.current.rotation.y = sc >= 25 ? Math.sin(state.clock.elapsedTime * 0.4) * 0.1 : 0;
+      const baseTilt = -0.55;
+      const breathe = Math.sin(t * 0.6) * 0.04;
+      const dynamic = sc >= 15 ? Math.sin(t * 0.8) * 0.08 : 0;
+      tiltRef.current.rotation.x = baseTilt + breathe + dynamic;
+      tiltRef.current.rotation.z = sc >= 25 ? Math.sin(t * 0.5) * 0.06 : 0;
     }
 
-    // Failure camera shake
-    if (e.flash.current === -1) {
-      const since = state.clock.elapsedTime - e.flashTime.current;
+    // Failure shake on group, not camera (keeps things on-screen)
+    if (e.flash.current === -1 && tiltRef.current) {
+      const since = t - e.flashTime.current;
       if (since < 0.35) {
-        state.camera.position.x += (Math.random() - 0.5) * 0.25;
-        state.camera.position.y += (Math.random() - 0.5) * 0.25;
+        tiltRef.current.position.x = (Math.random() - 0.5) * 0.15;
+        tiltRef.current.position.y = (Math.random() - 0.5) * 0.15;
+      } else {
+        tiltRef.current.position.set(0, 0, 0);
       }
     }
   });
 
   return (
     <group>
-      {/* Lighting */}
-      <ambientLight intensity={0.35} />
-      <pointLight position={[0, 6, 0]} intensity={1.4} color={ringColor} distance={20} />
-      <pointLight position={[5, 2, 5]} intensity={0.6} color={zoneColor} distance={15} />
-      <pointLight position={[-5, 2, -5]} intensity={0.4} color="#ff5470" distance={15} />
+      <ambientLight intensity={0.5} />
+      <pointLight position={[0, 3, 4]} intensity={1.2} color={ringColor} distance={20} />
+      <pointLight position={[3, -2, 3]} intensity={0.6} color={zoneColor} distance={15} />
+      <pointLight position={[-3, 2, 2]} intensity={0.4} color="#ff5470" distance={15} />
 
-      {/* Background stars */}
-      <Stars radius={60} depth={40} count={1200} factor={3} fade speed={0.5} />
+      <Stars radius={50} depth={30} count={900} factor={2.5} fade speed={0.4} />
 
-      {/* Floor disc for depth perception */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.6, 0]}>
-        <ringGeometry args={[RING_R - 0.5, RING_R + 1.2, 64]} />
-        <meshBasicMaterial color={ringColor} transparent opacity={0.06} side={THREE.DoubleSide} />
-      </mesh>
-
-      {/* Arena group — tilted for 3D feel */}
-      <group ref={groupRef} rotation={[0, 0, 0]}>
-        {/* Inner glow disc */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[RING_R - 0.3, 64]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.04} />
+      <group ref={tiltRef}>
+        {/* Glow disc behind ring */}
+        <mesh position={[0, 0, -0.05]}>
+          <circleGeometry args={[RING_R + 0.6, 64]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.05} />
         </mesh>
 
-        {/* Main ring (torus laid flat, axis = Y) */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[RING_R, 0.06, 24, 128]} />
+        {/* Main ring */}
+        <mesh>
+          <torusGeometry args={[RING_R, 0.05, 20, 128]} />
           <meshStandardMaterial
             color={ringColor}
             emissive={ringColor}
-            emissiveIntensity={0.8}
-            metalness={0.6}
+            emissiveIntensity={0.9}
+            metalness={0.5}
             roughness={0.3}
           />
         </mesh>
 
-        {/* Secondary outer ring for visual richness */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[RING_R + 0.35, 0.015, 12, 96]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.4} />
+        {/* Outer accent ring */}
+        <mesh>
+          <torusGeometry args={[RING_R + 0.28, 0.012, 8, 96]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.45} />
         </mesh>
 
-        {/* Green target zone — torus arc, laid flat */}
-        <mesh ref={zoneRef} rotation={[-Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[RING_R, 0.22, 16, 64, BASE_ZONE_ARC]} />
+        {/* Target zone (rotated around Z) */}
+        <group ref={zoneGroupRef}>
+          <mesh ref={zoneMeshRef}>
+            <torusGeometry args={[RING_R, 0.18, 16, 64, BASE_ZONE_ARC]} />
+            <meshStandardMaterial
+              color={zoneColor}
+              emissive={zoneColor}
+              emissiveIntensity={2.2}
+              toneMapped={false}
+            />
+          </mesh>
+        </group>
+
+        {/* Decoys */}
+        {[0, 1].map((i) => (
+          <group key={i} ref={(el) => (decoyGroupRefs.current[i] = el)} visible={false}>
+            <mesh ref={(el) => (decoyMeshRefs.current[i] = el)}>
+              <torusGeometry args={[RING_R, 0.14, 12, 48, BASE_ZONE_ARC * 0.85]} />
+              <meshStandardMaterial
+                color="#ff5470"
+                emissive="#ff2255"
+                emissiveIntensity={1.4}
+                toneMapped={false}
+              />
+            </mesh>
+          </group>
+        ))}
+
+        <Sparkles count={30} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={2} speed={0.3} color={ringColor} opacity={0.5} />
+
+        {/* Trail line */}
+        {/* @ts-ignore - line is a valid three element */}
+        <line ref={trailLineRef as any}>
+          <bufferGeometry />
+          <lineBasicMaterial color={ballColor} transparent opacity={0.6} linewidth={2} />
+        </line>
+
+        {/* Ball */}
+        <mesh ref={ballRef}>
+          <sphereGeometry args={[BALL_R, 24, 24]} />
           <meshStandardMaterial
-            color={zoneColor}
-            emissive={zoneColor}
-            emissiveIntensity={2.2}
+            color={ballColor}
+            emissive={ballColor}
+            emissiveIntensity={3}
             toneMapped={false}
           />
         </mesh>
-
-        {/* Decoy red zones (up to 2) */}
-        {[0, 1].map((i) => (
-          <mesh
-            key={i}
-            ref={(el) => (decoyRefs.current[i] = el)}
-            rotation={[-Math.PI / 2, 0, 0]}
-            visible={false}
-          >
-            <torusGeometry args={[RING_R, 0.16, 12, 48, BASE_ZONE_ARC * 0.85]} />
-            <meshStandardMaterial
-              color="#ff5470"
-              emissive="#ff2255"
-              emissiveIntensity={1.4}
-              toneMapped={false}
-            />
-          </mesh>
-        ))}
-
-        {/* Sparkles inside arena */}
-        <Sparkles count={40} scale={[RING_R * 2.5, 1.2, RING_R * 2.5]} size={2} speed={0.3} color={ringColor} opacity={0.5} />
-
-        {/* Ball with trail */}
-        <Trail
-          width={0.6}
-          length={5}
-          color={new THREE.Color(ballColor)}
-          attenuation={(t) => t * t}
-        >
-          <mesh ref={ballRef}>
-            <sphereGeometry args={[BALL_R, 24, 24]} />
-            <meshStandardMaterial
-              color={ballColor}
-              emissive={ballColor}
-              emissiveIntensity={3}
-              toneMapped={false}
-            />
-          </mesh>
-        </Trail>
       </group>
     </group>
   );
 };
 
-// ─── Main component ───
 export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
   theme,
   onBack,
@@ -287,7 +275,6 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
   });
   const [flashOverlay, setFlashOverlay] = useState<'success' | 'failure' | null>(null);
 
-  // Engine refs — shared with the scene
   const engine: EngineRefs = useMemo(() => ({
     ballAngle: { current: -Math.PI / 2 },
     ballDir: { current: 1 },
@@ -428,14 +415,13 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col items-center justify-start relative overflow-hidden select-none"
+      className="fixed inset-0 w-full h-full flex flex-col items-center justify-start overflow-hidden select-none"
       style={{ background: backgroundCss, touchAction: 'none' }}
       onPointerDown={handleTap}
     >
-      {/* Canvas fills behind UI */}
       <div className="absolute inset-0 z-0">
         <Canvas
-          camera={{ position: [0, 4.2, 7.2], fov: 50 }}
+          camera={{ position: [0, 0, 6.2], fov: 55 }}
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
@@ -450,16 +436,14 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         </Canvas>
       </div>
 
-      {/* Gradient vignette for depth */}
       <div
         className="absolute inset-0 z-[1] pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%)',
+            'radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.6) 100%)',
         }}
       />
 
-      {/* Flash overlay */}
       {flashOverlay && (
         <div
           className="absolute inset-0 pointer-events-none z-20"
@@ -472,7 +456,6 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         />
       )}
 
-      {/* Top bar */}
       {(status === 'idle' || status === 'gameover') && onBack && (
         <Button
           onClick={(e) => { e.stopPropagation(); onBack(); }}
@@ -493,7 +476,6 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         {isSoundMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
       </Button>
 
-      {/* HUD */}
       <div className="relative z-10 text-center mt-20 pointer-events-none">
         <div className="inline-flex items-center gap-2 mb-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/50 backdrop-blur-sm text-primary text-xs font-bold tracking-wider">
           <SparkIcon className="w-3 h-3" /> REFLEX 3D · TEST
@@ -513,9 +495,8 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         </div>
       </div>
 
-      {/* Idle */}
       {status === 'idle' && (
-        <div className="relative z-10 mt-auto mb-32 text-center pointer-events-none animate-fade-in">
+        <div className="absolute bottom-24 left-0 right-0 z-10 text-center pointer-events-none animate-fade-in">
           <div className="text-2xl font-bold text-white animate-pulse drop-shadow-lg">
             🎯 {t.tapOnScreen}
           </div>
@@ -525,9 +506,8 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         </div>
       )}
 
-      {/* Gameover */}
       {status === 'gameover' && (
-        <div className="relative z-30 mt-auto mb-24 flex flex-col items-center gap-3 animate-fade-in">
+        <div className="absolute bottom-16 left-0 right-0 z-30 flex flex-col items-center gap-3 animate-fade-in px-4">
           <div className="px-6 py-3 rounded-full text-white font-bold text-xl bg-gradient-danger shadow-glow-danger animate-scale-in">
             {t.gameOver}
           </div>
@@ -547,7 +527,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
                 variant="outline"
                 className="border-wheel-border bg-black/30 backdrop-blur-sm"
               >
-                Retour aux modes
+                Retour
               </Button>
             )}
           </div>
