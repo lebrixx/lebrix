@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,9 @@ interface Reflex3DModeProps {
   playFailure?: () => void;
 }
 
-const RING_R = 2.4;
-const BALL_R = 0.18;
+const RING_R = 1.9;
+const BALL_R = 0.16;
+const CAMERA_FOV = 50;
 const BASE_ZONE_ARC = Math.PI / 4;
 const MIN_ZONE_ARC = Math.PI / 11;
 const BASE_SPEED = 1.5;
@@ -45,6 +46,23 @@ const angleInArc = (a: number, start: number, arc: number) => {
   return x >= s || x <= e;
 };
 
+const pointerHitsZone = (event: React.PointerEvent<HTMLDivElement>, start: number, arc: number) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = event.clientX - cx;
+  const dy = cy - event.clientY;
+  const dist = Math.hypot(dx, dy);
+  const shortSide = Math.min(rect.width, rect.height);
+
+  if (dist < shortSide * 0.18 || dist > shortSide * 0.46) return false;
+  return angleInArc(Math.atan2(dy, dx), start - 0.08, arc + 0.16);
+};
+
+const getTorusArc = (geometry: THREE.BufferGeometry) => {
+  return (geometry as THREE.TorusGeometry).parameters.arc;
+};
+
 interface EngineRefs {
   ballAngle: { current: number };
   ballDir: { current: number };
@@ -57,6 +75,26 @@ interface EngineRefs {
   flash: { current: 0 | 1 | -1 };
   flashTime: { current: number };
 }
+
+const ResponsiveCamera = () => {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    const aspect = Math.max(0.1, size.width / Math.max(1, size.height));
+    const visibleRadius = RING_R + 0.55;
+    const fov = THREE.MathUtils.degToRad(camera.fov);
+    const margin = 1.22;
+    const distanceForHeight = (visibleRadius * margin) / Math.tan(fov / 2);
+    const distanceForWidth = (visibleRadius * margin) / (Math.tan(fov / 2) * aspect);
+
+    camera.position.set(0, 0, Math.max(7.2, distanceForHeight, distanceForWidth));
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [camera, size.height, size.width]);
+
+  return null;
+};
 
 const ArenaScene: React.FC<{
   engine: EngineRefs;
@@ -102,7 +140,7 @@ const ArenaScene: React.FC<{
     if (zoneMeshRef.current) {
       const geom = zoneMeshRef.current.geometry as THREE.TorusGeometry;
       const arc = e.zoneArc.current;
-      if (Math.abs((geom.parameters as any).arc - arc) > 0.005) {
+      if (Math.abs(getTorusArc(geom) - arc) > 0.005) {
         geom.dispose();
         zoneMeshRef.current.geometry = new THREE.TorusGeometry(RING_R, 0.18, 16, 64, arc);
       }
@@ -122,21 +160,19 @@ const ArenaScene: React.FC<{
       if (m) {
         const geom = m.geometry as THREE.TorusGeometry;
         const arc = e.zoneArc.current * 0.85;
-        if (Math.abs((geom.parameters as any).arc - arc) > 0.005) {
+        if (Math.abs(getTorusArc(geom) - arc) > 0.005) {
           geom.dispose();
           m.geometry = new THREE.TorusGeometry(RING_R, 0.14, 12, 48, arc);
         }
       }
     });
 
-    // Arena tilt: subtle breathing for 3D feel, no off-screen drift
+    // Arena tilt: subtle 3D feel without moving the ring out of frame.
     if (tiltRef.current) {
-      const sc = e.score.current;
-      const baseTilt = -0.55;
-      const breathe = Math.sin(t * 0.6) * 0.04;
-      const dynamic = sc >= 15 ? Math.sin(t * 0.8) * 0.08 : 0;
-      tiltRef.current.rotation.x = baseTilt + breathe + dynamic;
-      tiltRef.current.rotation.z = sc >= 25 ? Math.sin(t * 0.5) * 0.06 : 0;
+      const breathe = Math.sin(t * 0.6) * 0.025;
+      tiltRef.current.rotation.x = -0.32 + breathe;
+      tiltRef.current.rotation.y = Math.sin(t * 0.45) * 0.035;
+      tiltRef.current.rotation.z = 0;
     }
 
     // Failure shake on group, not camera (keeps things on-screen)
@@ -158,7 +194,7 @@ const ArenaScene: React.FC<{
       <pointLight position={[3, -2, 3]} intensity={0.6} color={zoneColor} distance={15} />
       <pointLight position={[-3, 2, 2]} intensity={0.4} color="#ff5470" distance={15} />
 
-      <Stars radius={50} depth={30} count={900} factor={2.5} fade speed={0.4} />
+      <Stars radius={42} depth={24} count={650} factor={2.2} fade speed={0.25} />
 
       <group ref={tiltRef}>
         {/* Glow disc behind ring */}
@@ -213,7 +249,7 @@ const ArenaScene: React.FC<{
           </group>
         ))}
 
-        <Sparkles count={30} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={2} speed={0.3} color={ringColor} opacity={0.5} />
+        <Sparkles count={22} scale={[RING_R * 2.2, RING_R * 2.2, 1]} size={1.6} speed={0.25} color={ringColor} opacity={0.45} />
 
 
         {/* Ball */}
@@ -337,13 +373,15 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
         const data = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
         data[BEST_KEY] = next;
         localStorage.setItem('luckyStopGame', JSON.stringify(data));
-      } catch {}
+      } catch {
+        return next;
+      }
       return next;
     });
-    try { (navigator as any).vibrate?.(80); } catch {}
+    navigator.vibrate?.(80);
   }, [engine, playFailure]);
 
-  const handleTap = useCallback(() => {
+  const handleTap = useCallback((forceSuccess = false) => {
     const now = performance.now();
     if (now - lastTapRef.current < DEBOUNCE_MS) return;
     lastTapRef.current = now;
@@ -354,7 +392,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
       return;
     }
 
-    const inZone = angleInArc(
+    const inZone = forceSuccess || angleInArc(
       engine.ballAngle.current,
       engine.zoneStart.current,
       engine.zoneArc.current
@@ -369,7 +407,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
       engine.flash.current = 1;
       engine.flashTime.current = now / 1000;
       setTimeout(() => setFlashOverlay(null), 160);
-      try { (navigator as any).vibrate?.(15); } catch {}
+      navigator.vibrate?.(15);
 
       if (newScore > 5) {
         engine.speed.current = Math.min(MAX_SPEED, engine.speed.current * SPEED_GAIN);
@@ -388,27 +426,53 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
     }
   }, [engine, endGame, placeZone, playClick, playSuccess, startGame, status]);
 
+  const handleArenaPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const clickedGreenZone = status === 'running' && pointerHitsZone(
+      event,
+      engine.zoneStart.current,
+      engine.zoneArc.current
+    );
+    handleTap(clickedGreenZone);
+  }, [engine, handleTap, status]);
+
   const handleReset = useCallback(() => {
     setStatus('idle');
     setScore(0);
     engine.score.current = 0;
+    engine.status.current = 'idle';
     engine.flash.current = 0;
+    engine.flashTime.current = 0;
+    lastTapRef.current = 0;
     resetEngine();
     setFlashOverlay(null);
   }, [engine, resetEngine]);
+
+  const replayGame = useCallback(() => {
+    lastTapRef.current = 0;
+    setScore(0);
+    engine.score.current = 0;
+    engine.status.current = 'running';
+    engine.flash.current = 0;
+    engine.flashTime.current = 0;
+    resetEngine();
+    setFlashOverlay(null);
+    setStatus('running');
+    playClick();
+  }, [engine, playClick, resetEngine]);
 
   return (
     <div
       className="fixed inset-0 w-full h-full flex flex-col items-center justify-start overflow-hidden select-none"
       style={{ background: backgroundCss, touchAction: 'none' }}
-      onPointerDown={handleTap}
     >
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" onPointerDown={handleArenaPointerDown}>
         <Canvas
-          camera={{ position: [0, 0, 6.2], fov: 55 }}
+          camera={{ position: [0, 0, 8], fov: CAMERA_FOV }}
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
+          <ResponsiveCamera />
           <Suspense fallback={null}>
             <ArenaScene
               engine={engine}
@@ -500,7 +564,8 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
           </p>
           <div className="flex gap-3 mt-2">
             <Button
-              onClick={(e) => { e.stopPropagation(); handleReset(); startGame(); }}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); replayGame(); }}
               className="bg-gradient-primary hover:scale-105 transition-transform shadow-glow-primary"
             >
               <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
