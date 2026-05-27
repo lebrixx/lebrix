@@ -428,7 +428,7 @@ export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
       engine.zoneArc.current
     );
     handleTap(clickedGreenZone);
-  }, [handleTap]);
+  }, [engine, handleTap, status]);
 
   const handleReset = useCallback(() => {
     setStatus('idle');
