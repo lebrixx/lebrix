@@ -293,9 +293,7 @@ const ArenaScene: React.FC<{
   );
 };
 
-    </group>
-  );
-};
+
 
 
 
