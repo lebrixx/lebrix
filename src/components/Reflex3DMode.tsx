@@ -175,14 +175,15 @@ const ArenaScene: React.FC<{
       }
     });
 
-    // Arena tilt + slow self-rotation for true 3D feel & added difficulty.
+    // Arena tilt + bounded self-rotation (never a full turn → tube always fully visible).
     if (tiltRef.current) {
-      const breathe = Math.sin(t * 0.7) * 0.05;
-      tiltRef.current.rotation.x = -0.55 + breathe;
-      // Continuous slow yaw drift + sway → ball visually shifts, harder timing
-      tiltRef.current.rotation.y = t * 0.18 + Math.sin(t * 0.6) * 0.18;
-      tiltRef.current.rotation.z = Math.sin(t * 0.4) * 0.06;
+      const breathe = Math.sin(t * 0.7) * 0.04;
+      tiltRef.current.rotation.x = -0.5 + breathe;
+      // Oscillating yaw bounded to ±0.55 rad (~31°)
+      tiltRef.current.rotation.y = Math.sin(t * 0.35) * 0.55;
+      tiltRef.current.rotation.z = Math.sin(t * 0.45) * 0.05;
     }
+
 
 
     // Failure shake on group, not camera (keeps things on-screen)
