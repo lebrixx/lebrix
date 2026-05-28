@@ -222,37 +222,36 @@ const ArenaScene: React.FC<{
       >
         <meshBasicMaterial attach="material" color={ringColor} transparent opacity={0.12} />
       </gridHelper>
-
       <group ref={tiltRef}>
-        {/* Soft back glow halo */}
-        <mesh position={[0, 0, -0.5]}>
-          <circleGeometry args={[RING_R + 1.1, 64]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.08} />
-        </mesh>
-
-        {/* Solid 3D tube — metallic, no glass */}
-        <mesh>
-          <torusGeometry args={[RING_R, TUBE_R, 32, 200]} />
+        {/* Translucent 3D tube — ball is visible through it */}
+        <mesh renderOrder={1}>
+          <torusGeometry args={[RING_R, TUBE_R, 32, 220]} />
           <meshStandardMaterial
             color={ringColor}
             emissive={ringColor}
-            emissiveIntensity={0.35}
-            metalness={0.85}
-            roughness={0.28}
+            emissiveIntensity={0.5}
+            metalness={0.4}
+            roughness={0.35}
+            transparent
+            opacity={0.32}
+            depthWrite={false}
           />
         </mesh>
 
-        {/* Target zone — solid emissive segment on top of tube */}
+        {/* Target zone — solid emissive segment hugging the tube */}
         <group ref={zoneGroupRef}>
-          <mesh ref={zoneMeshRef}>
-            <torusGeometry args={[RING_R, TUBE_R * 1.02, 24, 96, BASE_ZONE_ARC]} />
+          <mesh ref={zoneMeshRef} renderOrder={2}>
+            <torusGeometry args={[RING_R, TUBE_R * 1.04, 24, 96, BASE_ZONE_ARC]} />
             <meshStandardMaterial
               color={zoneColor}
               emissive={zoneColor}
-              emissiveIntensity={2.2}
+              emissiveIntensity={2.4}
               metalness={0.3}
-              roughness={0.35}
+              roughness={0.3}
               toneMapped={false}
+              transparent
+              opacity={0.9}
+              depthWrite={false}
             />
           </mesh>
         </group>
@@ -260,29 +259,37 @@ const ArenaScene: React.FC<{
         {/* Decoys */}
         {[0, 1].map((i) => (
           <group key={i} ref={(el) => (decoyGroupRefs.current[i] = el)} visible={false}>
-            <mesh ref={(el) => (decoyMeshRefs.current[i] = el)}>
-              <torusGeometry args={[RING_R, TUBE_R * 1.02, 20, 72, BASE_ZONE_ARC * 0.85]} />
+            <mesh ref={(el) => (decoyMeshRefs.current[i] = el)} renderOrder={2}>
+              <torusGeometry args={[RING_R, TUBE_R * 1.04, 20, 72, BASE_ZONE_ARC * 0.85]} />
               <meshStandardMaterial
                 color="#ff5470"
                 emissive="#ff2255"
-                emissiveIntensity={1.6}
+                emissiveIntensity={1.7}
                 metalness={0.3}
-                roughness={0.35}
+                roughness={0.3}
                 toneMapped={false}
+                transparent
+                opacity={0.9}
+                depthWrite={false}
               />
             </mesh>
           </group>
         ))}
 
-        {/* Ball — bright emissive sphere riding the tube */}
-        <mesh ref={ballRef}>
+        {/* Ball — drawn on top so it's always crisp through the translucent tube */}
+        <mesh ref={ballRef} renderOrder={3}>
           <sphereGeometry args={[BALL_R, 32, 32]} />
           <meshStandardMaterial
             color={ballColor}
             emissive={ballColor}
-            emissiveIntensity={3}
+            emissiveIntensity={3.2}
             toneMapped={false}
           />
+        </mesh>
+
+        <Sparkles count={14} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={1.2} speed={0.2} color={ringColor} opacity={0.3} />
+      </group>
+
         </mesh>
 
         <Sparkles count={16} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={1.3} speed={0.2} color={ringColor} opacity={0.35} />
