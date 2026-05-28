@@ -29,7 +29,7 @@ const BALL_R = 0.17;
 const CAMERA_FOV = 50;
 const BASE_ZONE_ARC = Math.PI / 4;
 
-const BASE_ZONE_ARC = Math.PI / 4;
+
 const MIN_ZONE_ARC = Math.PI / 11;
 const BASE_SPEED = 1.5;
 const SPEED_GAIN = 1.045;
