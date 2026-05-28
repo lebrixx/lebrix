@@ -113,6 +113,7 @@ const ArenaScene: React.FC<{
     const dt = Math.min(0.05, delta);
     const e = engine;
     const t = state.clock.elapsedTime;
+    const nowSec = performance.now() / 1000; // same epoch as engine.flashTime
 
     // Update ball angle
     if (e.status.current === 'running') {
@@ -126,10 +127,14 @@ const ArenaScene: React.FC<{
       const a = e.ballAngle.current;
       const x = Math.cos(a) * RING_R;
       const y = Math.sin(a) * RING_R;
-      ballRef.current.position.set(x, y, 0);
+      ballRef.current.position.set(x, y, 0.05);
 
-      const since = t - e.flashTime.current;
-      const pulse = e.flash.current && since < 0.25 ? 1 + (0.25 - since) * 2 : 1;
+      const since = nowSec - e.flashTime.current;
+      let pulse = 1;
+      if (e.flash.current === 1 && since >= 0 && since < 0.25) {
+        pulse = 1 + (0.25 - since) * 1.2; // max 1.3, clamped
+      }
+      pulse = Math.min(1.4, Math.max(0.85, pulse));
       ballRef.current.scale.setScalar(pulse);
     }
 
@@ -167,18 +172,18 @@ const ArenaScene: React.FC<{
       }
     });
 
-    // Arena tilt: subtle 3D feel without moving the ring out of frame.
+    // Arena tilt: deeper 3D perspective with subtle parallax sway.
     if (tiltRef.current) {
-      const breathe = Math.sin(t * 0.6) * 0.025;
-      tiltRef.current.rotation.x = -0.32 + breathe;
-      tiltRef.current.rotation.y = Math.sin(t * 0.45) * 0.035;
-      tiltRef.current.rotation.z = 0;
+      const breathe = Math.sin(t * 0.7) * 0.04;
+      tiltRef.current.rotation.x = -0.55 + breathe;
+      tiltRef.current.rotation.y = Math.sin(t * 0.5) * 0.12;
+      tiltRef.current.rotation.z = Math.sin(t * 0.35) * 0.04;
     }
 
     // Failure shake on group, not camera (keeps things on-screen)
     if (e.flash.current === -1 && tiltRef.current) {
-      const since = t - e.flashTime.current;
-      if (since < 0.35) {
+      const since = nowSec - e.flashTime.current;
+      if (since >= 0 && since < 0.35) {
         tiltRef.current.position.x = (Math.random() - 0.5) * 0.15;
         tiltRef.current.position.y = (Math.random() - 0.5) * 0.15;
       } else {
@@ -186,6 +191,7 @@ const ArenaScene: React.FC<{
       }
     }
   });
+
 
   return (
     <group>
