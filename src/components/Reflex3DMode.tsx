@@ -290,10 +290,7 @@ const ArenaScene: React.FC<{
   );
 };
 
-      </group>
-    </group>
-  );
-};
+
 
 export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
   theme,
