@@ -175,13 +175,15 @@ const ArenaScene: React.FC<{
       }
     });
 
-    // Arena tilt: deeper 3D perspective with subtle parallax sway.
+    // Arena tilt + slow self-rotation for true 3D feel & added difficulty.
     if (tiltRef.current) {
-      const breathe = Math.sin(t * 0.7) * 0.04;
+      const breathe = Math.sin(t * 0.7) * 0.05;
       tiltRef.current.rotation.x = -0.55 + breathe;
-      tiltRef.current.rotation.y = Math.sin(t * 0.5) * 0.12;
-      tiltRef.current.rotation.z = Math.sin(t * 0.35) * 0.04;
+      // Continuous slow yaw drift + sway → ball visually shifts, harder timing
+      tiltRef.current.rotation.y = t * 0.18 + Math.sin(t * 0.6) * 0.18;
+      tiltRef.current.rotation.z = Math.sin(t * 0.4) * 0.06;
     }
+
 
     // Failure shake on group, not camera (keeps things on-screen)
     if (e.flash.current === -1 && tiltRef.current) {
@@ -194,108 +196,101 @@ const ArenaScene: React.FC<{
       }
     }
   });
-
-
   return (
     <group>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[0, 3, 4]} intensity={1.2} color={ringColor} distance={20} />
-      <pointLight position={[3, -2, 3]} intensity={0.6} color={zoneColor} distance={15} />
-      <pointLight position={[-3, 2, 2]} intensity={0.4} color="#ff5470" distance={15} />
+      <ambientLight intensity={0.45} />
+      <directionalLight position={[4, 6, 5]} intensity={1.1} color="#ffffff" />
+      <pointLight position={[0, 3, 4]} intensity={1.0} color={ringColor} distance={20} />
+      <pointLight position={[-3, -2, 3]} intensity={0.5} color={zoneColor} distance={15} />
 
-      <Stars radius={42} depth={24} count={650} factor={2.2} fade speed={0.25} />
+      {/* Star backdrop */}
+      <Stars radius={50} depth={28} count={500} factor={2} fade speed={0.2} />
+
+      {/* Grid floor (cyber-grid backdrop) */}
+      <gridHelper
+        args={[40, 40, ringColor, ringColor]}
+        position={[0, -2.6, -1.2]}
+        rotation={[Math.PI / 2.4, 0, 0]}
+      >
+        <meshBasicMaterial attach="material" color={ringColor} transparent opacity={0.22} />
+      </gridHelper>
+      <gridHelper
+        args={[40, 20, ringColor, ringColor]}
+        position={[0, 2.6, -1.2]}
+        rotation={[-Math.PI / 2.4, 0, 0]}
+      >
+        <meshBasicMaterial attach="material" color={ringColor} transparent opacity={0.12} />
+      </gridHelper>
 
       <group ref={tiltRef}>
         {/* Soft back glow halo */}
         <mesh position={[0, 0, -0.5]}>
           <circleGeometry args={[RING_R + 1.1, 64]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.07} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.08} />
         </mesh>
 
-        {/* Inner guide rail (thin, sits inside tube center) */}
+        {/* Solid 3D tube — metallic, no glass */}
         <mesh>
-          <torusGeometry args={[RING_R, 0.012, 8, 160]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.35} />
+          <torusGeometry args={[RING_R, TUBE_R, 32, 200]} />
+          <meshStandardMaterial
+            color={ringColor}
+            emissive={ringColor}
+            emissiveIntensity={0.35}
+            metalness={0.85}
+            roughness={0.28}
+          />
         </mesh>
 
-        {/* Colored fluid inside tube — the target zone (slightly thinner than tube) */}
+        {/* Target zone — solid emissive segment on top of tube */}
         <group ref={zoneGroupRef}>
           <mesh ref={zoneMeshRef}>
-            <torusGeometry args={[RING_R, TUBE_R * 0.78, 18, 80, BASE_ZONE_ARC]} />
+            <torusGeometry args={[RING_R, TUBE_R * 1.02, 24, 96, BASE_ZONE_ARC]} />
             <meshStandardMaterial
               color={zoneColor}
               emissive={zoneColor}
-              emissiveIntensity={2.4}
+              emissiveIntensity={2.2}
+              metalness={0.3}
+              roughness={0.35}
               toneMapped={false}
-              transparent
-              opacity={0.85}
             />
           </mesh>
         </group>
 
-        {/* Decoys — colored fluid segments */}
+        {/* Decoys */}
         {[0, 1].map((i) => (
           <group key={i} ref={(el) => (decoyGroupRefs.current[i] = el)} visible={false}>
             <mesh ref={(el) => (decoyMeshRefs.current[i] = el)}>
-              <torusGeometry args={[RING_R, TUBE_R * 0.7, 16, 64, BASE_ZONE_ARC * 0.85]} />
+              <torusGeometry args={[RING_R, TUBE_R * 1.02, 20, 72, BASE_ZONE_ARC * 0.85]} />
               <meshStandardMaterial
                 color="#ff5470"
                 emissive="#ff2255"
-                emissiveIntensity={1.5}
+                emissiveIntensity={1.6}
+                metalness={0.3}
+                roughness={0.35}
                 toneMapped={false}
-                transparent
-                opacity={0.8}
               />
             </mesh>
           </group>
         ))}
 
-        {/* Ball — must render before transparent tube so tube draws on top */}
+        {/* Ball — bright emissive sphere riding the tube */}
         <mesh ref={ballRef}>
           <sphereGeometry args={[BALL_R, 32, 32]} />
           <meshStandardMaterial
             color={ballColor}
             emissive={ballColor}
-            emissiveIntensity={3.2}
+            emissiveIntensity={3}
             toneMapped={false}
           />
         </mesh>
 
-        {/* Glass tube — translucent shell, drawn last for proper compositing */}
-        <mesh renderOrder={2}>
-          <torusGeometry args={[RING_R, TUBE_R, 24, 180]} />
-          <meshPhysicalMaterial
-            color={ringColor}
-            transparent
-            opacity={0.18}
-            roughness={0.05}
-            metalness={0.1}
-            transmission={0.9}
-            thickness={0.4}
-            ior={1.4}
-            clearcoat={1}
-            clearcoatRoughness={0.05}
-            depthWrite={false}
-          />
-        </mesh>
-
-        {/* Subtle outer highlight rim on the tube */}
-        <mesh>
-          <torusGeometry args={[RING_R + TUBE_R + 0.01, 0.008, 8, 160]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.55} />
-        </mesh>
-        <mesh>
-          <torusGeometry args={[RING_R - TUBE_R - 0.01, 0.008, 8, 160]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.35} />
-        </mesh>
-
-        <Sparkles count={18} scale={[RING_R * 2.2, RING_R * 2.2, 1]} size={1.4} speed={0.25} color={ringColor} opacity={0.4} />
-
-
+        <Sparkles count={16} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={1.3} speed={0.2} color={ringColor} opacity={0.35} />
       </group>
     </group>
   );
 };
+
+
 
 export const Reflex3DMode: React.FC<Reflex3DModeProps> = ({
   theme,
