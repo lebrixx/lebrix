@@ -289,11 +289,10 @@ const ArenaScene: React.FC<{
 
         <Sparkles count={14} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={1.2} speed={0.2} color={ringColor} opacity={0.3} />
       </group>
+    </group>
+  );
+};
 
-        </mesh>
-
-        <Sparkles count={16} scale={[RING_R * 2.4, RING_R * 2.4, 1]} size={1.3} speed={0.2} color={ringColor} opacity={0.35} />
-      </group>
     </group>
   );
 };
