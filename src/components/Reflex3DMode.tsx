@@ -292,17 +292,6 @@ const ArenaScene: React.FC<{
         <Sparkles count={18} scale={[RING_R * 2.2, RING_R * 2.2, 1]} size={1.4} speed={0.25} color={ringColor} opacity={0.4} />
 
 
-
-        {/* Ball */}
-        <mesh ref={ballRef}>
-          <sphereGeometry args={[BALL_R, 24, 24]} />
-          <meshStandardMaterial
-            color={ballColor}
-            emissive={ballColor}
-            emissiveIntensity={3}
-            toneMapped={false}
-          />
-        </mesh>
       </group>
     </group>
   );
