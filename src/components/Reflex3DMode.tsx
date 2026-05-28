@@ -26,6 +26,8 @@ interface Reflex3DModeProps {
 const RING_R = 1.9;
 const TUBE_R = 0.28;
 const BALL_R = 0.17;
+const CAMERA_FOV = 50;
+const BASE_ZONE_ARC = Math.PI / 4;
 
 const BASE_ZONE_ARC = Math.PI / 4;
 const MIN_ZONE_ARC = Math.PI / 11;
