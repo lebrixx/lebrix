@@ -203,29 +203,49 @@ const ArenaScene: React.FC<{
       <Stars radius={42} depth={24} count={650} factor={2.2} fade speed={0.25} />
 
       <group ref={tiltRef}>
-        {/* Glow disc behind ring */}
-        <mesh position={[0, 0, -0.05]}>
-          <circleGeometry args={[RING_R + 0.6, 64]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.05} />
+        {/* Deep floor grid for strong 3D anchoring */}
+        <gridHelper
+          args={[24, 24, ringColor, ringColor]}
+          position={[0, -RING_R - 0.4, -0.5]}
+          rotation={[0, 0, 0]}
+        >
+          <meshBasicMaterial attach="material" color={ringColor} transparent opacity={0.18} />
+        </gridHelper>
+
+        {/* Back glow disc */}
+        <mesh position={[0, 0, -0.4]}>
+          <circleGeometry args={[RING_R + 0.9, 64]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.08} />
         </mesh>
 
-        {/* Main ring */}
+        {/* Inner depth disc (creates parallax against ring) */}
+        <mesh position={[0, 0, -0.2]}>
+          <ringGeometry args={[RING_R - 0.35, RING_R - 0.05, 64]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.12} />
+        </mesh>
+
+        {/* Main ring with thicker tube for 3D presence */}
         <mesh>
-          <torusGeometry args={[RING_R, 0.05, 20, 128]} />
+          <torusGeometry args={[RING_R, 0.09, 24, 160]} />
           <meshStandardMaterial
             color={ringColor}
             emissive={ringColor}
-            emissiveIntensity={0.9}
-            metalness={0.5}
-            roughness={0.3}
+            emissiveIntensity={1.1}
+            metalness={0.7}
+            roughness={0.22}
           />
         </mesh>
 
-        {/* Outer accent ring */}
-        <mesh>
-          <torusGeometry args={[RING_R + 0.28, 0.012, 8, 96]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.45} />
+        {/* Outer accent rings (depth layers) */}
+        <mesh position={[0, 0, -0.08]}>
+          <torusGeometry args={[RING_R + 0.32, 0.015, 8, 96]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.5} />
         </mesh>
+        <mesh position={[0, 0, -0.16]}>
+          <torusGeometry args={[RING_R + 0.55, 0.008, 8, 96]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.22} />
+        </mesh>
+
 
         {/* Target zone (rotated around Z) */}
         <group ref={zoneGroupRef}>
