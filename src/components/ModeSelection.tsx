@@ -18,7 +18,7 @@ interface ModeSelectionProps {
   onBack: () => void;
   onOpenShop: () => void;
   onOpenChallenges?: () => void;
-  onSelectReflex3D?: () => void;
+  
 }
 
 const getModeIcon = (modeId: ModeType) => {
@@ -51,7 +51,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onBack,
   onOpenShop,
   onOpenChallenges,
-  onSelectReflex3D,
+  
 }) => {
   const isGameRunning = gameStatus === 'running';
   const { language } = useLanguage();
