@@ -48,7 +48,7 @@ interface ChallengesProps {
 
 const MODE_INFO = {
   [ModeID.CLASSIC]: { name: 'Classique', icon: Target, color: 'text-blue-400', gradient: 'from-blue-500/20 to-blue-600/5' },
-  [ModeID.ARC_CHANGEANT]: { name: 'Arc changeant', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
+  [ModeID.ARC_CHANGEANT]: { name: 'Ball Balance 3D', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
   [ModeID.SURVIE_60S]: { name: 'Survie 30s', icon: Timer, color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-600/5' },
   [ModeID.ZONE_MOBILE]: { name: 'Zone mobile', icon: MapPin, color: 'text-green-400', gradient: 'from-green-500/20 to-green-600/5' },
   [ModeID.ZONE_TRAITRESSE]: { name: 'Zone traîtresse', icon: Skull, color: 'text-red-400', gradient: 'from-red-500/20 to-red-600/5' },
