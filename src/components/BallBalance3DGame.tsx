@@ -431,7 +431,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
       {/* Top bar */}
       <div className="flex items-center justify-between p-4 z-20 relative">
         <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> {t.menuButton || 'Menu'}
+          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
         </Button>
         <div className="text-right">
           <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
