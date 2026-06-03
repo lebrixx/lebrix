@@ -338,6 +338,18 @@ const Index = () => {
               />
             );
           }
+          if (currentMode === 'arc_changeant') {
+            return (
+              <BallBalance3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
           return (
             <CircleTap
               theme={currentTheme}
