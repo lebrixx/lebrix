@@ -49,14 +49,12 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.ARC_CHANGEANT]: {
-    name: "Arc changeant",
-    desc: "À chaque réussite, l'arc vert change de taille et d'emplacement. +3% de vitesse.",
-    arcMin: Math.PI / 12,     // ~15°
-    arcMax: Math.PI / 3,      // ~60°
+    name: "Ball Balance 3D",
+    desc: "Guide la bille sur une piste 3D sinueuse en glissant ton doigt. Tiens le plus longtemps possible — 1 point toutes les secondes !",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
-    variableArc: true
+    variableArc: false
   },
   [ModeID.SURVIE_60S]: {
     name: "Survie 30s",
