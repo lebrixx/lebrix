@@ -18,7 +18,7 @@ interface LeaderboardProps {
 
 const modeNames = {
   classic: 'Classique',
-  arc_changeant: 'Arc Changeant',
+  arc_changeant: 'Ball Balance 3D',
   survie_60s: 'Survie 60s',
   zone_mobile: 'Zone Mobile',
   zone_traitresse: 'Zone Traîtresse'

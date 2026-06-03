@@ -18,7 +18,7 @@ interface ModeSelectionProps {
   onBack: () => void;
   onOpenShop: () => void;
   onOpenChallenges?: () => void;
-  onSelectReflex3D?: () => void;
+  
 }
 
 const getModeIcon = (modeId: ModeType) => {
@@ -26,7 +26,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.CLASSIC:
       return <Target className="w-8 h-8" />;
     case ModeID.ARC_CHANGEANT:
-      return <RotateCcw className="w-8 h-8" />;
+      return <Box className="w-8 h-8" />;
     case ModeID.SURVIE_60S:
       return <Clock className="w-8 h-8" />;
     case ModeID.ZONE_MOBILE:
@@ -51,7 +51,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onBack,
   onOpenShop,
   onOpenChallenges,
-  onSelectReflex3D,
+  
 }) => {
   const isGameRunning = gameStatus === 'running';
   const { language } = useLanguage();
@@ -314,45 +314,6 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
         })}
       </div>
 
-      {/* Experimental: Reflex 3D — isolated, no leaderboard */}
-      {onSelectReflex3D && !isGameRunning && (
-        <div className="w-full max-w-4xl mt-8">
-          <Card
-            className="relative overflow-hidden border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 hover:border-primary transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-            onClick={onSelectReflex3D}
-          >
-            <div className="absolute top-3 right-3 z-10 flex gap-2">
-              <Badge className="bg-primary text-white border-primary animate-pulse">
-                <Sparkles className="w-3 h-3 mr-1" /> Nouveau
-              </Badge>
-              <Badge variant="outline" className="border-secondary/60 text-secondary">
-                Test
-              </Badge>
-            </div>
-            <div className="p-6 flex items-center gap-4">
-              <div className="p-3 rounded-full bg-primary/20 text-primary shrink-0">
-                <Box className="w-8 h-8" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-xl font-bold text-text-primary mb-1">Reflex 3D</h3>
-                <p className="text-sm text-text-secondary leading-snug">
-                  Anneau en perspective, caméra animée, zone qui rétrécit. Réflexe pur, mode expérimental.
-                </p>
-                <p className="text-[11px] text-text-muted mt-2 italic">
-                  Hors classement — score local uniquement
-                </p>
-              </div>
-              <Button
-                size="sm"
-                onClick={(e) => { e.stopPropagation(); onSelectReflex3D(); }}
-                className="bg-gradient-primary hover:scale-105 transition-transform shrink-0"
-              >
-                <Zap className="w-4 h-4 mr-1" /> Jouer
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
 
       {/* Footer Info */}
       <div className="mt-8 text-center">

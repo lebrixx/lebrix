@@ -18,11 +18,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'classic_score_20', title: 'Classique Confirmé', description: 'Fais un score de 20 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 30 } },
   { id: 'classic_score_25', title: 'Classique Pro', description: 'Fais un score de 25 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 25, reward: { coins: 40 } },
   
-  // Arc changeant
-  { id: 'arc_score_8', title: 'Arc Débutant', description: 'Fais un score de 8 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 8, reward: { coins: 16 } },
-  { id: 'arc_score_12', title: 'Arc Intermédiaire', description: 'Fais un score de 12 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 12, reward: { coins: 20 } },
-  { id: 'arc_score_15', title: 'Arc Confirmé', description: 'Fais un score de 15 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 15, reward: { coins: 30 } },
-  { id: 'arc_score_20', title: 'Arc Expert', description: 'Fais un score de 20 en Arc changeant', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 46 } },
+  // Ball Balance 3D
+  { id: 'arc_score_8', title: 'Ball Débutant', description: 'Tiens 10 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 10, reward: { coins: 16 } },
+  { id: 'arc_score_12', title: 'Ball Intermédiaire', description: 'Tiens 20 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 20 } },
+  { id: 'arc_score_15', title: 'Ball Confirmé', description: 'Tiens 30 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 30, reward: { coins: 30 } },
+  { id: 'arc_score_20', title: 'Ball Expert', description: 'Tiens 45 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 45, reward: { coins: 46 } },
   
   // Survie 30s
   { id: 'survie_score_5', title: 'Survivant Débutant', description: 'Fais un score de 5 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },

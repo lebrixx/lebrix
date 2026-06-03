@@ -12,7 +12,7 @@ import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
-import { Reflex3DMode } from '@/components/Reflex3DMode';
+import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -30,7 +30,7 @@ import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard' | 'reflex_3d';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard';
 
 const Index = () => {
   const { language } = useLanguage();
@@ -338,6 +338,18 @@ const Index = () => {
               />
             );
           }
+          if (currentMode === 'arc_changeant') {
+            return (
+              <BallBalance3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
           return (
             <CircleTap
               theme={currentTheme}
@@ -417,22 +429,10 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
               onOpenShop={() => setCurrentScreen('shop')}
               onOpenChallenges={() => setCurrentScreen('challenges')}
-              onSelectReflex3D={() => setCurrentScreen('reflex_3d')}
             />
           );
 
-        case 'reflex_3d':
-          return (
-            <Reflex3DMode
-              theme={currentTheme}
-              onBack={() => setCurrentScreen('modes')}
-              isSoundMuted={isMuted}
-              onToggleSound={toggleMute}
-              playClick={playClick}
-              playSuccess={playSuccess}
-              playFailure={playFailure}
-            />
-          );
+
           
         case 'leaderboard':
           return (
