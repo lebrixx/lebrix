@@ -17,7 +17,7 @@ interface LeaderboardProps {
 }
 
 const modeNames = {
-  classic: 'Classique',
+  classic: 'Cube Dodge 3D',
   arc_changeant: 'Ball Balance 3D',
   survie_60s: 'Survie 60s',
   zone_mobile: 'Zone Mobile',
