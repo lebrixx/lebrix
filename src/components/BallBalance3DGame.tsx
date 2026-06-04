@@ -246,8 +246,8 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
     if (s.dead || !playing) return;
 
     s.elapsed += dt;
-    const diff = 1 + s.elapsed / 45;
-    const speed = 6 * diff;
+    const diff = 1 + s.elapsed / 28;
+    const speed = 6.4 * diff;
     s.travel += speed * dt;
 
     // Cible latérale
@@ -468,18 +468,39 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
 
           {/* Overlays */}
           {phase === 'menu' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-game-dark/70 backdrop-blur-sm">
-              <div className="text-center max-w-sm px-6">
-                <h2 className="text-3xl font-bold text-primary mb-3">Ball Balance 3D</h2>
-                <p className="text-text-secondary mb-6 text-sm">
-                  Glisse ton doigt pour guider la bille sur la piste. Tiens le plus longtemps possible !
-                </p>
-                <div className="mb-4 text-text-muted text-sm">
-                  Meilleur score : <span className="text-primary font-bold">{best}s</span>
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0518]/85 via-[#1a0a3a]/80 to-[#0a0518]/90 backdrop-blur-md">
+              <div className="relative text-center max-w-sm px-6 py-8 mx-4 rounded-3xl border border-primary/30 bg-gradient-to-b from-[#1a0a3a]/80 to-[#0a0518]/80 shadow-[0_0_60px_-10px_hsl(var(--primary)/0.5)] overflow-hidden">
+                {/* Decorative glow orbs */}
+                <div className="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-purple-500/30 blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-cyan-400/30 blur-3xl pointer-events-none" />
+
+                <div className="relative">
+                  <div className="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-xs uppercase tracking-[0.2em] font-semibold">
+                    Nouveau mode
+                  </div>
+                  <h2 className="text-4xl font-extrabold mb-3 bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                    Ball Balance 3D
+                  </h2>
+                  <p className="text-text-secondary mb-6 text-sm leading-relaxed">
+                    Glisse ton doigt pour guider la bille sur la piste sinueuse.<br/>
+                    Tiens le plus longtemps possible !
+                  </p>
+
+                  <div className="mb-6 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black/30 border border-primary/20">
+                    <span className="text-xs uppercase tracking-wider text-text-muted">Record</span>
+                    <span className="text-2xl font-bold tabular-nums bg-gradient-to-r from-amber-300 to-yellow-500 bg-clip-text text-transparent">
+                      {best}s
+                    </span>
+                  </div>
+
+                  <Button
+                    onClick={handleStart}
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-cyan-500 hover:scale-105 transition-transform shadow-[0_0_30px_-5px_rgba(168,85,247,0.6)] text-white font-bold py-6"
+                  >
+                    <Play className="w-5 h-5 mr-2 fill-white" /> Jouer
+                  </Button>
                 </div>
-                <Button onClick={handleStart} size="lg" className="bg-gradient-primary">
-                  <Play className="w-5 h-5 mr-2" /> Jouer
-                </Button>
               </div>
             </div>
           )}
