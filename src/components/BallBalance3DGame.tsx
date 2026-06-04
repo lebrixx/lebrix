@@ -212,6 +212,10 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
     scored: 0,
     last: -1,
     dead: false,
+    dying: false,
+    dyingT: 0,
+    fallVx: 0,
+    finalScore: 0,
   });
 
   // Pré-créer les buffers
@@ -243,7 +247,26 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
 
   useFrame((_, dt) => {
     const s = state.current;
-    if (s.dead || !playing) return;
+    if (s.dead) return;
+
+    // Fall animation when dying
+    if (s.dying) {
+      s.dyingT += dt;
+      const ball = ballRef.current;
+      if (ball) {
+        ball.position.y -= (4 + s.dyingT * 12) * dt; // gravity accel
+        ball.position.x += s.fallVx * dt;
+        ball.rotation.x += dt * 5;
+        ball.rotation.z += dt * 3;
+      }
+      if (s.dyingT >= 1.0) {
+        s.dead = true;
+        onDie(s.finalScore);
+      }
+      return;
+    }
+
+    if (!playing) return;
 
     s.elapsed += dt;
     const diff = 1 + s.elapsed / 28;
@@ -307,8 +330,11 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
     // Collision
     if (ball && s.elapsed > INVULN) {
       if (Math.abs(ball.position.x - here.baseX) > TRACK_HW + TOL) {
-        s.dead = true;
-        onDie(Math.floor(s.elapsed));
+        s.dying = true;
+        s.dyingT = 0;
+        s.finalScore = Math.floor(s.elapsed);
+        // Push ball off the side it left from
+        s.fallVx = ball.position.x > here.baseX ? 2.5 : -2.5;
         return;
       }
     }
