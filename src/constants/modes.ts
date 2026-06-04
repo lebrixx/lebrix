@@ -40,8 +40,8 @@ interface ModeConfig {
 
 export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.CLASSIC]: {
-    name: "Classique",
-    desc: "Le mode de jeu original. L'arc reste fixe, +3% de vitesse par réussite.",
+    name: "Cube Dodge 3D",
+    desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
     zoneArc: Math.PI / 5,
     keepMovingZone: false,
     survival: false,
