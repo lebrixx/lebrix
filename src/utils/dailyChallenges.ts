@@ -12,11 +12,11 @@ export interface DailyChallenge {
 
 // UNIQUEMENT des défis de score dans un mode spécifique
 export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
-  // Classique
-  { id: 'classic_score_10', title: 'Classique Débutant', description: 'Fais un score de 10 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 16 } },
-  { id: 'classic_score_15', title: 'Classique Apprenti', description: 'Fais un score de 15 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 15, reward: { coins: 20 } },
-  { id: 'classic_score_20', title: 'Classique Confirmé', description: 'Fais un score de 20 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 30 } },
-  { id: 'classic_score_25', title: 'Classique Pro', description: 'Fais un score de 25 en Classique', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 25, reward: { coins: 40 } },
+  // Cube Dodge 3D
+  { id: 'classic_score_10', title: 'Cube Débutant', description: 'Fais un score de 10 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 16 } },
+  { id: 'classic_score_15', title: 'Cube Apprenti', description: 'Fais un score de 20 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 20 } },
+  { id: 'classic_score_20', title: 'Cube Confirmé', description: 'Fais un score de 35 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 35, reward: { coins: 30 } },
+  { id: 'classic_score_25', title: 'Cube Pro', description: 'Fais un score de 60 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 60, reward: { coins: 40 } },
   
   // Ball Balance 3D
   { id: 'arc_score_8', title: 'Ball Débutant', description: 'Tiens 10 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 10, reward: { coins: 16 } },
