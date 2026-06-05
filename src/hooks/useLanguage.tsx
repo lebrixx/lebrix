@@ -379,7 +379,7 @@ export const translations = {
     scoreSubmitted: 'Score soumis avec succès ✅',
     classic: 'Classique',
     arcChangeant: 'Ball Balance 3D',
-    survie60s: 'Survie 30s',
+    survie60s: 'Stack Jump 3D',
     zoneMobile: 'Zone Mobile',
     sending: 'Envoi...',
     submitBtn: 'Soumettre',
