@@ -203,14 +203,14 @@ export const translations = {
     // Mode names
     modeClassic: 'Cube Dodge 3D',
     modeArcChangeant: 'Ball Balance 3D',
-    modeSurvie30s: 'Survie 30s',
+    modeSurvie30s: 'Stack Jump 3D',
     modeZoneMobile: 'Zone mobile',
     modeZoneTraitresse: 'Zone traîtresse',
     modeMemoireExpert: 'Mémoire (Expert)',
     // Mode descriptions
     descClassic: 'Esquive les blocs, change de couleur d\'un tap et traverse les portails pour entrer en PHASE ×3 !',
     descArcChangeant: 'Guide la bille sur une piste 3D sinueuse. Tiens le plus longtemps possible — 1 point par seconde !',
-    descSurvie30s: 'Tu as 30 secondes pour réussir le plus de hits. Un échec = game over !',
+    descSurvie30s: 'Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, évite les pièges rouges.',
     descZoneMobile: 'L\'arc vert glisse en continu autour du cercle. +3% de vitesse à chaque réussite.',
     descZoneTraitresse: 'Plusieurs zones vertes, mais une seule est piégée. Trouve la bonne zone pour gagner !',
     descMemoireExpert: 'Une zone verte apparaît 1 seconde, mémorise sa position et clique au bon endroit ! La difficulté augmente à chaque niveau.',
