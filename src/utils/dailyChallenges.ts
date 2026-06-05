@@ -24,11 +24,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'arc_score_15', title: 'Ball Confirmé', description: 'Tiens 30 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 30, reward: { coins: 30 } },
   { id: 'arc_score_20', title: 'Ball Expert', description: 'Tiens 45 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 45, reward: { coins: 46 } },
   
-  // Survie 30s
-  { id: 'survie_score_5', title: 'Survivant Débutant', description: 'Fais un score de 5 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
-  { id: 'survie_score_8', title: 'Survivant', description: 'Fais un score de 8 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
-  { id: 'survie_score_12', title: 'Survie Confirmé', description: 'Fais un score de 12 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
-  { id: 'survie_score_15', title: 'Maître Survie', description: 'Fais un score de 15 en Survie 30s', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
+  // Stack Jump 3D
+  { id: 'survie_score_5', title: 'Stack Débutant', description: 'Fais un score de 5 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
+  { id: 'survie_score_8', title: 'Stack Empileur', description: 'Fais un score de 8 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
+  { id: 'survie_score_12', title: 'Stack Confirmé', description: 'Fais un score de 12 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
+  { id: 'survie_score_15', title: 'Maître Stack', description: 'Fais un score de 15 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
   // Zone mobile
   { id: 'mobile_score_8', title: 'Zone Nomade', description: 'Fais un score de 8 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 20 } },
