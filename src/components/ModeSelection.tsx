@@ -28,7 +28,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.ARC_CHANGEANT:
       return <Box className="w-8 h-8" />;
     case ModeID.SURVIE_60S:
-      return <Clock className="w-8 h-8" />;
+      return <Layers className="w-8 h-8" />;
     case ModeID.ZONE_MOBILE:
       return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.ZONE_TRAITRESSE:
