@@ -14,6 +14,7 @@ import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
+import { StackJump3DGame } from '@/components/StackJump3DGame';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -354,6 +355,18 @@ const Index = () => {
           if (currentMode === 'classic') {
             return (
               <CubeDodge3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
+          if (currentMode === 'survie_60s') {
+            return (
+              <StackJump3DGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
                 isSoundMuted={isMuted}
