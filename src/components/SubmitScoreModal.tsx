@@ -72,7 +72,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
     const names = {
       classic: 'Cube Dodge 3D',
       arc_changeant: 'Ball Balance 3D',
-      survie_60s: 'Survie 30s',
+      survie_60s: 'Stack Jump 3D',
       zone_mobile: 'Zone Mobile'
     };
     return names[mode as keyof typeof names] || mode;
