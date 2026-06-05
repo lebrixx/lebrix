@@ -57,12 +57,11 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.SURVIE_60S]: {
-    name: "Survie 30s",
-    desc: "Tu as 30 secondes pour réussir le plus de hits. Un échec = game over !",
-    zoneArc: Math.PI / 5,
+    name: "Stack Jump 3D",
+    desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, évite les pièges rouges.",
     keepMovingZone: false,
-    survival: true,
-    survivalTime: 30,
+    survival: false,
+    survivalTime: 0,
     variableArc: false
   },
   [ModeID.ZONE_MOBILE]: {
