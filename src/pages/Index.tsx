@@ -14,6 +14,7 @@ import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
+import { StackJump3DGame } from '@/components/StackJump3DGame';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
