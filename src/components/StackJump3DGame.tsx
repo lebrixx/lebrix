@@ -410,6 +410,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     setScore(0);
     setMsg(null);
     setRedWarn(false);
+    cmdRef.current.drop = false;
     startedAt.current = Date.now();
     setPhase('playing');
   }, []);
@@ -443,6 +444,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   }, [msg]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (phase !== 'playing') return;
     e.preventDefault();
     cmdRef.current.drop = true;
   };
