@@ -40,49 +40,29 @@ function pickNextKind(score: number, twinCounter: number): PlateKind {
 function addPlate(group: THREE.Group, size: number, color: THREE.Color | string, topAccent: number) {
   const colorObj = color instanceof THREE.Color ? color : new THREE.Color(color);
   const geom = new THREE.BoxGeometry(size, PLATE_H, size);
-  const mat = new THREE.MeshStandardMaterial({
-    color: colorObj,
-    emissive: colorObj.clone().multiplyScalar(0.55),
-    emissiveIntensity: 0.9,
-    roughness: 0.25,
-    metalness: 0.55,
-  });
+  // Flat, vivid sides (no emissive — keep the clean cartoon look from the reference)
+  const mat = new THREE.MeshBasicMaterial({ color: colorObj });
   const mesh = new THREE.Mesh(geom, mat);
   group.add(mesh);
 
-  // Top accent (glowing surface)
-  const topGeo = new THREE.BoxGeometry(size * 0.96, 0.05, size * 0.96);
-  const topMat = new THREE.MeshStandardMaterial({
-    color: topAccent,
-    emissive: topAccent,
-    emissiveIntensity: 1.1,
-    roughness: 0.2,
-    metalness: 0.4,
-  });
+  // Pure white top face (slightly inset)
+  const topGeo = new THREE.PlaneGeometry(size * 0.995, size * 0.995);
+  const topMat = new THREE.MeshBasicMaterial({ color: topAccent });
   const topMesh = new THREE.Mesh(topGeo, topMat);
-  topMesh.position.y = PLATE_H / 2 + 0.025;
+  topMesh.rotation.x = -Math.PI / 2;
+  topMesh.position.y = PLATE_H / 2 + 0.002;
   mesh.add(topMesh);
 
-  // Bottom rim glow (under-light)
-  const rimGeo = new THREE.BoxGeometry(size * 1.02, 0.025, size * 1.02);
-  const rimMat = new THREE.MeshBasicMaterial({
-    color: colorObj,
-    transparent: true,
-    opacity: 0.85,
-  });
-  const rimMesh = new THREE.Mesh(rimGeo, rimMat);
-  rimMesh.position.y = -PLATE_H / 2 - 0.005;
-  mesh.add(rimMesh);
-
-  // Bright outline edges
+  // Crisp white outline (cartoon edge)
   const edges = new THREE.LineSegments(
     new THREE.EdgesGeometry(geom),
-    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 })
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
   );
   mesh.add(edges);
 
   return mesh;
 }
+
 
 
 
