@@ -148,24 +148,17 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     const m = movingRef.current;
     const tw = twinRef.current;
     if (!m) return;
-    const colorMap: Record<PlateKind, [string, string]> = {
-      normal: ['#e879f9', '#d946ef'],
-      gold: ['#fde047', '#facc15'],
-      red: ['#ef4444', '#b91c1c'],
-      twin: ['#22d3ee', '#0891b2'],
+    const colorMap: Record<PlateKind, string> = {
+      normal: '#e879f9',
+      gold: '#fde047',
+      red: '#ef4444',
+      twin: '#22d3ee',
     };
-    const [col, emi] = colorMap[kind];
-    const mat = m.material as THREE.MeshStandardMaterial;
-    mat.color.set(col);
-    mat.emissive.set(emi);
-    mat.emissiveIntensity = 0.5;
-    if (tw) {
-      const matT = tw.material as THREE.MeshStandardMaterial;
-      matT.color.set(col);
-      matT.emissive.set(emi);
-      matT.emissiveIntensity = 0.5;
-    }
+    const col = colorMap[kind];
+    (m.material as THREE.MeshBasicMaterial).color.set(col);
+    if (tw) (tw.material as THREE.MeshBasicMaterial).color.set(col);
   };
+
 
   const nextPlate = () => {
     const s = state.current;
