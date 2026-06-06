@@ -42,34 +42,49 @@ function addPlate(group: THREE.Group, size: number, color: THREE.Color | string,
   const geom = new THREE.BoxGeometry(size, PLATE_H, size);
   const mat = new THREE.MeshStandardMaterial({
     color: colorObj,
-    emissive: colorObj.clone().multiplyScalar(0.35),
-    roughness: 0.4,
-    metalness: 0.25,
+    emissive: colorObj.clone().multiplyScalar(0.55),
+    emissiveIntensity: 0.9,
+    roughness: 0.25,
+    metalness: 0.55,
   });
   const mesh = new THREE.Mesh(geom, mat);
   group.add(mesh);
 
-  // Top accent
-  const topGeo = new THREE.BoxGeometry(size * 0.98, 0.04, size * 0.98);
+  // Top accent (glowing surface)
+  const topGeo = new THREE.BoxGeometry(size * 0.96, 0.05, size * 0.96);
   const topMat = new THREE.MeshStandardMaterial({
     color: topAccent,
     emissive: topAccent,
-    emissiveIntensity: 0.6,
-    roughness: 0.3,
+    emissiveIntensity: 1.1,
+    roughness: 0.2,
+    metalness: 0.4,
   });
   const topMesh = new THREE.Mesh(topGeo, topMat);
-  topMesh.position.y = PLATE_H / 2 + 0.02;
+  topMesh.position.y = PLATE_H / 2 + 0.025;
   mesh.add(topMesh);
 
-  // Edges
+  // Bottom rim glow (under-light)
+  const rimGeo = new THREE.BoxGeometry(size * 1.02, 0.025, size * 1.02);
+  const rimMat = new THREE.MeshBasicMaterial({
+    color: colorObj,
+    transparent: true,
+    opacity: 0.85,
+  });
+  const rimMesh = new THREE.Mesh(rimGeo, rimMat);
+  rimMesh.position.y = -PLATE_H / 2 - 0.005;
+  mesh.add(rimMesh);
+
+  // Bright outline edges
   const edges = new THREE.LineSegments(
     new THREE.EdgesGeometry(geom),
-    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 })
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 })
   );
   mesh.add(edges);
 
   return mesh;
 }
+
+
 
 function makeBurst(group: THREE.Group, x: number, y: number, color: number, scaleMax: number) {
   const ring = new THREE.Mesh(
