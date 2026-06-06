@@ -366,10 +366,11 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
 
   return (
     <>
-      <ambientLight intensity={0.45} />
-      <pointLight position={[6, 8, 5]} intensity={1.2} color="#a855f7" />
-      <pointLight position={[-6, 6, -4]} intensity={1.0} color="#22d3ee" />
-      <fog attach="fog" args={['#0a0518', 14, 32]} />
+      <ambientLight intensity={0.55} />
+      <pointLight position={[6, 8, 5]} intensity={1.6} color="#a855f7" />
+      <pointLight position={[-6, 6, -4]} intensity={1.4} color="#22d3ee" />
+      <pointLight position={[0, 12, 2]} intensity={0.9} color="#e879f9" />
+      <fog attach="fog" args={['#0a0518', 16, 38]} />
 
       <group ref={stackRef} />
 
@@ -382,26 +383,128 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       {/* Moving plate */}
       <mesh ref={movingRef}>
         <boxGeometry args={[1, PLATE_H, 1]} />
-        <meshStandardMaterial color="#e879f9" emissive="#d946ef" emissiveIntensity={0.5} roughness={0.4} metalness={0.25} />
+        <meshStandardMaterial color="#e879f9" emissive="#d946ef" emissiveIntensity={1} roughness={0.25} metalness={0.55} />
       </mesh>
       <mesh ref={twinRef} visible={false}>
         <boxGeometry args={[1, PLATE_H, 1]} />
-        <meshStandardMaterial color="#22d3ee" emissive="#0891b2" emissiveIntensity={0.5} roughness={0.4} metalness={0.25} />
+        <meshStandardMaterial color="#22d3ee" emissive="#0891b2" emissiveIntensity={1} roughness={0.25} metalness={0.55} />
       </mesh>
 
-      {/* Background decor: grid + orb */}
-      <gridHelper args={[60, 30, '#7c3aed', '#1a0f33']} position={[0, -2.5, 0]} />
-      <mesh position={[6, 8, -8]}>
-        <sphereGeometry args={[2.2, 24, 16]} />
-        <meshBasicMaterial color="#7c3aed" transparent opacity={0.25} />
-      </mesh>
-      <mesh position={[-7, 4, -10]}>
-        <sphereGeometry args={[1.5, 24, 16]} />
-        <meshBasicMaterial color="#22d3ee" transparent opacity={0.18} />
-      </mesh>
+      <BackgroundDecor />
     </>
   );
 };
+
+const BackgroundDecor: React.FC = () => {
+  const orbsRef = useRef<THREE.Group>(null);
+  const particlesRef = useRef<THREE.Points>(null);
+
+  // Particles geometry (memo once)
+  const particles = React.useMemo(() => {
+    const count = 140;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const cA = new THREE.Color('#a855f7');
+    const cB = new THREE.Color('#22d3ee');
+    const cC = new THREE.Color('#e879f9');
+    for (let i = 0; i < count; i++) {
+      const r = 8 + Math.random() * 14;
+      const theta = Math.random() * Math.PI * 2;
+      const y = (Math.random() - 0.3) * 18;
+      positions[i * 3] = Math.cos(theta) * r;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = Math.sin(theta) * r - 4;
+      const pick = Math.random();
+      const c = pick < 0.4 ? cA : pick < 0.75 ? cB : cC;
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+    }
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return geom;
+  }, []);
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    if (orbsRef.current) {
+      orbsRef.current.children.forEach((child, i) => {
+        const m = child as THREE.Mesh;
+        const base = (m.userData.baseY as number) ?? 0;
+        m.position.y = base + Math.sin(t * 0.5 + i) * 0.6;
+        const baseS = (m.userData.baseScale as number) ?? 1;
+        const s = baseS * (1 + Math.sin(t * 0.8 + i * 1.3) * 0.05);
+        m.scale.setScalar(s);
+      });
+    }
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y = t * 0.03;
+    }
+  });
+
+  const orbs = [
+    { pos: [7, 6, -8], r: 2.4, color: '#a855f7', opacity: 0.32 },
+    { pos: [-8, 3, -10], r: 1.8, color: '#22d3ee', opacity: 0.28 },
+    { pos: [5, 12, -12], r: 1.4, color: '#e879f9', opacity: 0.3 },
+    { pos: [-6, 10, -6], r: 1.1, color: '#fde047', opacity: 0.22 },
+    { pos: [9, -1, -7], r: 1.6, color: '#22d3ee', opacity: 0.25 },
+    { pos: [-10, 7, -14], r: 2.0, color: '#7c3aed', opacity: 0.28 },
+  ];
+
+  return (
+    <>
+      {/* Neon grid floor */}
+      <gridHelper args={[80, 40, '#a855f7', '#1a0f33']} position={[0, -2.5, 0]} />
+      <gridHelper args={[80, 40, '#22d3ee', '#0a0518']} position={[0, -2.48, 0]} rotation={[0, Math.PI / 4, 0]} />
+
+      {/* Floor glow disc */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.49, 0]}>
+        <circleGeometry args={[10, 64]} />
+        <meshBasicMaterial color="#7c3aed" transparent opacity={0.18} />
+      </mesh>
+
+      {/* Floating glowing orbs */}
+      <group ref={orbsRef}>
+        {orbs.map((o, i) => (
+          <mesh
+            key={i}
+            position={o.pos as [number, number, number]}
+            userData={{ baseY: o.pos[1], baseScale: 1 }}
+          >
+            <sphereGeometry args={[o.r, 24, 16]} />
+            <meshBasicMaterial color={o.color} transparent opacity={o.opacity} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* Halo rings around big orbs */}
+      <mesh position={[7, 6, -8]} rotation={[Math.PI / 2.3, 0.4, 0]}>
+        <ringGeometry args={[2.7, 2.85, 64]} />
+        <meshBasicMaterial color="#a855f7" transparent opacity={0.35} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[-8, 3, -10]} rotation={[Math.PI / 2.5, -0.3, 0]}>
+        <ringGeometry args={[2.1, 2.22, 64]} />
+        <meshBasicMaterial color="#22d3ee" transparent opacity={0.4} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Particles */}
+      <points ref={particlesRef} geometry={particles}>
+        <pointsMaterial
+          size={0.12}
+          vertexColors
+          transparent
+          opacity={0.85}
+          sizeAttenuation
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </points>
+    </>
+  );
+};
+
+
 
 export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure,
