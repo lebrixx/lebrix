@@ -40,49 +40,29 @@ function pickNextKind(score: number, twinCounter: number): PlateKind {
 function addPlate(group: THREE.Group, size: number, color: THREE.Color | string, topAccent: number) {
   const colorObj = color instanceof THREE.Color ? color : new THREE.Color(color);
   const geom = new THREE.BoxGeometry(size, PLATE_H, size);
-  const mat = new THREE.MeshStandardMaterial({
-    color: colorObj,
-    emissive: colorObj.clone().multiplyScalar(0.55),
-    emissiveIntensity: 0.9,
-    roughness: 0.25,
-    metalness: 0.55,
-  });
+  // Flat, vivid sides (no emissive — keep the clean cartoon look from the reference)
+  const mat = new THREE.MeshBasicMaterial({ color: colorObj });
   const mesh = new THREE.Mesh(geom, mat);
   group.add(mesh);
 
-  // Top accent (glowing surface)
-  const topGeo = new THREE.BoxGeometry(size * 0.96, 0.05, size * 0.96);
-  const topMat = new THREE.MeshStandardMaterial({
-    color: topAccent,
-    emissive: topAccent,
-    emissiveIntensity: 1.1,
-    roughness: 0.2,
-    metalness: 0.4,
-  });
+  // Pure white top face (slightly inset)
+  const topGeo = new THREE.PlaneGeometry(size * 0.995, size * 0.995);
+  const topMat = new THREE.MeshBasicMaterial({ color: topAccent });
   const topMesh = new THREE.Mesh(topGeo, topMat);
-  topMesh.position.y = PLATE_H / 2 + 0.025;
+  topMesh.rotation.x = -Math.PI / 2;
+  topMesh.position.y = PLATE_H / 2 + 0.002;
   mesh.add(topMesh);
 
-  // Bottom rim glow (under-light)
-  const rimGeo = new THREE.BoxGeometry(size * 1.02, 0.025, size * 1.02);
-  const rimMat = new THREE.MeshBasicMaterial({
-    color: colorObj,
-    transparent: true,
-    opacity: 0.85,
-  });
-  const rimMesh = new THREE.Mesh(rimGeo, rimMat);
-  rimMesh.position.y = -PLATE_H / 2 - 0.005;
-  mesh.add(rimMesh);
-
-  // Bright outline edges
+  // Crisp white outline (cartoon edge)
   const edges = new THREE.LineSegments(
     new THREE.EdgesGeometry(geom),
-    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 })
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
   );
   mesh.add(edges);
 
   return mesh;
 }
+
 
 
 
@@ -168,24 +148,17 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     const m = movingRef.current;
     const tw = twinRef.current;
     if (!m) return;
-    const colorMap: Record<PlateKind, [string, string]> = {
-      normal: ['#e879f9', '#d946ef'],
-      gold: ['#fde047', '#facc15'],
-      red: ['#ef4444', '#b91c1c'],
-      twin: ['#22d3ee', '#0891b2'],
+    const colorMap: Record<PlateKind, string> = {
+      normal: '#e879f9',
+      gold: '#fde047',
+      red: '#ef4444',
+      twin: '#22d3ee',
     };
-    const [col, emi] = colorMap[kind];
-    const mat = m.material as THREE.MeshStandardMaterial;
-    mat.color.set(col);
-    mat.emissive.set(emi);
-    mat.emissiveIntensity = 0.5;
-    if (tw) {
-      const matT = tw.material as THREE.MeshStandardMaterial;
-      matT.color.set(col);
-      matT.emissive.set(emi);
-      matT.emissiveIntensity = 0.5;
-    }
+    const col = colorMap[kind];
+    (m.material as THREE.MeshBasicMaterial).color.set(col);
+    if (tw) (tw.material as THREE.MeshBasicMaterial).color.set(col);
   };
+
 
   const nextPlate = () => {
     const s = state.current;
@@ -366,11 +339,8 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
 
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <pointLight position={[6, 8, 5]} intensity={1.6} color="#a855f7" />
-      <pointLight position={[-6, 6, -4]} intensity={1.4} color="#22d3ee" />
-      <pointLight position={[0, 12, 2]} intensity={0.9} color="#e879f9" />
-      <fog attach="fog" args={['#0a0518', 16, 38]} />
+      <ambientLight intensity={1} />
+      <fog attach="fog" args={['#08041a', 22, 50]} />
 
       <group ref={stackRef} />
 
@@ -380,14 +350,30 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
         <meshBasicMaterial color={0xfde047} transparent opacity={0.4} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Moving plate */}
+      {/* Moving plate (flat fuchsia with white top + white edges) */}
       <mesh ref={movingRef}>
         <boxGeometry args={[1, PLATE_H, 1]} />
-        <meshStandardMaterial color="#e879f9" emissive="#d946ef" emissiveIntensity={1} roughness={0.25} metalness={0.55} />
+        <meshBasicMaterial color="#e879f9" />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, PLATE_H / 2 + 0.002, 0]}>
+          <planeGeometry args={[0.995, 0.995]} />
+          <meshBasicMaterial color={0xffffff} />
+        </mesh>
+        <lineSegments>
+          <edgesGeometry args={[new THREE.BoxGeometry(1, PLATE_H, 1)]} />
+          <lineBasicMaterial color={0xffffff} transparent opacity={0.95} />
+        </lineSegments>
       </mesh>
       <mesh ref={twinRef} visible={false}>
         <boxGeometry args={[1, PLATE_H, 1]} />
-        <meshStandardMaterial color="#22d3ee" emissive="#0891b2" emissiveIntensity={1} roughness={0.25} metalness={0.55} />
+        <meshBasicMaterial color="#22d3ee" />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, PLATE_H / 2 + 0.002, 0]}>
+          <planeGeometry args={[0.995, 0.995]} />
+          <meshBasicMaterial color={0xffffff} />
+        </mesh>
+        <lineSegments>
+          <edgesGeometry args={[new THREE.BoxGeometry(1, PLATE_H, 1)]} />
+          <lineBasicMaterial color={0xffffff} transparent opacity={0.95} />
+        </lineSegments>
       </mesh>
 
       <BackgroundDecor />
@@ -396,26 +382,24 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
 };
 
 const BackgroundDecor: React.FC = () => {
-  const orbsRef = useRef<THREE.Group>(null);
-  const particlesRef = useRef<THREE.Points>(null);
-
-  // Particles geometry (memo once)
-  const particles = React.useMemo(() => {
-    const count = 140;
+  // Tiny stars scattered across the dark sky
+  const stars = React.useMemo(() => {
+    const count = 90;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
-    const cA = new THREE.Color('#a855f7');
-    const cB = new THREE.Color('#22d3ee');
-    const cC = new THREE.Color('#e879f9');
+    const cPink = new THREE.Color('#e879f9');
+    const cPurple = new THREE.Color('#a855f7');
+    const cWhite = new THREE.Color('#ffffff');
     for (let i = 0; i < count; i++) {
-      const r = 8 + Math.random() * 14;
-      const theta = Math.random() * Math.PI * 2;
-      const y = (Math.random() - 0.3) * 18;
-      positions[i * 3] = Math.cos(theta) * r;
+      // Distribute around a wide back hemisphere
+      const r = 14 + Math.random() * 16;
+      const theta = (Math.random() - 0.5) * Math.PI; // front-facing arc
+      const y = 1 + Math.random() * 18;
+      positions[i * 3] = Math.sin(theta) * r;
       positions[i * 3 + 1] = y;
-      positions[i * 3 + 2] = Math.sin(theta) * r - 4;
+      positions[i * 3 + 2] = -Math.abs(Math.cos(theta) * r) - 4;
       const pick = Math.random();
-      const c = pick < 0.4 ? cA : pick < 0.75 ? cB : cC;
+      const c = pick < 0.5 ? cPink : pick < 0.85 ? cPurple : cWhite;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -426,83 +410,53 @@ const BackgroundDecor: React.FC = () => {
     return geom;
   }, []);
 
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (orbsRef.current) {
-      orbsRef.current.children.forEach((child, i) => {
-        const m = child as THREE.Mesh;
-        const base = (m.userData.baseY as number) ?? 0;
-        m.position.y = base + Math.sin(t * 0.5 + i) * 0.6;
-        const baseS = (m.userData.baseScale as number) ?? 1;
-        const s = baseS * (1 + Math.sin(t * 0.8 + i * 1.3) * 0.05);
-        m.scale.setScalar(s);
-      });
-    }
-    if (particlesRef.current) {
-      particlesRef.current.rotation.y = t * 0.03;
-    }
-  });
-
-  const orbs = [
-    { pos: [7, 6, -8], r: 2.4, color: '#a855f7', opacity: 0.32 },
-    { pos: [-8, 3, -10], r: 1.8, color: '#22d3ee', opacity: 0.28 },
-    { pos: [5, 12, -12], r: 1.4, color: '#e879f9', opacity: 0.3 },
-    { pos: [-6, 10, -6], r: 1.1, color: '#fde047', opacity: 0.22 },
-    { pos: [9, -1, -7], r: 1.6, color: '#22d3ee', opacity: 0.25 },
-    { pos: [-10, 7, -14], r: 2.0, color: '#7c3aed', opacity: 0.28 },
+  // Concentric racetrack-style curves on the floor (cyan + purple).
+  // Off-centered to one side, like in the reference image.
+  const lanes = [
+    { r: 5.5, color: '#22d3ee' },
+    { r: 6.8, color: '#a855f7' },
+    { r: 8.2, color: '#22d3ee' },
+    { r: 9.6, color: '#a855f7' },
+    { r: 11.0, color: '#22d3ee' },
+    { r: 12.5, color: '#a855f7' },
   ];
 
   return (
     <>
-      {/* Neon grid floor */}
-      <gridHelper args={[80, 40, '#a855f7', '#1a0f33']} position={[0, -2.5, 0]} />
-      <gridHelper args={[80, 40, '#22d3ee', '#0a0518']} position={[0, -2.48, 0]} rotation={[0, Math.PI / 4, 0]} />
+      {/* Subtle dark purple grid floor */}
+      <gridHelper args={[60, 30, '#6d28d9', '#1a0b3a']} position={[0, -2.5, 0]} />
 
-      {/* Floor glow disc */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.49, 0]}>
-        <circleGeometry args={[10, 64]} />
-        <meshBasicMaterial color="#7c3aed" transparent opacity={0.18} />
-      </mesh>
-
-      {/* Floating glowing orbs */}
-      <group ref={orbsRef}>
-        {orbs.map((o, i) => (
-          <mesh
-            key={i}
-            position={o.pos as [number, number, number]}
-            userData={{ baseY: o.pos[1], baseScale: 1 }}
-          >
-            <sphereGeometry args={[o.r, 24, 16]} />
-            <meshBasicMaterial color={o.color} transparent opacity={o.opacity} />
+      {/* Concentric racetrack curves */}
+      <group position={[6, -2.46, -2]} rotation={[-Math.PI / 2, 0, 0]}>
+        {lanes.map((l, i) => (
+          <mesh key={i}>
+            <torusGeometry args={[l.r, 0.05, 8, 96]} />
+            <meshBasicMaterial color={l.color} transparent opacity={0.85} />
           </mesh>
         ))}
       </group>
 
-      {/* Halo rings around big orbs */}
-      <mesh position={[7, 6, -8]} rotation={[Math.PI / 2.3, 0.4, 0]}>
-        <ringGeometry args={[2.7, 2.85, 64]} />
-        <meshBasicMaterial color="#a855f7" transparent opacity={0.35} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[-8, 3, -10]} rotation={[Math.PI / 2.5, -0.3, 0]}>
-        <ringGeometry args={[2.1, 2.22, 64]} />
-        <meshBasicMaterial color="#22d3ee" transparent opacity={0.4} side={THREE.DoubleSide} />
+      {/* Big dark purple sphere — top-left planet */}
+      <mesh position={[-9, 10, -14]}>
+        <sphereGeometry args={[5.5, 48, 32]} />
+        <meshBasicMaterial color="#2a1257" />
       </mesh>
 
-      {/* Particles */}
-      <points ref={particlesRef} geometry={particles}>
+      {/* Tiny stars */}
+      <points geometry={stars}>
         <pointsMaterial
-          size={0.12}
+          size={0.09}
           vertexColors
           transparent
-          opacity={0.85}
+          opacity={0.9}
           sizeAttenuation
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
         />
       </points>
     </>
   );
 };
+
 
 
 
