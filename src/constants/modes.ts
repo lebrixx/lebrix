@@ -65,13 +65,9 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.ZONE_MOBILE]: {
-    name: "Zone mobile",
-    desc: "L'arc vert glisse en continu autour du cercle. +3% de vitesse à chaque réussite.",
-    zoneArc: Math.PI / 5,
-    keepMovingZone: true,
-    zoneDriftSpeed: 0.6,      // rad/s au départ
-    zoneDriftGain: 1.05,      // +5% sur la vitesse de glissement
-    zoneDriftInvertChance: 0.3, // 30% de chance d'inverser le sens
+    name: "Falling Tunnel",
+    desc: "Glisse ton doigt pour aligner la bille avec le trou vert. Évite les plaques qui foncent sur toi !",
+    keepMovingZone: false,
     survival: false,
     survivalTime: 0,
     variableArc: false
