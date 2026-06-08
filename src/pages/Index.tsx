@@ -377,6 +377,18 @@ const Index = () => {
               />
             );
           }
+          if (currentMode === 'zone_mobile') {
+            return (
+              <FallingTunnel3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
           return (
             <CircleTap
               theme={currentTheme}
