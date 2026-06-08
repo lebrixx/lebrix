@@ -31,10 +31,10 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'survie_score_15', title: 'Maître Stack', description: 'Fais un score de 15 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
   // Zone mobile
-  { id: 'mobile_score_8', title: 'Zone Nomade', description: 'Fais un score de 8 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 20 } },
-  { id: 'mobile_score_12', title: 'Chasseur Mobile', description: 'Fais un score de 12 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 12, reward: { coins: 30 } },
-  { id: 'mobile_score_15', title: 'Mobile Confirmé', description: 'Fais un score de 15 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 40 } },
-  { id: 'mobile_score_20', title: 'Expert Mobile', description: 'Fais un score de 20 en Zone mobile', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 50 } },
+  { id: 'mobile_score_8', title: 'Tunnel Débutant', description: 'Fais un score de 8 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 20 } },
+  { id: 'mobile_score_12', title: 'Chasseur de Trous', description: 'Fais un score de 12 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 12, reward: { coins: 30 } },
+  { id: 'mobile_score_15', title: 'Tunnel Confirmé', description: 'Fais un score de 15 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 40 } },
+  { id: 'mobile_score_20', title: 'Expert Tunnel', description: 'Fais un score de 20 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 50 } },
   
   // Zone traîtresse
   { id: 'traitresse_score_5', title: 'Détecteur', description: 'Fais un score de 5 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 20 } },
