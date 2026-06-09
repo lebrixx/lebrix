@@ -1724,7 +1724,7 @@ export const translations = {
     descArcChangeant: 'Guía la bola por una pista 3D sinuosa. ¡Aguanta lo máximo posible — 1 punto por segundo!',
     descSurvie30s: '¡Apila las placas lo más alto posible! Toca para colocar, apunta al centro, evita las trampas rojas.',
     descZoneMobile: 'El arco verde se desliza continuamente alrededor del círculo. +3% de velocidad por acierto.',
-    descZoneTraitresse: '¡Varias zonas verdes, pero una es una trampa. Encuentra la zona correcta para ganar!',
+    descZoneTraitresse: '¡Desliza horizontalmente para orbitar la torre. Apunta a la abertura de cada anillo y esquiva los segmentos rojos!',
     descMemoireExpert: '¡Una zona verde aparece 1 segundo, memoriza su posición y haz clic en el lugar correcto! La dificultad aumenta en cada nivel.',
     dailyRewardsTitle: 'RECOMPENSAS DIARIAS',
     yourStreak: 'Tu Racha',
