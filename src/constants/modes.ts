@@ -73,16 +73,12 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.ZONE_TRAITRESSE]: {
-    name: "Zone traîtresse",
-    desc: "Plusieurs zones vertes, mais une seule est piégée. Trouve la bonne zone pour gagner !",
-    zoneArc: Math.PI / 5,     // ~36° par zone (même taille que le mode classique)
+    name: "Orbit Dodge",
+    desc: "Glisse horizontalement pour orbiter autour de la tour. Vise l'ouverture verte de chaque anneau et évite les segments rouges !",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
-    variableArc: false,
-    multipleZones: true,
-    numberOfZones: 4,         // 4 zones vertes au total
-    trapZone: true            // Une des zones est piégée
+    variableArc: false
   },
   [ModeID.MEMOIRE_EXPERT]: {
     name: "Mémoire (Expert)",
