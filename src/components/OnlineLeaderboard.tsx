@@ -46,7 +46,7 @@ const modeNames = {
   arc_changeant: 'Ball Balance 3D',
   survie_60s: 'Stack Jump 3D',
   zone_mobile: 'Falling Tunnel',
-  zone_traitresse: 'Zone Traîtresse',
+  zone_traitresse: 'Orbit Dodge',
   memoire_expert: 'Mémoire (Expert)',
   pong_circulaire: 'Pong Circulaire'
 };
