@@ -98,9 +98,16 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-game flex flex-col items-center p-4 pt-12">
+    <div className="min-h-screen bg-gradient-game flex flex-col items-center p-4 pt-10 relative overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-24 w-80 h-80 rounded-full bg-purple-600/20 blur-3xl" />
+        <div className="absolute top-40 -right-24 w-72 h-72 rounded-full bg-cyan-500/20 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 w-96 h-96 rounded-full bg-fuchsia-500/10 blur-3xl" />
+      </div>
+
       {/* Header */}
-      <div className="w-full max-w-4xl mb-8">
+      <div className="w-full max-w-4xl mb-6 relative">
         <Button
           onClick={onBack}
           variant="outline"
@@ -108,30 +115,34 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Retour au Menu
-          </Button>
+        </Button>
 
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full border border-primary/30 bg-primary/5 backdrop-blur-sm">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold">Choisis ton défi</span>
+          </div>
+          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent mb-3 drop-shadow-[0_0_25px_rgba(168,85,247,0.35)]">
             {t.modeSelectionTitle}
           </h1>
-          
+
           {/* Slot Machine Button */}
           <Button
             onClick={() => setShowSlotMachine(true)}
             variant="outline"
             className={`mt-3 transition-all duration-300 border ${
-              canSpin 
-                ? 'border-primary/50 text-primary hover:bg-primary/10 hover:scale-[1.03] animate-[pulse-glow_3s_ease-in-out_infinite]' 
-                : bonusMode 
-                  ? 'border-secondary/40 text-secondary hover:bg-secondary/10' 
+              canSpin
+                ? 'border-primary/50 text-primary hover:bg-primary/10 hover:scale-[1.03] animate-[pulse-glow_3s_ease-in-out_infinite]'
+                : bonusMode
+                  ? 'border-secondary/40 text-secondary hover:bg-secondary/10'
                   : 'border-wheel-border text-text-muted'
             }`}
           >
             <Star className="w-4 h-4 mr-2" />
-            {canSpin 
-              ? 'Bonus x2 disponible' 
-              : bonusMode 
-                ? `${cfgModes[bonusMode].name} — x2 actif` 
+            {canSpin
+              ? 'Bonus x2 disponible'
+              : bonusMode
+                ? `${cfgModes[bonusMode].name} — x2 actif`
                 : 'Bonus x2'
             }
           </Button>
@@ -143,6 +154,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           )}
         </div>
       </div>
+
 
       {/* Slot Machine Dialog */}
       <SlotMachine
