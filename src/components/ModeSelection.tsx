@@ -180,7 +180,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
       )}
 
       {/* Mode Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-4xl relative">
         {Object.entries(cfgModes).map(([modeId, config]) => {
           const isCurrentMode = modeId === currentMode;
           const isLocked = !unlockedModes.includes(modeId);
@@ -188,24 +188,31 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           const hasBonus = isBonusActive(modeId as ModeType);
           const isPongChallenge = modeId === ModeID.PONG_CIRCULAIRE && isLocked;
           const pongUnlock = isPongChallenge ? getPongUnlockCount() : null;
+          const accent = MODE_ACCENT[modeId] ?? DEFAULT_ACCENT;
 
           return (
             <Card
               key={modeId}
               className={`
-                relative overflow-hidden border-2 transition-all duration-300
-                ${isCurrentMode 
-                  ? 'border-primary bg-primary/5 shadow-glow-primary' 
+                group relative overflow-hidden border transition-all duration-300 rounded-2xl
+                bg-gradient-to-br ${accent.from} ${accent.to}
+                ${isCurrentMode
+                  ? `border-primary/70 ${accent.ring}`
                   : isLocked
-                    ? 'border-danger/50 bg-button-bg/50'
-                    : 'border-wheel-border bg-button-bg hover:border-primary/50'
+                    ? 'border-white/5 opacity-90'
+                    : 'border-white/10 hover:border-white/30'
                 }
-                ${!isLocked && !isGameRunning ? 'hover:scale-105' : ''}
+                ${!isLocked && !isGameRunning ? 'hover:-translate-y-1 hover:shadow-2xl' : ''}
               `}
             >
+              {/* glossy top edge */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+              {/* radial glow on hover */}
+              <div className="pointer-events-none absolute -inset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(600px circle at 50% 0%, rgba(255,255,255,0.08), transparent 40%)' }} />
+
               {/* Bonus x2 Star Badge */}
               {hasBonus && !isLocked && (
-                <div className="absolute top-4 right-4 z-10">
+                <div className="absolute top-3 right-3 z-10">
                   <Badge className="bg-secondary/90 text-white border-secondary animate-pulse">
                     <Star className="w-3 h-3 mr-1" />
                     x2 COINS
@@ -214,24 +221,26 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               )}
               {/* Locked Badge */}
               {isLocked && (
-                <div className="absolute top-4 right-4 z-10">
+                <div className="absolute top-3 right-3 z-10">
                   <Badge className={isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
                     <Lock className="w-3 h-3 mr-1" />
                     {isPongChallenge ? t.challengeRequired : t.locked}
                   </Badge>
                 </div>
               )}
-              <div className="p-6">
+              <div className="p-5 relative">
                 {/* Mode Icon & Name */}
-                <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-4 mb-3">
                   <div className={`
-                    p-3 rounded-full 
-                    ${isCurrentMode ? 'bg-primary text-game-dark' : 'bg-wheel-segment text-primary'}
+                    relative p-3 rounded-2xl text-white shadow-lg
+                    bg-gradient-to-br ${accent.iconBg}
+                    ${isCurrentMode ? 'ring-2 ring-white/30' : ''}
                   `}>
                     {getModeIcon(modeId as ModeType)}
+                    <div className="absolute inset-0 rounded-2xl bg-white/10 mix-blend-overlay" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-text-primary">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-text-primary leading-tight">
                       {config.name}
                     </h3>
                     {isCurrentMode && (
@@ -241,6 +250,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     )}
                   </div>
                 </div>
+
 
                 {/* Description */}
                 <p className="text-text-secondary mb-6 leading-relaxed">
