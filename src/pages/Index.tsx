@@ -16,6 +16,7 @@ import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
+import { OrbitDodge3DGame } from '@/components/OrbitDodge3DGame';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
