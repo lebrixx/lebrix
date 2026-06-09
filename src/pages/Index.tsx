@@ -16,6 +16,7 @@ import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
+import { OrbitDodge3DGame } from '@/components/OrbitDodge3DGame';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -62,7 +63,7 @@ const Index = () => {
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
+    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert']; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
     let base: string[] = freeModes;
 
@@ -380,6 +381,18 @@ const Index = () => {
           if (currentMode === 'zone_mobile') {
             return (
               <FallingTunnel3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
+          if (currentMode === 'zone_traitresse') {
+            return (
+              <OrbitDodge3DGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
                 isSoundMuted={isMuted}

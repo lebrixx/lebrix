@@ -36,11 +36,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'mobile_score_15', title: 'Tunnel Confirmé', description: 'Fais un score de 15 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 40 } },
   { id: 'mobile_score_20', title: 'Expert Tunnel', description: 'Fais un score de 20 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 50 } },
   
-  // Zone traîtresse
-  { id: 'traitresse_score_5', title: 'Détecteur', description: 'Fais un score de 5 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 20 } },
-  { id: 'traitresse_score_8', title: 'Démineur', description: 'Fais un score de 8 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 8, reward: { coins: 30 } },
-  { id: 'traitresse_score_10', title: 'Traîtresse Confirmé', description: 'Fais un score de 10 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 40 } },
-  { id: 'traitresse_score_15', title: 'Expert Démineur', description: 'Fais un score de 15 en Zone traîtresse', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 56 } },
+  // Orbit Dodge
+  { id: 'traitresse_score_5', title: 'Orbite Novice', description: 'Fais un score de 5 en Orbit Dodge', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 5, reward: { coins: 20 } },
+  { id: 'traitresse_score_8', title: 'Orbite Habile', description: 'Fais un score de 8 en Orbit Dodge', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 8, reward: { coins: 30 } },
+  { id: 'traitresse_score_10', title: 'Orbite Confirmé', description: 'Fais un score de 10 en Orbit Dodge', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 40 } },
+  { id: 'traitresse_score_15', title: 'Maître de la Tour', description: 'Fais un score de 15 en Orbit Dodge', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 56 } },
   
   // Mémoire Expert
   { id: 'memoire_score_3', title: 'Mémoire courte', description: 'Fais un score de 3 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
