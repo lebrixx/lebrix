@@ -976,7 +976,7 @@ export const translations = {
     descArcChangeant: 'Guide the ball on a 3D winding track. Hold on as long as possible — 1 point per second!',
     descSurvie30s: 'Stack the plates as high as you can! Tap to drop, aim for the center, avoid red traps.',
     descZoneMobile: 'The green arc slides continuously around the circle. +3% speed per success.',
-    descZoneTraitresse: 'Multiple green zones, but one is trapped. Find the right zone to win!',
+    descZoneTraitresse: 'Drag horizontally to orbit the tower. Aim for the opening in each ring and dodge the red segments!',
     descMemoireExpert: 'A green zone appears for 1 second, memorize its position and click in the right spot! Difficulty increases at each level.',
     dailyRewardsTitle: 'DAILY REWARDS',
     yourStreak: 'Your Streak',
