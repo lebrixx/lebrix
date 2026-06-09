@@ -970,7 +970,7 @@ export const translations = {
     modeArcChangeant: 'Ball Balance 3D',
     modeSurvie30s: 'Stack Jump 3D',
     modeZoneMobile: 'Falling Tunnel',
-    modeZoneTraitresse: 'Trap Zone',
+    modeZoneTraitresse: 'Orbit Dodge',
     modeMemoireExpert: 'Memory (Expert)',
     descClassic: 'Dodge blocks, tap to swap color and cross portals to enter PHASE ×3!',
     descArcChangeant: 'Guide the ball on a 3D winding track. Hold on as long as possible — 1 point per second!',
