@@ -212,7 +212,7 @@ export const translations = {
     descArcChangeant: 'Guide la bille sur une piste 3D sinueuse. Tiens le plus longtemps possible — 1 point par seconde !',
     descSurvie30s: 'Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, évite les pièges rouges.',
     descZoneMobile: 'Glisse ton doigt pour aligner la bille avec le trou vert. Évite les plaques !',
-    descZoneTraitresse: 'Plusieurs zones vertes, mais une seule est piégée. Trouve la bonne zone pour gagner !',
+    descZoneTraitresse: "Glisse horizontalement pour orbiter autour de la tour. Vise l'ouverture de chaque anneau et évite les segments rouges !",
     descMemoireExpert: 'Une zone verte apparaît 1 seconde, mémorise sa position et clique au bon endroit ! La difficulté augmente à chaque niveau.',
     // Daily Rewards
     dailyRewardsTitle: 'RÉCOMPENSES QUOTIDIENNES',
