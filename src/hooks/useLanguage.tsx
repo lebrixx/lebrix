@@ -673,7 +673,7 @@ export const translations = {
     authSwitchToSignup: 'Créer un compte',
     authSwitchToLogin: 'Se connecter',
     // Misc UI (added)
-    trapZoneName: 'Zone Traîtresse',
+    trapZoneName: 'Orbit Dodge',
     memoryExpertName: 'Mémoire (Expert)',
     usernameTakenByOther: 'Ce pseudo est déjà pris par un autre joueur',
     usernameAfterChangeWarning: 'Après cette confirmation, il te restera {n} changement(s) de pseudo.',
