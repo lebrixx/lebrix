@@ -42,6 +42,19 @@ const getModeIcon = (modeId: ModeType) => {
   }
 };
 
+// Palette d'accents par mode (couleurs Tailwind sûres)
+const MODE_ACCENT: Record<string, { from: string; to: string; ring: string; iconBg: string; chip: string }> = {
+  [ModeID.CLASSIC]:          { from: 'from-cyan-500/20',    to: 'to-fuchsia-500/10',  ring: 'shadow-[0_0_40px_-10px_rgba(34,211,238,0.55)]', iconBg: 'from-cyan-500 to-fuchsia-500',    chip: 'border-cyan-400/40 text-cyan-300 bg-cyan-400/10' },
+  [ModeID.ARC_CHANGEANT]:    { from: 'from-purple-500/20',  to: 'to-pink-500/10',     ring: 'shadow-[0_0_40px_-10px_rgba(168,85,247,0.55)]',  iconBg: 'from-purple-500 to-pink-500',     chip: 'border-purple-400/40 text-purple-300 bg-purple-400/10' },
+  [ModeID.SURVIE_60S]:       { from: 'from-fuchsia-500/20', to: 'to-amber-500/10',    ring: 'shadow-[0_0_40px_-10px_rgba(232,121,249,0.55)]', iconBg: 'from-fuchsia-500 to-amber-500',   chip: 'border-fuchsia-400/40 text-fuchsia-300 bg-fuchsia-400/10' },
+  [ModeID.ZONE_MOBILE]:      { from: 'from-emerald-500/20', to: 'to-cyan-500/10',     ring: 'shadow-[0_0_40px_-10px_rgba(16,185,129,0.55)]',  iconBg: 'from-emerald-500 to-cyan-500',    chip: 'border-emerald-400/40 text-emerald-300 bg-emerald-400/10' },
+  [ModeID.ZONE_TRAITRESSE]:  { from: 'from-fuchsia-500/20', to: 'to-amber-400/10',    ring: 'shadow-[0_0_40px_-10px_rgba(168,85,247,0.55)]',  iconBg: 'from-fuchsia-500 via-purple-500 to-amber-400', chip: 'border-amber-300/40 text-amber-200 bg-amber-300/10' },
+  [ModeID.MEMOIRE_EXPERT]:   { from: 'from-cyan-500/20',    to: 'to-indigo-500/10',   ring: 'shadow-[0_0_40px_-10px_rgba(99,102,241,0.55)]',  iconBg: 'from-cyan-500 to-indigo-500',     chip: 'border-cyan-400/40 text-cyan-300 bg-cyan-400/10' },
+  [ModeID.PONG_CIRCULAIRE]:  { from: 'from-pink-500/20',    to: 'to-purple-500/10',   ring: 'shadow-[0_0_40px_-10px_rgba(236,72,153,0.55)]',  iconBg: 'from-pink-500 to-purple-500',     chip: 'border-pink-400/40 text-pink-300 bg-pink-400/10' },
+};
+
+const DEFAULT_ACCENT = MODE_ACCENT[ModeID.CLASSIC];
+
 export const ModeSelection: React.FC<ModeSelectionProps> = ({
   currentMode,
   gameStatus,
