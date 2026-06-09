@@ -205,7 +205,7 @@ export const translations = {
     modeArcChangeant: 'Ball Balance 3D',
     modeSurvie30s: 'Stack Jump 3D',
     modeZoneMobile: 'Falling Tunnel',
-    modeZoneTraitresse: 'Zone traîtresse',
+    modeZoneTraitresse: 'Orbit Dodge',
     modeMemoireExpert: 'Mémoire (Expert)',
     // Mode descriptions
     descClassic: 'Esquive les blocs, change de couleur d\'un tap et traverse les portails pour entrer en PHASE ×3 !',
