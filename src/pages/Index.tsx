@@ -63,7 +63,7 @@ const Index = () => {
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
+    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert']; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
     let base: string[] = freeModes;
 
