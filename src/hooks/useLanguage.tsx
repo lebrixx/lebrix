@@ -1718,7 +1718,7 @@ export const translations = {
     modeArcChangeant: 'Ball Balance 3D',
     modeSurvie30s: 'Stack Jump 3D',
     modeZoneMobile: 'Falling Tunnel',
-    modeZoneTraitresse: 'Zona Trampa',
+    modeZoneTraitresse: 'Orbit Dodge',
     modeMemoireExpert: 'Memoria (Experto)',
     descClassic: '¡Esquiva los bloques, toca para cambiar de color y atraviesa los portales para entrar en FASE ×3!',
     descArcChangeant: 'Guía la bola por una pista 3D sinuosa. ¡Aguanta lo máximo posible — 1 punto por segundo!',
