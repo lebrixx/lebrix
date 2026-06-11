@@ -17,6 +17,8 @@ import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
 import { OrbitDodge3DGame } from '@/components/OrbitDodge3DGame';
+import { RotatingCube3DGame } from '@/components/RotatingCube3DGame';
+import { getTickets, consumeTicket } from '@/utils/ticketSystem';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
