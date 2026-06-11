@@ -260,6 +260,20 @@ const Index = () => {
       });
       return;
     }
+
+    // Mode Rotating Cube : consommer un ticket
+    if (mode === 'memoire_expert') {
+      if (getTickets() <= 0) {
+        toast({
+          title: t.noTicket,
+          description: t.noTicketDesc,
+          variant: 'destructive',
+        });
+        return;
+      }
+      consumeTicket();
+    }
+    
     
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
