@@ -42,11 +42,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'traitresse_score_10', title: 'Orbite Confirmé', description: 'Fais un score de 10 en Orbit Dodge', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 10, reward: { coins: 40 } },
   { id: 'traitresse_score_15', title: 'Maître de la Tour', description: 'Fais un score de 15 en Orbit Dodge', type: 'score_in_mode', mode: ModeID.ZONE_TRAITRESSE, target: 15, reward: { coins: 56 } },
   
-  // Mémoire Expert
-  { id: 'memoire_score_3', title: 'Mémoire courte', description: 'Fais un score de 3 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
-  { id: 'memoire_score_5', title: 'Bonne mémoire', description: 'Fais un score de 5 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 36 } },
-  { id: 'memoire_score_8', title: 'Mémoire Confirmé', description: 'Fais un score de 8 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 8, reward: { coins: 50 } },
-  { id: 'memoire_score_10', title: 'Mémoire eidétique', description: 'Fais un score de 10 en Mémoire Expert', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 60 } },
+  // Rotating Cube
+  { id: 'memoire_score_3', title: 'Premier survivant', description: 'Survis à 3 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
+  { id: 'memoire_score_5', title: 'Esquiveur', description: 'Survis à 5 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 36 } },
+  { id: 'memoire_score_8', title: 'Tactique', description: 'Survis à 8 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 8, reward: { coins: 50 } },
+  { id: 'memoire_score_10', title: 'Maître du cube', description: 'Survis à 10 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 60 } },
 ];
 
 export interface DailyChallengeProgress {

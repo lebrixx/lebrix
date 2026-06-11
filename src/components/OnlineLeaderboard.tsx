@@ -47,7 +47,7 @@ const modeNames = {
   survie_60s: 'Stack Jump 3D',
   zone_mobile: 'Falling Tunnel',
   zone_traitresse: 'Orbit Dodge',
-  memoire_expert: 'Mémoire (Expert)',
+  memoire_expert: 'Rotating Cube',
   pong_circulaire: 'Pong Circulaire'
 };
 

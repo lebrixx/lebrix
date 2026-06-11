@@ -17,6 +17,8 @@ import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
 import { OrbitDodge3DGame } from '@/components/OrbitDodge3DGame';
+import { RotatingCube3DGame } from '@/components/RotatingCube3DGame';
+import { getTickets, consumeTicket } from '@/utils/ticketSystem';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -258,6 +260,20 @@ const Index = () => {
       });
       return;
     }
+
+    // Mode Rotating Cube : consommer un ticket
+    if (mode === 'memoire_expert') {
+      if (getTickets() <= 0) {
+        toast({
+          title: t.noTicket,
+          description: t.noTicketDesc,
+          variant: 'destructive',
+        });
+        return;
+      }
+      consumeTicket();
+    }
+    
     
     setCurrentMode(mode);
     localStorage.setItem('ls_mode', mode);
@@ -393,6 +409,18 @@ const Index = () => {
           if (currentMode === 'zone_traitresse') {
             return (
               <OrbitDodge3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
+          if (currentMode === 'memoire_expert') {
+            return (
+              <RotatingCube3DGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
                 isSoundMuted={isMuted}
