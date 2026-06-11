@@ -418,6 +418,18 @@ const Index = () => {
               />
             );
           }
+          if (currentMode === 'memoire_expert') {
+            return (
+              <RotatingCube3DGame
+                onBack={() => setCurrentScreen('menu')}
+                onGameOver={handleGameOver}
+                isSoundMuted={isMuted}
+                onToggleSound={toggleMute}
+                playSuccess={playSuccess}
+                playFailure={playFailure}
+              />
+            );
+          }
           return (
             <CircleTap
               theme={currentTheme}
