@@ -47,7 +47,7 @@ const GAME_MODES_SHOP = [
   },
   {
     id: 'expert_tickets',
-    name: 'Pack de Tickets Expert',
+    name: 'Pack de Tickets Rotating Cube',
     description: '__memoryExpertDesc__',
     price: 100,
     icon: Star,
