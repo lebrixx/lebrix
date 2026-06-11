@@ -81,8 +81,8 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.MEMOIRE_EXPERT]: {
-    name: "Mémoire (Expert)",
-    desc: "Une zone verte apparaît 1 seconde, mémorise sa position et clique au bon endroit ! La difficulté augmente à chaque niveau.",
+    name: "Rotating Cube",
+    desc: "Swipe pour bouger sur la grille 4×4. Évite les zones jaunes qui virent au rouge. Capte les pastilles vertes pour gagner un bouclier (max 2).",
     zoneArc: Math.PI / 5,
     keepMovingZone: false,
     survival: false,
