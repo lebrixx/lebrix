@@ -29,12 +29,8 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
       return false;
     }
     
-    // Boost "bigger_zone" interdit dans certains modes
-    if (boostId === 'bigger_zone') {
-      if (currentMode === 'arc_changeant' || currentMode === 'zone_traitresse' || currentMode === 'survie_60s') {
-        return false;
-      }
-    }
+    // Tous les autres boosts (dont "Convertisseur de score") sont autorisés dans tous les modes
+
     
     return true;
   };
