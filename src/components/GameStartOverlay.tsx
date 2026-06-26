@@ -24,6 +24,7 @@ interface GameStartOverlayProps {
   selectedBoosts: BoostType[];
   onSelectedBoostsChange: (b: BoostType[]) => void;
   onStart: () => void;
+  hideBoosts?: boolean;
 }
 
 export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
