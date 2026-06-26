@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Play, Volume2, VolumeX, RotateCcw, MoveHorizontal, Hand, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Play, Volume2, VolumeX, RotateCcw, MoveHorizontal, Hand, Sparkles, Zap, X, Trophy } from 'lucide-react';
+import { BOOSTS, BoostType } from '@/types/boosts';
+import { useBoosts } from '@/hooks/useBoosts';
 
 /**
  * Cube Dodge 3D — runner mobile-first.
