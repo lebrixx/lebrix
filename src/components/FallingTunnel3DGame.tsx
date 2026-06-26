@@ -427,10 +427,12 @@ const ResponsiveCamera: React.FC = () => {
 };
 
 export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
+  const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
+  useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
   const [best, setBest] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -445,14 +447,15 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
-    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
-    shieldRef.current = !!selectedBoosts?.includes('shield');
+    offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
+    shieldRef.current = menuBoosts.includes('shield');
+    onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     pointerRef.current.x = 0;
     pointerRef.current.y = 0;
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [pointerRef, selectedBoosts]);
+  }, [pointerRef, menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((s: number) => {
     setScore(offsetRef.current + s);
