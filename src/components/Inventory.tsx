@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
 import { Button } from '@/components/ui/button';
 import {
-  Backpack, Ticket, Palette, Check, Pencil, X, Zap, Shield, Rocket, Target,
+  Backpack, Ticket, Palette, Check, Pencil, X, Zap, Shield, Rocket, Target, Coins,
   Lock, ChevronRight, Crown, Star
 } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
