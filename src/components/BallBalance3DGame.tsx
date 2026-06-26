@@ -339,8 +339,8 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
       }
     }
 
-    // Score = secondes
-    const sec = Math.floor(s.elapsed);
+    // Score = +1 toutes les 2 secondes
+    const sec = Math.floor(s.elapsed / 2);
     if (sec !== s.last) {
       s.last = sec;
       s.scored = sec;
