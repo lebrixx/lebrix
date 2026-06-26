@@ -37,6 +37,7 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
   selectedBoosts,
   onSelectedBoostsChange,
   onStart,
+  hideBoosts = false,
 }) => {
   const [showBoostPicker, setShowBoostPicker] = useState(false);
   const { getBoostCount } = useBoosts();
