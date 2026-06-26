@@ -169,7 +169,7 @@ const Index = () => {
     });
     setSelectedBoostsForGame([]);
     if (hasConverter) {
-      const bonus = Math.floor(finalScore / 5);
+      const bonus = Math.floor(finalScore / 3);
       if (bonus > 0) {
         addCoins(bonus);
         toast({
