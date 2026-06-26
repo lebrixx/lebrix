@@ -332,15 +332,15 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
       if (Math.abs(ball.position.x - here.baseX) > TRACK_HW + TOL) {
         s.dying = true;
         s.dyingT = 0;
-        s.finalScore = Math.floor(s.elapsed);
+        s.finalScore = Math.floor(s.elapsed / 2);
         // Push ball off the side it left from
         s.fallVx = ball.position.x > here.baseX ? 2.5 : -2.5;
         return;
       }
     }
 
-    // Score = secondes
-    const sec = Math.floor(s.elapsed);
+    // Score = +1 toutes les 2 secondes
+    const sec = Math.floor(s.elapsed / 2);
     if (sec !== s.last) {
       s.last = sec;
       s.scored = sec;

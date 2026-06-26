@@ -471,10 +471,12 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
     s.walls = remove(s.walls, (w) => w.group.position.z, (w) => { wallGroupRef.current?.remove(w.group); dispose(w.group); });
     s.portals = remove(s.portals, (po) => po.group.position.z, (po) => { portalGroupRef.current?.remove(po.group); dispose(po.group); });
 
-    // Score callback
-    if (s.passed !== s.lastPassed) {
-      s.lastPassed = s.passed;
-      onScore(s.passed);
+    // Score callback : +1 toutes les 2 secondes
+    const timeScore = Math.floor(s.elapsed / 2);
+    if (timeScore !== s.lastPassed) {
+      s.lastPassed = timeScore;
+      s.passed = timeScore;
+      onScore(timeScore);
     }
 
     if (hit && !inPhase && !s.dying) {
