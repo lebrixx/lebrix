@@ -754,65 +754,163 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
           {/* Start menu */}
           {phase === 'menu' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0518]/85 via-[#1a0a3a]/85 to-[#0a0518]/95 backdrop-blur-md p-4 overflow-y-auto">
-              <div className="relative w-full max-w-sm rounded-3xl border border-fuchsia-400/30 bg-gradient-to-b from-[#1a0a3a]/90 to-[#0a0518]/95 shadow-[0_0_60px_-10px_rgba(232,121,249,0.55)] overflow-hidden">
-                <div className="absolute -top-12 -left-12 w-40 h-40 rounded-full bg-fuchsia-500/30 blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full bg-cyan-400/30 blur-3xl pointer-events-none" />
+            <div className="absolute inset-0 flex items-start justify-center bg-gradient-game p-4 overflow-y-auto">
+              <div className="relative w-full max-w-md my-auto">
+                {/* Decorative glows */}
+                <div className="absolute -top-16 -left-16 w-56 h-56 rounded-full bg-fuchsia-500/20 blur-3xl pointer-events-none animate-pulse" />
+                <div className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none animate-pulse" />
 
-                <div className="relative p-6 text-center">
-                  <div className="inline-block mb-3 px-3 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-[10px] uppercase tracking-[0.2em] font-semibold">
-                    Nouveau mode
+                <div className="relative rounded-3xl border border-wheel-border bg-button-bg/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+                  {/* Header */}
+                  <div className="relative px-6 pt-6 pb-5 text-center border-b border-wheel-border/50">
+                    <h2 className="text-3xl font-extrabold mb-1 bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent">
+                      Cube Dodge
+                    </h2>
+                    <p className="text-text-secondary text-xs">Esquive, change de couleur, traverse les portails</p>
+
+                    {/* Record */}
+                    <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 border border-wheel-border">
+                      <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="text-[10px] uppercase tracking-wider text-text-muted">Record</span>
+                      <span className="text-sm font-bold tabular-nums text-amber-300">{best}</span>
+                    </div>
                   </div>
-                  <h2 className="text-4xl font-extrabold mb-2 bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(232,121,249,0.4)]">
-                    Cube Dodge 3D
-                  </h2>
-                  <p className="text-text-secondary text-xs mb-5">Esquive, change de couleur, traverse les portails.</p>
 
                   {/* Rules */}
-                  <div className="text-left space-y-2.5 mb-5">
-                    <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/40 border border-white/10">
+                  <div className="px-5 py-4 space-y-2">
+                    <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/30 border border-wheel-border/60">
                       <MoveHorizontal className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
                       <div className="text-[11px] leading-tight">
-                        <div className="font-bold text-white">Swipe</div>
+                        <div className="font-bold text-text-primary">Swipe</div>
                         <div className="text-text-muted">Glisse gauche/droite pour changer de voie</div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/40 border border-white/10">
+                    <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/30 border border-wheel-border/60">
                       <Hand className="w-4 h-4 text-fuchsia-300 shrink-0 mt-0.5" />
                       <div className="text-[11px] leading-tight">
-                        <div className="font-bold text-white">Tap</div>
+                        <div className="font-bold text-text-primary">Tap</div>
                         <div className="text-text-muted">Touche court = change de couleur (cyan ↔ rose)</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500/15 to-cyan-500/15 border border-fuchsia-400/30">
                       <Sparkles className="w-4 h-4 text-fuchsia-300 shrink-0 mt-0.5" />
                       <div className="text-[11px] leading-tight">
-                        <div className="font-bold text-white">PHASE ×3</div>
+                        <div className="font-bold text-text-primary">PHASE ×3</div>
                         <div className="text-text-muted">Traverse un <span className="text-cyan-300 font-bold">portail</span> de ta couleur → 3 s d'invincibilité + score ×3</div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/40 border border-pink-400/30">
+                    <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/30 border border-pink-400/30">
                       <div className="w-4 h-4 rounded-sm bg-pink-400/80 shrink-0 mt-0.5" />
                       <div className="text-[11px] leading-tight">
-                        <div className="font-bold text-white">Murs colorés</div>
+                        <div className="font-bold text-text-primary">Murs colorés</div>
                         <div className="text-text-muted">Aligne ta couleur avec le mur, sinon c'est game over</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-black/40 border border-fuchsia-400/20">
-                    <span className="text-[10px] uppercase tracking-wider text-text-muted">Record</span>
-                    <span className="text-xl font-bold tabular-nums bg-gradient-to-r from-amber-300 to-yellow-500 bg-clip-text text-transparent">{best}</span>
+                  {/* Boost selector button */}
+                  <div className="px-5 pb-3">
+                    <button
+                      onClick={() => setShowBoostPicker(true)}
+                      className="w-full group relative overflow-hidden rounded-2xl border-2 border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-orange-500/30 transition-all p-3 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/40">
+                          <Zap className="w-5 h-5 text-white fill-white" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-bold text-text-primary leading-tight">Boosts</div>
+                          <div className="text-[10px] text-text-muted">
+                            {menuBoosts.length > 0 ? `${menuBoosts.length} sélectionné${menuBoosts.length > 1 ? 's' : ''}` : 'Choisis tes bonus'}
+                          </div>
+                        </div>
+                      </div>
+                      {menuBoosts.length > 0 ? (
+                        <div className="flex gap-1">
+                          {menuBoosts.map(id => (
+                            <span key={id} className="text-lg">{BOOSTS[id].icon}</span>
+                          ))}
+                        </div>
+                      ) : (
+                        <Badge variant="secondary" className="bg-amber-500/30 text-amber-200 border-amber-400/40">
+                          +
+                        </Badge>
+                      )}
+                    </button>
                   </div>
 
-                  <Button
-                    onClick={handleStart}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-fuchsia-600 via-pink-500 to-cyan-500 hover:scale-105 transition-transform shadow-[0_0_30px_-5px_rgba(232,121,249,0.6)] text-white font-bold py-6"
-                  >
-                    <Play className="w-5 h-5 mr-2 fill-white" /> Jouer
-                  </Button>
+                  {/* Play button */}
+                  <div className="px-5 pb-5">
+                    <Button
+                      onClick={handleStart}
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-fuchsia-600 via-pink-500 to-cyan-500 hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-[0_0_30px_-5px_rgba(232,121,249,0.6)] text-white font-bold py-6 text-lg"
+                    >
+                      <Play className="w-5 h-5 mr-2 fill-white" /> Jouer
+                    </Button>
+                  </div>
                 </div>
+              </div>
+
+              {/* Boost picker modal */}
+              {showBoostPicker && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4" onClick={() => setShowBoostPicker(false)}>
+                  <div className="w-full max-w-md rounded-3xl border border-wheel-border bg-button-bg shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-wheel-border">
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-amber-400" />
+                        <h3 className="text-lg font-bold text-text-primary">Sélectionne tes boosts</h3>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => setShowBoostPicker(false)}>
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </div>
+                    <div className="p-4 space-y-2.5 max-h-[60vh] overflow-y-auto">
+                      {Object.values(BOOSTS).map(boost => {
+                        const count = getBoostCount(boost.id);
+                        const selected = menuBoosts.includes(boost.id);
+                        const disabled = count === 0;
+                        return (
+                          <button
+                            key={boost.id}
+                            disabled={disabled}
+                            onClick={() => setMenuBoosts(prev => prev.includes(boost.id) ? prev.filter(b => b !== boost.id) : [...prev, boost.id])}
+                            className={`w-full text-left p-3 rounded-xl border-2 transition-all flex items-center gap-3 ${
+                              disabled
+                                ? 'opacity-40 cursor-not-allowed border-wheel-border bg-black/20'
+                                : selected
+                                ? 'border-primary bg-primary/15 scale-[0.99]'
+                                : 'border-wheel-border bg-black/30 hover:border-primary/50'
+                            }`}
+                          >
+                            <div className="text-3xl">{boost.icon}</div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-text-primary text-sm">{boost.name}</span>
+                                <Badge variant="secondary" className="text-[10px]">x{count}</Badge>
+                              </div>
+                              <div className="text-[11px] text-text-muted leading-tight mt-0.5">{boost.description}</div>
+                            </div>
+                            {selected && (
+                              <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                <div className="w-2 h-2 rounded-full bg-game-dark" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="p-4 border-t border-wheel-border">
+                      <Button
+                        onClick={() => setShowBoostPicker(false)}
+                        className="w-full bg-gradient-primary py-5 font-bold"
+                      >
+                        Valider
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
               </div>
             </div>
           )}
