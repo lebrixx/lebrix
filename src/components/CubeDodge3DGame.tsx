@@ -755,12 +755,12 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
           {/* Start menu — overlay sur le jeu en fond */}
           {phase === 'menu' && !showBoostPicker && (
             <div
-              className="absolute inset-0 z-30 flex flex-col items-center justify-between p-4 animate-fade-in"
+              className="absolute inset-0 z-30 flex flex-col items-center justify-start p-4 pt-2 gap-4 animate-fade-in"
               onClick={handleStart}
               style={{ cursor: 'pointer' }}
             >
               {/* Bandeau du haut : titre + record */}
-              <div className="w-full max-w-md text-center pt-2">
+              <div className="w-full max-w-md text-center">
                 <h2 className="text-3xl font-extrabold mb-1 bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(232,121,249,0.4)]">
                   Cube Dodge
                 </h2>
@@ -771,7 +771,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </div>
               </div>
 
-              {/* Règles centrées */}
+              {/* Règles */}
               <div className="w-full max-w-sm space-y-1.5 text-left">
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-black/55 backdrop-blur-sm border border-wheel-border/60">
                   <MoveHorizontal className="w-4 h-4 text-cyan-300 shrink-0" />
@@ -791,12 +791,12 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </div>
               </div>
 
-              {/* Bandeau du bas : boost + tap to play */}
-              <div className="w-full max-w-md flex flex-col items-center gap-3 pb-2">
+              {/* Bouton boost + libellé d'aide */}
+              <div className="w-full max-w-md flex items-center justify-center gap-2.5">
                 <Button
                   onClick={(e) => { e.stopPropagation(); setShowBoostPicker(true); }}
                   variant="outline"
-                  className="relative border-primary/40 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
+                  className="relative border-primary/40 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_12px_hsl(var(--primary)/0.25)] shrink-0"
                 >
                   <Zap className="w-5 h-5 mr-2 text-primary" />
                   Boosts
@@ -806,12 +806,16 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                     </Badge>
                   )}
                 </Button>
+                <div className="text-[11px] text-text-secondary leading-tight max-w-[160px]">
+                  Équipe des bonus pour booster ta partie
+                </div>
+              </div>
 
-                <div className="text-center select-none">
-                  <div className="text-xl font-bold text-primary animate-pulse flex items-center gap-2">
-                    <Play className="w-5 h-5 fill-primary" />
-                    Touche l'écran pour jouer
-                  </div>
+              {/* Touche pour jouer */}
+              <div className="text-center select-none">
+                <div className="text-xl font-bold text-primary animate-pulse flex items-center gap-2">
+                  <Play className="w-5 h-5 fill-primary" />
+                  Touche l'écran pour jouer
                 </div>
               </div>
             </div>
