@@ -431,10 +431,12 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
 };
 
 export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
+  const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
+  useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
   const [best, setBest] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -453,14 +455,15 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
-    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
-    shieldRef.current = !!selectedBoosts?.includes('shield');
+    offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
+    shieldRef.current = menuBoosts.includes('shield');
+    onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     angleRef.current = 0;
     compassRef.current = null;
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [selectedBoosts]);
+  }, [menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((s: number) => {
     setScore(offsetRef.current + s);
