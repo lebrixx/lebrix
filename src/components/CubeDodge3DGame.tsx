@@ -21,6 +21,7 @@ interface CubeDodge3DGameProps {
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
   selectedBoosts?: string[];
+  onSetBoosts?: (boosts: BoostType[]) => void;
 }
 
 // ===== Constantes =====
