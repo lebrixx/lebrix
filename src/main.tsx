@@ -8,6 +8,17 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// Lock orientation to portrait (web + Android Chromium). Native iOS/Android lock
+// is enforced via Info.plist (UISupportedInterfaceOrientations = Portrait) and
+// AndroidManifest android:screenOrientation="portrait".
+try {
+  const orientation: any = (screen as any).orientation;
+  if (orientation && typeof orientation.lock === 'function') {
+    orientation.lock('portrait').catch(() => {});
+  }
+} catch {}
+
+
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";

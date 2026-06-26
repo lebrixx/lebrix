@@ -42,9 +42,9 @@ interface OnlineLeaderboardProps {
 }
 
 const modeNames = {
-  classic: 'Cube Dodge 3D',
-  arc_changeant: 'Ball Balance 3D',
-  survie_60s: 'Stack Jump 3D',
+  classic: 'Cube Dodge',
+  arc_changeant: 'Ball Balance',
+  survie_60s: 'Stack Jump',
   zone_mobile: 'Falling Tunnel',
   zone_traitresse: 'Orbit Dodge',
   memoire_expert: 'Rotating Cube',

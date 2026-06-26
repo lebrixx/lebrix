@@ -40,7 +40,7 @@ interface ModeConfig {
 
 export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.CLASSIC]: {
-    name: "Cube Dodge 3D",
+    name: "Cube Dodge",
     desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
     zoneArc: Math.PI / 5,
     keepMovingZone: false,
@@ -49,7 +49,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.ARC_CHANGEANT]: {
-    name: "Ball Balance 3D",
+    name: "Ball Balance",
     desc: "Guide la bille sur une piste 3D sinueuse en glissant ton doigt. Tiens le plus longtemps possible — 1 point toutes les secondes !",
     keepMovingZone: false,
     survival: false,
@@ -57,7 +57,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.SURVIE_60S]: {
-    name: "Stack Jump 3D",
+    name: "Stack Jump",
     desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, évite les pièges rouges.",
     keepMovingZone: false,
     survival: false,
