@@ -100,24 +100,26 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
           </div>
 
           {/* Bouton boost + libellé */}
-          <div className="w-full max-w-md flex items-center justify-center gap-3 mt-6">
-            <Button
-              onClick={(e) => { e.stopPropagation(); setShowBoostPicker(true); }}
-              variant="outline"
-              className="relative border-primary/40 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_12px_hsl(var(--primary)/0.25)] shrink-0"
-            >
-              <Zap className="w-5 h-5 mr-2 text-primary" />
-              Boosts
-              {selectedBoosts.length > 0 && (
-                <Badge className="ml-2 bg-primary text-primary-foreground border-0 h-5 px-1.5">
-                  {selectedBoosts.length}
-                </Badge>
-              )}
-            </Button>
-            <div className="text-xs text-text-primary font-semibold leading-tight max-w-[170px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-              Équipe des bonus pour booster ta partie
+          {!hideBoosts && (
+            <div className="w-full max-w-md flex items-center justify-center gap-3 mt-6">
+              <Button
+                onClick={(e) => { e.stopPropagation(); setShowBoostPicker(true); }}
+                variant="outline"
+                className="relative border-primary/40 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_12px_hsl(var(--primary)/0.25)] shrink-0"
+              >
+                <Zap className="w-5 h-5 mr-2 text-primary" />
+                Boosts
+                {selectedBoosts.length > 0 && (
+                  <Badge className="ml-2 bg-primary text-primary-foreground border-0 h-5 px-1.5">
+                    {selectedBoosts.length}
+                  </Badge>
+                )}
+              </Button>
+              <div className="text-xs text-text-primary font-semibold leading-tight max-w-[170px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+                Équipe des bonus pour booster ta partie
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Tap to play */}
           <div className="text-center select-none mt-10">
