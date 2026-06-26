@@ -28,8 +28,12 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
     if (currentMode === ModeID.MEMOIRE_EXPERT) {
       return false;
     }
-    
+    // Ball Balance : shield et start_20 désactivés (mécanique incompatible)
+    if (currentMode === 'arc_changeant' && (boostId === 'shield' || boostId === 'start_20')) {
+      return false;
+    }
     // Tous les autres boosts (dont "Convertisseur de score") sont autorisés dans tous les modes
+
 
     
     return true;

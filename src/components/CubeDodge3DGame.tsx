@@ -17,6 +17,7 @@ interface CubeDodge3DGameProps {
   onToggleSound?: () => void;
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
+  selectedBoosts?: string[];
 }
 
 // ===== Constantes =====
@@ -568,6 +569,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   isSoundMuted,
   onToggleSound,
   playFailure,
+  selectedBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -581,6 +583,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   });
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
+  const offsetRef = useRef(0);
+  const shieldRef = useRef(false);
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
@@ -612,16 +616,27 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     colorRef.current = 0;
     phaseTimerRef.current = { t: 0 };
     sceneKey.current++;
-    setScore(0);
+    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
+    shieldRef.current = !!selectedBoosts?.includes('shield');
+    setScore(offsetRef.current);
     setUiColor(0);
     setPhaseUi(0);
     startedAt.current = Date.now();
     setPhase('playing');
-  }, []);
+  }, [selectedBoosts]);
 
-  const handleScore = useCallback((n: number) => setScore(n), []);
+  const handleScore = useCallback((n: number) => setScore(offsetRef.current + n), []);
 
-  const handleDie = useCallback((finalScore: number) => {
+  const handleDie = useCallback((finalRaw: number) => {
+    const finalScore = offsetRef.current + finalRaw;
+    if (shieldRef.current) {
+      shieldRef.current = false;
+      offsetRef.current = finalScore;
+      sceneKey.current++;
+      laneRef.current = 1;
+      setScore(finalScore);
+      return;
+    }
     playFailure?.();
     setPhase('gameover');
     try {

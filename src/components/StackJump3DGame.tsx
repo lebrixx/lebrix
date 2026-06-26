@@ -17,6 +17,7 @@ interface StackJump3DGameProps {
   onToggleSound?: () => void;
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
+  selectedBoosts?: string[];
 }
 
 // ===== Constantes =====
@@ -461,7 +462,7 @@ const BackgroundDecor: React.FC = () => {
 
 
 export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -476,23 +477,37 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   const cmdRef = useRef({ drop: false });
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
+  const offsetRef = useRef(0);
+  const shieldRef = useRef(false);
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
-    setScore(0);
+    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
+    shieldRef.current = !!selectedBoosts?.includes('shield');
+    setScore(offsetRef.current);
     setMsg(null);
     setRedWarn(false);
     cmdRef.current.drop = false;
     startedAt.current = Date.now();
     setPhase('playing');
-  }, []);
+  }, [selectedBoosts]);
 
   const handleScore = useCallback((s: number) => {
-    setScore(s);
+    setScore(offsetRef.current + s);
     if (s > 0) playSuccess?.();
   }, [playSuccess]);
 
-  const handleDie = useCallback((finalScore: number) => {
+  const handleDie = useCallback((finalRaw: number) => {
+    const finalScore = offsetRef.current + finalRaw;
+    if (shieldRef.current) {
+      shieldRef.current = false;
+      offsetRef.current = finalScore;
+      sceneKey.current++;
+      cmdRef.current.drop = false;
+      setRedWarn(false);
+      setScore(finalScore);
+      return;
+    }
     playFailure?.();
     setPhase('gameover');
     try {

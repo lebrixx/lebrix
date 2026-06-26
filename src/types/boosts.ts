@@ -20,7 +20,7 @@ export const BOOSTS: Record<BoostType, Boost> = {
     id: 'bigger_zone',
     name: 'Convertisseur de score',
     icon: '💰',
-    description: 'Convertit ton score en pièces bonus à la fin de la prochaine partie (+1 pièce tous les 5 points). Fonctionne dans tous les modes.',
+    description: 'Convertit ton score en pièces bonus à la fin de la prochaine partie (+1 pièce tous les 3 points). Fonctionne dans tous les modes.',
     coinPrice: 150,
   },
   start_20: {

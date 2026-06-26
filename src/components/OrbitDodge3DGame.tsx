@@ -17,6 +17,7 @@ interface OrbitDodge3DGameProps {
   onToggleSound?: () => void;
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
+  selectedBoosts?: string[];
 }
 
 // ===== Constantes =====
@@ -427,7 +428,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
 };
 
 export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -442,20 +443,24 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const [, force] = useState(0);
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
+  const offsetRef = useRef(0);
+  const shieldRef = useRef(false);
 
   const { handlers } = useDragAngle(angleRef);
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
-    setScore(0);
+    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
+    shieldRef.current = !!selectedBoosts?.includes('shield');
+    setScore(offsetRef.current);
     angleRef.current = 0;
     compassRef.current = null;
     startedAt.current = Date.now();
     setPhase('playing');
-  }, []);
+  }, [selectedBoosts]);
 
   const handleScore = useCallback((s: number) => {
-    setScore(s);
+    setScore(offsetRef.current + s);
     if (s > 0) playSuccess?.();
   }, [playSuccess]);
 
@@ -466,7 +471,17 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     }
   }, []);
 
-  const handleDie = useCallback((finalScore: number) => {
+  const handleDie = useCallback((finalRaw: number) => {
+    const finalScore = offsetRef.current + finalRaw;
+    if (shieldRef.current) {
+      shieldRef.current = false;
+      offsetRef.current = finalScore;
+      sceneKey.current++;
+      angleRef.current = 0;
+      compassRef.current = null;
+      setScore(finalScore);
+      return;
+    }
     playFailure?.();
     setPhase('gameover');
     try {

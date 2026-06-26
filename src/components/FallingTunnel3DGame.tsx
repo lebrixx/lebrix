@@ -17,6 +17,7 @@ interface FallingTunnel3DGameProps {
   onToggleSound?: () => void;
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
+  selectedBoosts?: string[];
 }
 
 // ===== Constantes =====
@@ -423,7 +424,7 @@ const ResponsiveCamera: React.FC = () => {
 };
 
 export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -435,23 +436,37 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   });
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
+  const offsetRef = useRef(0);
+  const shieldRef = useRef(false);
   const { pointerRef, handlers } = usePointerTrack();
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
-    setScore(0);
+    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
+    shieldRef.current = !!selectedBoosts?.includes('shield');
+    setScore(offsetRef.current);
     pointerRef.current.x = 0;
     pointerRef.current.y = 0;
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [pointerRef]);
+  }, [pointerRef, selectedBoosts]);
 
   const handleScore = useCallback((s: number) => {
-    setScore(s);
+    setScore(offsetRef.current + s);
     if (s > 0) playSuccess?.();
   }, [playSuccess]);
 
-  const handleDie = useCallback((finalScore: number) => {
+  const handleDie = useCallback((finalRaw: number) => {
+    const finalScore = offsetRef.current + finalRaw;
+    if (shieldRef.current) {
+      shieldRef.current = false;
+      offsetRef.current = finalScore;
+      sceneKey.current++;
+      pointerRef.current.x = 0;
+      pointerRef.current.y = 0;
+      setScore(finalScore);
+      return;
+    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -465,7 +480,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
     } catch {}
     const duration = Math.max(0, (Date.now() - startedAt.current) / 1000);
     onGameOver?.(finalScore, duration);
-  }, [onGameOver, playFailure]);
+  }, [onGameOver, playFailure, pointerRef]);
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
