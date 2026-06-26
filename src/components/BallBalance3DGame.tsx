@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles } from 'lucide-react';
+import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
 /**
