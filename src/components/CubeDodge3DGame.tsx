@@ -911,7 +911,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                   </div>
                 </div>
               )}
-              </div>
             </div>
           )}
 
