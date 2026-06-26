@@ -625,14 +625,15 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     colorRef.current = 0;
     phaseTimerRef.current = { t: 0 };
     sceneKey.current++;
-    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
-    shieldRef.current = !!selectedBoosts?.includes('shield');
+    offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
+    shieldRef.current = menuBoosts.includes('shield');
+    onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setUiColor(0);
     setPhaseUi(0);
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [selectedBoosts]);
+  }, [menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((n: number) => setScore(offsetRef.current + n), []);
 
