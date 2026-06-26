@@ -16,6 +16,7 @@ interface RotatingCube3DGameProps {
   onToggleSound?: () => void;
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
+  selectedBoosts?: string[];
 }
 
 const BEST_KEY = 'bestScore_memoire_expert';
@@ -401,7 +402,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
 };
 
 export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -417,23 +418,37 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const cmdRef = useRef<{ dir: 'left' | 'right' | 'up' | 'down' | null }>({ dir: null });
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
+  const offsetRef = useRef(0);
+  const shieldRef = useRef(false);
 
   const handleStart = useCallback(() => {
     posRef.current = { i: 1, j: 1 };
     cmdRef.current.dir = null;
     sceneKey.current++;
-    setScore(0);
+    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
+    shieldRef.current = !!selectedBoosts?.includes('shield');
+    setScore(offsetRef.current);
     setShields(0);
     startedAt.current = Date.now();
     setPhase('playing');
-  }, []);
+  }, [selectedBoosts]);
 
   const handleScore = useCallback((n: number) => {
-    setScore(n);
+    setScore(offsetRef.current + n);
     if (n > 0) playSuccess?.();
   }, [playSuccess]);
 
-  const handleDie = useCallback((finalScore: number) => {
+  const handleDie = useCallback((finalRaw: number) => {
+    const finalScore = offsetRef.current + finalRaw;
+    if (shieldRef.current) {
+      shieldRef.current = false;
+      offsetRef.current = finalScore;
+      sceneKey.current++;
+      posRef.current = { i: 1, j: 1 };
+      cmdRef.current.dir = null;
+      setScore(finalScore);
+      return;
+    }
     playFailure?.();
     setPhase('gameover');
     try {
