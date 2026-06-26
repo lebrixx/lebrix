@@ -411,11 +411,15 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   isSoundMuted,
   onToggleSound,
   playFailure,
+  selectedBoosts,
+  onSetBoosts,
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
+  const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
+  useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
   const [best, setBest] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -430,10 +434,11 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     pointer.current.x = 0;
     pointer.current.y = 0;
     sceneKey.current++;
+    onSetBoosts?.(menuBoosts);
     setScore(0);
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [pointer]);
+  }, [pointer, menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((s: number) => {
     setScore(s);
