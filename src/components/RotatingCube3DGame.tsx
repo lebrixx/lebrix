@@ -520,50 +520,21 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
         </SwipeArea>
 
         {phase === 'menu' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0518]/85 via-[#1a0a3a]/80 to-[#0a0518]/90 backdrop-blur-md">
-            <div className="relative text-center max-w-sm px-6 py-8 mx-4 rounded-3xl border border-primary/30 bg-gradient-to-b from-[#1a0a3a]/80 to-[#0a0518]/80 shadow-[0_0_60px_-10px_hsl(var(--primary)/0.5)] overflow-hidden">
-              <div className="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-purple-500/30 blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-cyan-400/30 blur-3xl pointer-events-none" />
-              <div className="relative">
-                <div className="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-xs uppercase tracking-[0.2em] font-semibold">
-                  Nouveau mode
-                </div>
-                <h2 className="text-4xl font-extrabold mb-3 bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
-                  Rotating Cube
-                </h2>
-                <p className="text-text-secondary mb-5 text-sm leading-relaxed">
-                  Esquive les zones qui clignotent. Capte les pastilles vertes pour gagner un bouclier (max 2) qui absorbe un coup.
-                </p>
-                <div className="space-y-2 mb-5 text-left">
-                  <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-fuchsia-500/20">
-                    <Hand className="w-5 h-5 text-fuchsia-300 shrink-0" />
-                    <span className="text-xs text-text-secondary">Swipe ↑ ↓ ← → pour bouger d'une case.</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-yellow-500/20">
-                    <Zap className="w-5 h-5 text-yellow-300 shrink-0" />
-                    <span className="text-xs text-text-secondary">Jaune = warning. Rouge = danger ! Quitte la case.</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-green-500/20">
-                    <Shield className="w-5 h-5 text-green-300 shrink-0" />
-                    <span className="text-xs text-text-secondary">Pastille verte = +1 bouclier (max 2).</span>
-                  </div>
-                </div>
-                <div className="mb-5 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black/30 border border-primary/20">
-                  <span className="text-xs uppercase tracking-wider text-text-muted">Record</span>
-                  <span className="text-2xl font-bold tabular-nums bg-gradient-to-r from-amber-300 to-yellow-500 bg-clip-text text-transparent">
-                    {best}
-                  </span>
-                </div>
-                <Button
-                  onClick={handleStart}
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-cyan-500 hover:scale-105 transition-transform shadow-[0_0_30px_-5px_rgba(168,85,247,0.6)] text-white font-bold py-6"
-                >
-                  <Play className="w-5 h-5 mr-2 fill-white" /> Commencer
-                </Button>
-              </div>
-            </div>
-          </div>
+          <GameStartOverlay
+            title="Rotating Cube"
+            titleGradient="from-purple-300 via-fuchsia-300 to-cyan-300"
+            bestValue={best}
+            currentMode={'memoire_expert' as any}
+            selectedBoosts={menuBoosts}
+            onSelectedBoostsChange={setMenuBoosts}
+            onStart={handleStart}
+            hideBoosts
+            rules={[
+              { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Swipe', desc: '↑ ↓ ← → pour bouger d\'une case' },
+              { icon: <Zap className="w-4 h-4 text-yellow-300" />, title: 'Jaune / Rouge', desc: 'warning puis danger ! Quitte la case', accent: 'danger' },
+              { icon: <Shield className="w-4 h-4 text-green-300" />, title: 'Pastille verte', desc: '+1 bouclier (max 2)', accent: 'highlight' },
+            ]}
+          />
         )}
 
         {phase === 'gameover' && (
