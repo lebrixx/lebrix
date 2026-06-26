@@ -611,54 +611,20 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
 
           {/* Menu */}
           {phase === 'menu' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0518]/85 via-[#1a0a3a]/80 to-[#0a0518]/90 backdrop-blur-md">
-              <div className="relative text-center max-w-sm px-6 py-8 mx-4 rounded-3xl border border-primary/30 bg-gradient-to-b from-[#1a0a3a]/80 to-[#0a0518]/80 shadow-[0_0_60px_-10px_hsl(var(--primary)/0.5)] overflow-hidden">
-                <div className="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-purple-500/30 blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-cyan-400/30 blur-3xl pointer-events-none" />
-
-                <div className="relative">
-                  <div className="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-xs uppercase tracking-[0.2em] font-semibold">
-                    Nouveau mode
-                  </div>
-                  <h2 className="text-4xl font-extrabold mb-3 bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                    Stack Jump 3D
-                  </h2>
-                  <p className="text-text-secondary mb-5 text-sm leading-relaxed">
-                    Empile les plaques le plus haut possible. Tape au bon moment pour viser le centre !
-                  </p>
-
-                  <div className="space-y-2 mb-5 text-left">
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-fuchsia-500/20">
-                      <Hand className="w-5 h-5 text-fuchsia-300 shrink-0" />
-                      <span className="text-xs text-text-secondary">Tape pour poser la plaque qui glisse.</span>
-                    </div>
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-yellow-500/20">
-                      <Sparkles className="w-5 h-5 text-yellow-300 shrink-0" />
-                      <span className="text-xs text-text-secondary">Or = taille restaurée. Parfait = +8% de taille.</span>
-                    </div>
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-red-500/20">
-                      <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
-                      <span className="text-xs text-text-secondary">Rouge = piège ! Attends 2.5s qu'elle redevienne normale.</span>
-                    </div>
-                  </div>
-
-                  <div className="mb-5 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black/30 border border-primary/20">
-                    <span className="text-xs uppercase tracking-wider text-text-muted">Record</span>
-                    <span className="text-2xl font-bold tabular-nums bg-gradient-to-r from-amber-300 to-yellow-500 bg-clip-text text-transparent">
-                      {best}
-                    </span>
-                  </div>
-
-                  <Button
-                    onClick={handleStart}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-cyan-500 hover:scale-105 transition-transform shadow-[0_0_30px_-5px_rgba(168,85,247,0.6)] text-white font-bold py-6"
-                  >
-                    <Play className="w-5 h-5 mr-2 fill-white" /> Commencer
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <GameStartOverlay
+              title="Stack Jump"
+              titleGradient="from-purple-300 via-fuchsia-300 to-cyan-300"
+              bestValue={best}
+              currentMode={'survie_60s' as any}
+              selectedBoosts={menuBoosts}
+              onSelectedBoostsChange={setMenuBoosts}
+              onStart={handleStart}
+              rules={[
+                { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Tap', desc: 'pose la plaque qui glisse au bon moment' },
+                { icon: <Sparkles className="w-4 h-4 text-yellow-300" />, title: 'Or', desc: 'taille restaurée. Parfait = +8% de taille', accent: 'highlight' },
+                { icon: <AlertTriangle className="w-4 h-4 text-red-400" />, title: 'Rouge', desc: 'piège ! Attends 2.5s qu\'elle redevienne normale', accent: 'danger' },
+              ]}
+            />
           )}
 
           {phase === 'gameover' && (
