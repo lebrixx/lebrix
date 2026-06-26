@@ -20,6 +20,8 @@ interface BallBalance3DGameProps {
   onToggleSound?: () => void;
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
+  selectedBoosts?: string[];
+  onSetBoosts?: (b: BoostType[]) => void;
 }
 
 // ===== Constantes =====
