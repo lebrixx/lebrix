@@ -20,6 +20,7 @@ interface StackJump3DGameProps {
   playSuccess?: (combo?: number) => void;
   playFailure?: () => void;
   selectedBoosts?: string[];
+  onSetBoosts?: (b: BoostType[]) => void;
 }
 
 // ===== Constantes =====
