@@ -405,11 +405,13 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
 };
 
 export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
   const [shields, setShields] = useState(0);
+  const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
+  useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
   const [best, setBest] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -428,13 +430,14 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     posRef.current = { i: 1, j: 1 };
     cmdRef.current.dir = null;
     sceneKey.current++;
-    offsetRef.current = selectedBoosts?.includes('start_20') ? 20 : 0;
-    shieldRef.current = !!selectedBoosts?.includes('shield');
+    offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
+    shieldRef.current = menuBoosts.includes('shield');
+    onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setShields(0);
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [selectedBoosts]);
+  }, [menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((n: number) => {
     setScore(offsetRef.current + n);
