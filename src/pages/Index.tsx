@@ -65,7 +65,7 @@ const Index = () => {
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert']; // Modes gratuits
+    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
     let base: string[] = freeModes;
 
@@ -162,11 +162,22 @@ const Index = () => {
     // Season Pass: update quest score
     updateQuestScore(finalScore);
     
-    // Consommer les boosts utilisés
+    // Consommer les boosts utilisés + appliquer "Convertisseur de score"
+    const hasConverter = selectedBoostsForGame.includes('bigger_zone');
     selectedBoostsForGame.forEach(boostId => {
       removeBoost(boostId);
     });
     setSelectedBoostsForGame([]);
+    if (hasConverter) {
+      const bonus = Math.floor(finalScore / 5);
+      if (bonus > 0) {
+        addCoins(bonus);
+        toast({
+          title: '💰 Convertisseur de score',
+          description: `+${bonus} pièces bonus !`,
+        });
+      }
+    }
 
     // Recharger les coins depuis localStorage (mis à jour par useGameLogic dans CircleTap)
     const saved = localStorage.getItem('luckyStopGame');

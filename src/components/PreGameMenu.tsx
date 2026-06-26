@@ -27,12 +27,8 @@ export const PreGameMenu: React.FC<PreGameMenuProps> = ({ onStartGame, onCancel,
       return false;
     }
     
-    // Boost "bigger_zone" interdit dans zone traitresse et survie 60s
-    if (boostId === 'bigger_zone') {
-      if (currentMode === 'zone_traitresse' || currentMode === 'survie_60s') {
-        return false;
-      }
-    }
+    // Tous les autres boosts (dont "Convertisseur de score") sont autorisés dans tous les modes
+
     
     return true;
   };

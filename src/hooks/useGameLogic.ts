@@ -441,11 +441,8 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
     // Vitesse de base modifiée pour le mode survie (+17%)
     const baseSpeed = modeConfig.survival ? cfg.baseSpeed * 1.17 : cfg.baseSpeed;
     
-    // Appliquer boost "bigger_zone" si sélectionné
+    // Boost "bigger_zone" reconverti en "Convertisseur de score" (effet global appliqué en fin de partie)
     let effectiveZoneArc = zoneArc;
-    if (boosts.includes('bigger_zone')) {
-      effectiveZoneArc = zoneArc * 1.5; // 50% plus grand
-    }
     
     // Score de départ avec boost "start_20"
     const startScore = boosts.includes('start_20') ? 20 : 0;
