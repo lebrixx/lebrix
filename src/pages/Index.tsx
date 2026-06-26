@@ -391,6 +391,7 @@ const Index = () => {
                 playSuccess={playSuccess}
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
+                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
               />
             );
           }
