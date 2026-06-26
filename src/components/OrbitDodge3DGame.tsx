@@ -385,7 +385,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
       <pointLight position={[3, 6, 4]} intensity={1.3} color="#a855f7" />
       <pointLight position={[-4, 3, -3]} intensity={1.0} color="#22d3ee" />
       <pointLight position={[0, -2, 6]} intensity={0.7} color="#ec4899" />
-      <fog attach="fog" args={['#0a0518', 12, 28]} />
+      <fog attach="fog" args={['#0a0518', 12, 26]} />
 
       <BackgroundDecor />
 
@@ -508,9 +508,9 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
           <Canvas
             key={sceneKey.current}
             dpr={[1, 2]}
-            camera={{ position: [0, 3.2, 4.6], fov: 60, near: 0.1, far: 80 }}
+            camera={{ position: [0, 7.5, 5], fov: 55 }}
             onCreated={({ camera }) => camera.lookAt(0, 0.5, 0)}
-            style={{ background: '#08041a' }}
+            style={{ background: '#0a0518' }}
           >
             <Scene
               angleRef={angleRef}
