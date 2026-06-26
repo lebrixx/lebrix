@@ -378,6 +378,8 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
+                selectedBoosts={selectedBoostsForGame}
+                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
               />
             );
           }
@@ -405,6 +407,7 @@ const Index = () => {
                 playSuccess={playSuccess}
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
+                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
               />
             );
           }
@@ -418,6 +421,7 @@ const Index = () => {
                 playSuccess={playSuccess}
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
+                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
               />
             );
           }
@@ -431,6 +435,7 @@ const Index = () => {
                 playSuccess={playSuccess}
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
+                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
               />
             );
           }
@@ -444,6 +449,7 @@ const Index = () => {
                 playSuccess={playSuccess}
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
+                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
               />
             );
           }
