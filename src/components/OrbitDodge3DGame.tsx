@@ -571,54 +571,20 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
 
           {/* Menu */}
           {phase === 'menu' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#0a0518]/85 via-[#1a0a3a]/80 to-[#0a0518]/90 backdrop-blur-md">
-              <div className="relative text-center max-w-sm px-6 py-8 mx-4 rounded-3xl border border-primary/30 bg-gradient-to-b from-[#1a0a3a]/80 to-[#0a0518]/80 shadow-[0_0_60px_-10px_hsl(var(--primary)/0.5)] overflow-hidden">
-                <div className="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-purple-500/30 blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-cyan-400/30 blur-3xl pointer-events-none" />
-
-                <div className="relative">
-                  <div className="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 text-xs uppercase tracking-[0.2em] font-semibold">
-                    Nouveau mode
-                  </div>
-                  <h2 className="text-4xl font-extrabold mb-3 bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                    Orbit Dodge
-                  </h2>
-                  <p className="text-text-secondary mb-5 text-sm leading-relaxed">
-                    Glisse horizontalement pour orbiter autour de la tour. Vise l'ouverture de chaque anneau et évite les segments rouges.
-                  </p>
-
-                  <div className="space-y-2 mb-5 text-left">
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-fuchsia-500/20">
-                      <Hand className="w-5 h-5 text-fuchsia-300 shrink-0" />
-                      <span className="text-xs text-text-secondary">Glisse horizontalement — la bille orbite autour de la tour.</span>
-                    </div>
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-amber-500/20">
-                      <Target className="w-5 h-5 text-amber-300 shrink-0" />
-                      <span className="text-xs text-text-secondary">La boussole jaune en haut pointe vers l'ouverture.</span>
-                    </div>
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-black/30 border border-rose-500/20">
-                      <AlertTriangle className="w-5 h-5 text-rose-300 shrink-0" />
-                      <span className="text-xs text-text-secondary">Toucher un segment rouge = fin de partie.</span>
-                    </div>
-                  </div>
-
-                  <div className="mb-5 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black/30 border border-primary/20">
-                    <span className="text-xs uppercase tracking-wider text-text-muted">Record</span>
-                    <span className="text-2xl font-bold tabular-nums bg-gradient-to-r from-amber-300 to-yellow-500 bg-clip-text text-transparent">
-                      {best}
-                    </span>
-                  </div>
-
-                  <Button
-                    onClick={handleStart}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-cyan-500 hover:scale-105 transition-transform shadow-[0_0_30px_-5px_rgba(168,85,247,0.6)] text-white font-bold py-6"
-                  >
-                    <Play className="w-5 h-5 mr-2 fill-white" /> Commencer
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <GameStartOverlay
+              title="Orbit Dodge"
+              titleGradient="from-purple-300 via-fuchsia-300 to-cyan-300"
+              bestValue={best}
+              currentMode={'zone_traitresse' as any}
+              selectedBoosts={menuBoosts}
+              onSelectedBoostsChange={setMenuBoosts}
+              onStart={handleStart}
+              rules={[
+                { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Glisse', desc: 'horizontalement — la bille orbite autour de la tour' },
+                { icon: <Target className="w-4 h-4 text-amber-300" />, title: 'Boussole', desc: 'la flèche jaune pointe vers l\'ouverture', accent: 'highlight' },
+                { icon: <AlertTriangle className="w-4 h-4 text-rose-300" />, title: 'Segments rouges', desc: 'les toucher = fin de partie', accent: 'danger' },
+              ]}
+            />
           )}
 
           {phase === 'gameover' && (
