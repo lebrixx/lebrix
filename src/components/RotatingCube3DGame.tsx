@@ -3,6 +3,8 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Shield, Zap } from 'lucide-react';
+import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { BoostType } from '@/types/boosts';
 
 /**
  * Rotating Cube — implémentation fidèle au cahier des charges.
