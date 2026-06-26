@@ -578,6 +578,10 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const [score, setScore] = useState(0);
   const [uiColor, setUiColor] = useState(0);
   const [phaseUi, setPhaseUi] = useState(0);
+  const [showBoostPicker, setShowBoostPicker] = useState(false);
+  const { getBoostCount, consumeBoost } = useBoosts();
+  const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
+  useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
   const [best, setBest] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
