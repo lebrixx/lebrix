@@ -390,6 +390,7 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
+                selectedBoosts={selectedBoostsForGame}
               />
             );
           }
@@ -402,6 +403,7 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
+                selectedBoosts={selectedBoostsForGame}
               />
             );
           }
@@ -414,6 +416,7 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
+                selectedBoosts={selectedBoostsForGame}
               />
             );
           }
@@ -426,6 +429,7 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
+                selectedBoosts={selectedBoostsForGame}
               />
             );
           }
@@ -438,6 +442,7 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
+                selectedBoosts={selectedBoostsForGame}
               />
             );
           }
