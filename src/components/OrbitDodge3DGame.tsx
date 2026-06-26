@@ -3,6 +3,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, AlertTriangle } from 'lucide-react';
+import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { BoostType } from '@/types/boosts';
 
 /**
  * Orbit Dodge — Cahier des charges fidèle.
