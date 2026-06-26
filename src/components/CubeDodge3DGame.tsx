@@ -791,8 +791,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </div>
               </div>
 
-              {/* Bouton boost + libellé d'aide */}
-              <div className="w-full max-w-md flex items-center justify-center gap-2.5">
+              {/* Bouton boost + libellé d'aide (descendu) */}
+              <div className="w-full max-w-md flex items-center justify-center gap-3 mt-6">
                 <Button
                   onClick={(e) => { e.stopPropagation(); setShowBoostPicker(true); }}
                   variant="outline"
@@ -806,13 +806,13 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                     </Badge>
                   )}
                 </Button>
-                <div className="text-[11px] text-text-secondary leading-tight max-w-[160px]">
+                <div className="text-xs text-text-primary font-semibold leading-tight max-w-[170px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                   Équipe des bonus pour booster ta partie
                 </div>
               </div>
 
-              {/* Touche pour jouer */}
-              <div className="text-center select-none">
+              {/* Touche pour jouer (descendu avec espace) */}
+              <div className="text-center select-none mt-10">
                 <div className="text-xl font-bold text-primary animate-pulse flex items-center gap-2">
                   <Play className="w-5 h-5 fill-primary" />
                   Touche l'écran pour jouer
