@@ -574,6 +574,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   onToggleSound,
   playFailure,
   selectedBoosts,
+  onSetBoosts,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
