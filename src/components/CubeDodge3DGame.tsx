@@ -810,31 +810,48 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
                   {/* Boost selector button */}
                   <div className="px-5 pb-3">
+                    <div className="text-[10px] uppercase tracking-wider text-text-muted font-semibold mb-1.5 px-1 flex items-center gap-1.5">
+                      <Zap className="w-3 h-3 text-amber-400" />
+                      Avant de jouer
+                    </div>
                     <button
                       onClick={() => setShowBoostPicker(true)}
-                      className="w-full group relative overflow-hidden rounded-2xl border-2 border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-orange-500/30 transition-all p-3 flex items-center justify-between"
+                      className="w-full group relative overflow-hidden rounded-2xl border-2 border-dashed border-amber-400/60 bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 hover:from-amber-500/25 hover:to-orange-500/25 hover:border-amber-400 transition-all p-3.5 flex items-center justify-between active:scale-[0.99]"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/40">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/40 shrink-0">
                           <Zap className="w-5 h-5 text-white fill-white" />
+                          {menuBoosts.length === 0 && (
+                            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-300 text-[10px] font-black text-amber-900 flex items-center justify-center animate-pulse">+</span>
+                          )}
                         </div>
                         <div className="text-left">
-                          <div className="text-sm font-bold text-text-primary leading-tight">Boosts</div>
-                          <div className="text-[10px] text-text-muted">
-                            {menuBoosts.length > 0 ? `${menuBoosts.length} sélectionné${menuBoosts.length > 1 ? 's' : ''}` : 'Choisis tes bonus'}
+                          <div className="text-sm font-bold text-text-primary leading-tight flex items-center gap-1.5">
+                            Équiper des boosts
+                            {menuBoosts.length > 0 && (
+                              <Badge className="bg-amber-500 text-amber-950 border-0 text-[10px] h-4 px-1.5">
+                                {menuBoosts.length}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-text-muted leading-tight mt-0.5">
+                            {menuBoosts.length > 0
+                              ? 'Touche pour modifier ta sélection'
+                              : 'Bonus actifs pendant cette partie'}
                           </div>
                         </div>
                       </div>
                       {menuBoosts.length > 0 ? (
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 shrink-0">
                           {menuBoosts.map(id => (
-                            <span key={id} className="text-lg">{BOOSTS[id].icon}</span>
+                            <span key={id} className="text-xl drop-shadow">{BOOSTS[id].icon}</span>
                           ))}
                         </div>
                       ) : (
-                        <Badge variant="secondary" className="bg-amber-500/30 text-amber-200 border-amber-400/40">
-                          +
-                        </Badge>
+                        <div className="text-amber-300 text-[11px] font-bold uppercase tracking-wider shrink-0 flex items-center gap-1">
+                          Choisir
+                          <span className="text-base">›</span>
+                        </div>
                       )}
                     </button>
                   </div>
