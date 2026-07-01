@@ -571,7 +571,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
                 >
                   <Zap className="w-4 h-4 mr-2" /> Activer des Boosts
                 </Button>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
               </div>
             </div>
           </div>
