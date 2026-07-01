@@ -292,12 +292,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
     const diff = 1 + s.elapsed / 45;
     const speed = Math.min(14, 9 * diff);
 
-    // Phase timer
-    if (phaseTimerRef.current.t > 0) {
-      phaseTimerRef.current.t = Math.max(0, phaseTimerRef.current.t - dt);
-    }
-    const inPhase = phaseTimerRef.current.t > 0;
-
     // Swap pulse decay
     if (s.swapPulse > 0) s.swapPulse = Math.max(0, s.swapPulse - dt);
 
@@ -314,19 +308,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
       const mat = p.material as THREE.MeshStandardMaterial;
       mat.color.setHex(currentColor.hex);
       mat.emissive.setHex(currentColor.emissive);
-      mat.emissiveIntensity = 0.9 + s.swapPulse * 1.5 + (inPhase ? 2.2 : 0);
-    }
-    // Aura PHASE
-    if (auraRef.current) {
-      auraRef.current.visible = inPhase;
-      if (inPhase) {
-        auraRef.current.position.copy(p!.position);
-        auraRef.current.rotation.y += dt * 4;
-        auraRef.current.rotation.x += dt * 3;
-        const am = auraRef.current.material as THREE.MeshBasicMaterial;
-        am.color.setHex(currentColor.hex);
-        am.opacity = 0.35 + Math.sin(s.elapsed * 10) * 0.15;
-      }
+      mat.emissiveIntensity = 0.9 + s.swapPulse * 1.5;
     }
 
     // Pillars scroll
