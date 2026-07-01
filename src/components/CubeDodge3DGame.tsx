@@ -455,7 +455,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
       onScore(timeScore);
     }
 
-    if (hit && !inPhase && !s.dying) {
+    if (hit && !s.dying) {
       s.dying = true;
       s.dyingT = 0;
     }
