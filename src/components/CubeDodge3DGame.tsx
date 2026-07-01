@@ -8,6 +8,7 @@ import { ArrowLeft, Play, Volume2, VolumeX, RotateCcw, MoveHorizontal, Hand, Spa
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 
 /**
  * Cube Dodge 3D — runner mobile-first.
