@@ -377,19 +377,13 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
     let hit = false;
     s.blocks.forEach((b) => {
       b.mesh.position.z += speed * dt;
-      // PHASE visual
       const mat = b.mesh.material as THREE.MeshStandardMaterial;
-      if (inPhase) {
-        mat.opacity = 0.45;
-        b.mesh.scale.setScalar(0.55);
-      } else {
-        mat.opacity = 1;
-        b.mesh.scale.setScalar(1);
-      }
+      mat.opacity = 1;
+      b.mesh.scale.setScalar(1);
       const dz = b.mesh.position.z - PLAYER_Z;
       if (!b.passed) {
         if (Math.abs(dz) <= 0.5) {
-          if (b.lane === playerLane && !inPhase) {
+          if (b.lane === playerLane) {
             hit = true;
           }
         }
@@ -397,7 +391,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
           b.passed = true;
           const adj = Math.abs(b.lane - playerLane) === 1;
           const base = adj ? 2 : 1;
-          s.passed += inPhase ? base * 3 : base;
+          s.passed += base;
         }
       }
     });
@@ -408,11 +402,11 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
       const dz = w.group.position.z - PLAYER_Z;
       if (!w.passed) {
         if (Math.abs(dz) <= 0.35) {
-          if (w.color !== playerHex && !inPhase) hit = true;
+          if (w.color !== playerHex) hit = true;
         }
         if (w.group.position.z > PLAYER_Z + 0.35) {
           w.passed = true;
-          s.passed += inPhase ? 6 : 3;
+          s.passed += 3;
         }
       }
     });
@@ -429,17 +423,11 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
         if (dist <= 0.4) {
           if (po.lane === playerLane) {
             if (po.color === playerHex) {
-              phaseTimerRef.current.t = 3.0;
-              s.combo += 1;
-              s.passed += 5 + s.combo * 2;
+              s.passed += 5;
               s.swapPulse = 0.6;
-            } else if (inPhase) {
-              s.passed += 2;
             } else {
               hit = true;
             }
-          } else {
-            s.combo = 0;
           }
           po.passed = true;
         }
