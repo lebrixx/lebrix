@@ -539,14 +539,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
                 <div className="mb-6 text-text-muted text-sm">
                   Meilleur : <span className="text-primary font-bold">{best}s</span>
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}
