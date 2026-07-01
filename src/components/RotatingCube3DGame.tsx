@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Shield, Zap } from 'lucide-react';
@@ -504,7 +505,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <SwipeArea onSwipe={handleSwipe}>
-          <Canvas
+          <GameCanvas
             key={sceneKey.current}
             dpr={[1, 2]}
             camera={{ position: [0, 6.2, 5.5], fov: 50, near: 0.1, far: 100 }}
@@ -519,7 +520,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
               onShields={setShields}
               playing={phase === 'playing'}
             />
-          </Canvas>
+          </GameCanvas>
         </SwipeArea>
 
         {phase === 'menu' && (

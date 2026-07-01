@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
+import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, AlertTriangle } from 'lucide-react';
@@ -526,7 +527,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <div className="absolute inset-0 touch-none select-none" {...handlers}>
-          <Canvas
+          <GameCanvas
             key={sceneKey.current}
             dpr={[1, 2]}
             camera={{ position: [0, 7.5, 5], fov: 55 }}
@@ -540,7 +541,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               onNextHole={handleNextHole}
               playing={phase === 'playing'}
             />
-          </Canvas>
+          </GameCanvas>
 
           {/* Compass */}
           {phase === 'playing' && (

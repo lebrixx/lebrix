@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, Zap } from 'lucide-react';
@@ -514,7 +515,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
           className="absolute inset-0 touch-none select-none"
           {...handlers}
         >
-          <Canvas
+          <GameCanvas
             key={sceneKey.current}
             dpr={[1, 2]}
             camera={{ position: [0, PLAYER_Y - 0.2, PLAYER_Z + 6], fov: 70, near: 0.1, far: 80 }}
@@ -527,7 +528,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               onDie={handleDie}
               playing={phase === 'playing'}
             />
-          </Canvas>
+          </GameCanvas>
 
           {/* Menu */}
           {phase === 'menu' && (
