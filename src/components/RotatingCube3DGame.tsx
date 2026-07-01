@@ -110,9 +110,10 @@ interface SceneProps {
   onScore: (n: number) => void;
   onDie: (final: number) => void;
   onShields: (n: number) => void;
+  playing: boolean;
 }
 
-const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields }) => {
+const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing }) => {
   const { scene } = useThree();
 
   const cubeRef = useRef<THREE.Group>(null);
