@@ -28,7 +28,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
     { emoji: '\u{1F451}', title: t.premiumSeasonVIP, description: t.premiumSeasonVIPDesc, amount: t.premiumAllIncluded, tone: 'secondary' as const },
     { emoji: '\u{1FA99}', title: t.premiumCoins, description: t.premiumCoinsDesc, amount: '+1 500', tone: 'secondary' as const },
     { emoji: '\u{1F6E1}\uFE0F', title: t.shopShieldLabel, description: t.shopShieldProtect, amount: 'x4', tone: 'primary' as const },
-    { emoji: '\u{1F3AF}', title: t.shopGreenZonePlus, description: t.shopGreenZoneDesc, amount: 'x4', tone: 'primary' as const },
+    { emoji: '\u{1F4B0}', title: t.shopGreenZonePlus, description: t.shopGreenZoneDesc, amount: 'x4', tone: 'primary' as const },
     { emoji: '\u{1F680}', title: t.premiumStartAt20, description: t.premiumStartAt20Desc, amount: 'x4', tone: 'primary' as const },
   ];
 
