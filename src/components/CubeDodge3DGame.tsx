@@ -735,7 +735,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 <div className="mb-6 text-text-muted text-sm">
                   Record : <span className="text-primary font-bold">{best}</span>
                 </div>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
               </div>
             </div>
           )}

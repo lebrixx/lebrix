@@ -539,7 +539,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
                 <div className="mb-6 text-text-muted text-sm">
                   Meilleur : <span className="text-primary font-bold">{best}s</span>
                 </div>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
               </div>
             </div>
           )}

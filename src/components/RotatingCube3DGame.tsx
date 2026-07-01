@@ -564,15 +564,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
                   <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                 )}
               </div>
-              <div className="flex flex-col gap-4 items-stretch">
-                <Button
-                  onClick={() => setPhase('menu')}
-                  className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white font-bold hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-fuchsia-500/30"
-                >
-                  <Zap className="w-4 h-4 mr-2" /> Activer des Boosts
-                </Button>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
-              </div>
+              <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
             </div>
           </div>
         )}
