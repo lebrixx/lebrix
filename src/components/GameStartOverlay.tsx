@@ -99,32 +99,40 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
             ))}
           </div>
 
-          {/* Bouton boost + libellé */}
+          {/* Bouton boost + libellé — fusionnés dans un même bloc */}
           {!hideBoosts && (
-            <div className="w-full max-w-md flex items-center justify-center gap-3 mt-6">
-              <Button
+            <div className="w-full max-w-sm mt-6">
+              <button
                 onClick={(e) => { e.stopPropagation(); setShowBoostPicker(true); }}
-                variant="outline"
-                className="relative border-primary/40 bg-primary/10 backdrop-blur-sm hover:bg-primary/20 hover:border-primary/60 hover:scale-105 transition-all duration-300 shadow-[0_0_12px_hsl(var(--primary)/0.25)] shrink-0"
+                className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-gradient-to-r from-primary/25 via-primary/15 to-fuchsia-500/20 backdrop-blur-md border-2 border-primary/60 shadow-[0_0_20px_hsl(var(--primary)/0.45)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
-                <Zap className="w-5 h-5 mr-2 text-primary" />
-                Boosts
-                {selectedBoosts.length > 0 && (
-                  <Badge className="ml-2 bg-primary text-primary-foreground border-0 h-5 px-1.5">
-                    {selectedBoosts.length}
-                  </Badge>
-                )}
-              </Button>
-              <div className="text-xs text-text-primary font-semibold leading-tight max-w-[170px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-                Équipe des bonus pour booster ta partie
-              </div>
+                <div className="relative shrink-0 w-11 h-11 rounded-xl bg-primary/30 border border-primary/70 flex items-center justify-center shadow-[inset_0_0_10px_hsl(var(--primary)/0.4)]">
+                  <Zap className="w-6 h-6 text-primary fill-primary/40 animate-pulse" />
+                  {selectedBoosts.length > 0 && (
+                    <Badge className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground border-2 border-game-dark h-5 min-w-[20px] px-1 text-[10px]">
+                      {selectedBoosts.length}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="text-sm font-extrabold text-text-primary uppercase tracking-wide leading-none">
+                    Boosts
+                  </div>
+                  <div className="text-[11px] text-text-secondary font-medium leading-tight mt-1">
+                    Équipe des bonus pour booster ta partie
+                  </div>
+                </div>
+                <div className="shrink-0 text-primary text-lg font-bold opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+                  ›
+                </div>
+              </button>
             </div>
           )}
 
           {/* Tap to play */}
-          <div className="text-center select-none mt-10">
-            <div className="text-xl font-bold text-primary animate-pulse flex items-center gap-2">
-              <Play className="w-5 h-5 fill-primary" />
+          <div className="text-center select-none mt-12">
+            <div className="text-2xl font-extrabold text-primary animate-pulse flex items-center gap-2.5 drop-shadow-[0_2px_8px_hsl(var(--primary)/0.6)]">
+              <Play className="w-6 h-6 fill-primary" />
               Touche l'écran pour jouer
             </div>
           </div>
