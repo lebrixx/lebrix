@@ -478,7 +478,7 @@ const Index = () => {
             ownedThemes={ownedThemesState}
             currentTheme={currentTheme}
             unlockedModes={unlockedModes}
-            onBack={() => setCurrentScreen('menu')}
+            onBack={() => { setShopTarget(null); setCurrentScreen('menu'); }}
             onPurchaseTheme={(theme) => {
               const success = purchaseTheme(theme.id, theme.price);
               if (success) {
@@ -491,6 +491,7 @@ const Index = () => {
             onPurchaseMode={handlePurchaseMode}
             onSpendCoins={spendCoins}
             onAddCoins={addCoins}
+            initialTarget={shopTarget}
           />
         );
         
