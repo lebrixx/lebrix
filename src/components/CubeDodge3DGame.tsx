@@ -708,7 +708,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               rules={[
                 { icon: <MoveHorizontal className="w-4 h-4 text-cyan-300" />, title: 'Swipe', desc: 'gauche/droite pour changer de voie' },
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Tap', desc: 'change ta couleur (cyan ↔ rose)' },
-                { icon: <Sparkles className="w-4 h-4 text-fuchsia-300" />, title: 'PHASE ×3', desc: 'traverse un portail = 3s invincible + score ×3', accent: 'highlight' },
+                { icon: <Sparkles className="w-4 h-4 text-cyan-300" />, title: 'Portails', desc: 'traverse-les avec la bonne couleur — sinon game over', accent: 'highlight' },
                 { icon: <div className="w-3.5 h-3.5 rounded-sm bg-pink-400/80" />, title: 'Murs colorés', desc: 'aligne ta couleur ou game over', accent: 'danger' },
               ]}
             />
