@@ -84,7 +84,6 @@ function usePointerInput(onTap: () => void, onSwipe: (dir: -1 | 1) => void) {
 interface SceneProps {
   laneRef: React.MutableRefObject<number>;
   colorRef: React.MutableRefObject<number>;
-  phaseTimerRef: React.MutableRefObject<{ t: number }>;
   onScore: (n: number) => void;
   onDie: (n: number) => void;
   playing: boolean;
@@ -94,10 +93,9 @@ interface Block { mesh: THREE.Mesh; lane: number; passed: boolean; }
 interface Wall { group: THREE.Group; color: number; passed: boolean; }
 interface Portal { group: THREE.Group; lane: number; color: number; ring: THREE.Mesh; passed: boolean; }
 
-const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onScore, onDie, playing }) => {
+const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing }) => {
   const { camera, scene } = useThree();
   const playerRef = useRef<THREE.Mesh>(null);
-  const auraRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
   const wallGroupRef = useRef<THREE.Group>(null);
   const portalGroupRef = useRef<THREE.Group>(null);
@@ -278,7 +276,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
         p.rotation.x += dt * 6;
         p.rotation.z += dt * 4;
       }
-      if (auraRef.current) (auraRef.current.material as THREE.Material).opacity = 0;
+      
       if (s.dyingT >= 1.0) {
         s.dead = true;
         onDie(s.passed);
@@ -291,12 +289,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
     s.elapsed += dt;
     const diff = 1 + s.elapsed / 45;
     const speed = Math.min(14, 9 * diff);
-
-    // Phase timer
-    if (phaseTimerRef.current.t > 0) {
-      phaseTimerRef.current.t = Math.max(0, phaseTimerRef.current.t - dt);
-    }
-    const inPhase = phaseTimerRef.current.t > 0;
 
     // Swap pulse decay
     if (s.swapPulse > 0) s.swapPulse = Math.max(0, s.swapPulse - dt);
@@ -314,19 +306,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
       const mat = p.material as THREE.MeshStandardMaterial;
       mat.color.setHex(currentColor.hex);
       mat.emissive.setHex(currentColor.emissive);
-      mat.emissiveIntensity = 0.9 + s.swapPulse * 1.5 + (inPhase ? 2.2 : 0);
-    }
-    // Aura PHASE
-    if (auraRef.current) {
-      auraRef.current.visible = inPhase;
-      if (inPhase) {
-        auraRef.current.position.copy(p!.position);
-        auraRef.current.rotation.y += dt * 4;
-        auraRef.current.rotation.x += dt * 3;
-        const am = auraRef.current.material as THREE.MeshBasicMaterial;
-        am.color.setHex(currentColor.hex);
-        am.opacity = 0.35 + Math.sin(s.elapsed * 10) * 0.15;
-      }
+      mat.emissiveIntensity = 0.9 + s.swapPulse * 1.5;
     }
 
     // Pillars scroll
@@ -395,19 +375,13 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
     let hit = false;
     s.blocks.forEach((b) => {
       b.mesh.position.z += speed * dt;
-      // PHASE visual
       const mat = b.mesh.material as THREE.MeshStandardMaterial;
-      if (inPhase) {
-        mat.opacity = 0.45;
-        b.mesh.scale.setScalar(0.55);
-      } else {
-        mat.opacity = 1;
-        b.mesh.scale.setScalar(1);
-      }
+      mat.opacity = 1;
+      b.mesh.scale.setScalar(1);
       const dz = b.mesh.position.z - PLAYER_Z;
       if (!b.passed) {
         if (Math.abs(dz) <= 0.5) {
-          if (b.lane === playerLane && !inPhase) {
+          if (b.lane === playerLane) {
             hit = true;
           }
         }
@@ -415,7 +389,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
           b.passed = true;
           const adj = Math.abs(b.lane - playerLane) === 1;
           const base = adj ? 2 : 1;
-          s.passed += inPhase ? base * 3 : base;
+          s.passed += base;
         }
       }
     });
@@ -426,11 +400,11 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
       const dz = w.group.position.z - PLAYER_Z;
       if (!w.passed) {
         if (Math.abs(dz) <= 0.35) {
-          if (w.color !== playerHex && !inPhase) hit = true;
+          if (w.color !== playerHex) hit = true;
         }
         if (w.group.position.z > PLAYER_Z + 0.35) {
           w.passed = true;
-          s.passed += inPhase ? 6 : 3;
+          s.passed += 3;
         }
       }
     });
@@ -447,17 +421,11 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
         if (dist <= 0.4) {
           if (po.lane === playerLane) {
             if (po.color === playerHex) {
-              phaseTimerRef.current.t = 3.0;
-              s.combo += 1;
-              s.passed += 5 + s.combo * 2;
+              s.passed += 5;
               s.swapPulse = 0.6;
-            } else if (inPhase) {
-              s.passed += 2;
             } else {
               hit = true;
             }
-          } else {
-            s.combo = 0;
           }
           po.passed = true;
         }
@@ -485,7 +453,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
       onScore(timeScore);
     }
 
-    if (hit && !inPhase && !s.dying) {
+    if (hit && !s.dying) {
       s.dying = true;
       s.dyingT = 0;
     }
@@ -558,11 +526,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onS
         <boxGeometry args={[0.8, 0.8, 0.8]} />
         <meshStandardMaterial color={COLOR_A.css} emissive={COLOR_A.css} emissiveIntensity={0.9} metalness={0.5} roughness={0.3} />
       </mesh>
-      {/* Aura PHASE */}
-      <mesh ref={auraRef} visible={false}>
-        <icosahedronGeometry args={[0.95, 0]} />
-        <meshBasicMaterial color={COLOR_A.css} wireframe transparent opacity={0.4} />
-      </mesh>
     </>
   );
 };
@@ -580,7 +543,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
   const [uiColor, setUiColor] = useState(0);
-  const [phaseUi, setPhaseUi] = useState(0);
+  
   const [showBoostPicker, setShowBoostPicker] = useState(false);
   const { getBoostCount, removeBoost } = useBoosts();
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
@@ -598,7 +561,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
-  const phaseTimerRef = useRef({ t: 0 });
 
   const doSwap = useCallback(() => {
     colorRef.current = colorRef.current === 0 ? 1 : 0;
@@ -616,7 +578,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   useEffect(() => {
     const id = setInterval(() => {
       setUiColor(colorRef.current);
-      setPhaseUi(phaseTimerRef.current.t);
     }, 80);
     return () => clearInterval(id);
   }, []);
@@ -624,14 +585,12 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const handleStart = useCallback(() => {
     laneRef.current = 1;
     colorRef.current = 0;
-    phaseTimerRef.current = { t: 0 };
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setUiColor(0);
-    setPhaseUi(0);
     startedAt.current = Date.now();
     setPhase('playing');
   }, [menuBoosts, onSetBoosts]);
@@ -700,7 +659,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
             <GameScene
               laneRef={laneRef}
               colorRef={colorRef}
-              phaseTimerRef={phaseTimerRef}
+              
               onScore={handleScore}
               onDie={handleDie}
               playing={phase === 'playing'}
@@ -721,23 +680,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </span>
               </div>
 
-              {/* Phase tag */}
-              {phaseUi > 0 && (
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none">
-                  <div
-                    className="px-3 py-1 rounded-full bg-fuchsia-500/90 text-white text-xs font-bold uppercase tracking-wider"
-                    style={{ boxShadow: '0 0 18px rgba(232,121,249,0.55)' }}
-                  >
-                    Phase ×3
-                  </div>
-                  <div className="w-24 h-1.5 rounded-full bg-white/15 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-fuchsia-400 to-cyan-400 transition-all"
-                      style={{ width: `${(phaseUi / 3) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* Legend */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[9px] uppercase tracking-wider text-white/70 pointer-events-none">
@@ -766,7 +708,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               rules={[
                 { icon: <MoveHorizontal className="w-4 h-4 text-cyan-300" />, title: 'Swipe', desc: 'gauche/droite pour changer de voie' },
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Tap', desc: 'change ta couleur (cyan ↔ rose)' },
-                { icon: <Sparkles className="w-4 h-4 text-fuchsia-300" />, title: 'PHASE ×3', desc: 'traverse un portail = 3s invincible + score ×3', accent: 'highlight' },
+                { icon: <Sparkles className="w-4 h-4 text-cyan-300" />, title: 'Portails', desc: 'traverse-les avec la bonne couleur — sinon game over', accent: 'highlight' },
                 { icon: <div className="w-3.5 h-3.5 rounded-sm bg-pink-400/80" />, title: 'Murs colorés', desc: 'aligne ta couleur ou game over', accent: 'danger' },
               ]}
             />
