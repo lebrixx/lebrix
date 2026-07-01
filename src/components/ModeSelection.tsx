@@ -276,6 +276,23 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     Acheter en Boutique
                   </Button>
                 )
+              ) : modeId === ModeID.MEMOIRE_EXPERT && tickets === 0 ? (
+                <div className="space-y-2">
+                  <Button
+                    disabled
+                    className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed"
+                  >
+                    <Ticket className="w-4 h-4 mr-2" />
+                    Aucun ticket disponible
+                  </Button>
+                  <Button
+                    onClick={() => onOpenShop('tickets')}
+                    className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
+                  >
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Acheter en Boutique
+                  </Button>
+                </div>
               ) : (
                 <Button
                   onClick={() => onSelectMode(modeId as ModeType)}
