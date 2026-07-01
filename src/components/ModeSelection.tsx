@@ -16,7 +16,7 @@ interface ModeSelectionProps {
   unlockedModes: string[];
   onSelectMode: (mode: ModeType, selectedBoosts?: string[]) => void;
   onBack: () => void;
-  onOpenShop: () => void;
+  onOpenShop: (target?: 'orbit' | 'tickets') => void;
   onOpenChallenges?: () => void;
 }
 
