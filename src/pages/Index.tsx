@@ -49,6 +49,7 @@ const Index = () => {
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   const [showRateDialog, setShowRateDialog] = useState(false);
+  const [shopTarget, setShopTarget] = useState<'orbit' | 'tickets' | null>(null);
   const [pendingRateDialog, setPendingRateDialog] = useState(false);
   
   // État du thème actuel avec persistance
