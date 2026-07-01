@@ -532,6 +532,16 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    cmdRef.current.drop = false;
+    setRedWarn(false);
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   // Auto-dismiss msg
   useEffect(() => {
     if (!msg) return;
