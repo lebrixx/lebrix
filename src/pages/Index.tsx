@@ -530,7 +530,7 @@ const Index = () => {
               unlockedModes={unlockedModes}
               onSelectMode={handleModeChange}
               onBack={() => setCurrentScreen('menu')}
-              onOpenShop={() => setCurrentScreen('shop')}
+              onOpenShop={(target) => { setShopTarget(target ?? null); setCurrentScreen('shop'); }}
               onOpenChallenges={() => setCurrentScreen('challenges')}
             />
           );
