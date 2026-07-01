@@ -531,7 +531,6 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
             selectedBoosts={menuBoosts}
             onSelectedBoostsChange={setMenuBoosts}
             onStart={handleStart}
-            hideBoosts
             rules={[
               { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Swipe', desc: '↑ ↓ ← → pour bouger d\'une case' },
               { icon: <Zap className="w-4 h-4 text-yellow-300" />, title: 'Jaune / Rouge', desc: 'warning puis danger ! Quitte la case', accent: 'danger' },
@@ -553,13 +552,21 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
                   <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                 )}
               </div>
-              <div className="flex gap-3 justify-center">
-                <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Menu
+              <div className="flex flex-col gap-2 items-stretch">
+                <Button
+                  onClick={() => setPhase('menu')}
+                  className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white font-bold hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-fuchsia-500/30"
+                >
+                  <Zap className="w-4 h-4 mr-2" /> Activer des Boosts
                 </Button>
-                <Button onClick={handleStart} className="bg-gradient-primary">
-                  <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  <Button onClick={onBack} variant="outline" className="border-wheel-border flex-1">
+                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
+                  </Button>
+                  <Button onClick={handleStart} className="bg-gradient-primary flex-1">
+                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
