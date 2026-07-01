@@ -494,6 +494,16 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure, pointerRef]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    pointerRef.current.x = 0;
+    pointerRef.current.y = 0;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score, pointerRef]);
+
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
       <div className="flex items-center justify-between p-4 z-20 relative">
