@@ -273,7 +273,7 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
     if (!playing) return;
 
     s.elapsed += dt;
-    const diff = 1 + s.elapsed / 28;
+    const diff = 1 + s.elapsed / 30.8;
     const speed = 6.4 * diff;
     s.travel += speed * dt;
 
