@@ -680,23 +680,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </span>
               </div>
 
-              {/* Phase tag */}
-              {phaseUi > 0 && (
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none">
-                  <div
-                    className="px-3 py-1 rounded-full bg-fuchsia-500/90 text-white text-xs font-bold uppercase tracking-wider"
-                    style={{ boxShadow: '0 0 18px rgba(232,121,249,0.55)' }}
-                  >
-                    Phase ×3
-                  </div>
-                  <div className="w-24 h-1.5 rounded-full bg-white/15 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-fuchsia-400 to-cyan-400 transition-all"
-                      style={{ width: `${(phaseUi / 3) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* Legend */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[9px] uppercase tracking-wider text-white/70 pointer-events-none">
