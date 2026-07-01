@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
+import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Sparkles } from 'lucide-react';
@@ -576,7 +577,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
           className="absolute inset-0 touch-none select-none"
           onPointerDown={onPointerDown}
         >
-          <Canvas
+          <GameCanvas
             key={sceneKey.current}
             dpr={[1, 2]}
             camera={{ position: [5, 2, 6], fov: 50, near: 0.1, far: 100 }}
@@ -590,7 +591,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               onRedWarn={setRedWarn}
               playing={phase === 'playing'}
             />
-          </Canvas>
+          </GameCanvas>
 
           {/* Red warning banner */}
           {phase === 'playing' && redWarn && (

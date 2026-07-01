@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
+import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -649,7 +650,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
           className="absolute inset-0 touch-none select-none"
           {...handlers}
         >
-          <Canvas
+          <GameCanvas
             key={sceneKey.current}
             dpr={[1, 2]}
             camera={{ position: [0, 2.5, 6], fov: 60, near: 0.1, far: 100 }}
@@ -664,7 +665,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               onDie={handleDie}
               playing={phase === 'playing'}
             />
-          </Canvas>
+          </GameCanvas>
 
           {/* In-game overlay */}
           {phase === 'playing' && (
