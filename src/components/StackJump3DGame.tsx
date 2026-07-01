@@ -115,8 +115,9 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     bursts: [] as Burst[],
   });
 
-  // Setup
+  // Setup — only (re)initialize when a new game starts (playing becomes true)
   useEffect(() => {
+    if (!playing) return;
     const g = stackRef.current!;
     // clear
     while (g.children.length) {
@@ -146,7 +147,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     applyMovingMaterial('normal');
     onRedWarn(false);
     onScore(0);
-  }, [playing]); // re-init on each play
+  }, [playing]);
 
   const applyMovingMaterial = (kind: PlateKind) => {
     const m = movingRef.current;
