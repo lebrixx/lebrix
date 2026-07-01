@@ -199,9 +199,22 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 </div>
               </div>
 
-              <p className="text-text-secondary mb-4 leading-relaxed">
+              <p className="text-text-secondary mb-2 leading-relaxed">
                 {config.desc}
               </p>
+
+              {modeId === ModeID.MEMOIRE_EXPERT && (
+                <div className="mb-4 flex items-center justify-between p-2.5 rounded-lg bg-secondary/10 border border-secondary/30">
+                  <span className="text-xs text-text-muted flex items-center gap-1.5">
+                    <Ticket className="w-3.5 h-3.5 text-secondary" />
+                    Tickets disponibles
+                  </span>
+                  <span className={`text-sm font-bold ${tickets === 0 ? 'text-danger' : 'text-secondary'}`}>
+                    {tickets}
+                  </span>
+                </div>
+              )}
+
 
               <div className="space-y-2 mb-4">
                 {config.survival && (
