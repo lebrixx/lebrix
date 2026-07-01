@@ -276,7 +276,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
         p.rotation.x += dt * 6;
         p.rotation.z += dt * 4;
       }
-      if (auraRef.current) (auraRef.current.material as THREE.Material).opacity = 0;
+      
       if (s.dyingT >= 1.0) {
         s.dead = true;
         onDie(s.passed);
