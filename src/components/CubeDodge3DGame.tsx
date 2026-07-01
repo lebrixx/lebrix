@@ -624,6 +624,15 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     onGameOver?.(finalScore, dur);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    laneRef.current = 1;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   const colorCss = uiColor === 0 ? COLOR_A.css : COLOR_B.css;
 
   return (
