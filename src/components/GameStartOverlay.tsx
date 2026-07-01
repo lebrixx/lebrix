@@ -43,7 +43,6 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
   const { getBoostCount } = useBoosts();
 
   const isBoostAvailable = (boostId: BoostType): boolean => {
-    if (currentMode === ModeID.MEMOIRE_EXPERT) return false;
     if (currentMode === 'arc_changeant' && (boostId === 'shield' || boostId === 'start_20')) return false;
     return true;
   };
