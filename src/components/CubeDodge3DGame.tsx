@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
