@@ -611,14 +611,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
                     <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                   )}
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}
