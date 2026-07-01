@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, Zap } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 
 /**
@@ -493,6 +494,16 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure, pointerRef]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    pointerRef.current.x = 0;
+    pointerRef.current.y = 0;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score, pointerRef]);
+
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
       <div className="flex items-center justify-between p-4 z-20 relative">
@@ -561,14 +572,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
                     <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                   )}
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}

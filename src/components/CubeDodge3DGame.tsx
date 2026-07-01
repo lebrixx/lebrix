@@ -8,6 +8,7 @@ import { ArrowLeft, Play, Volume2, VolumeX, RotateCcw, MoveHorizontal, Hand, Spa
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 
 /**
  * Cube Dodge 3D — runner mobile-first.
@@ -623,6 +624,15 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     onGameOver?.(finalScore, dur);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    laneRef.current = 1;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   const colorCss = uiColor === 0 ? COLOR_A.css : COLOR_B.css;
 
   return (
@@ -725,14 +735,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 <div className="mb-6 text-text-muted text-sm">
                   Record : <span className="text-primary font-bold">{best}</span>
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}

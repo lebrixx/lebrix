@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Sparkles } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 
 /**
@@ -531,6 +532,16 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    cmdRef.current.drop = false;
+    setRedWarn(false);
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   // Auto-dismiss msg
   useEffect(() => {
     if (!msg) return;
@@ -642,14 +653,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
                     <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                   )}
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}

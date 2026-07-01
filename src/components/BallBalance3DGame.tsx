@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
@@ -462,6 +463,15 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    pointer.current.x = 0;
+    pointer.current.y = 0;
+    sceneKey.current++;
+    // Preserve current elapsed time (score is seconds survived).
+    startedAt.current = Date.now() - score * 1000;
+    setPhase('playing');
+  }, [pointer, score]);
+
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
       {/* Top bar */}
@@ -529,14 +539,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
                 <div className="mb-6 text-text-muted text-sm">
                   Meilleur : <span className="text-primary font-bold">{best}s</span>
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}

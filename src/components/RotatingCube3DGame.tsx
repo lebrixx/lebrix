@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Shield, Zap } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 
 /**
@@ -473,6 +474,16 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    posRef.current = { i: 1, j: 1 };
+    cmdRef.current.dir = null;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   const handleSwipe = (dir: 'left' | 'right' | 'up' | 'down') => {
     if (phase !== 'playing') return;
     cmdRef.current.dir = dir;
@@ -553,21 +564,14 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
                   <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                 )}
               </div>
-              <div className="flex flex-col gap-2 items-stretch">
+              <div className="flex flex-col gap-4 items-stretch">
                 <Button
                   onClick={() => setPhase('menu')}
                   className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white font-bold hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-fuchsia-500/30"
                 >
                   <Zap className="w-4 h-4 mr-2" /> Activer des Boosts
                 </Button>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border flex-1">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary flex-1">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           </div>

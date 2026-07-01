@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, AlertTriangle } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
+import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 
 /**
@@ -504,6 +505,16 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    angleRef.current = 0;
+    compassRef.current = null;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   const rel = compassRef.current;
   const aligned = rel !== null && Math.abs(rel) < 0.2;
   const compassDeg = rel !== null ? (rel * 180) / Math.PI : 0;
@@ -601,14 +612,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
                     <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                   )}
                 </div>
-                <div className="flex gap-3 justify-center">
-                  <Button onClick={onBack} variant="outline" className="border-wheel-border">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Menu
-                  </Button>
-                  <Button onClick={handleStart} className="bg-gradient-primary">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Rejouer
-                  </Button>
-                </div>
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onRevive={handleRevive} />
               </div>
             </div>
           )}
