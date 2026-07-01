@@ -526,11 +526,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
         <boxGeometry args={[0.8, 0.8, 0.8]} />
         <meshStandardMaterial color={COLOR_A.css} emissive={COLOR_A.css} emissiveIntensity={0.9} metalness={0.5} roughness={0.3} />
       </mesh>
-      {/* Aura PHASE */}
-      <mesh ref={auraRef} visible={false}>
-        <icosahedronGeometry args={[0.95, 0]} />
-        <meshBasicMaterial color={COLOR_A.css} wireframe transparent opacity={0.4} />
-      </mesh>
     </>
   );
 };
