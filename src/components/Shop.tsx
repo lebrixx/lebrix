@@ -35,6 +35,7 @@ interface ShopProps {
   onPurchaseMode: (modeId: string, price: number) => boolean;
   onSpendCoins: (amount: number) => boolean;
   onAddCoins?: (amount: number) => void;
+  initialTarget?: 'orbit' | 'tickets' | null;
 }
 
 const GAME_MODES_SHOP = [
