@@ -659,7 +659,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
             <GameScene
               laneRef={laneRef}
               colorRef={colorRef}
-              phaseTimerRef={phaseTimerRef}
+              
               onScore={handleScore}
               onDie={handleDie}
               playing={phase === 'playing'}
