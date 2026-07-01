@@ -253,7 +253,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                   </div>
                 ) : (
                   <Button
-                    onClick={onOpenShop}
+                    onClick={() => onOpenShop(modeId === ModeID.ZONE_TRAITRESSE ? 'orbit' : undefined)}
                     className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />
