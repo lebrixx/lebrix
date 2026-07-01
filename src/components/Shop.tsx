@@ -67,11 +67,28 @@ export const Shop: React.FC<ShopProps> = ({
   onPurchaseMode,
   onSpendCoins,
   onAddCoins,
+  initialTarget,
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
   
-  const [activeTab, setActiveTab] = useState('themes');
+  const [activeTab, setActiveTab] = useState(initialTarget ? 'modes' : 'themes');
+
+  useEffect(() => {
+    if (!initialTarget) return;
+    setActiveTab('modes');
+    const targetId = initialTarget === 'orbit' ? 'shop-mode-zone_traitresse' : 'shop-mode-expert_tickets';
+    // Wait for Tabs content to mount
+    const timer = setTimeout(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'ring-offset-background');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-primary', 'ring-offset-2', 'ring-offset-background'), 2500);
+      }
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [initialTarget]);
   const [currentTickets, setCurrentTickets] = useState(getTickets());
   
   const [showEssentialPack, setShowEssentialPack] = useState(false);
