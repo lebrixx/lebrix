@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3 } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
 import { getPongUnlockCount, PONG_UNLOCK_TARGET } from '@/utils/pongUnlock';
+import { getTickets } from '@/utils/ticketSystem';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
@@ -16,7 +17,7 @@ interface ModeSelectionProps {
   unlockedModes: string[];
   onSelectMode: (mode: ModeType, selectedBoosts?: string[]) => void;
   onBack: () => void;
-  onOpenShop: () => void;
+  onOpenShop: (target?: 'orbit' | 'tickets') => void;
   onOpenChallenges?: () => void;
 }
 
@@ -48,6 +49,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   const t = translations[language];
   const [showSlotMachine, setShowSlotMachine] = useState(false);
   const [bonusMode, setBonusMode] = useState<ModeType | null>(getActiveBonusMode());
+  const [tickets, setTickets] = useState<number>(getTickets());
+  useEffect(() => { setTickets(getTickets()); }, [currentMode, gameStatus]);
   const canSpin = canSpinSlotToday();
   const [countdown, setCountdown] = useState('');
 
@@ -196,9 +199,22 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 </div>
               </div>
 
-              <p className="text-text-secondary mb-4 leading-relaxed">
+              <p className="text-text-secondary mb-2 leading-relaxed">
                 {config.desc}
               </p>
+
+              {modeId === ModeID.MEMOIRE_EXPERT && (
+                <div className="mb-4 flex items-center justify-between p-2.5 rounded-lg bg-secondary/10 border border-secondary/30">
+                  <span className="text-xs text-text-muted flex items-center gap-1.5">
+                    <Ticket className="w-3.5 h-3.5 text-secondary" />
+                    Tickets disponibles
+                  </span>
+                  <span className={`text-sm font-bold ${tickets === 0 ? 'text-danger' : 'text-secondary'}`}>
+                    {tickets}
+                  </span>
+                </div>
+              )}
+
 
               <div className="space-y-2 mb-4">
                 {config.survival && (
@@ -253,13 +269,30 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                   </div>
                 ) : (
                   <Button
-                    onClick={onOpenShop}
+                    onClick={() => onOpenShop(modeId === ModeID.ZONE_TRAITRESSE ? 'orbit' : undefined)}
                     className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />
                     Acheter en Boutique
                   </Button>
                 )
+              ) : modeId === ModeID.MEMOIRE_EXPERT && tickets === 0 ? (
+                <div className="space-y-2">
+                  <Button
+                    disabled
+                    className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed"
+                  >
+                    <Ticket className="w-4 h-4 mr-2" />
+                    Aucun ticket disponible
+                  </Button>
+                  <Button
+                    onClick={() => onOpenShop('tickets')}
+                    className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
+                  >
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Acheter en Boutique
+                  </Button>
+                </div>
               ) : (
                 <Button
                   onClick={() => onSelectMode(modeId as ModeType)}

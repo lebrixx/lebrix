@@ -49,6 +49,7 @@ const Index = () => {
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   const [showRateDialog, setShowRateDialog] = useState(false);
+  const [shopTarget, setShopTarget] = useState<'orbit' | 'tickets' | null>(null);
   const [pendingRateDialog, setPendingRateDialog] = useState(false);
   
   // État du thème actuel avec persistance
@@ -477,7 +478,7 @@ const Index = () => {
             ownedThemes={ownedThemesState}
             currentTheme={currentTheme}
             unlockedModes={unlockedModes}
-            onBack={() => setCurrentScreen('menu')}
+            onBack={() => { setShopTarget(null); setCurrentScreen('menu'); }}
             onPurchaseTheme={(theme) => {
               const success = purchaseTheme(theme.id, theme.price);
               if (success) {
@@ -490,6 +491,7 @@ const Index = () => {
             onPurchaseMode={handlePurchaseMode}
             onSpendCoins={spendCoins}
             onAddCoins={addCoins}
+            initialTarget={shopTarget}
           />
         );
         
@@ -530,7 +532,7 @@ const Index = () => {
               unlockedModes={unlockedModes}
               onSelectMode={handleModeChange}
               onBack={() => setCurrentScreen('menu')}
-              onOpenShop={() => setCurrentScreen('shop')}
+              onOpenShop={(target) => { setShopTarget(target ?? null); setCurrentScreen('shop'); }}
               onOpenChallenges={() => setCurrentScreen('challenges')}
             />
           );
