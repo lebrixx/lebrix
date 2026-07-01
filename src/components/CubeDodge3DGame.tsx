@@ -543,7 +543,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
   const [uiColor, setUiColor] = useState(0);
-  const [phaseUi, setPhaseUi] = useState(0);
+  
   const [showBoostPicker, setShowBoostPicker] = useState(false);
   const { getBoostCount, removeBoost } = useBoosts();
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
