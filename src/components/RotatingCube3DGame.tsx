@@ -242,6 +242,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
   };
 
   useFrame((_, dt) => {
+    if (!playing) return;
     const s = state.current;
     if (s.dead) return;
 
