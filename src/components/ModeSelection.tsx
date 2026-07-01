@@ -49,6 +49,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   const t = translations[language];
   const [showSlotMachine, setShowSlotMachine] = useState(false);
   const [bonusMode, setBonusMode] = useState<ModeType | null>(getActiveBonusMode());
+  const [tickets, setTickets] = useState<number>(getTickets());
+  useEffect(() => { setTickets(getTickets()); }, [currentMode, gameStatus]);
   const canSpin = canSpinSlotToday();
   const [countdown, setCountdown] = useState('');
 
