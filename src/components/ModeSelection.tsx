@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3 } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
 import { getPongUnlockCount, PONG_UNLOCK_TARGET } from '@/utils/pongUnlock';
+import { getTickets } from '@/utils/ticketSystem';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
