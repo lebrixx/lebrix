@@ -474,6 +474,16 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    posRef.current = { i: 1, j: 1 };
+    cmdRef.current.dir = null;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   const handleSwipe = (dir: 'left' | 'right' | 'up' | 'down') => {
     if (phase !== 'playing') return;
     cmdRef.current.dir = dir;
