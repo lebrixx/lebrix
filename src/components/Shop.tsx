@@ -569,6 +569,7 @@ export const Shop: React.FC<ShopProps> = ({
               return (
                 <Card 
                   key={mode.id}
+                  id={`shop-mode-${mode.id}`}
                   className={`
                     relative overflow-hidden border-2 transition-all duration-300 hover:scale-105
                     ${isUnlocked 
