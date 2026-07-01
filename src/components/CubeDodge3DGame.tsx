@@ -561,7 +561,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
-  const phaseTimerRef = useRef({ t: 0 });
 
   const doSwap = useCallback(() => {
     colorRef.current = colorRef.current === 0 ? 1 : 0;
@@ -579,7 +578,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   useEffect(() => {
     const id = setInterval(() => {
       setUiColor(colorRef.current);
-      setPhaseUi(phaseTimerRef.current.t);
     }, 80);
     return () => clearInterval(id);
   }, []);
@@ -587,14 +585,12 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const handleStart = useCallback(() => {
     laneRef.current = 1;
     colorRef.current = 0;
-    phaseTimerRef.current = { t: 0 };
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setUiColor(0);
-    setPhaseUi(0);
     startedAt.current = Date.now();
     setPhase('playing');
   }, [menuBoosts, onSetBoosts]);
