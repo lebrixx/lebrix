@@ -504,6 +504,16 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    offsetRef.current = score;
+    shieldRef.current = false;
+    sceneKey.current++;
+    angleRef.current = 0;
+    compassRef.current = null;
+    startedAt.current = Date.now();
+    setPhase('playing');
+  }, [score]);
+
   const rel = compassRef.current;
   const aligned = rel !== null && Math.abs(rel) < 0.2;
   const compassDeg = rel !== null ? (rel * 180) / Math.PI : 0;
