@@ -84,7 +84,6 @@ function usePointerInput(onTap: () => void, onSwipe: (dir: -1 | 1) => void) {
 interface SceneProps {
   laneRef: React.MutableRefObject<number>;
   colorRef: React.MutableRefObject<number>;
-  phaseTimerRef: React.MutableRefObject<{ t: number }>;
   onScore: (n: number) => void;
   onDie: (n: number) => void;
   playing: boolean;
@@ -94,10 +93,9 @@ interface Block { mesh: THREE.Mesh; lane: number; passed: boolean; }
 interface Wall { group: THREE.Group; color: number; passed: boolean; }
 interface Portal { group: THREE.Group; lane: number; color: number; ring: THREE.Mesh; passed: boolean; }
 
-const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, phaseTimerRef, onScore, onDie, playing }) => {
+const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing }) => {
   const { camera, scene } = useThree();
   const playerRef = useRef<THREE.Mesh>(null);
-  const auraRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
   const wallGroupRef = useRef<THREE.Group>(null);
   const portalGroupRef = useRef<THREE.Group>(null);
