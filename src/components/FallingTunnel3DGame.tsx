@@ -348,9 +348,13 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing }) =>
         (m as any).opacity = base * spawnIn;
       }
 
-      // Ghost
-      p.ghost.position.x = bx;
-      p.ghost.position.y = by - PLAYER_Y;
+      // Ghost — hide as soon as the plate reaches/passes the player
+      const showGhost = !p.passed && z < PLAYER_Z;
+      p.ghost.visible = showGhost;
+      if (showGhost) {
+        p.ghost.position.x = bx;
+        p.ghost.position.y = by - PLAYER_Y;
+      }
       const dxg = Math.abs(bx - p.ox);
       const dyg = Math.abs((by - PLAYER_Y) - p.oy);
       const inTarget = dxg < p.hole - 0.22 && dyg < p.hole - 0.22;
