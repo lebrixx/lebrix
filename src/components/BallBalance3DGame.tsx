@@ -463,6 +463,15 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     onGameOver?.(finalScore, duration);
   }, [onGameOver, playFailure]);
 
+  const handleRevive = useCallback(() => {
+    pointer.current.x = 0;
+    pointer.current.y = 0;
+    sceneKey.current++;
+    // Preserve current elapsed time (score is seconds survived).
+    startedAt.current = Date.now() - score * 1000;
+    setPhase('playing');
+  }, [pointer, score]);
+
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
       {/* Top bar */}
