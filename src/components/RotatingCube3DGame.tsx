@@ -7,6 +7,8 @@ import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Shield, Zap } from 
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
+import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Rotating Cube — implémentation fidèle au cahier des charges.
@@ -117,9 +119,10 @@ interface SceneProps {
   scoreOffset?: number;
   graceMs?: number;
   shieldsInit?: number;
+  onShieldUsed?: () => void;
 }
 
-const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldsInit = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldsInit = 0, onShieldUsed }) => {
   const { scene } = useThree();
 
   const cubeRef = useRef<THREE.Group>(null);
@@ -298,6 +301,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
           if (s.shields > 0) {
             s.shields -= 1;
             onShields(s.shields);
+            onShieldUsed?.();
             w.phase = 'done';
             s.survived += 1;
           } else if (s.elapsed < s.graceUntil) {
@@ -442,6 +446,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
   const shieldsInitRef = useRef(0);
+  const [shieldFlashKey, setShieldFlashKey] = useState(0);
 
   const handleStart = useCallback(() => {
     posRef.current = { i: 1, j: 1 };
@@ -451,6 +456,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     shieldsInitRef.current = menuBoosts.includes('shield') ? 1 : 0;
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setShields(shieldsInitRef.current);
@@ -494,6 +500,10 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     if (phase !== 'playing') return;
     cmdRef.current.dir = dir;
   };
+
+  const handleShieldUsed = useCallback(() => {
+    setShieldFlashKey((key) => key + 1);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
@@ -542,9 +552,12 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
               shieldsInit={shieldsInitRef.current}
+              onShieldUsed={handleShieldUsed}
             />
           </GameCanvas>
         </SwipeArea>
+
+        {phase === 'playing' && <ShieldUsedFlash triggerKey={shieldFlashKey} />}
 
         {phase === 'menu' && (
           <GameStartOverlay
