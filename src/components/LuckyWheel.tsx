@@ -122,7 +122,7 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
     } else if (reward.type === 'boost') {
       const boostNames: Record<string, string> = {
         shield: t.shield,
-        bigger_zone: t.biggerZone,
+        bigger_zone: 'Convertisseur de score',
         start_20: t.start20,
       };
       return boostNames[reward.boostId] || 'Boost';
