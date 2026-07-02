@@ -374,6 +374,11 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
           if (s.elapsed < graceUntil) {
             // Grace: laisse passer sans mourir
             p.passed = true;
+          } else if (s.shield) {
+            s.shield = false;
+            onShieldUsed?.();
+            p.passed = true;
+            p.group.visible = false;
           } else {
             s.dead = true;
             onDie(s.score);
