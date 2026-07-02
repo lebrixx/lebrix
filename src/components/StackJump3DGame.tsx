@@ -7,6 +7,7 @@ import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Spar
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Stack Jump 3D — implémentation fidèle au cahier des charges.
@@ -500,6 +501,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     shieldRef.current = menuBoosts.includes('shield');
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setMsg(null);

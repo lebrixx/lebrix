@@ -7,6 +7,8 @@ import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, Zap } from 
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
+import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Falling Tunnel 3D — Cahier des charges fidèle.
@@ -467,6 +469,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
   const [shieldActive, setShieldActive] = useState(false);
+  const [shieldFlashKey, setShieldFlashKey] = useState(0);
   const { pointerRef, handlers } = usePointerTrack();
 
   const handleStart = useCallback(() => {
@@ -475,6 +478,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
     setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     pointerRef.current.x = 0;
@@ -514,6 +518,11 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
     pointerRef.current.y = 0;
     setPhase('playing');
   }, [score, pointerRef]);
+
+  const handleShieldUsed = useCallback(() => {
+    setShieldActive(false);
+    setShieldFlashKey((key) => key + 1);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
@@ -555,7 +564,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
               shieldInit={shieldActive}
-              onShieldUsed={() => setShieldActive(false)}
+              onShieldUsed={handleShieldUsed}
             />
           </GameCanvas>
 
@@ -565,6 +574,8 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
             </div>
           )}
+
+          {phase === 'playing' && <ShieldUsedFlash triggerKey={shieldFlashKey} />}
 
 
           {/* Menu */}

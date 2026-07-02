@@ -8,6 +8,7 @@ import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Ball Balance 3D — implementation fidèle au cahier des charges fourni.
@@ -441,6 +442,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     pointer.current.y = 0;
     sceneKey.current++;
     elapsedOffsetRef.current = 0;
+    startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(0);
     startedAt.current = Date.now();
