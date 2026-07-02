@@ -496,13 +496,14 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   const sceneScoreOffsetRef = useRef(0);
 
   const handleStart = useCallback(() => {
+    const allowedBoosts = menuBoosts.filter((boost) => boost !== 'shield');
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    shieldRef.current = false;
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     startGameSession();
-    onSetBoosts?.(menuBoosts);
+    onSetBoosts?.(allowedBoosts);
     setScore(offsetRef.current);
     setMsg(null);
     setRedWarn(false);

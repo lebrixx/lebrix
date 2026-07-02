@@ -438,12 +438,13 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const { pointer, handlers, elRef } = usePointerTrack();
 
   const handleStart = useCallback(() => {
+    const allowedBoosts = menuBoosts.filter((boost) => boost === 'bigger_zone');
     pointer.current.x = 0;
     pointer.current.y = 0;
     sceneKey.current++;
     elapsedOffsetRef.current = 0;
     startGameSession();
-    onSetBoosts?.(menuBoosts);
+    onSetBoosts?.(allowedBoosts);
     setScore(0);
     startedAt.current = Date.now();
     setPhase('playing');
