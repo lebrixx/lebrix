@@ -565,8 +565,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
   const offsetRef = useRef(0);
-  const shieldRef = useRef(false);
   const elapsedOffsetRef = useRef(0);
+  const [shieldActive, setShieldActive] = useState(false);
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
@@ -596,7 +596,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     colorRef.current = 0;
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
@@ -609,15 +609,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
-    if (shieldRef.current) {
-      shieldRef.current = false;
-      // Time-based scoring: preserve elapsed for both difficulty AND score continuity.
-      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-      sceneKey.current++;
-      laneRef.current = 1;
-      setScore(finalScore);
-      return;
-    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -635,7 +626,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
   const handleRevive = useCallback(() => {
     elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-    shieldRef.current = false;
+    setShieldActive(false);
     sceneKey.current++;
     laneRef.current = 1;
     setPhase('playing');
