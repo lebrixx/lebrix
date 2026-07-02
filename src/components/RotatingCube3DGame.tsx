@@ -113,9 +113,12 @@ interface SceneProps {
   onDie: (final: number) => void;
   onShields: (n: number) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  scoreOffset?: number;
+  graceMs?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing }) => {
+const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const { scene } = useThree();
 
   const cubeRef = useRef<THREE.Group>(null);
@@ -125,16 +128,17 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
   const bonusGroupRef = useRef<THREE.Group>(null);
 
   const state = useRef({
-    elapsed: 0,
+    elapsed: elapsedOffset,
     spawn: 0,
     bonusSpawn: 0,
     waves: [] as Wave[],
     lastSig: '',
     prevSig: '',
-    survived: 0,
-    lastReported: 0,
+    survived: scoreOffset,
+    lastReported: scoreOffset,
     shields: 0,
     dead: false,
+    graceUntil: elapsedOffset + graceMs / 1000,
     bonus: null as null | { i: number; j: number; mesh: THREE.Mesh; timer: number },
   });
 
