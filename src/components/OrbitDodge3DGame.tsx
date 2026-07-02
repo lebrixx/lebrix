@@ -568,6 +568,9 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               onDie={handleDie}
               onNextHole={handleNextHole}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              scoreOffset={sceneScoreOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
 
