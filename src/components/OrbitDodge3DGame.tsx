@@ -536,20 +536,22 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right">
-          <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-          <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right">
+            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <div className="absolute inset-0 touch-none select-none" {...handlers}>
