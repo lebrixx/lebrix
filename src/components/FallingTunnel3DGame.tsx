@@ -265,13 +265,15 @@ interface SceneProps {
   elapsedOffset?: number;
   scoreOffset?: number;
   graceMs?: number;
+  shieldInit?: boolean;
+  onShieldUsed?: () => void;
 }
 
-const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
   const ballRef = useRef<THREE.Mesh>(null);
   const platesGroupRef = useRef<THREE.Group>(null);
   const platesRef = useRef<Plate[]>([]);
-  const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0 });
+  const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit });
   const { camera } = useThree();
   const graceUntil = elapsedOffset + graceMs / 1000;
 
@@ -281,7 +283,7 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
 
   // Reset on (re)mount
   useEffect(() => {
-    stateRef.current = { elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0 };
+    stateRef.current = { elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit };
     if (platesGroupRef.current) {
       while (platesGroupRef.current.children.length) {
         platesGroupRef.current.remove(platesGroupRef.current.children[0]);
@@ -372,6 +374,11 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
           if (s.elapsed < graceUntil) {
             // Grace: laisse passer sans mourir
             p.passed = true;
+          } else if (s.shield) {
+            s.shield = false;
+            onShieldUsed?.();
+            p.passed = true;
+            p.group.visible = false;
           } else {
             s.dead = true;
             onDie(s.score);
@@ -457,15 +464,15 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
-  const shieldRef = useRef(false);
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
+  const [shieldActive, setShieldActive] = useState(false);
   const { pointerRef, handlers } = usePointerTrack();
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
@@ -483,16 +490,6 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
 
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
-    if (shieldRef.current) {
-      shieldRef.current = false;
-      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-      sceneScoreOffsetRef.current = finalRaw;
-      sceneKey.current++;
-      pointerRef.current.x = 0;
-      pointerRef.current.y = 0;
-      setScore(finalScore);
-      return;
-    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -511,7 +508,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   const handleRevive = useCallback(() => {
     elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
-    shieldRef.current = false;
+    setShieldActive(false);
     sceneKey.current++;
     pointerRef.current.x = 0;
     pointerRef.current.y = 0;
@@ -557,8 +554,18 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
+              shieldInit={shieldActive}
+              onShieldUsed={() => setShieldActive(false)}
             />
           </GameCanvas>
+
+          {phase === 'playing' && shieldActive && (
+            <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-emerald-500/25 backdrop-blur-sm border border-emerald-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse z-10">
+              <span className="text-lg">🛡️</span>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
+            </div>
+          )}
+
 
           {/* Menu */}
           {phase === 'menu' && (

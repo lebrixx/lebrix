@@ -293,17 +293,19 @@ interface SceneProps {
   elapsedOffset?: number;
   scoreOffset?: number;
   graceMs?: number;
+  shieldInit?: boolean;
+  onShieldUsed?: () => void;
 }
 
-const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
   const playerRef = useRef<THREE.Mesh>(null);
   const trailRef = useRef<THREE.Mesh>(null);
   const ringsContainerRef = useRef<THREE.Group>(null);
-  const stateRef = useRef({ elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] as RingDef[] });
+  const stateRef = useRef({ elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] as RingDef[], shield: shieldInit });
   const graceUntil = elapsedOffset + graceMs / 1000;
 
   useEffect(() => {
-    stateRef.current = { elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] };
+    stateRef.current = { elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [], shield: shieldInit };
     if (ringsContainerRef.current) {
       while (ringsContainerRef.current.children.length) {
         ringsContainerRef.current.remove(ringsContainerRef.current.children[0]);
@@ -367,6 +369,11 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
           if (s.elapsed < graceUntil) {
             // Grâce : laisse passer sans mourir
             ring.passed = true;
+          } else if (s.shield) {
+            s.shield = false;
+            onShieldUsed?.();
+            ring.passed = true;
+            ring.group.visible = false;
           } else {
             stateRef.current.dead = true;
             onDie(s.passed);
@@ -461,16 +468,16 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
-  const shieldRef = useRef(false);
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
+  const [shieldActive, setShieldActive] = useState(false);
 
   const { handlers } = useDragAngle(angleRef);
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
@@ -495,16 +502,6 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
 
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
-    if (shieldRef.current) {
-      shieldRef.current = false;
-      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-      sceneScoreOffsetRef.current = finalRaw;
-      sceneKey.current++;
-      angleRef.current = 0;
-      compassRef.current = null;
-      setScore(finalScore);
-      return;
-    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -523,7 +520,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const handleRevive = useCallback(() => {
     elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
-    shieldRef.current = false;
+    setShieldActive(false);
     sceneKey.current++;
     angleRef.current = 0;
     compassRef.current = null;
@@ -571,8 +568,18 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
+              shieldInit={shieldActive}
+              onShieldUsed={() => setShieldActive(false)}
             />
           </GameCanvas>
+
+          {phase === 'playing' && shieldActive && (
+            <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-emerald-500/25 backdrop-blur-sm border border-emerald-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse z-10">
+              <span className="text-lg">🛡️</span>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
+            </div>
+          )}
+
 
           {/* Compass */}
           {phase === 'playing' && (

@@ -116,9 +116,10 @@ interface SceneProps {
   elapsedOffset?: number;
   scoreOffset?: number;
   graceMs?: number;
+  shieldsInit?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldsInit = 0 }) => {
   const { scene } = useThree();
 
   const cubeRef = useRef<THREE.Group>(null);
@@ -135,12 +136,15 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
     lastSig: '',
     prevSig: '',
     survived: scoreOffset,
-    lastReported: scoreOffset,
-    shields: 0,
+    lastReported: scoreOffset - 1,
+    shields: shieldsInit,
     dead: false,
     graceUntil: elapsedOffset + graceMs / 1000,
     bonus: null as null | { i: number; j: number; mesh: THREE.Mesh; timer: number },
   });
+
+  // Report initial shields to parent
+  useEffect(() => { onShields(shieldsInit); }, []);
 
   // Build cells
   useEffect(() => {
@@ -435,21 +439,21 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
   const offsetRef = useRef(0);
-  const shieldRef = useRef(false);
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
+  const shieldsInitRef = useRef(0);
 
   const handleStart = useCallback(() => {
     posRef.current = { i: 1, j: 1 };
     cmdRef.current.dir = null;
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    shieldsInitRef.current = menuBoosts.includes('shield') ? 1 : 0;
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
-    setShields(0);
+    setShields(shieldsInitRef.current);
     startedAt.current = Date.now();
     setPhase('playing');
   }, [menuBoosts, onSetBoosts]);
@@ -461,16 +465,6 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
 
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
-    if (shieldRef.current) {
-      shieldRef.current = false;
-      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-      sceneScoreOffsetRef.current = finalRaw;
-      sceneKey.current++;
-      posRef.current = { i: 1, j: 1 };
-      cmdRef.current.dir = null;
-      setScore(finalScore);
-      return;
-    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -489,7 +483,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const handleRevive = useCallback(() => {
     elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
-    shieldRef.current = false;
+    shieldsInitRef.current = 0;
     sceneKey.current++;
     posRef.current = { i: 1, j: 1 };
     cmdRef.current.dir = null;
@@ -547,6 +541,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
+              shieldsInit={shieldsInitRef.current}
             />
           </GameCanvas>
         </SwipeArea>

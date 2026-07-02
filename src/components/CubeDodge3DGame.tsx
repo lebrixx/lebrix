@@ -91,13 +91,15 @@ interface SceneProps {
   playing: boolean;
   elapsedOffset?: number;
   graceMs?: number;
+  shieldInit?: boolean;
+  onShieldUsed?: () => void;
 }
 
 interface Block { mesh: THREE.Mesh; lane: number; passed: boolean; }
 interface Wall { group: THREE.Group; color: number; passed: boolean; }
 interface Portal { group: THREE.Group; lane: number; color: number; ring: THREE.Mesh; passed: boolean; }
 
-const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing, elapsedOffset = 0, graceMs = 0 }) => {
+const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing, elapsedOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
   const { camera, scene } = useThree();
   const playerRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -120,8 +122,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     combo: 0,
     swapPulse: 0,
     dead: false,
-    dying: false,
-    dyingT: 0,
+    shield: shieldInit,
   });
   const graceUntil = elapsedOffset + graceMs / 1000;
 
@@ -272,23 +273,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     const s = state.current;
     if (s.dead) return;
 
-    // Death fall animation
-    if (s.dying) {
-      s.dyingT += dt;
-      const p = playerRef.current;
-      if (p) {
-        p.position.y -= 9.5 * dt;
-        p.rotation.x += dt * 6;
-        p.rotation.z += dt * 4;
-      }
-      
-      if (s.dyingT >= 1.0) {
-        s.dead = true;
-        onDie(s.passed);
-      }
-      return;
-    }
-
     if (!playing) return;
 
     s.elapsed += dt;
@@ -377,7 +361,10 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     // Update blocks
     const playerLane = laneRef.current;
     const playerHex = currentColor.hex;
-    let hit = false;
+    let killKind: 'block' | 'wall' | 'portal' | null = null;
+    let killBlock: Block | null = null;
+    let killWall: Wall | null = null;
+    let killPortal: Portal | null = null;
     s.blocks.forEach((b) => {
       b.mesh.position.z += speed * dt;
       const mat = b.mesh.material as THREE.MeshStandardMaterial;
@@ -386,8 +373,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       const dz = b.mesh.position.z - PLAYER_Z;
       if (!b.passed) {
         if (Math.abs(dz) <= 0.5) {
-          if (b.lane === playerLane) {
-            hit = true;
+          if (b.lane === playerLane && !killKind) {
+            killKind = 'block'; killBlock = b;
           }
         }
         if (b.mesh.position.z > PLAYER_Z + 0.5) {
@@ -405,7 +392,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       const dz = w.group.position.z - PLAYER_Z;
       if (!w.passed) {
         if (Math.abs(dz) <= 0.35) {
-          if (w.color !== playerHex) hit = true;
+          if (w.color !== playerHex && !killKind) { killKind = 'wall'; killWall = w; }
         }
         if (w.group.position.z > PLAYER_Z + 0.35) {
           w.passed = true;
@@ -428,8 +415,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
             if (po.color === playerHex) {
               s.passed += 5;
               s.swapPulse = 0.6;
-            } else {
-              hit = true;
+            } else if (!killKind) {
+              killKind = 'portal'; killPortal = po;
             }
           }
           po.passed = true;
@@ -458,11 +445,27 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       onScore(timeScore);
     }
 
-    if (hit && !s.dying && s.elapsed >= graceUntil) {
-      s.dying = true;
-      s.dyingT = 0;
+    if (killKind && s.elapsed >= graceUntil) {
+      if (s.shield) {
+        s.shield = false;
+        onShieldUsed?.();
+        if (killKind === 'block' && killBlock) {
+          killBlock.passed = true;
+          killBlock.mesh.visible = false;
+        } else if (killKind === 'wall' && killWall) {
+          killWall.passed = true;
+          killWall.group.visible = false;
+        } else if (killKind === 'portal' && killPortal) {
+          killPortal.passed = true;
+          killPortal.group.visible = false;
+        }
+      } else {
+        s.dead = true;
+        onDie(s.passed);
+      }
     }
   });
+
 
   return (
     <>
@@ -562,8 +565,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
   const offsetRef = useRef(0);
-  const shieldRef = useRef(false);
   const elapsedOffsetRef = useRef(0);
+  const [shieldActive, setShieldActive] = useState(false);
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
@@ -593,7 +596,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     colorRef.current = 0;
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
@@ -606,15 +609,6 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
-    if (shieldRef.current) {
-      shieldRef.current = false;
-      // Time-based scoring: preserve elapsed for both difficulty AND score continuity.
-      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-      sceneKey.current++;
-      laneRef.current = 1;
-      setScore(finalScore);
-      return;
-    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -632,7 +626,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
   const handleRevive = useCallback(() => {
     elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-    shieldRef.current = false;
+    setShieldActive(false);
     sceneKey.current++;
     laneRef.current = 1;
     setPhase('playing');
@@ -682,6 +676,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
               graceMs={1500}
+              shieldInit={shieldActive}
+              onShieldUsed={() => setShieldActive(false)}
             />
           </GameCanvas>
 
@@ -699,6 +695,13 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </span>
               </div>
 
+              {/* Shield badge */}
+              {shieldActive && (
+                <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-emerald-500/25 backdrop-blur-sm border border-emerald-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse">
+                  <span className="text-lg">🛡️</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
+                </div>
+              )}
 
               {/* Legend */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[9px] uppercase tracking-wider text-white/70 pointer-events-none">
@@ -713,6 +716,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               </div>
             </>
           )}
+
 
           {/* Start menu — overlay sur le jeu en fond */}
           {phase === 'menu' && (
