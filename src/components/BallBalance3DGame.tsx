@@ -8,6 +8,7 @@ import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Ball Balance 3D — implementation fidèle au cahier des charges fourni.
@@ -437,11 +438,13 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const { pointer, handlers, elRef } = usePointerTrack();
 
   const handleStart = useCallback(() => {
+    const allowedBoosts = menuBoosts.filter((boost) => boost === 'bigger_zone');
     pointer.current.x = 0;
     pointer.current.y = 0;
     sceneKey.current++;
     elapsedOffsetRef.current = 0;
-    onSetBoosts?.(menuBoosts);
+    startGameSession();
+    onSetBoosts?.(allowedBoosts);
     setScore(0);
     startedAt.current = Date.now();
     setPhase('playing');

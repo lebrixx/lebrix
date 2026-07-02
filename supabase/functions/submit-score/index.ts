@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
 
     // Score validation
     const maxScore = SCORE_LIMITS[mode];
-    if (score < 2 || score > maxScore) {
+    if (score < 1 || score > maxScore) {
       return new Response(
         JSON.stringify({ error: 'Invalid score range' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -9,6 +9,8 @@ import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
+import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Cube Dodge 3D — runner mobile-first.
@@ -123,6 +125,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     swapPulse: 0,
     dead: false,
     shield: shieldInit,
+    shieldGraceUntil: 0,
   });
   const graceUntil = elapsedOffset + graceMs / 1000;
 
@@ -445,9 +448,10 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       onScore(timeScore);
     }
 
-    if (killKind && s.elapsed >= graceUntil) {
+    if (killKind && s.elapsed >= graceUntil && s.elapsed >= s.shieldGraceUntil) {
       if (s.shield) {
         s.shield = false;
+        s.shieldGraceUntil = s.elapsed + 0.45;
         onShieldUsed?.();
         if (killKind === 'block' && killBlock) {
           killBlock.passed = true;
@@ -567,6 +571,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const offsetRef = useRef(0);
   const elapsedOffsetRef = useRef(0);
   const [shieldActive, setShieldActive] = useState(false);
+  const [shieldFlashKey, setShieldFlashKey] = useState(0);
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
@@ -598,6 +603,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
+    startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setUiColor(0);
@@ -630,6 +636,11 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     sceneKey.current++;
     laneRef.current = 1;
     setPhase('playing');
+  }, []);
+
+  const handleShieldUsed = useCallback(() => {
+    setShieldActive(false);
+    setShieldFlashKey((key) => key + 1);
   }, []);
 
   const colorCss = uiColor === 0 ? COLOR_A.css : COLOR_B.css;
@@ -677,7 +688,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               elapsedOffset={elapsedOffsetRef.current}
               graceMs={1500}
               shieldInit={shieldActive}
-              onShieldUsed={() => setShieldActive(false)}
+              onShieldUsed={handleShieldUsed}
             />
           </GameCanvas>
 
@@ -702,6 +713,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                   <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
                 </div>
               )}
+
+              <ShieldUsedFlash triggerKey={shieldFlashKey} />
 
               {/* Legend */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[9px] uppercase tracking-wider text-white/70 pointer-events-none">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Zap, Trophy, X } from 'lucide-react';
@@ -49,6 +49,13 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
     if (currentMode === 'arc_changeant' && boostId === 'start_20') return false;
     return true;
   };
+
+  useEffect(() => {
+    const filtered = selectedBoosts.filter(isBoostAvailable);
+    if (filtered.length !== selectedBoosts.length) {
+      onSelectedBoostsChange(filtered);
+    }
+  }, [currentMode, selectedBoosts, onSelectedBoostsChange]);
 
   const toggle = (id: BoostType) => {
     if (!isBoostAvailable(id)) return;

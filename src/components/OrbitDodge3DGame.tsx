@@ -7,6 +7,8 @@ import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, AlertTriang
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
+import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
+import { startGameSession } from '@/utils/scoresApi';
 
 /**
  * Orbit Dodge — Cahier des charges fidèle.
@@ -471,6 +473,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
   const [shieldActive, setShieldActive] = useState(false);
+  const [shieldFlashKey, setShieldFlashKey] = useState(0);
 
   const { handlers } = useDragAngle(angleRef);
 
@@ -480,6 +483,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     angleRef.current = 0;
@@ -527,6 +531,11 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     setPhase('playing');
   }, [score]);
 
+  const handleShieldUsed = useCallback(() => {
+    setShieldActive(false);
+    setShieldFlashKey((key) => key + 1);
+  }, []);
+
   const rel = compassRef.current;
   const aligned = rel !== null && Math.abs(rel) < 0.2;
   const compassDeg = rel !== null ? (rel * 180) / Math.PI : 0;
@@ -569,7 +578,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
               shieldInit={shieldActive}
-              onShieldUsed={() => setShieldActive(false)}
+              onShieldUsed={handleShieldUsed}
             />
           </GameCanvas>
 
@@ -579,6 +588,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
             </div>
           )}
+
+          {phase === 'playing' && <ShieldUsedFlash triggerKey={shieldFlashKey} />}
 
 
           {/* Compass */}

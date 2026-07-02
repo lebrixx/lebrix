@@ -43,7 +43,7 @@ function setCache(key: string, data: Score[], ttl?: number) {
 // Enhanced anti-spam
 let lastSubmitTime = 0;
 let gameSessionStart = 0;
-const SUBMIT_COOLDOWN = 3000; // 3 secondes
+const SUBMIT_COOLDOWN = 500; // anti double-clic léger, le vrai rate-limit est côté serveur
 
 // Idempotence & anti-burst guards
 let isSubmitting = false;
@@ -84,7 +84,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     }
 
     // Basic client-side validation
-    if (typeof score !== 'number' || score < 2) {
+    if (typeof score !== 'number' || score < 1) {
       console.warn('Score invalide:', score);
       return false;
     }
