@@ -462,6 +462,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
   const shieldRef = useRef(false);
+  const elapsedOffsetRef = useRef(0);
+  const sceneScoreOffsetRef = useRef(0);
 
   const { handlers } = useDragAngle(angleRef);
 
@@ -469,6 +471,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
+    elapsedOffsetRef.current = 0;
+    sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     angleRef.current = 0;
@@ -493,7 +497,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
-      offsetRef.current = finalScore;
+      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+      sceneScoreOffsetRef.current = finalRaw;
       sceneKey.current++;
       angleRef.current = 0;
       compassRef.current = null;
@@ -516,12 +521,12 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    offsetRef.current = score;
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldRef.current = false;
     sceneKey.current++;
     angleRef.current = 0;
     compassRef.current = null;
-    startedAt.current = Date.now();
     setPhase('playing');
   }, [score]);
 
