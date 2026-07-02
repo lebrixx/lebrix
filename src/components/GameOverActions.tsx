@@ -53,9 +53,9 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
         </Button>
       </div>
 
-      {/* Revive — bottom left, un peu plus bas */}
+      {/* Revive — bas à gauche, remonté */}
       {onRevive && (
-        <div className="absolute bottom-6 left-4 z-10">
+        <div className="absolute bottom-28 left-4 z-10">
           <RewardButton
             kind="revive"
             onReward={() => onRevive()}

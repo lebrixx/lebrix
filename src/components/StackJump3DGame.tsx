@@ -94,9 +94,12 @@ interface SceneProps {
   onMsg: (msg: { kind: string; key: number } | null) => void;
   onRedWarn: (v: boolean) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  scoreOffset?: number;
+  graceMs?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn, playing }) => {
+const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const { camera } = useThree();
   const stackRef = useRef<THREE.Group>(null);
   const movingRef = useRef<THREE.Mesh>(null);
@@ -110,12 +113,13 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     moving: { x: -3.2, size: BASE_SIZE, dir: 1 } as Moving,
     kind: 'normal' as PlateKind,
     twinCounter: 0,
-    score: 0,
-    elapsed: 0,
+    score: scoreOffset,
+    elapsed: elapsedOffset,
     dead: false,
     redTimer: 0,
     bursts: [] as Burst[],
   });
+  const graceUntil = elapsedOffset + graceMs / 1000;
 
   // Setup — only (re)initialize when a new game starts (playing becomes true)
   useEffect(() => {
@@ -129,8 +133,8 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       if ((c as any).material) (c as any).material.dispose?.();
     }
     state.current.stack = [];
-    state.current.score = 0;
-    state.current.elapsed = 0;
+    state.current.score = scoreOffset;
+    state.current.elapsed = elapsedOffset;
     state.current.dead = false;
     state.current.twinCounter = 0;
     state.current.kind = 'normal';
@@ -148,7 +152,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     // Style moving
     applyMovingMaterial('normal');
     onRedWarn(false);
-    onScore(0);
+    onScore(scoreOffset);
   }, [playing]);
 
   const applyMovingMaterial = (kind: PlateKind) => {
@@ -237,10 +241,10 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       }
     }
 
-    // Handle drop command
+    // Handle drop command — ignoré pendant la période de grâce après revive/shield
     if (cmdRef.current.drop) {
       cmdRef.current.drop = false;
-      handleDrop(movingY);
+      if (s.elapsed >= graceUntil) handleDrop(movingY);
     }
 
     // Bursts update
@@ -487,11 +491,15 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
   const shieldRef = useRef(false);
+  const elapsedOffsetRef = useRef(0);
+  const sceneScoreOffsetRef = useRef(0);
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
+    elapsedOffsetRef.current = 0;
+    sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setMsg(null);
@@ -510,7 +518,9 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
-      offsetRef.current = finalScore;
+      // Préserve difficulté + score interne
+      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+      sceneScoreOffsetRef.current = finalRaw;
       sceneKey.current++;
       cmdRef.current.drop = false;
       setRedWarn(false);
@@ -533,12 +543,12 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    offsetRef.current = score;
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldRef.current = false;
     sceneKey.current++;
     cmdRef.current.drop = false;
     setRedWarn(false);
-    startedAt.current = Date.now();
     setPhase('playing');
   }, [score]);
 
@@ -568,20 +578,22 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right">
-          <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-          <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right">
+            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <div
@@ -601,6 +613,9 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               onMsg={setMsg}
               onRedWarn={setRedWarn}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              scoreOffset={sceneScoreOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
 

@@ -290,16 +290,20 @@ interface SceneProps {
   onDie: (final: number) => void;
   onNextHole: (rel: number | null) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  scoreOffset?: number;
+  graceMs?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, playing }) => {
+const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const playerRef = useRef<THREE.Mesh>(null);
   const trailRef = useRef<THREE.Mesh>(null);
   const ringsContainerRef = useRef<THREE.Group>(null);
-  const stateRef = useRef({ elapsed: 0, spawn: 0, passed: 0, dead: false, rings: [] as RingDef[] });
+  const stateRef = useRef({ elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] as RingDef[] });
+  const graceUntil = elapsedOffset + graceMs / 1000;
 
   useEffect(() => {
-    stateRef.current = { elapsed: 0, spawn: 0, passed: 0, dead: false, rings: [] };
+    stateRef.current = { elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] };
     if (ringsContainerRef.current) {
       while (ringsContainerRef.current.children.length) {
         ringsContainerRef.current.remove(ringsContainerRef.current.children[0]);
@@ -360,13 +364,19 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
       ) {
         const diffA = ((a - ring.holeAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
         if (Math.abs(diffA) > ring.holeWidth / 2 - 0.05) {
-          stateRef.current.dead = true;
-          onDie(s.passed);
-          return;
+          if (s.elapsed < graceUntil) {
+            // Grâce : laisse passer sans mourir
+            ring.passed = true;
+          } else {
+            stateRef.current.dead = true;
+            onDie(s.passed);
+            return;
+          }
+        } else {
+          ring.passed = true;
+          s.passed += 1;
+          onScore(s.passed);
         }
-        ring.passed = true;
-        s.passed += 1;
-        onScore(s.passed);
       }
 
       if (ring.group.position.y < KILL_Y) {
@@ -452,6 +462,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
   const shieldRef = useRef(false);
+  const elapsedOffsetRef = useRef(0);
+  const sceneScoreOffsetRef = useRef(0);
 
   const { handlers } = useDragAngle(angleRef);
 
@@ -459,6 +471,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
+    elapsedOffsetRef.current = 0;
+    sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     angleRef.current = 0;
@@ -483,7 +497,8 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
-      offsetRef.current = finalScore;
+      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+      sceneScoreOffsetRef.current = finalRaw;
       sceneKey.current++;
       angleRef.current = 0;
       compassRef.current = null;
@@ -506,12 +521,12 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    offsetRef.current = score;
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldRef.current = false;
     sceneKey.current++;
     angleRef.current = 0;
     compassRef.current = null;
-    startedAt.current = Date.now();
     setPhase('playing');
   }, [score]);
 
@@ -521,20 +536,22 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right">
-          <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-          <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right">
+            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <div className="absolute inset-0 touch-none select-none" {...handlers}>
@@ -551,6 +568,9 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               onDie={handleDie}
               onNextHole={handleNextHole}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              scoreOffset={sceneScoreOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
 

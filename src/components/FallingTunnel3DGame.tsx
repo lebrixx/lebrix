@@ -262,14 +262,18 @@ interface SceneProps {
   onScore: (s: number) => void;
   onDie: (final: number) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  scoreOffset?: number;
+  graceMs?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing }) => {
+const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const ballRef = useRef<THREE.Mesh>(null);
   const platesGroupRef = useRef<THREE.Group>(null);
   const platesRef = useRef<Plate[]>([]);
-  const stateRef = useRef({ elapsed: 0, spawnTimer: 0, score: 0, dead: false, pulse: 0 });
+  const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0 });
   const { camera } = useThree();
+  const graceUntil = elapsedOffset + graceMs / 1000;
 
   useEffect(() => {
     camera.lookAt(0, CAMERA_LOOK_Y, -10);
@@ -277,7 +281,7 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing }) =>
 
   // Reset on (re)mount
   useEffect(() => {
-    stateRef.current = { elapsed: 0, spawnTimer: 0, score: 0, dead: false, pulse: 0 };
+    stateRef.current = { elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0 };
     if (platesGroupRef.current) {
       while (platesGroupRef.current.children.length) {
         platesGroupRef.current.remove(platesGroupRef.current.children[0]);
@@ -365,9 +369,14 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing }) =>
       // Collision/pass plane
       if (!p.passed && z > PLAYER_Z - 0.4 && z < PLAYER_Z + 0.4) {
         if (dxg > p.hole - 0.22 || dyg > p.hole - 0.22) {
-          s.dead = true;
-          onDie(s.score);
-          return;
+          if (s.elapsed < graceUntil) {
+            // Grace: laisse passer sans mourir
+            p.passed = true;
+          } else {
+            s.dead = true;
+            onDie(s.score);
+            return;
+          }
         } else {
           p.passed = true;
           s.score += 1;
@@ -449,12 +458,16 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
   const shieldRef = useRef(false);
+  const elapsedOffsetRef = useRef(0);
+  const sceneScoreOffsetRef = useRef(0);
   const { pointerRef, handlers } = usePointerTrack();
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
+    elapsedOffsetRef.current = 0;
+    sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     pointerRef.current.x = 0;
@@ -472,7 +485,8 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
-      offsetRef.current = finalScore;
+      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+      sceneScoreOffsetRef.current = finalRaw;
       sceneKey.current++;
       pointerRef.current.x = 0;
       pointerRef.current.y = 0;
@@ -495,31 +509,33 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   }, [onGameOver, playFailure, pointerRef]);
 
   const handleRevive = useCallback(() => {
-    offsetRef.current = score;
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldRef.current = false;
     sceneKey.current++;
     pointerRef.current.x = 0;
     pointerRef.current.y = 0;
-    startedAt.current = Date.now();
     setPhase('playing');
   }, [score, pointerRef]);
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right">
-          <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-          <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right">
+            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <div
@@ -538,6 +554,9 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               onScore={handleScore}
               onDie={handleDie}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              scoreOffset={sceneScoreOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
 
