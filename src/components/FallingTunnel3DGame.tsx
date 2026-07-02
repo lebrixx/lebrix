@@ -265,13 +265,15 @@ interface SceneProps {
   elapsedOffset?: number;
   scoreOffset?: number;
   graceMs?: number;
+  shieldInit?: boolean;
+  onShieldUsed?: () => void;
 }
 
-const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
   const ballRef = useRef<THREE.Mesh>(null);
   const platesGroupRef = useRef<THREE.Group>(null);
   const platesRef = useRef<Plate[]>([]);
-  const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0 });
+  const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit });
   const { camera } = useThree();
   const graceUntil = elapsedOffset + graceMs / 1000;
 
@@ -281,7 +283,7 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
 
   // Reset on (re)mount
   useEffect(() => {
-    stateRef.current = { elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0 };
+    stateRef.current = { elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit };
     if (platesGroupRef.current) {
       while (platesGroupRef.current.children.length) {
         platesGroupRef.current.remove(platesGroupRef.current.children[0]);
