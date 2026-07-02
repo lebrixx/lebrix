@@ -436,6 +436,8 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const startedAt = useRef(0);
   const offsetRef = useRef(0);
   const shieldRef = useRef(false);
+  const elapsedOffsetRef = useRef(0);
+  const sceneScoreOffsetRef = useRef(0);
 
   const handleStart = useCallback(() => {
     posRef.current = { i: 1, j: 1 };
@@ -443,6 +445,8 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
+    elapsedOffsetRef.current = 0;
+    sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setShields(0);
@@ -459,7 +463,8 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
-      offsetRef.current = finalScore;
+      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+      sceneScoreOffsetRef.current = finalRaw;
       sceneKey.current++;
       posRef.current = { i: 1, j: 1 };
       cmdRef.current.dir = null;
@@ -482,12 +487,12 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    offsetRef.current = score;
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldRef.current = false;
     sceneKey.current++;
     posRef.current = { i: 1, j: 1 };
     cmdRef.current.dir = null;
-    startedAt.current = Date.now();
     setPhase('playing');
   }, [score]);
 
