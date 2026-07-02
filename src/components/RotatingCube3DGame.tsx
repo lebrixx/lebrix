@@ -544,6 +544,9 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
               onDie={handleDie}
               onShields={setShields}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              scoreOffset={sceneScoreOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
         </SwipeArea>
