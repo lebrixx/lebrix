@@ -273,23 +273,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     const s = state.current;
     if (s.dead) return;
 
-    // Death fall animation
-    if (s.dying) {
-      s.dyingT += dt;
-      const p = playerRef.current;
-      if (p) {
-        p.position.y -= 9.5 * dt;
-        p.rotation.x += dt * 6;
-        p.rotation.z += dt * 4;
-      }
-      
-      if (s.dyingT >= 1.0) {
-        s.dead = true;
-        onDie(s.passed);
-      }
-      return;
-    }
-
     if (!playing) return;
 
     s.elapsed += dt;
