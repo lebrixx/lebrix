@@ -464,15 +464,15 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
-  const shieldRef = useRef(false);
   const elapsedOffsetRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
+  const [shieldActive, setShieldActive] = useState(false);
   const { pointerRef, handlers } = usePointerTrack();
 
   const handleStart = useCallback(() => {
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
-    shieldRef.current = menuBoosts.includes('shield');
+    setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
@@ -490,16 +490,6 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
 
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
-    if (shieldRef.current) {
-      shieldRef.current = false;
-      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
-      sceneScoreOffsetRef.current = finalRaw;
-      sceneKey.current++;
-      pointerRef.current.x = 0;
-      pointerRef.current.y = 0;
-      setScore(finalScore);
-      return;
-    }
     playFailure?.();
     setPhase('gameover');
     try {
@@ -518,7 +508,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   const handleRevive = useCallback(() => {
     elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
-    shieldRef.current = false;
+    setShieldActive(false);
     sceneKey.current++;
     pointerRef.current.x = 0;
     pointerRef.current.y = 0;
