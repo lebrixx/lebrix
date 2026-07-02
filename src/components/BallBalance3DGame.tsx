@@ -199,6 +199,8 @@ interface SceneProps {
   onScore: (s: number) => void;
   onDie: (s: number) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  graceMs?: number;
 }
 
 const RIBBONS = [
@@ -207,22 +209,23 @@ const RIBBONS = [
   { leftB: 0.26, rightB: 0.32, color: 0x22d3ee, emissive: 0x22d3ee, intensity: 1.1, yOff: 0.04 },
 ];
 
-const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) => {
+const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing, elapsedOffset = 0, graceMs = 0 }) => {
   const { camera } = useThree();
   const ballRef = useRef<THREE.Mesh>(null);
   const ribbonRefs = useRef<(THREE.BufferGeometry | null)[]>([null, null, null]);
 
   const state = useRef({
     travel: 0,
-    elapsed: 0,
-    scored: 0,
-    last: -1,
+    elapsed: elapsedOffset,
+    scored: Math.floor(elapsedOffset / 2),
+    last: Math.floor(elapsedOffset / 2) - 1,
     dead: false,
     dying: false,
     dyingT: 0,
     fallVx: 0,
     finalScore: 0,
   });
+  const graceUntil = elapsedOffset + graceMs / 1000;
 
   // Pré-créer les buffers
   const buffers = useMemo(() => {
@@ -334,7 +337,7 @@ const GameScene: React.FC<SceneProps> = ({ pointer, onScore, onDie, playing }) =
     }
 
     // Collision
-    if (ball && s.elapsed > INVULN) {
+    if (ball && s.elapsed > Math.max(INVULN, graceUntil)) {
       if (Math.abs(ball.position.x - here.baseX) > TRACK_HW + TOL) {
         s.dying = true;
         s.dyingT = 0;
@@ -430,12 +433,14 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   });
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
+  const elapsedOffsetRef = useRef(0);
   const { pointer, handlers, elRef } = usePointerTrack();
 
   const handleStart = useCallback(() => {
     pointer.current.x = 0;
     pointer.current.y = 0;
     sceneKey.current++;
+    elapsedOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(0);
     startedAt.current = Date.now();
@@ -466,29 +471,31 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const handleRevive = useCallback(() => {
     pointer.current.x = 0;
     pointer.current.y = 0;
+    // Preserve elapsed → same difficulty + score continuity
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
     sceneKey.current++;
-    // Preserve current elapsed time (score is seconds survived).
-    startedAt.current = Date.now() - score * 1000;
     setPhase('playing');
-  }, [pointer, score]);
+  }, [pointer]);
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      {/* Top bar */}
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right">
-          <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-          <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {/* Top bar — masqué en gameover */}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right">
+            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Canvas */}
       <div className="flex-1 relative">
@@ -509,6 +516,8 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
               onScore={handleScore}
               onDie={handleDie}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
 

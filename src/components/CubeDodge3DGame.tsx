@@ -89,13 +89,15 @@ interface SceneProps {
   onScore: (n: number) => void;
   onDie: (n: number) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  graceMs?: number;
 }
 
 interface Block { mesh: THREE.Mesh; lane: number; passed: boolean; }
 interface Wall { group: THREE.Group; color: number; passed: boolean; }
 interface Portal { group: THREE.Group; lane: number; color: number; ring: THREE.Mesh; passed: boolean; }
 
-const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing }) => {
+const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing, elapsedOffset = 0, graceMs = 0 }) => {
   const { camera, scene } = useThree();
   const playerRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -106,21 +108,22 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
   const horizonRef = useRef<THREE.Mesh>(null);
 
   const state = useRef({
-    elapsed: 0,
+    elapsed: elapsedOffset,
     blockTimer: 0,
     wallTimer: 0,
     portalTimer: 0,
     blocks: [] as Block[],
     walls: [] as Wall[],
     portals: [] as Portal[],
-    passed: 0,
-    lastPassed: -1,
+    passed: Math.floor(elapsedOffset / 2),
+    lastPassed: Math.floor(elapsedOffset / 2) - 1,
     combo: 0,
     swapPulse: 0,
     dead: false,
     dying: false,
     dyingT: 0,
   });
+  const graceUntil = elapsedOffset + graceMs / 1000;
 
   // Listen swap event for emissive pulse
   useEffect(() => {
@@ -455,7 +458,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       onScore(timeScore);
     }
 
-    if (hit && !s.dying) {
+    if (hit && !s.dying && s.elapsed >= graceUntil) {
       s.dying = true;
       s.dyingT = 0;
     }
@@ -560,6 +563,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const startedAt = useRef(0);
   const offsetRef = useRef(0);
   const shieldRef = useRef(false);
+  const elapsedOffsetRef = useRef(0);
 
   const laneRef = useRef(1);
   const colorRef = useRef(0);
@@ -590,6 +594,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldRef.current = menuBoosts.includes('shield');
+    elapsedOffsetRef.current = 0;
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
     setUiColor(0);
@@ -603,7 +608,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
-      offsetRef.current = finalScore;
+      // Time-based scoring: preserve elapsed for both difficulty AND score continuity.
+      elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
       sceneKey.current++;
       laneRef.current = 1;
       setScore(finalScore);
@@ -625,33 +631,34 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    offsetRef.current = score;
+    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
     shieldRef.current = false;
     sceneKey.current++;
     laneRef.current = 1;
-    startedAt.current = Date.now();
     setPhase('playing');
-  }, [score]);
+  }, []);
 
   const colorCss = uiColor === 0 ? COLOR_A.css : COLOR_B.css;
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      {/* Top bar */}
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right">
-          <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-          <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {/* Top bar — masqué en gameover pour éviter le double bouton Menu */}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right">
+            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Canvas + overlay */}
       <div className="flex-1 relative">
@@ -670,10 +677,11 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
             <GameScene
               laneRef={laneRef}
               colorRef={colorRef}
-              
               onScore={handleScore}
               onDie={handleDie}
               playing={phase === 'playing'}
+              elapsedOffset={elapsedOffsetRef.current}
+              graceMs={1500}
             />
           </GameCanvas>
 

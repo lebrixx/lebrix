@@ -290,16 +290,20 @@ interface SceneProps {
   onDie: (final: number) => void;
   onNextHole: (rel: number | null) => void;
   playing: boolean;
+  elapsedOffset?: number;
+  scoreOffset?: number;
+  graceMs?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, playing }) => {
+const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const playerRef = useRef<THREE.Mesh>(null);
   const trailRef = useRef<THREE.Mesh>(null);
   const ringsContainerRef = useRef<THREE.Group>(null);
-  const stateRef = useRef({ elapsed: 0, spawn: 0, passed: 0, dead: false, rings: [] as RingDef[] });
+  const stateRef = useRef({ elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] as RingDef[] });
+  const graceUntil = elapsedOffset + graceMs / 1000;
 
   useEffect(() => {
-    stateRef.current = { elapsed: 0, spawn: 0, passed: 0, dead: false, rings: [] };
+    stateRef.current = { elapsed: elapsedOffset, spawn: 0, passed: scoreOffset, dead: false, rings: [] };
     if (ringsContainerRef.current) {
       while (ringsContainerRef.current.children.length) {
         ringsContainerRef.current.remove(ringsContainerRef.current.children[0]);
