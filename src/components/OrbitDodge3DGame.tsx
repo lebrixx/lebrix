@@ -369,6 +369,11 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
           if (s.elapsed < graceUntil) {
             // Grâce : laisse passer sans mourir
             ring.passed = true;
+          } else if (s.shield) {
+            s.shield = false;
+            onShieldUsed?.();
+            ring.passed = true;
+            ring.group.visible = false;
           } else {
             stateRef.current.dead = true;
             onDie(s.passed);
