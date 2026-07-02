@@ -60,7 +60,7 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
       addBoost(reward.boostId);
       const boostNames: Record<string, string> = {
         shield: t.shield || 'Bouclier',
-        bigger_zone: t.biggerZone || 'Zone +',
+        bigger_zone: 'Convertisseur de score',
         start_20: t.start20 || 'Départ +20',
       };
       toast({
