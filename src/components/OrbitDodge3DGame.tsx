@@ -364,13 +364,19 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
       ) {
         const diffA = ((a - ring.holeAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
         if (Math.abs(diffA) > ring.holeWidth / 2 - 0.05) {
-          stateRef.current.dead = true;
-          onDie(s.passed);
-          return;
+          if (s.elapsed < graceUntil) {
+            // Grâce : laisse passer sans mourir
+            ring.passed = true;
+          } else {
+            stateRef.current.dead = true;
+            onDie(s.passed);
+            return;
+          }
+        } else {
+          ring.passed = true;
+          s.passed += 1;
+          onScore(s.passed);
         }
-        ring.passed = true;
-        s.passed += 1;
-        onScore(s.passed);
       }
 
       if (ring.group.position.y < KILL_Y) {
