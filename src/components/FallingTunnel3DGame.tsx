@@ -554,8 +554,18 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
               graceMs={1500}
+              shieldInit={shieldActive}
+              onShieldUsed={() => setShieldActive(false)}
             />
           </GameCanvas>
+
+          {phase === 'playing' && shieldActive && (
+            <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-emerald-500/25 backdrop-blur-sm border border-emerald-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse z-10">
+              <span className="text-lg">🛡️</span>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
+            </div>
+          )}
+
 
           {/* Menu */}
           {phase === 'menu' && (
