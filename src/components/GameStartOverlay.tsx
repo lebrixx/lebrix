@@ -43,7 +43,10 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
   const { getBoostCount } = useBoosts();
 
   const isBoostAvailable = (boostId: BoostType): boolean => {
-    if (currentMode === 'arc_changeant' && (boostId === 'shield' || boostId === 'start_20')) return false;
+    // Bouclier autorisé uniquement dans : Cube Dodge, Falling Tunnel, Orbit Dodge, Rotating Cube
+    const shieldAllowed: string[] = ['classic', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
+    if (boostId === 'shield' && currentMode && !shieldAllowed.includes(currentMode)) return false;
+    if (currentMode === 'arc_changeant' && boostId === 'start_20') return false;
     return true;
   };
 
