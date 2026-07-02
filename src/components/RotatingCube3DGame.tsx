@@ -116,9 +116,10 @@ interface SceneProps {
   elapsedOffset?: number;
   scoreOffset?: number;
   graceMs?: number;
+  shieldsInit?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldsInit = 0 }) => {
   const { scene } = useThree();
 
   const cubeRef = useRef<THREE.Group>(null);
@@ -135,12 +136,15 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
     lastSig: '',
     prevSig: '',
     survived: scoreOffset,
-    lastReported: scoreOffset,
-    shields: 0,
+    lastReported: scoreOffset - 1,
+    shields: shieldsInit,
     dead: false,
     graceUntil: elapsedOffset + graceMs / 1000,
     bonus: null as null | { i: number; j: number; mesh: THREE.Mesh; timer: number },
   });
+
+  // Report initial shields to parent
+  useEffect(() => { onShields(shieldsInit); }, []);
 
   // Build cells
   useEffect(() => {
