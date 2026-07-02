@@ -165,6 +165,9 @@ const Index = () => {
     
     // Consommer les boosts utilisés + appliquer "Convertisseur de score"
     const hasConverter = selectedBoostsForGame.includes('bigger_zone');
+    if (selectedBoostsForGame.length > 0) {
+      updateQuestBoostUsed();
+    }
     selectedBoostsForGame.forEach(boostId => {
       removeBoost(boostId);
     });

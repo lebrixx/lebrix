@@ -29,7 +29,7 @@ export const WHEEL_SEGMENTS: WheelSegment[] = [
   { id: 'boost_shield', label: '🛡️', reward: { type: 'boost', boostId: 'shield' }, color: 'hsl(var(--primary))', probability: 12 },
   { id: 'coins_30', label: '30', reward: { type: 'coins', amount: 30 }, color: 'hsl(var(--secondary))', probability: 18 },
   { id: 'tickets_1', label: '🎟️', reward: { type: 'tickets', amount: 1 }, color: 'hsl(var(--accent))', probability: 15 },
-  { id: 'boost_bigger', label: '🎯', reward: { type: 'boost', boostId: 'bigger_zone' }, color: 'hsl(var(--primary))', probability: 12 },
+  { id: 'boost_bigger', label: '💰', reward: { type: 'boost', boostId: 'bigger_zone' }, color: 'hsl(var(--primary))', probability: 12 },
   { id: 'coins_100', label: '100', reward: { type: 'coins', amount: 100 }, color: 'hsl(var(--secondary))', probability: 5 },
   { id: 'tickets_3', label: '🎟️x3', reward: { type: 'tickets', amount: 3 }, color: 'hsl(var(--accent))', probability: 8 },
   { id: 'boost_start', label: '🚀', reward: { type: 'boost', boostId: 'start_20' }, color: 'hsl(var(--primary))', probability: 10 },
