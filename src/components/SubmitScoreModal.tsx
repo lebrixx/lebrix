@@ -70,11 +70,13 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
 
   const getModeDisplayName = (mode: string) => {
     const names = {
-      classic: 'Cube Dodge 3D',
-      arc_changeant: 'Ball Balance 3D',
-      survie_60s: 'Stack Jump 3D',
+      classic: 'Cube Dodge',
+      arc_changeant: 'Ball Balance',
+      survie_60s: 'Stack Jump',
       zone_mobile: 'Falling Tunnel',
-      zone_traitresse: 'Orbit Dodge'
+      zone_traitresse: 'Orbit Dodge',
+      memoire_expert: 'Rotating Cube',
+      pong_circulaire: 'Pong Circulaire'
     };
     return names[mode as keyof typeof names] || mode;
   };
