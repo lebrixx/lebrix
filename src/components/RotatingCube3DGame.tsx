@@ -503,28 +503,30 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-game flex flex-col">
-      <div className="flex items-center justify-between p-4 z-20 relative">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="text-right flex items-center gap-3">
-          {shields > 0 && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/15 border border-green-400/40">
-              <Shield className="w-4 h-4 text-green-300" />
-              <span className="text-green-200 font-bold text-sm">×{shields}</span>
-            </div>
-          )}
-          <div>
-            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-          </div>
-        </div>
-        {onToggleSound && (
-          <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-            {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      {phase !== 'gameover' && (
+        <div className="flex items-center justify-between p-4 z-20 relative">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-        )}
-      </div>
+          <div className="text-right flex items-center gap-3">
+            {shields > 0 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/15 border border-green-400/40">
+                <Shield className="w-4 h-4 text-green-300" />
+                <span className="text-green-200 font-bold text-sm">×{shields}</span>
+              </div>
+            )}
+            <div>
+              <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+              <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+            </div>
+          </div>
+          {onToggleSound && (
+            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
+              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="flex-1 relative mx-3 mb-3 rounded-2xl overflow-hidden border border-border bg-black">
         <SwipeArea onSwipe={handleSwipe}>
