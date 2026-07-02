@@ -296,6 +296,9 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
             onShields(s.shields);
             w.phase = 'done';
             s.survived += 1;
+          } else if (s.elapsed < s.graceUntil) {
+            // Grâce : ignorer la vague sur le joueur
+            w.phase = 'done';
           } else {
             s.dead = true;
             onDie(s.survived);
