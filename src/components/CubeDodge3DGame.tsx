@@ -676,6 +676,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
               graceMs={1500}
+              shieldInit={shieldActive}
+              onShieldUsed={() => setShieldActive(false)}
             />
           </GameCanvas>
 
@@ -693,6 +695,13 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
                 </span>
               </div>
 
+              {/* Shield badge */}
+              {shieldActive && (
+                <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-emerald-500/25 backdrop-blur-sm border border-emerald-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse">
+                  <span className="text-lg">🛡️</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-100">Bouclier actif</span>
+                </div>
+              )}
 
               {/* Legend */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[9px] uppercase tracking-wider text-white/70 pointer-events-none">
@@ -707,6 +716,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               </div>
             </>
           )}
+
 
           {/* Start menu — overlay sur le jeu en fond */}
           {phase === 'menu' && (
