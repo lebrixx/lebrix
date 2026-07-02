@@ -84,7 +84,7 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     }
 
     // Basic client-side validation
-    if (typeof score !== 'number' || score < 2) {
+    if (typeof score !== 'number' || score < 1) {
       console.warn('Score invalide:', score);
       return false;
     }
