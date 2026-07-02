@@ -91,13 +91,15 @@ interface SceneProps {
   playing: boolean;
   elapsedOffset?: number;
   graceMs?: number;
+  shieldInit?: boolean;
+  onShieldUsed?: () => void;
 }
 
 interface Block { mesh: THREE.Mesh; lane: number; passed: boolean; }
 interface Wall { group: THREE.Group; color: number; passed: boolean; }
 interface Portal { group: THREE.Group; lane: number; color: number; ring: THREE.Mesh; passed: boolean; }
 
-const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing, elapsedOffset = 0, graceMs = 0 }) => {
+const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, playing, elapsedOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
   const { camera, scene } = useThree();
   const playerRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
@@ -120,8 +122,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     combo: 0,
     swapPulse: 0,
     dead: false,
-    dying: false,
-    dyingT: 0,
+    shield: shieldInit,
   });
   const graceUntil = elapsedOffset + graceMs / 1000;
 
