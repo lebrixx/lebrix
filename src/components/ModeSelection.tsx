@@ -174,9 +174,9 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               )}
               {isLocked && (
                 <div className="absolute top-3 right-3 z-10">
-                  <Badge className={isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
+                  <Badge className={isComingSoon ? 'bg-primary/90 text-white border-primary' : isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
                     <Lock className="w-3 h-3 mr-1" />
-                    {isPongChallenge ? t.challengeRequired : t.locked}
+                    {isComingSoon ? 'Bientôt' : isPongChallenge ? t.challengeRequired : t.locked}
                   </Badge>
                 </div>
               )}
