@@ -206,15 +206,8 @@ const Index = () => {
       setShowUsernameModal(true);
     }
 
-    // Vérifier si Pong Circulaire vient d'être débloqué
-    if (isPongUnlocked() && !unlockedModes.includes('pong_circulaire')) {
-      const newUnlocked = [...unlockedModes, 'pong_circulaire'];
-      setUnlockedModes(newUnlocked);
-      toast({
-        title: t.modeUnlockedToast,
-        description: 'Pong Circulaire',
-      });
-    }
+    // Pong Circulaire: coming soon — pas de déblocage
+
 
     // Rate dialog logic:
     // 1st trigger: score >30 in non-classic mode (if never triggered before)
