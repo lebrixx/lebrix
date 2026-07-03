@@ -522,6 +522,10 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
             <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
           <div className="text-right flex items-center gap-3">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">
+              <Coins className="w-4 h-4 text-secondary" />
+              <span className="text-secondary font-bold text-sm tabular-nums">{coinsDisplay}</span>
+            </div>
             {shields > 0 && (
               <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/15 border border-green-400/40">
                 <Shield className="w-4 h-4 text-green-300" />
