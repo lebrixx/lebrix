@@ -248,7 +248,21 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               </div>
 
               {isLocked ? (
-                isPongChallenge ? (
+                isComingSoon ? (
+                  <div className="space-y-2">
+                    <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
+                      <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm">
+                        <Lock className="w-4 h-4" />
+                        Bientôt disponible
+                      </div>
+                      <p className="text-xs text-text-muted mt-1">Ce mode sort prochainement, reste à l'affût !</p>
+                    </div>
+                    <Button disabled className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed">
+                      <Lock className="w-4 h-4 mr-2" />
+                      Verrouillé
+                    </Button>
+                  </div>
+                ) : isPongChallenge ? (
                   <div className="space-y-2">
                     <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30 text-xs text-text-secondary">
                       <div className="flex items-center gap-2 mb-1 text-secondary font-semibold">
