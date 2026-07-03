@@ -373,6 +373,8 @@ const Index = () => {
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
                 onSetBoosts={(b) => setSelectedBoostsForGame(b)}
+                coins={gameState.coins}
+                onEarnCoin={addCoins}
               />
             );
           }
@@ -387,6 +389,8 @@ const Index = () => {
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
                 onSetBoosts={(b) => setSelectedBoostsForGame(b)}
+                coins={gameState.coins}
+                onEarnCoin={addCoins}
               />
             );
           }
@@ -401,6 +405,8 @@ const Index = () => {
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
                 onSetBoosts={(b) => setSelectedBoostsForGame(b)}
+                coins={gameState.coins}
+                onEarnCoin={addCoins}
               />
             );
           }
@@ -415,6 +421,8 @@ const Index = () => {
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
                 onSetBoosts={(b) => setSelectedBoostsForGame(b)}
+                coins={gameState.coins}
+                onEarnCoin={addCoins}
               />
             );
           }
@@ -429,6 +437,8 @@ const Index = () => {
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
                 onSetBoosts={(b) => setSelectedBoostsForGame(b)}
+                coins={gameState.coins}
+                onEarnCoin={addCoins}
               />
             );
           }
@@ -443,6 +453,8 @@ const Index = () => {
                 playFailure={playFailure}
                 selectedBoosts={selectedBoostsForGame}
                 onSetBoosts={(b) => setSelectedBoostsForGame(b)}
+                coins={gameState.coins}
+                onEarnCoin={addCoins}
               />
             );
           }

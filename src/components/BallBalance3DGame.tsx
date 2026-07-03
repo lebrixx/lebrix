@@ -3,12 +3,13 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { startGameSession } from '@/utils/scoresApi';
+import { useInGameCoins } from '@/hooks/useInGameCoins';
 
 /**
  * Ball Balance 3D — implementation fidèle au cahier des charges fourni.
@@ -25,6 +26,8 @@ interface BallBalance3DGameProps {
   playFailure?: () => void;
   selectedBoosts?: string[];
   onSetBoosts?: (b: BoostType[]) => void;
+  coins?: number;
+  onEarnCoin?: (amount: number) => void;
 }
 
 // ===== Constantes =====
@@ -419,6 +422,8 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   playFailure,
   selectedBoosts,
   onSetBoosts,
+  coins = 0,
+  onEarnCoin,
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
@@ -435,7 +440,9 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const sceneKey = useRef(0);
   const startedAt = useRef(0);
   const elapsedOffsetRef = useRef(0);
+  const elapsedAtDeathRef = useRef(0);
   const { pointer, handlers, elRef } = usePointerTrack();
+  const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const handleStart = useCallback(() => {
     const allowedBoosts = menuBoosts.filter((boost) => boost === 'bigger_zone');
@@ -443,6 +450,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     pointer.current.y = 0;
     sceneKey.current++;
     elapsedOffsetRef.current = 0;
+    elapsedAtDeathRef.current = 0;
     startGameSession();
     onSetBoosts?.(allowedBoosts);
     setScore(0);
@@ -456,6 +464,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
 
   const handleDie = useCallback((finalScore: number) => {
     playFailure?.();
+    elapsedAtDeathRef.current = (Date.now() - startedAt.current) / 1000;
     setPhase('gameover');
     // Persist best
     try {
@@ -474,8 +483,9 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const handleRevive = useCallback(() => {
     pointer.current.x = 0;
     pointer.current.y = 0;
-    // Preserve elapsed → same difficulty + score continuity
-    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    // Restaure l'état exact au moment de la mort → aucun avancement pendant la pub
+    elapsedOffsetRef.current = elapsedAtDeathRef.current;
+    startedAt.current = Date.now() - elapsedAtDeathRef.current * 1000;
     sceneKey.current++;
     setPhase('playing');
   }, [pointer]);
@@ -488,9 +498,15 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
           <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
             <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-          <div className="text-right">
-            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">
+              <Coins className="w-4 h-4 text-secondary" />
+              <span className="text-secondary font-bold text-sm tabular-nums">{coinsDisplay}</span>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+              <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+            </div>
           </div>
           {onToggleSound && (
             <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
@@ -520,7 +536,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
               onDie={handleDie}
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
-              graceMs={1500}
+              graceMs={2000}
             />
           </GameCanvas>
 

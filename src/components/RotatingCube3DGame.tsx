@@ -3,12 +3,13 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Shield, Zap } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Shield, Zap, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
 import { startGameSession } from '@/utils/scoresApi';
+import { useInGameCoins } from '@/hooks/useInGameCoins';
 
 /**
  * Rotating Cube — implémentation fidèle au cahier des charges.
@@ -24,6 +25,8 @@ interface RotatingCube3DGameProps {
   playFailure?: () => void;
   selectedBoosts?: string[];
   onSetBoosts?: (b: BoostType[]) => void;
+  coins?: number;
+  onEarnCoin?: (amount: number) => void;
 }
 
 const BEST_KEY = 'bestScore_memoire_expert';
@@ -424,7 +427,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
 };
 
 export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -444,9 +447,11 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const startedAt = useRef(0);
   const offsetRef = useRef(0);
   const elapsedOffsetRef = useRef(0);
+  const elapsedAtDeathRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
   const shieldsInitRef = useRef(0);
   const [shieldFlashKey, setShieldFlashKey] = useState(0);
+  const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const handleStart = useCallback(() => {
     posRef.current = { i: 1, j: 1 };
@@ -455,6 +460,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     shieldsInitRef.current = menuBoosts.includes('shield') ? 1 : 0;
     elapsedOffsetRef.current = 0;
+    elapsedAtDeathRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     startGameSession();
     onSetBoosts?.(menuBoosts);
@@ -472,6 +478,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
     playFailure?.();
+    elapsedAtDeathRef.current = (Date.now() - startedAt.current) / 1000;
     setPhase('gameover');
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -487,7 +494,9 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    // Restaure l'état exact au moment de la mort → pas d'avancement pendant la pub
+    elapsedOffsetRef.current = elapsedAtDeathRef.current;
+    startedAt.current = Date.now() - elapsedAtDeathRef.current * 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldsInitRef.current = 0;
     sceneKey.current++;
@@ -550,7 +559,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
-              graceMs={1500}
+              graceMs={2000}
               shieldsInit={shieldsInitRef.current}
               onShieldUsed={handleShieldUsed}
             />
