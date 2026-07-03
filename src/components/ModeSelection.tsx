@@ -142,11 +142,12 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
         {Object.entries(cfgModes).map(([modeId, config], idx) => {
-          const isCurrentMode = modeId === currentMode;
-          const isLocked = !unlockedModes.includes(modeId);
+          const isComingSoon = modeId === ModeID.PONG_CIRCULAIRE;
+          const isCurrentMode = modeId === currentMode && !isComingSoon;
+          const isLocked = !unlockedModes.includes(modeId) || isComingSoon;
           const canSelect = !isGameRunning && !isLocked;
-          const hasBonus = isBonusActive(modeId as ModeType);
-          const isPongChallenge = modeId === ModeID.PONG_CIRCULAIRE && isLocked;
+          const hasBonus = isBonusActive(modeId as ModeType) && !isComingSoon;
+          const isPongChallenge = modeId === ModeID.PONG_CIRCULAIRE && isLocked && !isComingSoon;
           const pongUnlock = isPongChallenge ? getPongUnlockCount() : null;
 
           return (
@@ -173,9 +174,9 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               )}
               {isLocked && (
                 <div className="absolute top-3 right-3 z-10">
-                  <Badge className={isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
+                  <Badge className={isComingSoon ? 'bg-primary/90 text-white border-primary' : isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
                     <Lock className="w-3 h-3 mr-1" />
-                    {isPongChallenge ? t.challengeRequired : t.locked}
+                    {isComingSoon ? 'Bientôt' : isPongChallenge ? t.challengeRequired : t.locked}
                   </Badge>
                 </div>
               )}
@@ -247,7 +248,21 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               </div>
 
               {isLocked ? (
-                isPongChallenge ? (
+                isComingSoon ? (
+                  <div className="space-y-2">
+                    <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
+                      <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm">
+                        <Lock className="w-4 h-4" />
+                        Bientôt disponible
+                      </div>
+                      <p className="text-xs text-text-muted mt-1">Ce mode sort prochainement, reste à l'affût !</p>
+                    </div>
+                    <Button disabled className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed">
+                      <Lock className="w-4 h-4 mr-2" />
+                      Verrouillé
+                    </Button>
+                  </div>
+                ) : isPongChallenge ? (
                   <div className="space-y-2">
                     <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30 text-xs text-text-secondary">
                       <div className="flex items-center gap-2 mb-1 text-secondary font-semibold">
