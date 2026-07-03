@@ -3,12 +3,13 @@ import { useFrame } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, AlertTriangle, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
 import { startGameSession } from '@/utils/scoresApi';
+import { useInGameCoins } from '@/hooks/useInGameCoins';
 
 /**
  * Orbit Dodge — Cahier des charges fidèle.
@@ -25,6 +26,8 @@ interface OrbitDodge3DGameProps {
   playFailure?: () => void;
   selectedBoosts?: string[];
   onSetBoosts?: (b: BoostType[]) => void;
+  coins?: number;
+  onEarnCoin?: (amount: number) => void;
 }
 
 // ===== Constantes =====
@@ -452,7 +455,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
 };
 
 export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
-  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts,
+  onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
@@ -471,9 +474,11 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const sceneKey = useRef(0);
   const offsetRef = useRef(0);
   const elapsedOffsetRef = useRef(0);
+  const elapsedAtDeathRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
   const [shieldActive, setShieldActive] = useState(false);
   const [shieldFlashKey, setShieldFlashKey] = useState(0);
+  const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const { handlers } = useDragAngle(angleRef);
 
@@ -482,6 +487,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     setShieldActive(menuBoosts.includes('shield'));
     elapsedOffsetRef.current = 0;
+    elapsedAtDeathRef.current = 0;
     sceneScoreOffsetRef.current = 0;
     startGameSession();
     onSetBoosts?.(menuBoosts);
@@ -507,6 +513,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const handleDie = useCallback((finalRaw: number) => {
     const finalScore = offsetRef.current + finalRaw;
     playFailure?.();
+    elapsedAtDeathRef.current = (Date.now() - startedAt.current) / 1000;
     setPhase('gameover');
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -522,7 +529,9 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
-    elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
+    // Restaure l'état exact au moment de la mort → pas d'avancement pendant la pub
+    elapsedOffsetRef.current = elapsedAtDeathRef.current;
+    startedAt.current = Date.now() - elapsedAtDeathRef.current * 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     setShieldActive(false);
     sceneKey.current++;
@@ -547,9 +556,15 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
           <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
             <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-          <div className="text-right">
-            <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-            <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">
+              <Coins className="w-4 h-4 text-secondary" />
+              <span className="text-secondary font-bold text-sm tabular-nums">{coinsDisplay}</span>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
+              <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
+            </div>
           </div>
           {onToggleSound && (
             <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
@@ -576,7 +591,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
-              graceMs={1500}
+              graceMs={2000}
               shieldInit={shieldActive}
               onShieldUsed={handleShieldUsed}
             />
