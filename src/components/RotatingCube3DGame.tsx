@@ -521,7 +521,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
           <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
             <ArrowLeft className="w-4 h-4 mr-1" /> Menu
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">
               <Coins className="w-4 h-4 text-secondary" />
               <span className="text-secondary font-bold text-sm tabular-nums">{coinsDisplay}</span>
