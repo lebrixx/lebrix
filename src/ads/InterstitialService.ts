@@ -26,7 +26,7 @@ class InterstitialService {
       // Configuration production originale (à restaurer) :
       // await AdMob.initialize({ initializeForTesting: false });
       await AdMob.initialize({
-        testingDevices: ['4d71138b336348d79bdfde0d6dcbcb92'],
+        testingDevices: ['85e6680cf3c2f22daca236964ad5cbf7'],
         initializeForTesting: true,
       });
       console.log('[AdMob] initialized in test mode for local Xcode testing');
