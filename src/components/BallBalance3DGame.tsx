@@ -8,7 +8,7 @@ import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
-import { startGameSession } from '@/utils/scoresApi';
+import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
 
 /**
@@ -481,6 +481,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
+    resetSubmissionAfterRevive();
     pointer.current.x = 0;
     pointer.current.y = 0;
     // Restaure l'état exact au moment de la mort → aucun avancement pendant la pub
