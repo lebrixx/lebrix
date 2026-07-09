@@ -38,11 +38,16 @@ private currentKind: RewardKind | null = null;
     }
 
     try {
+      // TEMP TEST MODE ADMOB - à retirer avant production App Store
+      // Configuration production originale (à restaurer) :
+      // await AdMob.initialize({ initializeForTesting: false });
       await AdMob.initialize({
-        initializeForTesting: false, // Mode production
+        testingDevices: ['4d71138b336348d79bdfde0d6dcbcb92'],
+        initializeForTesting: true,
       });
 
-      console.log('[Rewarded] AdMob initialized successfully (production mode)');
+      console.log('[AdMob] initialized in test mode for local Xcode testing');
+      console.log('[Rewarded] AdMob initialized successfully (TEST MODE)');
       this.state = 'loading';
       this.preload();
     } catch (error) {
