@@ -10,7 +10,7 @@ import { useBoosts } from '@/hooks/useBoosts';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
-import { startGameSession } from '@/utils/scoresApi';
+import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
 
 /**
@@ -640,6 +640,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   }, [onGameOver, playFailure]);
 
   const handleRevive = useCallback(() => {
+    resetSubmissionAfterRevive();
     // Restaure l'état exact au moment de la mort : aucun avancement pendant la pub.
     elapsedOffsetRef.current = elapsedAtDeathRef.current;
     startedAt.current = Date.now() - elapsedAtDeathRef.current * 1000;
