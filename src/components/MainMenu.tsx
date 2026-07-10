@@ -165,7 +165,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   return (
     <>
       <MainMenuBackground />
-      <div className={`main-menu-container ${theme} pt-safe relative z-10`}>
+      <div className={`main-menu-container ${theme} relative z-10`}>
 
 
 
