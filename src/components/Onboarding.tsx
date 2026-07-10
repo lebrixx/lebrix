@@ -519,15 +519,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
         {/* Footer nav */}
         {step > 0 && (
           <div className="w-full max-w-lg mx-auto flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={goBack}
-              className="h-14 px-4 border-wheel-border hover:bg-button-hover text-text-primary flex items-center gap-1 shrink-0 transition-all duration-300 active:scale-[0.98]"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="text-sm font-semibold">{ob.back}</span>
-            </Button>
-
             {step < TOTAL_STEPS - 1 ? (
               <Button
                 onClick={goNext}
