@@ -411,7 +411,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
     // Compass — next opening
     const next = s.rings.find((r) => !r.passed);
     if (next) {
-      const rel = ((next.holeAngle - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+      const rel = wrapPi(next.holeAngle - a);
       onNextHole(rel);
     } else {
       onNextHole(null);
