@@ -518,7 +518,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
 
         {/* Footer nav */}
         {step > 0 && (
-          <div className="w-full max-w-lg mx-auto flex items-center gap-3">
+          <div className="w-full max-w-lg mx-auto flex items-center gap-3 mb-3">
             {step < TOTAL_STEPS - 1 ? (
               <Button
                 onClick={goNext}
