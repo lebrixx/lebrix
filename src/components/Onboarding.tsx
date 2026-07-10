@@ -14,6 +14,9 @@ import {
   Languages,
   Globe,
   Calendar,
+  Star,
+  ShoppingBag,
+  Lock,
 } from 'lucide-react';
 import { MainMenuBackground } from '@/components/MainMenuBackground';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
