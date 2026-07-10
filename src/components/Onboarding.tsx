@@ -238,6 +238,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
   }, [username, step, ob.usernameInvalid, ob.usernameTaken, replay]);
 
   const goNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  const goBack = () => setStep((s) => Math.max(s - 1, 0));
 
   const canGoNext = (() => {
     if (step === STEP_USERNAME) {
