@@ -580,6 +580,9 @@ const Index = () => {
       {showOnboarding && (
         <Onboarding onComplete={() => setShowOnboarding(false)} />
       )}
+      {replayOnboarding && (
+        <Onboarding replay onComplete={() => setReplayOnboarding(false)} />
+      )}
       {renderScreen()}
       
       
