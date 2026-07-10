@@ -37,6 +37,14 @@ const PLAYER_Y = 0;
 const SPAWN_Y = 9;
 const KILL_Y = -3;
 const BEST_KEY = 'bestScore_zone_traitresse';
+const TWO_PI = Math.PI * 2;
+// Ramène un angle (en radians) dans l'intervalle [-π, π] même pour de très grandes valeurs
+// négatives ou positives (le `%` de JS conserve le signe du dividende, ce qui cassait
+// le calibrage après plusieurs rotations en début de partie).
+function wrapPi(x: number): number {
+  const y = ((x % TWO_PI) + TWO_PI) % TWO_PI;
+  return y > Math.PI ? y - TWO_PI : y;
+}
 
 interface RingDef {
   group: THREE.Group;
