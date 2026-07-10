@@ -297,6 +297,31 @@ export const Settings: React.FC<SettingsProps> = ({
             </Button>
           </div>
 
+          {/* Relancer l'onboarding */}
+          {onReplayOnboarding && (
+            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
+              <div className="flex items-center gap-3">
+                <PlayCircle className="w-5 h-5 text-primary" />
+                <Label className="text-text-primary text-base">
+                  Revoir l'introduction
+                </Label>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  onClose();
+                  setTimeout(() => onReplayOnboarding(), 300);
+                }}
+                className="border-wheel-border hover:bg-button-hover text-text-primary"
+              >
+                Relancer
+              </Button>
+            </div>
+          )}
+
+
+
 
 
           {Capacitor.isNativePlatform() && (
