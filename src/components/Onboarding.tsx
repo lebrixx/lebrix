@@ -507,13 +507,22 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
 
         {/* Footer nav */}
         {step > 0 && (
-          <div className="w-full max-w-lg mx-auto">
+          <div className="w-full max-w-lg mx-auto flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={goBack}
+              className="h-14 px-4 border-wheel-border hover:bg-button-hover text-text-primary flex items-center gap-1 shrink-0 transition-all duration-300 active:scale-[0.98]"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              <span className="text-sm font-semibold">{ob.back}</span>
+            </Button>
+
             {step < TOTAL_STEPS - 1 ? (
               <Button
                 onClick={goNext}
                 disabled={!canGoNext}
                 size="lg"
-                className="w-full bg-gradient-primary hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed shadow-glow-primary transition-all duration-300 py-6 text-base font-bold"
+                className="flex-1 bg-gradient-primary hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed shadow-glow-primary transition-all duration-300 py-6 text-base font-bold"
               >
                 {ob.next}
                 <ChevronRight className="w-5 h-5 ml-1" />
@@ -522,7 +531,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
               <Button
                 onClick={finish}
                 size="lg"
-                className="w-full bg-gradient-primary hover:scale-[1.02] shadow-glow-primary transition-all duration-300 py-6 text-base font-bold"
+                className="flex-1 bg-gradient-primary hover:scale-[1.02] shadow-glow-primary transition-all duration-300 py-6 text-base font-bold"
               >
                 <Rocket className="w-5 h-5 mr-2" />
                 {replay ? ob.finish : ob.start}
