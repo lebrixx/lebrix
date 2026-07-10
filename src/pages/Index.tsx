@@ -44,6 +44,7 @@ const Index = () => {
   const t = translations[language];
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
   const [showSubmitScoreModal, setShowSubmitScoreModal] = useState(false);
   const [showDailyRewards, setShowDailyRewards] = useState(false);
   const [lastGameScore, setLastGameScore] = useState(0);
