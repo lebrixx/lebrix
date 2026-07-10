@@ -380,7 +380,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
         ring.group.position.y <= PLAYER_Y + 0.25 &&
         ring.group.position.y >= PLAYER_Y - 0.25
       ) {
-        const diffA = ((a - ring.holeAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+        const diffA = wrapPi(a - ring.holeAngle);
         if (Math.abs(diffA) > ring.holeWidth / 2 - 0.05) {
           if (s.elapsed < graceUntil) {
             // Grâce : laisse passer sans mourir
