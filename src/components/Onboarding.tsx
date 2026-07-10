@@ -8,6 +8,7 @@ import {
   User,
   Rocket,
   ChevronRight,
+  ChevronLeft,
   Loader2,
   CheckCircle,
   XCircle,
