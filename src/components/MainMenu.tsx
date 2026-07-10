@@ -62,7 +62,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   isSoundMuted = false,
   onToggleSound = () => {},
   onOpenRateDialog,
-  onOpenDailyChallenge
+  onOpenDailyChallenge,
+  onReplayOnboarding
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
