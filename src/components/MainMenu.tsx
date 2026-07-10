@@ -574,5 +574,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClose={() => setShowDailyTip(false)}
       />
     </div>
+    </>
   );
 };
