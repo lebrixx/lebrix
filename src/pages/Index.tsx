@@ -347,6 +347,7 @@ const Index = () => {
             onToggleSound={toggleMute}
             onOpenRateDialog={() => setShowRateDialog(true)}
             onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
+            onReplayOnboarding={() => setReplayOnboarding(true)}
           />
         );
         
