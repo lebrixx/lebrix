@@ -22,14 +22,8 @@ class InterstitialService {
     if (this.isInitialized) return;
 
     try {
-      // TEMP TEST MODE ADMOB - à retirer avant production App Store
-      // Configuration production originale (à restaurer) :
-      // await AdMob.initialize({ initializeForTesting: false });
-      await AdMob.initialize({
-        testingDevices: ['85e6680cf3c2f22daca236964ad5cbf7'],
-        initializeForTesting: true,
-      });
-      console.log('[AdMob] initialized in test mode for local Xcode testing');
+      await AdMob.initialize({ initializeForTesting: false });
+      console.log('[AdMob] initialized in production mode');
 
       this.isInitialized = true;
       console.log('[Interstitial] AdMob initialized successfully');
