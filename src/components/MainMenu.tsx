@@ -15,6 +15,7 @@ import { LuckyWheel } from '@/components/LuckyWheel';
 import { SeasonPass } from '@/components/SeasonPass';
 import { Inventory } from '@/components/Inventory';
 import { DailyTip } from '@/components/DailyTip';
+import { MainMenuBackground } from '@/components/MainMenuBackground';
 import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -162,7 +163,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   }, []);
 
   return (
-    <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
+    <>
+      <MainMenuBackground />
+      <div className={`main-menu-container ${theme} pt-safe relative z-10`}>
+
+
 
       {/* Lucky Wheel Button */}
       <Button
@@ -569,5 +574,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClose={() => setShowDailyTip(false)}
       />
     </div>
+    </>
   );
 };
