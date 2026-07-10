@@ -43,9 +43,15 @@ export function markOnboardingDone() {
 
 interface OnboardingProps {
   onComplete: () => void;
+  /** Relance de l'onboarding : le pseudo est déjà défini et ne peut plus être modifié ici. */
+  replay?: boolean;
 }
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
+// Indice de l'étape "Défis & Boutique" ajoutée entre modes et pseudo.
+const STEP_EXTRAS = 3;
+const STEP_USERNAME = 4;
+const STEP_FINAL = 5;
 
 // Textes onboarding par langue
 const OB = {
