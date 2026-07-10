@@ -575,7 +575,11 @@ const Index = () => {
 
   return (
     <div className="overflow-hidden">
+      {showOnboarding && (
+        <Onboarding onComplete={() => setShowOnboarding(false)} />
+      )}
       {renderScreen()}
+      
       
       {/* Modals */}
       <UsernameModal
