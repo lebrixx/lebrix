@@ -18,6 +18,7 @@ interface SettingsProps {
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
   onOpenDailyTip?: () => void;
+  onReplayOnboarding?: () => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({ 
@@ -27,7 +28,8 @@ export const Settings: React.FC<SettingsProps> = ({
   onToggleSound,
   onOpenRateDialog,
   onOpenDailyChallenge,
-  onOpenDailyTip
+  onOpenDailyTip,
+  onReplayOnboarding
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
