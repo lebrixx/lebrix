@@ -265,8 +265,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
       <MainMenuBackground />
 
       {/* Overlay content */}
-      <div className="relative z-10 flex flex-col h-full w-full px-6 pt-safe pb-6">
-        {/* Progress dots — légèrement descendus pour respirer sous le safe-area */}
+      <div className="relative z-10 flex flex-col h-full w-full px-6 pb-6">
+        {/* Back button — petit, en haut à gauche */}
+        {step > 0 && (
+          <button
+            onClick={goBack}
+            className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full border border-wheel-border bg-button-bg/80 backdrop-blur-sm flex items-center justify-center text-text-primary active:scale-95 transition-all duration-300 hover:bg-button-hover"
+            aria-label={ob.back}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Progress dots */}
         <div className="flex items-center justify-center gap-2 mt-10 mb-6">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <div
@@ -508,15 +519,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
         {/* Footer nav */}
         {step > 0 && (
           <div className="w-full max-w-lg mx-auto flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={goBack}
-              className="h-14 px-4 border-wheel-border hover:bg-button-hover text-text-primary flex items-center gap-1 shrink-0 transition-all duration-300 active:scale-[0.98]"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="text-sm font-semibold">{ob.back}</span>
-            </Button>
-
             {step < TOTAL_STEPS - 1 ? (
               <Button
                 onClick={goNext}
