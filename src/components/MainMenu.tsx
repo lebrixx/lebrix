@@ -561,6 +561,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onOpenRateDialog={onOpenRateDialog}
         onOpenDailyChallenge={onOpenDailyChallenge}
         onOpenDailyTip={() => setShowDailyTip(true)}
+        onReplayOnboarding={onReplayOnboarding}
       />
 
       {/* Premium Offer */}
