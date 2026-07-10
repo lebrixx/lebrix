@@ -41,6 +41,7 @@ interface MainMenuProps {
   onToggleSound?: () => void;
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
+  onReplayOnboarding?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -61,7 +62,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   isSoundMuted = false,
   onToggleSound = () => {},
   onOpenRateDialog,
-  onOpenDailyChallenge
+  onOpenDailyChallenge,
+  onReplayOnboarding
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
@@ -559,6 +561,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onOpenRateDialog={onOpenRateDialog}
         onOpenDailyChallenge={onOpenDailyChallenge}
         onOpenDailyTip={() => setShowDailyTip(true)}
+        onReplayOnboarding={onReplayOnboarding}
       />
 
       {/* Premium Offer */}

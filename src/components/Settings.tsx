@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins, Star, Lightbulb } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins, Star, Lightbulb, PlayCircle } from 'lucide-react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
@@ -18,6 +18,7 @@ interface SettingsProps {
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
   onOpenDailyTip?: () => void;
+  onReplayOnboarding?: () => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({ 
@@ -27,7 +28,8 @@ export const Settings: React.FC<SettingsProps> = ({
   onToggleSound,
   onOpenRateDialog,
   onOpenDailyChallenge,
-  onOpenDailyTip
+  onOpenDailyTip,
+  onReplayOnboarding
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
@@ -294,6 +296,31 @@ export const Settings: React.FC<SettingsProps> = ({
               Voir
             </Button>
           </div>
+
+          {/* Relancer l'onboarding */}
+          {onReplayOnboarding && (
+            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
+              <div className="flex items-center gap-3">
+                <PlayCircle className="w-5 h-5 text-primary" />
+                <Label className="text-text-primary text-base">
+                  Revoir l'introduction
+                </Label>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  onClose();
+                  setTimeout(() => onReplayOnboarding(), 300);
+                }}
+                className="border-wheel-border hover:bg-button-hover text-text-primary"
+              >
+                Relancer
+              </Button>
+            </div>
+          )}
+
+
 
 
 

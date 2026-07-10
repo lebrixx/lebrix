@@ -45,6 +45,7 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
+  const [replayOnboarding, setReplayOnboarding] = useState(false);
   const [showSubmitScoreModal, setShowSubmitScoreModal] = useState(false);
   const [showDailyRewards, setShowDailyRewards] = useState(false);
   const [lastGameScore, setLastGameScore] = useState(0);
@@ -346,6 +347,7 @@ const Index = () => {
             onToggleSound={toggleMute}
             onOpenRateDialog={() => setShowRateDialog(true)}
             onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
+            onReplayOnboarding={() => setReplayOnboarding(true)}
           />
         );
         
@@ -577,6 +579,9 @@ const Index = () => {
     <div className="overflow-hidden">
       {showOnboarding && (
         <Onboarding onComplete={() => setShowOnboarding(false)} />
+      )}
+      {replayOnboarding && (
+        <Onboarding replay onComplete={() => setReplayOnboarding(false)} />
       )}
       {renderScreen()}
       

@@ -37,6 +37,14 @@ const PLAYER_Y = 0;
 const SPAWN_Y = 9;
 const KILL_Y = -3;
 const BEST_KEY = 'bestScore_zone_traitresse';
+const TWO_PI = Math.PI * 2;
+// Ramène un angle (en radians) dans l'intervalle [-π, π] même pour de très grandes valeurs
+// négatives ou positives (le `%` de JS conserve le signe du dividende, ce qui cassait
+// le calibrage après plusieurs rotations en début de partie).
+function wrapPi(x: number): number {
+  const y = ((x % TWO_PI) + TWO_PI) % TWO_PI;
+  return y > Math.PI ? y - TWO_PI : y;
+}
 
 interface RingDef {
   group: THREE.Group;
@@ -106,7 +114,10 @@ function useDragAngle(angleRef: React.MutableRefObject<number>) {
     onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
       if (!dragRef.current) return;
       const dx = e.clientX - dragRef.current.x;
-      angleRef.current += (dx / 280) * Math.PI;
+      // Toujours ramener l'angle dans [-π, π] pour éviter toute dérive après plusieurs
+      // rotations (le calcul de compass/collision utilise le modulo, qui devient faux
+      // pour de très grandes valeurs).
+      angleRef.current = wrapPi(angleRef.current + (dx / 280) * Math.PI);
       dragRef.current.x = e.clientX;
     },
     onPointerUp: () => { dragRef.current = null; },
@@ -369,7 +380,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
         ring.group.position.y <= PLAYER_Y + 0.25 &&
         ring.group.position.y >= PLAYER_Y - 0.25
       ) {
-        const diffA = ((a - ring.holeAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+        const diffA = wrapPi(a - ring.holeAngle);
         if (Math.abs(diffA) > ring.holeWidth / 2 - 0.05) {
           if (s.elapsed < graceUntil) {
             // Grâce : laisse passer sans mourir
@@ -400,7 +411,7 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
     // Compass — next opening
     const next = s.rings.find((r) => !r.passed);
     if (next) {
-      const rel = ((next.holeAngle - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+      const rel = wrapPi(next.holeAngle - a);
       onNextHole(rel);
     } else {
       onNextHole(null);

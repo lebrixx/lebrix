@@ -14,6 +14,9 @@ import {
   Languages,
   Globe,
   Calendar,
+  Star,
+  ShoppingBag,
+  Lock,
 } from 'lucide-react';
 import { MainMenuBackground } from '@/components/MainMenuBackground';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
@@ -43,9 +46,15 @@ export function markOnboardingDone() {
 
 interface OnboardingProps {
   onComplete: () => void;
+  /** Relance de l'onboarding : le pseudo est déjà défini et ne peut plus être modifié ici. */
+  replay?: boolean;
 }
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
+// Indice de l'étape "Défis & Boutique" ajoutée entre modes et pseudo.
+const STEP_EXTRAS = 3;
+const STEP_USERNAME = 4;
+const STEP_FINAL = 5;
 
 // Textes onboarding par langue
 const OB = {
@@ -61,10 +70,18 @@ const OB = {
     modesLine1: 'Plus de 10 modes de jeu uniques',
     modesLine2: '2 classements distincts : mensuel global & hebdomadaire par mode',
     modesFooter: 'Grimpe, compare, recommence.',
+    extrasKicker: 'Encore plus',
+    extrasTitle: 'Défis & Boutique',
+    extrasLine1: 'Des défis quotidiens et globaux à relever pour gagner des récompenses',
+    extrasLine2: 'Une boutique avec thèmes, décorations et boosts pour personnaliser ton expérience',
+    extrasFooter: 'De quoi progresser et se démarquer.',
     usernameKicker: 'Ton identité',
     usernameTitle: 'Choisis ton pseudo',
     usernameBody:
       'Ton pseudo est unique et apparaîtra dans les classements. Choisis-le avec soin — tu ne pourras le changer qu’une seule fois.',
+    usernameHintInstagram:
+      '💡 Conseil : utilise ton pseudo Instagram — de futurs concours récompenseront les meilleurs joueurs.',
+    usernameLocked: 'Ton pseudo est déjà défini et ne peut pas être modifié ici.',
     usernamePlaceholder: 'Ton pseudo',
     usernameTaken: 'Ce pseudo est déjà pris',
     usernameInvalid: '3 à 16 caractères (lettres, chiffres, _)',
@@ -73,6 +90,7 @@ const OB = {
     finalTitle: 'Bonnes parties !',
     finalBody: 'Tout est prêt. À toi de jouer et de viser le sommet.',
     start: 'Commencer',
+    finish: 'Terminer',
     next: 'Suivant',
     skip: 'Passer',
   },
@@ -88,10 +106,18 @@ const OB = {
     modesLine1: 'More than 10 unique game modes',
     modesLine2: '2 separate leaderboards: monthly global & weekly per mode',
     modesFooter: 'Climb, compare, repeat.',
+    extrasKicker: 'Even more',
+    extrasTitle: 'Challenges & Shop',
+    extrasLine1: 'Daily and global challenges to complete for extra rewards',
+    extrasLine2: 'A shop with themes, decorations and boosts to make it yours',
+    extrasFooter: 'Plenty to grind and stand out.',
     usernameKicker: 'Your identity',
     usernameTitle: 'Pick your username',
     usernameBody:
       'Your username is unique and appears on the leaderboards. Choose carefully — you can change it only once.',
+    usernameHintInstagram:
+      '💡 Tip: use your Instagram handle — upcoming contests will reward the top players.',
+    usernameLocked: 'Your username is already set and can’t be changed here.',
     usernamePlaceholder: 'Your username',
     usernameTaken: 'This username is already taken',
     usernameInvalid: '3 to 16 characters (letters, numbers, _)',
@@ -100,6 +126,7 @@ const OB = {
     finalTitle: 'Have fun!',
     finalBody: 'You’re all set. Time to play and aim for the top.',
     start: 'Start',
+    finish: 'Done',
     next: 'Next',
     skip: 'Skip',
   },
@@ -115,10 +142,18 @@ const OB = {
     modesLine1: 'Más de 10 modos de juego únicos',
     modesLine2: '2 clasificaciones distintas: mensual global y semanal por modo',
     modesFooter: 'Sube, compara, repite.',
+    extrasKicker: 'Aún más',
+    extrasTitle: 'Desafíos y Tienda',
+    extrasLine1: 'Desafíos diarios y globales para conseguir recompensas',
+    extrasLine2: 'Una tienda con temas, decoraciones y boosts para personalizar',
+    extrasFooter: 'Mucho por conseguir y destacar.',
     usernameKicker: 'Tu identidad',
     usernameTitle: 'Elige tu apodo',
     usernameBody:
       'Tu apodo es único y aparece en las clasificaciones. Elígelo con cuidado — solo podrás cambiarlo una vez.',
+    usernameHintInstagram:
+      '💡 Consejo: usa tu apodo de Instagram — próximos concursos recompensarán a los mejores.',
+    usernameLocked: 'Tu apodo ya está definido y no se puede cambiar aquí.',
     usernamePlaceholder: 'Tu apodo',
     usernameTaken: 'Este apodo ya está en uso',
     usernameInvalid: '3 a 16 caracteres (letras, números, _)',
@@ -127,6 +162,7 @@ const OB = {
     finalTitle: '¡Buenas partidas!',
     finalBody: 'Todo listo. Es hora de jugar y apuntar a la cima.',
     start: 'Empezar',
+    finish: 'Terminar',
     next: 'Siguiente',
     skip: 'Saltar',
   },
@@ -138,13 +174,20 @@ const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'es', label: 'Español', flag: '🇪🇸' },
 ];
 
-export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = false }) => {
   const { language, setLanguage } = useLanguage();
   const [step, setStep] = useState(0);
   const ob = OB[language];
 
   // Username state
-  const [username, setUsername] = useState(() => generateDefaultUsername());
+  const existingUsername = React.useMemo(() => {
+    try {
+      return localStorage.getItem('circle_tap_username');
+    } catch {
+      return null;
+    }
+  }, []);
+  const [username, setUsername] = useState(() => existingUsername || generateDefaultUsername());
   const [checking, setChecking] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null);
   const [usernameError, setUsernameError] = useState('');
@@ -153,7 +196,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   // Debounced check
   useEffect(() => {
-    if (step !== 3) return;
+    if (step !== STEP_USERNAME) return;
+    if (replay) return; // Pseudo verrouillé en replay
     if (!isValidUsername(username)) {
       setAvailable(null);
       setUsernameError(username ? ob.usernameInvalid : '');
@@ -187,12 +231,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [username, step, ob.usernameInvalid, ob.usernameTaken]);
+  }, [username, step, ob.usernameInvalid, ob.usernameTaken, replay]);
 
   const goNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
 
   const canGoNext = (() => {
-    if (step === 3) {
+    if (step === STEP_USERNAME) {
+      if (replay) return true;
       return isValidUsername(username) && available === true && !checking;
     }
     return true;
@@ -200,7 +245,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   const finish = () => {
     try {
-      if (isValidUsername(username)) {
+      if (!replay && isValidUsername(username)) {
         setUsernameForScores(username);
       }
     } catch (err) {
@@ -216,8 +261,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       {/* Overlay content */}
       <div className="relative z-10 flex flex-col h-full w-full px-6 pt-safe pb-6">
-        {/* Progress dots */}
-        <div className="flex items-center justify-center gap-2 mt-4 mb-6">
+        {/* Progress dots — légèrement descendus pour respirer sous le safe-area */}
+        <div className="flex items-center justify-center gap-2 mt-10 mb-6">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <div
               key={i}
@@ -327,8 +372,39 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </div>
           )}
 
-          {/* Step 3 — Username (required) */}
-          {step === 3 && (
+          {/* Step 3 — Défis & Boutique */}
+          {step === STEP_EXTRAS && (
+            <div className="w-full text-center animate-fade-in">
+              <div className="text-xs uppercase tracking-[0.25em] text-primary/80 font-bold mb-3">
+                {ob.extrasKicker}
+              </div>
+              <h2 className="text-3xl font-black bg-gradient-primary bg-clip-text text-transparent mb-6">
+                {ob.extrasTitle}
+              </h2>
+              <div className="grid grid-cols-1 gap-3 w-full mb-4">
+                <div className="flex items-center gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                    <Star className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-text-primary text-left font-medium">
+                    {ob.extrasLine1}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 rounded-2xl border border-secondary/30 bg-secondary/5 p-4">
+                  <div className="w-12 h-12 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+                    <ShoppingBag className="w-6 h-6 text-secondary" />
+                  </div>
+                  <p className="text-sm text-text-primary text-left font-medium">
+                    {ob.extrasLine2}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm text-text-muted italic">{ob.extrasFooter}</p>
+            </div>
+          )}
+
+          {/* Step 4 — Username (required, verrouillé en replay) */}
+          {step === STEP_USERNAME && (
             <div className="w-full text-center animate-fade-in">
               <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-primary/25 to-secondary/15 flex items-center justify-center border border-primary/30">
                 <User className="w-8 h-8 text-primary" />
@@ -339,14 +415,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <h2 className="text-3xl font-black bg-gradient-primary bg-clip-text text-transparent mb-3">
                 {ob.usernameTitle}
               </h2>
-              <p className="text-sm text-text-secondary mb-6 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-text-secondary mb-3 max-w-md mx-auto leading-relaxed">
                 {ob.usernameBody}
               </p>
+              {!replay && (
+                <p className="text-xs text-primary/90 mb-5 max-w-md mx-auto leading-relaxed font-medium">
+                  {ob.usernameHintInstagram}
+                </p>
+              )}
 
               <div className="relative w-full mb-2">
                 <Input
                   value={username}
                   onChange={(e) => {
+                    if (replay) return;
                     setUsername(e.target.value);
                     setAvailable(null);
                     setUsernameError('');
@@ -354,11 +436,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   }}
                   placeholder={ob.usernamePlaceholder}
                   maxLength={16}
-                  autoFocus
-                  className="bg-background/60 border-wheel-border text-text-primary text-center text-lg py-6 pr-12"
+                  autoFocus={!replay}
+                  disabled={replay}
+                  className={`bg-background/60 border-wheel-border text-text-primary text-center text-lg py-6 pr-12 ${
+                    replay ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  {checking ? (
+                  {replay ? (
+                    <Lock className="w-5 h-5 text-text-muted" />
+                  ) : checking ? (
                     <Loader2 className="w-5 h-5 text-text-muted animate-spin" />
                   ) : available === true ? (
                     <CheckCircle className="w-5 h-5 text-green-500" />
@@ -369,29 +456,33 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               </div>
 
               <div className="min-h-[20px] mb-4">
-                {usernameError && (
-                  <p className="text-xs text-red-400">{usernameError}</p>
+                {replay ? (
+                  <p className="text-xs text-text-muted italic">{ob.usernameLocked}</p>
+                ) : (
+                  usernameError && <p className="text-xs text-red-400">{usernameError}</p>
                 )}
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setUsername(generateDefaultUsername());
-                  setAvailable(null);
-                  setUsernameError('');
-                  lastCheckedRef.current = '';
-                }}
-                className="border-wheel-border hover:bg-button-hover"
-              >
-                {ob.random}
-              </Button>
+              {!replay && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setUsername(generateDefaultUsername());
+                    setAvailable(null);
+                    setUsernameError('');
+                    lastCheckedRef.current = '';
+                  }}
+                  className="border-wheel-border hover:bg-button-hover"
+                >
+                  {ob.random}
+                </Button>
+              )}
             </div>
           )}
 
-          {/* Step 4 — Final */}
-          {step === 4 && (
+          {/* Step 5 — Final */}
+          {step === STEP_FINAL && (
             <div className="w-full text-center animate-fade-in">
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/40 via-secondary/30 to-primary/40 flex items-center justify-center border border-primary/50 shadow-[0_0_40px_hsl(var(--primary)/0.5)] animate-pulse">
                 <Rocket className="w-12 h-12 text-primary" />
@@ -429,7 +520,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 className="w-full bg-gradient-primary hover:scale-[1.02] shadow-glow-primary transition-all duration-300 py-6 text-base font-bold"
               >
                 <Rocket className="w-5 h-5 mr-2" />
-                {ob.start}
+                {replay ? ob.finish : ob.start}
               </Button>
             )}
           </div>
