@@ -163,7 +163,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   }, []);
 
   return (
-    <div className={`main-menu-container bg-gradient-game ${theme} pt-safe`}>
+    <>
+      <MainMenuBackground />
+      <div className={`main-menu-container ${theme} pt-safe relative z-10`}>
+
+
 
       {/* Lucky Wheel Button */}
       <Button
