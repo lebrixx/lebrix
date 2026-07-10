@@ -114,7 +114,10 @@ function useDragAngle(angleRef: React.MutableRefObject<number>) {
     onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
       if (!dragRef.current) return;
       const dx = e.clientX - dragRef.current.x;
-      angleRef.current += (dx / 280) * Math.PI;
+      // Toujours ramener l'angle dans [-π, π] pour éviter toute dérive après plusieurs
+      // rotations (le calcul de compass/collision utilise le modulo, qui devient faux
+      // pour de très grandes valeurs).
+      angleRef.current = wrapPi(angleRef.current + (dx / 280) * Math.PI);
       dragRef.current.x = e.clientX;
     },
     onPointerUp: () => { dragRef.current = null; },
