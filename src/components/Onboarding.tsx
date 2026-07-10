@@ -171,13 +171,20 @@ const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'es', label: 'Español', flag: '🇪🇸' },
 ];
 
-export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = false }) => {
   const { language, setLanguage } = useLanguage();
   const [step, setStep] = useState(0);
   const ob = OB[language];
 
   // Username state
-  const [username, setUsername] = useState(() => generateDefaultUsername());
+  const existingUsername = React.useMemo(() => {
+    try {
+      return localStorage.getItem('circle_tap_username');
+    } catch {
+      return null;
+    }
+  }, []);
+  const [username, setUsername] = useState(() => existingUsername || generateDefaultUsername());
   const [checking, setChecking] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null);
   const [usernameError, setUsernameError] = useState('');
@@ -186,7 +193,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   // Debounced check
   useEffect(() => {
-    if (step !== 3) return;
+    if (step !== STEP_USERNAME) return;
+    if (replay) return; // Pseudo verrouillé en replay
     if (!isValidUsername(username)) {
       setAvailable(null);
       setUsernameError(username ? ob.usernameInvalid : '');
@@ -220,12 +228,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [username, step, ob.usernameInvalid, ob.usernameTaken]);
+  }, [username, step, ob.usernameInvalid, ob.usernameTaken, replay]);
 
   const goNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
 
   const canGoNext = (() => {
-    if (step === 3) {
+    if (step === STEP_USERNAME) {
+      if (replay) return true;
       return isValidUsername(username) && available === true && !checking;
     }
     return true;
@@ -233,7 +242,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   const finish = () => {
     try {
-      if (isValidUsername(username)) {
+      if (!replay && isValidUsername(username)) {
         setUsernameForScores(username);
       }
     } catch (err) {
@@ -249,8 +258,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       {/* Overlay content */}
       <div className="relative z-10 flex flex-col h-full w-full px-6 pt-safe pb-6">
-        {/* Progress dots */}
-        <div className="flex items-center justify-center gap-2 mt-4 mb-6">
+        {/* Progress dots — légèrement descendus pour respirer sous le safe-area */}
+        <div className="flex items-center justify-center gap-2 mt-10 mb-6">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <div
               key={i}
