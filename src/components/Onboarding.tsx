@@ -93,6 +93,7 @@ const OB = {
     start: 'Commencer',
     finish: 'Terminer',
     next: 'Suivant',
+    back: 'Retour',
     skip: 'Passer',
   },
   en: {
@@ -129,6 +130,7 @@ const OB = {
     start: 'Start',
     finish: 'Done',
     next: 'Next',
+    back: 'Back',
     skip: 'Skip',
   },
   es: {
@@ -165,6 +167,7 @@ const OB = {
     start: 'Empezar',
     finish: 'Terminar',
     next: 'Siguiente',
+    back: 'Atrás',
     skip: 'Saltar',
   },
 } as const;
