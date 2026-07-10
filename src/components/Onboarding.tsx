@@ -372,8 +372,39 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
             </div>
           )}
 
-          {/* Step 3 — Username (required) */}
-          {step === 3 && (
+          {/* Step 3 — Défis & Boutique */}
+          {step === STEP_EXTRAS && (
+            <div className="w-full text-center animate-fade-in">
+              <div className="text-xs uppercase tracking-[0.25em] text-primary/80 font-bold mb-3">
+                {ob.extrasKicker}
+              </div>
+              <h2 className="text-3xl font-black bg-gradient-primary bg-clip-text text-transparent mb-6">
+                {ob.extrasTitle}
+              </h2>
+              <div className="grid grid-cols-1 gap-3 w-full mb-4">
+                <div className="flex items-center gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                    <Star className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-text-primary text-left font-medium">
+                    {ob.extrasLine1}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 rounded-2xl border border-secondary/30 bg-secondary/5 p-4">
+                  <div className="w-12 h-12 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+                    <ShoppingBag className="w-6 h-6 text-secondary" />
+                  </div>
+                  <p className="text-sm text-text-primary text-left font-medium">
+                    {ob.extrasLine2}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm text-text-muted italic">{ob.extrasFooter}</p>
+            </div>
+          )}
+
+          {/* Step 4 — Username (required, verrouillé en replay) */}
+          {step === STEP_USERNAME && (
             <div className="w-full text-center animate-fade-in">
               <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-primary/25 to-secondary/15 flex items-center justify-center border border-primary/30">
                 <User className="w-8 h-8 text-primary" />
@@ -384,14 +415,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
               <h2 className="text-3xl font-black bg-gradient-primary bg-clip-text text-transparent mb-3">
                 {ob.usernameTitle}
               </h2>
-              <p className="text-sm text-text-secondary mb-6 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-text-secondary mb-3 max-w-md mx-auto leading-relaxed">
                 {ob.usernameBody}
               </p>
+              {!replay && (
+                <p className="text-xs text-primary/90 mb-5 max-w-md mx-auto leading-relaxed font-medium">
+                  {ob.usernameHintInstagram}
+                </p>
+              )}
 
               <div className="relative w-full mb-2">
                 <Input
                   value={username}
                   onChange={(e) => {
+                    if (replay) return;
                     setUsername(e.target.value);
                     setAvailable(null);
                     setUsernameError('');
@@ -399,11 +436,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
                   }}
                   placeholder={ob.usernamePlaceholder}
                   maxLength={16}
-                  autoFocus
-                  className="bg-background/60 border-wheel-border text-text-primary text-center text-lg py-6 pr-12"
+                  autoFocus={!replay}
+                  disabled={replay}
+                  className={`bg-background/60 border-wheel-border text-text-primary text-center text-lg py-6 pr-12 ${
+                    replay ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  {checking ? (
+                  {replay ? (
+                    <Lock className="w-5 h-5 text-text-muted" />
+                  ) : checking ? (
                     <Loader2 className="w-5 h-5 text-text-muted animate-spin" />
                   ) : available === true ? (
                     <CheckCircle className="w-5 h-5 text-green-500" />
@@ -414,29 +456,33 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
               </div>
 
               <div className="min-h-[20px] mb-4">
-                {usernameError && (
-                  <p className="text-xs text-red-400">{usernameError}</p>
+                {replay ? (
+                  <p className="text-xs text-text-muted italic">{ob.usernameLocked}</p>
+                ) : (
+                  usernameError && <p className="text-xs text-red-400">{usernameError}</p>
                 )}
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setUsername(generateDefaultUsername());
-                  setAvailable(null);
-                  setUsernameError('');
-                  lastCheckedRef.current = '';
-                }}
-                className="border-wheel-border hover:bg-button-hover"
-              >
-                {ob.random}
-              </Button>
+              {!replay && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setUsername(generateDefaultUsername());
+                    setAvailable(null);
+                    setUsernameError('');
+                    lastCheckedRef.current = '';
+                  }}
+                  className="border-wheel-border hover:bg-button-hover"
+                >
+                  {ob.random}
+                </Button>
+              )}
             </div>
           )}
 
-          {/* Step 4 — Final */}
-          {step === 4 && (
+          {/* Step 5 — Final */}
+          {step === STEP_FINAL && (
             <div className="w-full text-center animate-fade-in">
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/40 via-secondary/30 to-primary/40 flex items-center justify-center border border-primary/50 shadow-[0_0_40px_hsl(var(--primary)/0.5)] animate-pulse">
                 <Rocket className="w-12 h-12 text-primary" />
