@@ -7,6 +7,7 @@ import { ModeSelection } from '@/components/ModeSelection';
 import { OnlineLeaderboard } from '@/components/OnlineLeaderboard';
 import { GlobalLeaderboard } from '@/components/GlobalLeaderboard';
 import { UsernameModal } from '@/components/UsernameModal';
+import { Onboarding, isOnboardingDone } from '@/components/Onboarding';
 import { SubmitScoreModal } from '@/components/SubmitScoreModal';
 import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
