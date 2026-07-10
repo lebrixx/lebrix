@@ -41,6 +41,7 @@ interface MainMenuProps {
   onToggleSound?: () => void;
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
+  onReplayOnboarding?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
