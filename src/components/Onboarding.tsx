@@ -243,7 +243,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
   const canGoNext = (() => {
     if (step === STEP_USERNAME) {
       if (replay) return true;
-      return isValidUsername(username) && available === true && !checking;
+      // On autorise dès qu'il est valide syntaxiquement et pas explicitement pris.
+      // Si check-username échoue (réseau/edge down), on n'empêche pas de continuer.
+      return isValidUsername(username) && available !== false;
     }
     return true;
   })();
