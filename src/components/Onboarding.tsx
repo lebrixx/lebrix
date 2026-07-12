@@ -308,9 +308,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
                 {LANGUAGES.map((l) => (
                   <button
                     key={l.code}
+                    type="button"
                     onClick={() => {
-                      setLanguage(l.code);
-                      goNext();
+                      try {
+                        setLanguage(l.code);
+                      } catch (err) {
+                        console.error('[Onboarding] setLanguage error:', err);
+                      }
                     }}
                     className={`group relative flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
                       language === l.code
@@ -322,10 +326,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
                     <span className="text-lg font-semibold text-text-primary flex-1 text-left">
                       {l.label}
                     </span>
-                    <ChevronRight className="w-5 h-5 text-primary opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                    {language === l.code ? (
+                      <CheckCircle className="w-5 h-5 text-primary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-primary opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                    )}
                   </button>
                 ))}
               </div>
+              <Button
+                type="button"
+                onClick={goNext}
+                size="lg"
+                className="w-full mt-6 bg-gradient-primary hover:scale-[1.02] shadow-glow-primary transition-all duration-300 py-6 text-base font-bold"
+              >
+                {ob.next}
+                <ChevronRight className="w-5 h-5 ml-1" />
+              </Button>
             </div>
           )}
 
