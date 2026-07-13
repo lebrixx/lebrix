@@ -126,14 +126,14 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-secondary" />
                 <span className="bg-gradient-primary bg-clip-text text-transparent text-lg font-black tracking-wide">
-                  Bonus Quotidien
+                  {t.dailyBonusTitle}
                 </span>
                 <Sparkles className="w-4 h-4 text-secondary" />
               </div>
             </DialogTitle>
           </DialogHeader>
           <p className="text-text-muted text-[11px] text-center mt-1 tracking-wide">
-            Lance la machine pour doubler tes coins dans un mode pendant 24h
+            {t.dailyBonusSubtitle}
           </p>
         </div>
 
