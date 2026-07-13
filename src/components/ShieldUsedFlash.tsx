@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface ShieldUsedFlashProps {
   triggerKey: number;
@@ -6,6 +7,8 @@ interface ShieldUsedFlashProps {
 
 export const ShieldUsedFlash: React.FC<ShieldUsedFlashProps> = ({ triggerKey }) => {
   const [visible, setVisible] = useState(false);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     if (triggerKey <= 0) return;
@@ -24,7 +27,7 @@ export const ShieldUsedFlash: React.FC<ShieldUsedFlashProps> = ({ triggerKey }) 
       <div className="flex items-center gap-2 rounded-full border border-emerald-300/70 bg-emerald-500/25 px-5 py-2.5 shadow-lg shadow-emerald-500/25 backdrop-blur-md">
         <span className="text-2xl">🛡️</span>
         <span className="whitespace-nowrap text-sm font-extrabold uppercase tracking-wide text-emerald-100">
-          Bouclier utilisé !
+          {t.shieldUsed}
         </span>
       </div>
     </div>
