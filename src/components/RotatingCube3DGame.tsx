@@ -10,6 +10,7 @@ import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 /**
  * Rotating Cube — implémentation fidèle au cahier des charges.
