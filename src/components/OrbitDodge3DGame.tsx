@@ -10,6 +10,7 @@ import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 /**
  * Orbit Dodge — Cahier des charges fidèle.
