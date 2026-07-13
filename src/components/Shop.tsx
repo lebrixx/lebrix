@@ -589,7 +589,7 @@ export const Shop: React.FC<ShopProps> = ({
                       </div>
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-text-primary">
-                          {mode.name}
+                          {(mode as any).isTicketPack ? t.ticketPackRotatingCube : mode.name}
                         </h3>
                         {isUnlocked && (
                           <Badge variant="secondary" className="mt-1">
