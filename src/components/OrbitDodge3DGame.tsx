@@ -469,6 +469,8 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
 export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
