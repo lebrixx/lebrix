@@ -286,8 +286,8 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
   const handleBoostsInfo = () => {
     playClick();
     toast({
-      title: 'Boosts indisponibles',
-      description: 'Les boosts ne sont pas utilisables dans ce mode.',
+      title: t.boostsUnavailableTitle,
+      description: t.boostsUnavailableDesc,
       duration: 2000,
     });
   };
@@ -417,7 +417,7 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
       <div className="text-center mt-8 text-text-muted animate-fade-in">
         <p className="text-sm">
           {status === 'running'
-            ? 'Glisse ton doigt autour du cercle pour renvoyer la bille !'
+            ? t.pongInstructions
             : status === 'idle'
               ? t.tapToStartGame
               : ''}

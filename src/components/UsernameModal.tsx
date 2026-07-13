@@ -105,7 +105,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onUsername
           lastCheckedRef.current = normalizedUsername;
           usernameCache.set(normalizedUsername, data.available);
           if (!data.available) {
-            setError('Ce pseudo est déjà pris par un autre joueur');
+            setError(t.usernameTakenOther);
           } else {
             setError('');
           }

@@ -110,14 +110,14 @@ export const PostGameBoostMenu: React.FC<PostGameBoostMenuProps> = ({ onStartGam
                 className="border-wheel-border hover:bg-button-hover"
               >
                 <X className="w-4 h-4 mr-2" />
-                Fermer
+                {t.close}
               </Button>
               <Button
                 onClick={() => onStartGame([])}
                 className="bg-gradient-primary hover:scale-105 transition-all duration-300"
               >
                 <Play className="w-4 h-4 mr-2" />
-                Rejouer
+                {t.replay}
               </Button>
             </div>
           </div>

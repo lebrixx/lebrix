@@ -10,6 +10,7 @@ import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 /**
  * Rotating Cube — implémentation fidèle au cahier des charges.
@@ -429,6 +430,8 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
 export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
   const [shields, setShields] = useState(0);
@@ -520,7 +523,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
       {phase !== 'gameover' && (
         <div className="flex items-center justify-between p-4 z-20 relative">
           <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t.menu}
           </Button>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">

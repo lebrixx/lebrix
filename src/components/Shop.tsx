@@ -108,7 +108,7 @@ export const Shop: React.FC<ShopProps> = ({
       const usedRaw = localStorage.getItem('ls_used_promo_codes');
       const used: string[] = usedRaw ? JSON.parse(usedRaw) : [];
       if (used.includes(code)) {
-        toast({ title: 'Code déjà utilisé', description: 'Ce code a déjà été échangé.', variant: 'destructive' });
+        toast({ title: t.codeAlreadyUsedTitle, description: t.codeAlreadyUsedDesc, variant: 'destructive' });
         return;
       }
       if (code === 'LEBRIX2026') {
@@ -117,9 +117,9 @@ export const Shop: React.FC<ShopProps> = ({
         used.push(code);
         localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
         setPromoCode('');
-        toast({ title: '🎁 Code activé !', description: 'Passe de combat débloqué + 1150 coins reçus !' });
+        toast({ title: t.codeActivatedTitle, description: t.codeActivatedDesc });
       } else {
-        toast({ title: 'Code invalide', description: 'Vérifie ton code et réessaie.', variant: 'destructive' });
+        toast({ title: t.codeInvalidTitle, description: t.codeInvalidDesc, variant: 'destructive' });
       }
     } catch {
       toast({ title: 'Erreur', description: 'Impossible d\'activer le code.', variant: 'destructive' });
@@ -589,7 +589,7 @@ export const Shop: React.FC<ShopProps> = ({
                       </div>
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-text-primary">
-                          {mode.name}
+                          {(mode as any).isTicketPack ? t.ticketPackRotatingCube : mode.name}
                         </h3>
                         {isUnlocked && (
                           <Badge variant="secondary" className="mt-1">

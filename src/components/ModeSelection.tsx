@@ -105,10 +105,10 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           >
             <Star className="w-4 h-4 mr-2" />
             {canSpin
-              ? 'Bonus x2 disponible'
+              ? t.bonusX2Available
               : bonusMode
                 ? `${cfgModes[bonusMode].name} — x2 actif`
-                : 'Bonus x2'}
+                : t.bonusX2}
           </Button>
           {!canSpin && bonusMode && countdown && (
             <p className="text-text-muted text-xs mt-2 flex items-center justify-center gap-1.5">
@@ -176,7 +176,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 <div className="absolute top-3 right-3 z-10">
                   <Badge className={isComingSoon ? 'bg-primary/90 text-white border-primary' : isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
                     <Lock className="w-3 h-3 mr-1" />
-                    {isComingSoon ? 'Bientôt' : isPongChallenge ? t.challengeRequired : t.locked}
+                    {isComingSoon ? t.soonLabel : isPongChallenge ? t.challengeRequired : t.locked}
                   </Badge>
                 </div>
               )}

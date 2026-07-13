@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from 'lucide-react';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 export const MonthlyTimer: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState('');
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     const update = () => {
@@ -12,7 +15,7 @@ export const MonthlyTimer: React.FC = () => {
       const diff = nextMonth.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeLeft('Nouveau mois !');
+        setTimeLeft(t.newMonthLabel);
         return;
       }
 
@@ -31,10 +34,11 @@ export const MonthlyTimer: React.FC = () => {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [t.newMonthLabel]);
 
+  const locale = language === 'es' ? 'es-ES' : language === 'en' ? 'en-US' : 'fr-FR';
   const now = new Date();
-  const monthName = now.toLocaleDateString('fr-FR', { month: 'long' });
+  const monthName = now.toLocaleDateString(locale, { month: 'long' });
 
   return (
     <Badge variant="outline" className="flex items-center gap-1.5 px-3 py-1.5 border-primary/30 bg-primary/5">

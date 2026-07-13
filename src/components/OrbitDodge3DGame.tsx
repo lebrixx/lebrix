@@ -10,6 +10,7 @@ import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 /**
  * Orbit Dodge — Cahier des charges fidèle.
@@ -468,6 +469,8 @@ const Scene: React.FC<SceneProps> = ({ angleRef, onScore, onDie, onNextHole, pla
 export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [score, setScore] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
@@ -632,7 +635,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
                     <div className={`w-1.5 h-1.5 rounded-full ${aligned ? 'bg-emerald-300' : 'bg-amber-300'}`} />
                   </div>
                   <div className={`text-[10px] uppercase tracking-wider font-semibold ${aligned ? 'text-emerald-300' : 'text-amber-200'}`}>
-                    {aligned ? 'Aligné' : "Vise l'ouverture"}
+                    {aligned ? t.alignedLabel : t.aimOpening}
                   </div>
                 </div>
               </div>
