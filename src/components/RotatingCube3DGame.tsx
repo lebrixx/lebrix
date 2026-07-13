@@ -523,7 +523,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
       {phase !== 'gameover' && (
         <div className="flex items-center justify-between p-4 z-20 relative">
           <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t.menu}
           </Button>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">
