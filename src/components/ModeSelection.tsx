@@ -105,10 +105,10 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
           >
             <Star className="w-4 h-4 mr-2" />
             {canSpin
-              ? 'Bonus x2 disponible'
+              ? t.bonusX2Available
               : bonusMode
                 ? `${cfgModes[bonusMode].name} — x2 actif`
-                : 'Bonus x2'}
+                : t.bonusX2}
           </Button>
           {!canSpin && bonusMode && countdown && (
             <p className="text-text-muted text-xs mt-2 flex items-center justify-center gap-1.5">
