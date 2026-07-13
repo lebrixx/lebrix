@@ -286,8 +286,8 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
   const handleBoostsInfo = () => {
     playClick();
     toast({
-      title: 'Boosts indisponibles',
-      description: 'Les boosts ne sont pas utilisables dans ce mode.',
+      title: t.boostsUnavailableTitle,
+      description: t.boostsUnavailableDesc,
       duration: 2000,
     });
   };
