@@ -60,7 +60,7 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
       addBoost(reward.boostId);
       const boostNames: Record<string, string> = {
         shield: t.shield || 'Bouclier',
-        bigger_zone: 'Convertisseur de score',
+        bigger_zone: t.convertScoreName,
         start_20: t.start20 || 'Départ +20',
       };
       toast({
@@ -122,7 +122,7 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
     } else if (reward.type === 'boost') {
       const boostNames: Record<string, string> = {
         shield: t.shield,
-        bigger_zone: 'Convertisseur de score',
+        bigger_zone: t.convertScoreName,
         start_20: t.start20,
       };
       return boostNames[reward.boostId] || 'Boost';
