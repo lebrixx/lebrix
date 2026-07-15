@@ -50,7 +50,7 @@ export const translations = {
   fr: {
     // Main Menu
     title: 'LUCKY STOP',
-    subtitle: 'Tapez dans la zone verte au bon moment!',
+    subtitle: '',
     bestScore: 'Meilleur Score',
     coins: 'Coins',
     playNow: 'JOUER MAINTENANT',
@@ -845,7 +845,7 @@ export const translations = {
   },
   en: {
     title: 'LUCKY STOP',
-    subtitle: 'Tap in the green zone at the right time!',
+    subtitle: '',
     bestScore: 'Best Score',
     coins: 'Coins',
     playNow: 'PLAY NOW',
@@ -1616,7 +1616,7 @@ export const translations = {
   },
   es: {
     title: 'LUCKY STOP',
-    subtitle: '¡Toca en la zona verde en el momento justo!',
+    subtitle: '',
     bestScore: 'Mejor Puntuación',
     coins: 'Monedas',
     playNow: 'JUGAR AHORA',

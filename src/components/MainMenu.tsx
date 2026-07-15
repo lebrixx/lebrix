@@ -255,12 +255,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={() => setShowSeasonPass(true)}
             variant="ghost"
             size="sm"
-            className={`relative hover:bg-secondary/20 transition-all duration-300 gap-2 px-3 py-2 border ${hasPassReward ? 'animate-pulse-glow border-secondary/60 bg-secondary/10' : 'border-secondary/30 bg-secondary/5'}`}
+            className={`relative hover:bg-secondary/20 transition-all duration-300 gap-2 px-3.5 py-2.5 border ${hasPassReward ? 'animate-pulse-glow border-secondary/60 bg-secondary/10' : 'border-secondary/30 bg-secondary/5'}`}
           >
-            <Crown className="w-6 h-6 text-secondary drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]" />
+            <Crown className="w-7 h-7 text-secondary drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]" />
             <div className="flex flex-col items-start leading-none">
-              <span className="text-sm font-bold text-secondary">Pass</span>
-              <span className="text-[10px] text-text-muted">Saison</span>
+              <span className="text-base font-bold text-secondary">Pass</span>
+              <span className="text-[11px] text-text-muted">Saison</span>
             </div>
             {hasPassReward && (
               <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_hsl(var(--secondary)/0.8)]" />
@@ -279,12 +279,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
         </div>
 
-        {/* Subtitle */}
-        <div className="text-center mb-3">
-          <p className="text-text-secondary text-base">
-            {t.subtitle}
-          </p>
-        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
