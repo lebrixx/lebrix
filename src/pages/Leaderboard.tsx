@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Trophy, Medal, Award, Crown, Target, ChevronsDown } from 'lucide-react';
 import { fetchTop, Score } from '@/utils/scoresApi';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, translations } from '@/hooks/useLanguage';
+
 
 interface LeaderboardEntry {
   username: string;
@@ -33,7 +35,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
 
   const fetchLeaderboard = async (mode: string) => {
     setLoading(true);
@@ -43,10 +48,11 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
     } catch (error: any) {
       console.error('Error fetching leaderboard:', error);
       toast({
-        title: "Erreur de connexion",
-        description: error.message || "Impossible de charger le classement.",
+        title: t.connectionErrorTitle,
+        description: error.message || t.loadLeaderboardError,
         variant: "destructive"
       });
+
     }
     setLoading(false);
   };
@@ -103,17 +109,18 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           className="mb-4 border-wheel-border hover:bg-button-hover"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
+          {t.back}
         </Button>
 
         <div className="text-center mb-6">
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-            CLASSEMENT
+            {t.leaderboardTitle}
           </h1>
           <p className="text-text-secondary">
-            Comparez vos performances avec les autres joueurs
+            {t.comparePerformances}
           </p>
         </div>
+
 
         {/* Mode Selection */}
         <div className="flex flex-wrap gap-2 justify-center mb-6">
@@ -143,9 +150,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
         ) : leaderboard.length === 0 ? (
           <Card className="p-8 text-center bg-button-bg border-wheel-border">
             <Trophy className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />
-            <p className="text-text-muted">Aucun score enregistré pour ce mode</p>
-            <p className="text-text-muted text-sm">Soyez le premier à jouer !</p>
+            <p className="text-text-muted">{t.noScoresForMode}</p>
+            <p className="text-text-muted text-sm">{t.beFirstToPlay}</p>
           </Card>
+
         ) : (
           <div className="space-y-2">
             {leaderboard.map((entry, index) => (
@@ -184,7 +192,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           onClick={handleScrollButton}
           size="icon"
           className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/40 border border-wheel-border/50 hover:bg-button-bg/60 shadow-lg backdrop-blur-sm transition-all hover:scale-110 z-50"
-          aria-label={isAtTop ? 'Aller en bas' : 'Revenir en haut'}
+          aria-label={isAtTop ? t.scrollToBottom : t.scrollToTop}
         >
           <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${isAtTop ? '' : 'rotate-180'}`} />
         </Button>
