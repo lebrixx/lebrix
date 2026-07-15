@@ -271,7 +271,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                       </div>
                       <p>{t.pongUnlockDesc.replace('{target}', String(PONG_UNLOCK_TARGET))}</p>
                       {pongUnlock && (
-                        <p className="mt-1 font-bold text-secondary">{t.progress}: {pongUnlock.done}/{pongUnlock.total}</p>
+                        <p className="mt-1 font-bold text-secondary">Progression : {pongUnlock.done}/{pongUnlock.total}</p>
                       )}
 
                     </div>

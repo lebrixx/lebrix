@@ -5,6 +5,8 @@ import { Play, Zap, Trophy, X } from 'lucide-react';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { ModeType, ModeID } from '@/constants/modes';
+import { useLanguage, translations } from '@/hooks/useLanguage';
+
 
 export interface GameRule {
   icon: React.ReactNode;
@@ -30,7 +32,7 @@ interface GameStartOverlayProps {
 export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
   title,
   titleGradient = 'from-cyan-300 via-fuchsia-300 to-pink-300',
-  bestLabel = 'Record',
+  bestLabel,
   bestValue,
   rules,
   currentMode,
@@ -41,6 +43,10 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
 }) => {
   const [showBoostPicker, setShowBoostPicker] = useState(false);
   const { getBoostCount } = useBoosts();
+  const { language } = useLanguage();
+  const t = translations[language];
+  const finalBestLabel = bestLabel ?? t.recordLabel;
+
 
   const isBoostAvailable = (boostId: BoostType): boolean => {
     // Bouclier autorisé uniquement dans : Cube Dodge, Falling Tunnel, Orbit Dodge, Rotating Cube
@@ -81,8 +87,9 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
             </h2>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm border border-wheel-border">
               <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-[10px] uppercase tracking-wider text-text-muted">{bestLabel}</span>
+              <span className="text-[10px] uppercase tracking-wider text-text-muted">{finalBestLabel}</span>
               <span className="text-sm font-bold tabular-nums text-amber-300">{bestValue}</span>
+
             </div>
           </div>
 
@@ -125,10 +132,10 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
                 </div>
                 <div className="flex-1 min-w-0 text-left">
                   <div className="text-sm font-extrabold text-text-primary uppercase tracking-wide leading-none">
-                    Boosts
+                    {t.boostsLabel}
                   </div>
                   <div className="text-[11px] text-text-secondary font-medium leading-tight mt-1">
-                    Équipe des bonus pour booster ta partie
+                    {t.boostsDesc}
                   </div>
                 </div>
                 <div className="shrink-0 text-primary text-lg font-bold opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
@@ -142,9 +149,10 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
           <div className="text-center select-none mt-12">
             <div className="text-2xl font-extrabold text-primary animate-pulse flex items-center gap-2.5 drop-shadow-[0_2px_8px_hsl(var(--primary)/0.6)]">
               <Play className="w-6 h-6 fill-primary" />
-              Touche l'écran pour jouer
+              {t.tapToPlayBig}
             </div>
           </div>
+
         </div>
       )}
 
@@ -160,7 +168,7 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
             <div className="flex items-center justify-between px-5 py-4 border-b border-wheel-border">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-amber-400" />
-                <h3 className="text-lg font-bold text-text-primary">Sélectionne tes boosts</h3>
+                <h3 className="text-lg font-bold text-text-primary">{t.selectYourBoosts}</h3>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setShowBoostPicker(false)}>
                 <X className="w-5 h-5" />
@@ -193,7 +201,7 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
                       </div>
                       <div className="text-[11px] text-text-muted leading-tight mt-0.5">{boost.description}</div>
                       {!available && (
-                        <div className="text-[10px] text-red-400 mt-0.5">Indisponible dans ce mode</div>
+                        <div className="text-[10px] text-red-400 mt-0.5">{t.unavailableInThisMode}</div>
                       )}
                     </div>
                     {selected && (
@@ -210,7 +218,7 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
                 onClick={() => setShowBoostPicker(false)}
                 className="w-full bg-gradient-primary py-5 font-bold"
               >
-                Valider
+                {t.validateLabel}
               </Button>
             </div>
           </div>
