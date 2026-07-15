@@ -253,13 +253,13 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
                       <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm">
                         <Lock className="w-4 h-4" />
-                        Bientôt disponible
+                        {t.comingSoonMode}
                       </div>
-                      <p className="text-xs text-text-muted mt-1">Ce mode sort prochainement, reste à l'affût !</p>
+                      <p className="text-xs text-text-muted mt-1">{t.comingSoonModeDesc}</p>
                     </div>
                     <Button disabled className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed">
                       <Lock className="w-4 h-4 mr-2" />
-                      Verrouillé
+                      {t.lockedShort}
                     </Button>
                   </div>
                 ) : isPongChallenge ? (
@@ -269,10 +269,11 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                         <Trophy className="w-3.5 h-3.5" />
                         {t.unlockChallenge}
                       </div>
-                      <p>Atteins un score de {PONG_UNLOCK_TARGET}+ dans chacun des autres modes.</p>
+                      <p>{t.pongUnlockDesc.replace('{target}', String(PONG_UNLOCK_TARGET))}</p>
                       {pongUnlock && (
                         <p className="mt-1 font-bold text-secondary">Progression : {pongUnlock.done}/{pongUnlock.total}</p>
                       )}
+
                     </div>
                     <Button
                       onClick={onOpenChallenges}

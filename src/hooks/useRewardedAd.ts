@@ -1,11 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Rewarded, RewardKind, REWARDED_COOLDOWN_EVENT } from '@/ads/RewardedService';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 export const useRewardedAd = () => {
   const [isShowing, setIsShowing] = useState(false);
   const [cooldownTick, setCooldownTick] = useState(0);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   // Écouter les événements de changement de cooldown
   useEffect(() => {
@@ -27,14 +30,14 @@ export const useRewardedAd = () => {
       const cooldown = Rewarded.getCooldownRemaining();
       if (cooldown > 0) {
         toast({
-          title: "Pub en cooldown",
-          description: `Réessaye dans ${cooldown} secondes.`,
+          title: t.adCooldownTitle,
+          description: t.adCooldownDesc.replace('{time}', String(cooldown)),
           variant: 'destructive',
         });
       } else {
         toast({
-          title: "Pub indisponible",
-          description: "La pub n'est pas encore prête. Réessaye dans quelques instants.",
+          title: t.adUnavailableTitle,
+          description: t.adUnavailableDesc,
           variant: 'destructive',
         });
       }
@@ -46,25 +49,23 @@ export const useRewardedAd = () => {
     try {
       const result = await Rewarded.show(kind);
 
-      // Reset state immédiatement après le retour de la promesse
       setIsShowing(false);
 
       if (result.status === 'rewarded') {
         console.log(`[useRewardedAd] Reward earned for ${kind} (${result.ms}ms)`);
-        // Petit délai pour laisser l'UI se mettre à jour après la pub
         await new Promise(r => setTimeout(r, 100));
         return true;
       } else if (result.status === 'closed') {
         toast({
-          title: "Pub fermée",
-          description: "Tu n'as pas reçu la récompense car la pub n'a pas été complétée.",
+          title: t.adClosedTitle,
+          description: t.adClosedDesc,
           variant: 'destructive',
         });
         return false;
       } else {
         toast({
-          title: "Erreur",
-          description: "Une erreur s'est produite. Réessaye plus tard.",
+          title: t.errorTitle,
+          description: t.errorGenericDesc,
           variant: 'destructive',
         });
         return false;
@@ -73,15 +74,14 @@ export const useRewardedAd = () => {
       console.error('[useRewardedAd] Error showing ad:', error);
       setIsShowing(false);
       toast({
-        title: "Erreur",
-        description: "Une erreur s'est produite. Réessaye plus tard.",
+        title: t.errorTitle,
+        description: t.errorGenericDesc,
         variant: 'destructive',
       });
       return false;
     }
-  }, [isShowing, toast]);
+  }, [isShowing, toast, t]);
 
-  // Forcer le recalcul quand cooldownTick change
   const getCooldown = useCallback(() => {
     return Rewarded.getCooldownRemaining();
   }, [cooldownTick]);

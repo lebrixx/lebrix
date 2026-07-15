@@ -176,9 +176,10 @@ const Index = () => {
       if (bonus > 0) {
         addCoins(bonus);
         toast({
-          title: '💰 Convertisseur de score',
-          description: `+${bonus} pièces bonus !`,
+          title: t.convertBonusTitle,
+          description: t.convertBonusDesc.replace('{bonus}', String(bonus)),
         });
+
       }
     }
 
@@ -251,10 +252,11 @@ const Index = () => {
   const handleModeChange = (mode: ModeType, selectedBoosts?: BoostType[]) => {
     if (gameState.gameStatus === 'running') {
       toast({
-        title: "Impossible de changer de mode",
-        description: "Termine ta partie actuelle pour changer de mode.",
+        title: t.cantSwitchModeTitle,
+        description: t.cantSwitchModeDesc,
         variant: "destructive"
       });
+
       return;
     }
 

@@ -193,7 +193,8 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
         <button
           onPointerDown={(e) => { e.stopPropagation(); setPhase('intro'); }}
           onClick={(e) => e.stopPropagation()}
-          aria-label="Fermer"
+          aria-label={t.close}
+
           className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 z-10 w-10 h-10 rounded-full bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] flex items-center justify-center text-[hsl(var(--text-primary))] active:scale-95">
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -233,7 +234,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
             setPhase('intro');
           }}
           onClick={(e) => e.stopPropagation()}
-          aria-label="Fermer"
+          aria-label={t.close}
           className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 z-10 w-10 h-10 rounded-full bg-[hsl(var(--wheel-base))] border border-[hsl(var(--wheel-border)/0.5)] flex items-center justify-center text-[hsl(var(--text-primary))] active:scale-95">
           <ArrowLeft className="w-5 h-5" />
         </button>

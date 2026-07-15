@@ -541,7 +541,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
               <div className="px-4">
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-bold flex items-center gap-1.5">
                   <Star className="w-3 h-3 text-yellow-400" />
-                  {unlockedDecorations.filter(d => !d.isColorReward).length} / {DECORATIONS.filter(d => !d.isColorReward).length} débloquée{unlockedDecorations.filter(d => !d.isColorReward).length > 1 ? 's' : ''}
+                  {unlockedDecorations.filter(d => !d.isColorReward).length} / {DECORATIONS.filter(d => !d.isColorReward).length} {unlockedDecorations.filter(d => !d.isColorReward).length > 1 ? t.unlockedFemPlural : t.unlockedFemSingular}
                 </p>
                 <div className="space-y-1.5">
                   {DECORATIONS.filter(d => !d.isColorReward).map((deco) => {

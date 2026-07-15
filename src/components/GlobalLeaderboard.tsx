@@ -177,10 +177,11 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
       setLeaderboard(data);
     } catch {
       toast({
-        title: "Erreur de connexion",
-        description: "Impossible de charger le classement global.",
+        title: t.connectionErrorTitle,
+        description: t.loadGlobalLeaderboardError,
         variant: "destructive"
       });
+
     }
     setLoading(false);
   }, []);
@@ -193,10 +194,11 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
       setMonthlyLeaderboard(data);
     } catch {
       toast({
-        title: "Erreur de connexion",
-        description: "Impossible de charger le classement mensuel.",
+        title: t.connectionErrorTitle,
+        description: t.loadMonthlyLeaderboardError,
         variant: "destructive"
       });
+
     }
     setMonthlyLoading(false);
   }, []);
@@ -262,7 +264,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
             className="border-wheel-border hover:bg-button-hover"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour
+            {t.back}
           </Button>
         </div>
 
@@ -270,9 +272,10 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
           <div className="flex items-center justify-center gap-2 mb-2">
             <Globe className="w-8 h-8 text-primary drop-shadow-[0_0_10px_hsl(var(--primary)/0.5)]" />
             <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              CLASSEMENT GLOBAL
+              {t.globalLeaderboardTitle}
             </h1>
           </div>
+
           <p className="text-text-secondary text-sm max-w-xs mx-auto">
             {selectedTab === 'general'
               ? t.globalRankingHowItWorks
@@ -289,8 +292,9 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
               className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
             >
               <Calendar className="w-4 h-4" />
-              Mensuel
+              {t.monthlyTab}
             </TabsTrigger>
+
             <TabsTrigger
               value="general"
               className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
@@ -327,8 +331,9 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
               <div className="text-right">
                 <div className="text-primary font-bold text-lg">{activeData[userRank - 1]?.total_score || 0}</div>
                 <div className="text-[10px] text-text-muted">
-                  {selectedTab === 'general' ? 'Score Global' : 'Score Mensuel'}
+                  {selectedTab === 'general' ? t.globalScoreLabel : t.monthlyScoreLabel}
                 </div>
+
               </div>
             </div>
           </Card>
@@ -355,9 +360,10 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
               loading={monthlyLoading}
               currentUsername={currentUsername || ''}
               emptyIcon={<Calendar className="w-16 h-16 mx-auto mb-4 text-text-muted opacity-50" />}
-              emptyText="Aucun score ce mois-ci"
+              emptyText={t.noScoreThisMonth}
               emptySubtext={t.playToAppear}
-              scoreLabel="pts ce mois"
+              scoreLabel={t.ptsThisMonth}
+
             />
           </TabsContent>
         </Tabs>
