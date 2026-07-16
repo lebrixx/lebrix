@@ -41,6 +41,7 @@ interface Wave {
   cells?: [number, number][];
   phase: 'warn' | 'danger' | 'done';
   timer: number;
+  dangerDuration: number;
   sig: string;
 }
 
@@ -227,7 +228,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
   };
 
   const pickWave = (): Wave => {
-    for (let tries = 0; tries < 8; tries++) {
+    for (let tries = 0; tries < 12; tries++) {
       const r = Math.random();
       let kind: WaveKind;
       if (r < 0.18) kind = 'cluster';
@@ -249,13 +250,20 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       } else {
         sig = `${kind}:0`;
       }
-      if (sig !== state.current.lastSig && sig !== state.current.prevSig) {
-        return { kind, index, cells, phase: 'warn', timer: 0, sig };
+      // Interdit strictement le même pattern deux fois de suite
+      if (sig !== state.current.lastSig) {
+        return { kind, index, cells, phase: 'warn', timer: 0, dangerDuration: 0.55, sig };
       }
     }
-    // fallback
-    const index = Math.floor(Math.random() * GRID);
-    return { kind: 'row', index, phase: 'warn', timer: 0, sig: `row:${index}` };
+    // fallback : garantit un sig différent du précédent
+    let index = Math.floor(Math.random() * GRID);
+    let sig = `row:${index}`;
+    if (sig === state.current.lastSig) {
+      index = (index + 1) % GRID;
+      sig = `col:${index}`;
+    }
+    const kind: WaveKind = sig.startsWith('row') ? 'row' : 'col';
+    return { kind, index, phase: 'warn', timer: 0, dangerDuration: 0.55, sig };
   };
 
   useFrame((_, dt) => {
@@ -278,11 +286,10 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       else if (d === 'down') p.j = Math.min(GRID - 1, p.j + 1);
     }
 
-    // Difficulté progressive : combine temps écoulé et score (nb de vagues survécues)
-    // Objectif : dépasser 100 doit devenir réellement compliqué.
-    const diff = 1 + s.elapsed / 22 + s.survived / 35;
-    const interval = Math.max(0.42, 1.9 / diff);
-    const warnTime = Math.max(0.48, 1.55 / diff);
+    // Difficulté progressive : combine temps écoulé et score, ramp légèrement adouci.
+    const diff = 1 + s.elapsed / 28 + s.survived / 45;
+    const interval = Math.max(0.48, 1.9 / diff);
+    const warnTime = Math.max(0.52, 1.55 / diff);
     const maxConcurrent = s.survived < 25 ? 2 : s.survived < 60 ? 3 : s.survived < 110 ? 4 : 5;
     const activeCount = s.waves.filter(w => w.phase !== 'done').length;
 
@@ -301,9 +308,15 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       if (w.phase === 'done') continue;
       w.timer -= dt;
       if (w.phase === 'warn') {
-        if (w.timer <= 0) { w.phase = 'danger'; w.timer = Math.max(0.32, 0.55 / Math.sqrt(diff)); }
+        if (w.timer <= 0) {
+          w.phase = 'danger';
+          w.dangerDuration = Math.max(0.35, 0.55 / Math.sqrt(diff));
+          w.timer = w.dangerDuration;
+        }
       } else if (w.phase === 'danger') {
-        if (onWaveAt(w, player.i, player.j) && w.timer > 0.35) {
+        // Un joueur présent sur la vague dans les 60% initiaux de la phase "danger" est touché.
+        const hitWindow = w.dangerDuration * 0.4;
+        if (onWaveAt(w, player.i, player.j) && w.timer > hitWindow) {
           if (s.shields > 0) {
             s.shields -= 1;
             onShields(s.shields);
