@@ -228,7 +228,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
   };
 
   const pickWave = (): Wave => {
-    for (let tries = 0; tries < 8; tries++) {
+    for (let tries = 0; tries < 12; tries++) {
       const r = Math.random();
       let kind: WaveKind;
       if (r < 0.18) kind = 'cluster';
@@ -250,13 +250,20 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       } else {
         sig = `${kind}:0`;
       }
-      if (sig !== state.current.lastSig && sig !== state.current.prevSig) {
-        return { kind, index, cells, phase: 'warn', timer: 0, sig };
+      // Interdit strictement le même pattern deux fois de suite
+      if (sig !== state.current.lastSig) {
+        return { kind, index, cells, phase: 'warn', timer: 0, dangerDuration: 0.55, sig };
       }
     }
-    // fallback
-    const index = Math.floor(Math.random() * GRID);
-    return { kind: 'row', index, phase: 'warn', timer: 0, sig: `row:${index}` };
+    // fallback : garantit un sig différent du précédent
+    let index = Math.floor(Math.random() * GRID);
+    let sig = `row:${index}`;
+    if (sig === state.current.lastSig) {
+      index = (index + 1) % GRID;
+      sig = `col:${index}`;
+    }
+    const kind: WaveKind = sig.startsWith('row') ? 'row' : 'col';
+    return { kind, index, phase: 'warn', timer: 0, dangerDuration: 0.55, sig };
   };
 
   useFrame((_, dt) => {
