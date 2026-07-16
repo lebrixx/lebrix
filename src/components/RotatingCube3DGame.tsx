@@ -41,6 +41,7 @@ interface Wave {
   cells?: [number, number][];
   phase: 'warn' | 'danger' | 'done';
   timer: number;
+  dangerDuration: number;
   sig: string;
 }
 
