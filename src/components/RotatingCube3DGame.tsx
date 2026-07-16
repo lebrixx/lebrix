@@ -278,10 +278,12 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       else if (d === 'down') p.j = Math.min(GRID - 1, p.j + 1);
     }
 
-    const diff = 1 + s.elapsed / 55;
-    const interval = Math.max(1.0, 1.9 / diff);
-    const warnTime = Math.max(0.95, 1.55 / diff);
-    const maxConcurrent = 2;
+    // Difficulté progressive : combine temps écoulé et score (nb de vagues survécues)
+    // Objectif : dépasser 100 doit devenir réellement compliqué.
+    const diff = 1 + s.elapsed / 22 + s.survived / 35;
+    const interval = Math.max(0.42, 1.9 / diff);
+    const warnTime = Math.max(0.48, 1.55 / diff);
+    const maxConcurrent = s.survived < 25 ? 2 : s.survived < 60 ? 3 : s.survived < 110 ? 4 : 5;
     const activeCount = s.waves.filter(w => w.phase !== 'done').length;
 
     if (s.spawn > interval && activeCount < maxConcurrent) {
@@ -299,7 +301,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       if (w.phase === 'done') continue;
       w.timer -= dt;
       if (w.phase === 'warn') {
-        if (w.timer <= 0) { w.phase = 'danger'; w.timer = 0.55; }
+        if (w.timer <= 0) { w.phase = 'danger'; w.timer = Math.max(0.32, 0.55 / Math.sqrt(diff)); }
       } else if (w.phase === 'danger') {
         if (onWaveAt(w, player.i, player.j) && w.timer > 0.35) {
           if (s.shields > 0) {
