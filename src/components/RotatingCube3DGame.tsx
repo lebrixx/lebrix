@@ -301,7 +301,7 @@ const Scene: React.FC<SceneProps> = ({ posRef, cmdRef, onScore, onDie, onShields
       if (w.phase === 'done') continue;
       w.timer -= dt;
       if (w.phase === 'warn') {
-        if (w.timer <= 0) { w.phase = 'danger'; w.timer = 0.55; }
+        if (w.timer <= 0) { w.phase = 'danger'; w.timer = Math.max(0.32, 0.55 / Math.sqrt(diff)); }
       } else if (w.phase === 'danger') {
         if (onWaveAt(w, player.i, player.j) && w.timer > 0.35) {
           if (s.shields > 0) {
