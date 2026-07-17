@@ -44,6 +44,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onBack,
   onOpenShop,
   onOpenChallenges,
+  onOpenReflexGrid,
 }) => {
   const isGameRunning = gameStatus === 'running';
   const { language } = useLanguage();
