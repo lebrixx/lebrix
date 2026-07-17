@@ -19,6 +19,7 @@ interface ModeSelectionProps {
   onBack: () => void;
   onOpenShop: (target?: 'orbit' | 'tickets') => void;
   onOpenChallenges?: () => void;
+  onOpenReflexGrid?: () => void;
 }
 
 const getModeIcon = (modeId: ModeType) => {
