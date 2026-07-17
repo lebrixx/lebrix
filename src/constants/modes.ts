@@ -90,8 +90,8 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.PONG_CIRCULAIRE]: {
-    name: "Pong Circulaire",
-    desc: "Déplace la zone verte avec ton doigt pour renvoyer la bille. À chaque renvoi, elle accélère ! Si elle touche le bord hors de la zone verte, c'est perdu.",
+    name: "Reflex Grid",
+    desc: "Grille 3×3 : tape la case verte avant qu'elle ne disparaisse, mais évite les leurres rouges. Rythme progressif, une erreur = fin.",
     zoneArc: Math.PI / 4,
     keepMovingZone: false,
     survival: false,

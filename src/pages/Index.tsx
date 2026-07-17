@@ -13,6 +13,7 @@ import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
+import { ReflexGrid } from '@/components/ReflexGrid';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
@@ -37,7 +38,7 @@ import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard' | 'reflex_grid';
 
 const Index = () => {
   const { language } = useLanguage();
@@ -82,7 +83,7 @@ const Index = () => {
       }
     }
 
-    // Pong Circulaire: coming soon — toujours verrouillé
+    // Reflex Grid uses its own dedicated page — never appears in the free-modes list
     base = base.filter((m) => m !== 'pong_circulaire');
     return base;
   });
@@ -544,8 +545,12 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
               onOpenShop={(target) => { setShopTarget(target ?? null); setCurrentScreen('shop'); }}
               onOpenChallenges={() => setCurrentScreen('challenges')}
+              onOpenReflexGrid={() => setCurrentScreen('reflex_grid')}
             />
           );
+
+        case 'reflex_grid':
+          return <ReflexGrid onBack={() => setCurrentScreen('menu')} />;
 
 
           

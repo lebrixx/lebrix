@@ -160,6 +160,36 @@ export type Database = {
         }
         Relationships: []
       }
+      reflex_grid_scores: {
+        Row: {
+          best_score: number
+          created_at: string
+          decorations: string | null
+          device_id: string
+          id: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          best_score?: number
+          created_at?: string
+          decorations?: string | null
+          device_id: string
+          id?: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          best_score?: number
+          created_at?: string
+          decorations?: string | null
+          device_id?: string
+          id?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       scores: {
         Row: {
           best_score: number

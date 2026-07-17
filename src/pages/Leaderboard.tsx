@@ -24,8 +24,7 @@ const modeNames = {
   survie_60s: 'Stack Jump',
   zone_mobile: 'Falling Tunnel',
   zone_traitresse: 'Orbit Dodge',
-  memoire_expert: 'Rotating Cube',
-  pong_circulaire: 'Pong Circulaire'
+  memoire_expert: 'Rotating Cube'
 };
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
