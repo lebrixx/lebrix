@@ -545,8 +545,12 @@ const Index = () => {
               onBack={() => setCurrentScreen('menu')}
               onOpenShop={(target) => { setShopTarget(target ?? null); setCurrentScreen('shop'); }}
               onOpenChallenges={() => setCurrentScreen('challenges')}
+              onOpenReflexGrid={() => setCurrentScreen('reflex_grid')}
             />
           );
+
+        case 'reflex_grid':
+          return <ReflexGrid onBack={() => setCurrentScreen('menu')} />;
 
 
           
