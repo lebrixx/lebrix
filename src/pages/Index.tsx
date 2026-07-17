@@ -82,7 +82,7 @@ const Index = () => {
       }
     }
 
-    // Pong Circulaire: coming soon — toujours verrouillé
+    // Reflex Grid uses its own dedicated page — never appears in the free-modes list
     base = base.filter((m) => m !== 'pong_circulaire');
     return base;
   });
