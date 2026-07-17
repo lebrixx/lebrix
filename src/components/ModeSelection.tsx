@@ -144,13 +144,14 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
         {Object.entries(cfgModes).map(([modeId, config], idx) => {
-          const isComingSoon = modeId === ModeID.PONG_CIRCULAIRE;
-          const isCurrentMode = modeId === currentMode && !isComingSoon;
-          const isLocked = !unlockedModes.includes(modeId) || isComingSoon;
-          const canSelect = !isGameRunning && !isLocked;
-          const hasBonus = isBonusActive(modeId as ModeType) && !isComingSoon;
-          const isPongChallenge = modeId === ModeID.PONG_CIRCULAIRE && isLocked && !isComingSoon;
-          const pongUnlock = isPongChallenge ? getPongUnlockCount() : null;
+          const isReflexGrid = modeId === ModeID.PONG_CIRCULAIRE;
+          const isComingSoon = false;
+          const isCurrentMode = !isReflexGrid && modeId === currentMode;
+          const isLocked = !isReflexGrid && !unlockedModes.includes(modeId);
+          const canSelect = !isGameRunning && (!isLocked || isReflexGrid);
+          const hasBonus = !isReflexGrid && isBonusActive(modeId as ModeType);
+          const isPongChallenge = false;
+          const pongUnlock = null as null | { done: number; total: number };
 
           return (
             <Card
