@@ -314,7 +314,13 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                 </div>
               ) : (
                 <Button
-                  onClick={() => onSelectMode(modeId as ModeType)}
+                  onClick={() => {
+                    if (isReflexGrid) {
+                      onOpenReflexGrid?.();
+                    } else {
+                      onSelectMode(modeId as ModeType);
+                    }
+                  }}
                   disabled={!canSelect}
                   className={`
                     w-full transition-all duration-300
@@ -325,7 +331,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                   `}
                 >
                   <Zap className="w-4 h-4 mr-2" />
-                  {isCurrentMode ? t.playNowMode : t.selectMode}
+                  {isReflexGrid ? t.playNowMode : (isCurrentMode ? t.playNowMode : t.selectMode)}
                 </Button>
               )}
 
