@@ -13,6 +13,7 @@ import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
+import { ReflexGrid } from '@/components/ReflexGrid';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
