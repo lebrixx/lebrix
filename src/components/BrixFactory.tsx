@@ -177,8 +177,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     setState(next);
     saveState(next);
     toast({ title: '🎁 Bonus quotidien', description: `+${formatBrix(bonus.amount)} Brix (jour ${bonus.streak})` });
-    if (!getUsername()) setShowUsername(true);
-    else uploadScore(next);
+    if (getUsername()) uploadScore(next);
   };
 
   const deviceId = getDeviceId();
