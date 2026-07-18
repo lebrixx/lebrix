@@ -85,6 +85,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
+  const { toast: uiToast } = useToast();
+  const [brixUnlocked, setBrixUnlocked] = useState<boolean>(() => isBrixFactoryUnlocked());
+  useEffect(() => {
+    const check = () => setBrixUnlocked(isBrixFactoryUnlocked());
+    check();
+    const id = setInterval(check, 1500);
+    window.addEventListener('storage', check);
+    return () => { clearInterval(id); window.removeEventListener('storage', check); };
+  }, []);
 
   // Auto-open premium offer every 4 app launches OR daily tip (flags set in main.tsx)
   useEffect(() => {
