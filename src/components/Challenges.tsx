@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SeasonPass } from '@/components/SeasonPass';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
