@@ -213,33 +213,34 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
 
       <div className="max-w-md mx-auto px-4 pt-6 pb-16 flex flex-col gap-5">
         {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
+        <div className="flex flex-col items-center">
+          <div className="relative w-full flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
 
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] uppercase tracking-[0.35em] text-text-muted">Idle Reactor</span>
-            <h1 className="text-lg font-black tracking-tight">
-              BRIX <span className="text-primary">FACTORY</span>
-            </h1>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] uppercase tracking-[0.35em] text-text-muted">Idle Reactor</span>
+              <h1 className="text-xl font-black tracking-tight">
+                BRIX <span className="text-primary">FACTORY</span>
+              </h1>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 mt-4">
             <Dialog>
               <DialogTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
-                  aria-label="Comment jouer"
+                  className="h-9 px-4 rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10 text-text-primary text-xs font-bold uppercase tracking-widest"
                 >
-                  <Info className="w-4 h-4" />
+                  <Info className="w-4 h-4 mr-1.5" />
+                  Info
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-[hsl(240_28%_7%)] border-white/10 text-text-primary max-w-sm">
@@ -275,7 +276,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
               <SheetTrigger asChild>
                 <Button
                   onClick={openLeaderboard}
-                  className="h-9 px-3 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
+                  className="h-9 px-4 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
                 >
                   <Trophy className="w-4 h-4 mr-1.5" />
                   Classement
@@ -352,6 +353,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
             </Sheet>
           </div>
         </div>
+
 
 
         {/* Wallet card */}
