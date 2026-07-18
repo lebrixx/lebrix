@@ -81,7 +81,7 @@ export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactor
 }
 
 // ---- Bonus quotidien ----
-const DAILY_TIERS = [25, 50, 100, 150, 250, 400, 750];
+const DAILY_TIERS = [2, 5, 10, 15, 25, 40, 75];
 const DAY_MS = 24 * 3600 * 1000;
 
 export function dailyBonusStatus(s: BrixFactoryState) {
