@@ -594,7 +594,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
             const total = pongProgress.length;
 
             return (
-              <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+              <div ref={brixUnlockRef} className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
                 pongUnlocked
                   ? 'border-emerald-400/50 bg-gradient-to-br from-emerald-500/15 via-emerald-400/5 to-transparent'
                   : 'border-pink-500/40 bg-gradient-to-br from-pink-500/15 via-pink-500/5 to-primary/5'
