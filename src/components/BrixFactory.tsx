@@ -526,6 +526,119 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
         </div>
 
 
+
+
+        {/* Prestige — Fusion du Cœur */}
+        {(state.totalProduced >= PRESTIGE_THRESHOLD / 2 || state.cores > 0) && (
+          <Dialog open={prestigeOpen} onOpenChange={setPrestigeOpen}>
+            <DialogTrigger asChild>
+              <button
+                className={`group relative w-full rounded-2xl p-4 border text-left overflow-hidden transition-all ${
+                  canPrestige
+                    ? 'border-fuchsia-400/40 bg-gradient-to-r from-fuchsia-500/15 via-primary/10 to-fuchsia-500/15 hover:from-fuchsia-500/25 hover:to-fuchsia-500/25 cursor-pointer'
+                    : 'border-white/10 bg-white/[0.03] cursor-pointer hover:bg-white/[0.05]'
+                }`}
+              >
+                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-fuchsia-500/20 blur-3xl pointer-events-none" />
+                <div className="relative flex items-center gap-3">
+                  <div
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                      canPrestige ? 'bg-fuchsia-500/25 text-fuchsia-200' : 'bg-white/5 text-text-muted'
+                    }`}
+                  >
+                    <Atom className={`w-5 h-5 ${canPrestige ? 'animate-pulse' : ''}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold flex items-center gap-2">
+                      Fusion du Cœur
+                      {state.cores > 0 && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-200 font-mono">
+                          {state.cores} ⚛
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-text-muted mt-0.5">
+                      {canPrestige
+                        ? `Réinitialise pour gagner +${pendingCores} Cœur${pendingCores > 1 ? 's' : ''} de Fusion`
+                        : `Prochain Cœur à ${formatBrix(nextGainAt)} Brix produits`}
+                    </div>
+                    <div className="mt-2 relative h-1.5 rounded-full bg-white/5 overflow-hidden border border-white/10">
+                      <div
+                        className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${prestigeProgress}%`,
+                          background: 'linear-gradient(90deg, hsl(var(--primary)), #d946ef)',
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-fuchsia-200">
+                    {canPrestige ? 'Fusionner →' : 'Détails'}
+                  </span>
+                </div>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="bg-[hsl(240_28%_7%)] border-white/10 text-text-primary max-w-sm">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Atom className="w-5 h-5 text-fuchsia-300" /> Fusion du Cœur
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3 text-sm text-text-secondary mt-2">
+                <p>
+                  Réinitialise ton solde, ton stock et tes modules (Réacteur, Stockage, Amplificateur) pour
+                  obtenir des <span className="text-fuchsia-200 font-semibold">Cœurs de Fusion</span> permanents.
+                </p>
+                <p>
+                  Chaque Cœur ajoute <span className="text-fuchsia-200 font-semibold">+8%</span> de production
+                  définitive, cumulable avec les niveaux.
+                </p>
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-text-muted">Cœurs actuels</span>
+                    <span className="font-bold text-fuchsia-200">
+                      {state.cores} · ×{coreMultiplier(state.cores).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-text-muted">Gain à la fusion</span>
+                    <span className="font-bold text-fuchsia-200">
+                      +{pendingCores} ⚛ (×{coreMultiplier(state.cores + pendingCores).toFixed(2)})
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-text-muted">Produit sur cette run</span>
+                    <span className="font-mono">{formatBrix(state.runProduced)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-text-muted">Prochain Cœur à</span>
+                    <span className="font-mono">{formatBrix(nextGainAt)}</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-text-muted">
+                  Le total produit et le classement ne sont <span className="text-text-secondary">pas</span> réinitialisés.
+                </p>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => setPrestigeOpen(false)}
+                  className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  onClick={handlePrestige}
+                  disabled={!canPrestige}
+                  className="flex-1 bg-gradient-to-r from-fuchsia-500 to-primary text-white font-bold disabled:opacity-40"
+                >
+                  Fusionner
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
         {/* Daily bonus */}
         <button
           onClick={handleClaimBonus}
