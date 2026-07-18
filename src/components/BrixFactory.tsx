@@ -1,9 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Factory, Zap, Package, Sparkles, Gift, Trophy, RefreshCw, Hammer } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  ArrowLeft,
+  Factory,
+  Zap,
+  Package,
+  Sparkles,
+  Gift,
+  Trophy,
+  RefreshCw,
+  Hammer,
+  Flame,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   BrixFactoryState,
@@ -34,10 +44,11 @@ interface BrixFactoryProps {
 export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const { toast } = useToast();
   const [state, setState] = useState<BrixFactoryState>(() => loadState());
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
   const [leaderboard, setLeaderboard] = useState<BrixLeaderboardEntry[]>([]);
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState<string | null>(null);
+  const [lbOpen, setLbOpen] = useState(false);
   const [showUsername, setShowUsername] = useState(false);
   const lastSubmitRef = useRef(0);
   const harvestFlashRef = useRef<HTMLDivElement | null>(null);
@@ -57,7 +68,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Live production loop (1s)
+  // Live loop
   useEffect(() => {
     const id = window.setInterval(() => {
       setState((s) => {
@@ -73,7 +84,6 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     return () => window.clearInterval(id);
   }, []);
 
-  // Save on unmount / visibility change
   useEffect(() => {
     const onHide = () => saveState({ ...state, lastTick: Date.now() });
     document.addEventListener('visibilitychange', onHide);
@@ -84,7 +94,6 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     };
   }, [state]);
 
-  // Leaderboard
   const loadLeaderboard = async () => {
     setLbLoading(true);
     setLbError(null);
@@ -98,29 +107,22 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     }
   };
 
-  useEffect(() => {
-    loadLeaderboard();
-  }, []);
-
   const uploadScore = async (s: BrixFactoryState) => {
     const now = Date.now();
-    if (now - lastSubmitRef.current < 15000) return; // throttle 15s
+    if (now - lastSubmitRef.current < 15000) return;
     if (!getUsername()) return;
     lastSubmitRef.current = now;
-    const res = await submitBrixScore({
+    await submitBrixScore({
       totalProduced: s.totalProduced,
       reactorLevel: s.reactorLevel,
       storageLevel: s.storageLevel,
       amplifierLevel: s.amplifierLevel,
     });
-    if (res.success) {
-      loadLeaderboard();
-    }
   };
 
   const cap = storageCapacity(state.storageLevel);
   const pctStorage = cap > 0 ? Math.min(100, (state.stored / cap) * 100) : 0;
-  const storageFull = state.stored >= cap - 0.5;
+  const storageFull = state.stored >= cap - 0.05;
   const ppMin = productionPerMin(state);
 
   const handleHarvest = () => {
@@ -135,44 +137,43 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     };
     setState(next);
     saveState(next);
-    // Flash
     if (harvestFlashRef.current) {
       harvestFlashRef.current.classList.remove('animate-ping');
-      // reflow
       void harvestFlashRef.current.offsetWidth;
       harvestFlashRef.current.classList.add('animate-ping');
     }
-    if (!getUsername()) {
-      setShowUsername(true);
-    } else {
-      uploadScore(next);
-    }
+    if (!getUsername()) setShowUsername(true);
+    else uploadScore(next);
   };
 
   const buyReactor = () => {
     const cost = reactorCost(state.reactorLevel);
     if (state.brix < cost) return;
     const next = { ...state, brix: state.brix - cost, reactorLevel: state.reactorLevel + 1 };
-    setState(next); saveState(next);
+    setState(next);
+    saveState(next);
   };
   const buyStorage = () => {
     const cost = storageCost(state.storageLevel);
     if (state.brix < cost) return;
     const next = { ...state, brix: state.brix - cost, storageLevel: state.storageLevel + 1 };
-    setState(next); saveState(next);
+    setState(next);
+    saveState(next);
   };
   const buyAmplifier = () => {
     const cost = amplifierCost(state.amplifierLevel);
     if (state.brix < cost) return;
     const next = { ...state, brix: state.brix - cost, amplifierLevel: state.amplifierLevel + 1 };
-    setState(next); saveState(next);
+    setState(next);
+    saveState(next);
   };
 
   const bonus = dailyBonusStatus(state);
   const handleClaimBonus = () => {
     if (!bonus.available) return;
     const next = claimDailyBonus(state);
-    setState(next); saveState(next);
+    setState(next);
+    saveState(next);
     toast({ title: '🎁 Bonus quotidien', description: `+${formatBrix(bonus.amount)} Brix (jour ${bonus.streak})` });
     if (!getUsername()) setShowUsername(true);
     else uploadScore(next);
@@ -181,178 +182,307 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const deviceId = getDeviceId();
   const myRank = leaderboard.findIndex((r) => r.device_id === deviceId);
 
+  const openLeaderboard = () => {
+    setLbOpen(true);
+    loadLeaderboard();
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-game text-text-primary flex flex-col p-4 pt-8 pb-10">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-        </Button>
-        <div className="flex items-center gap-2">
-          <Factory className="w-6 h-6 text-primary" />
-          <h1 className="text-xl font-bold">Brix Factory</h1>
-        </div>
-        <div className="w-16" />
-      </div>
+    <div className="relative min-h-screen text-text-primary overflow-hidden">
+      {/* Atmospheric background */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(120% 80% at 50% -10%, hsl(var(--primary) / 0.35) 0%, transparent 55%), radial-gradient(80% 60% at 100% 100%, hsl(var(--secondary) / 0.25) 0%, transparent 60%), linear-gradient(180deg, hsl(240 30% 6%) 0%, hsl(240 25% 4%) 100%)',
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 opacity-[0.08] mix-blend-screen"
+        style={{
+          backgroundImage:
+            'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+          maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+        }}
+      />
 
-      {/* Stats */}
-      <Card className="p-4 bg-wheel-segment/50 border-wheel-border mb-4">
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <div className="text-text-muted text-xs">Brix</div>
-            <div className="text-2xl font-bold text-primary">{formatBrix(state.brix)}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-text-muted text-xs flex items-center justify-end gap-1"><Zap className="w-3 h-3" /> Production</div>
-            <div className="text-lg font-semibold text-secondary">{ppMin.toFixed(1)} / min</div>
-          </div>
-          <div>
-            <div className="text-text-muted text-xs">Total produit</div>
-            <div className="font-semibold">{formatBrix(state.totalProduced)}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-text-muted text-xs">Stockage</div>
-            <div className="font-semibold">{formatBrix(state.stored)} / {formatBrix(cap)}</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Reactor visual + harvest */}
-      <Card className="p-6 bg-wheel-segment/40 border-wheel-border mb-4 relative overflow-hidden">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative w-32 h-32 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse" />
-            <div className="absolute inset-3 rounded-full bg-primary/30 blur-md animate-pulse" style={{ animationDelay: '150ms' }} />
-            <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-primary via-secondary to-primary shadow-2xl shadow-primary/50 flex items-center justify-center">
-              <Factory className="w-12 h-12 text-white" />
-            </div>
-            <div ref={harvestFlashRef} className="absolute inset-0 rounded-full bg-secondary/40 opacity-0" />
-          </div>
-          <div className="w-full">
-            <Progress value={pctStorage} className="h-3" />
-            <div className="flex justify-between text-xs text-text-muted mt-1">
-              <span>{Math.floor(pctStorage)}%</span>
-              {storageFull && <span className="text-danger font-semibold">Stockage plein !</span>}
-            </div>
-          </div>
+      <div className="max-w-md mx-auto px-4 pt-6 pb-16 flex flex-col gap-5">
+        {/* Top bar */}
+        <div className="flex items-center justify-between">
           <Button
-            onClick={handleHarvest}
-            disabled={state.stored < 1}
-            className="w-full h-14 text-lg bg-gradient-primary hover:scale-[1.02] transition-transform disabled:opacity-50"
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
           >
-            <Hammer className="w-5 h-5 mr-2" />
-            Récolter {state.stored >= 1 ? formatBrix(state.stored) : ''}
+            <ArrowLeft className="w-4 h-4" />
           </Button>
-          {storageFull && (
-            <p className="text-xs text-danger text-center">
-              Récolte tes Brix pour relancer la production.
-            </p>
-          )}
-        </div>
-      </Card>
 
-      {/* Upgrades */}
-      <div className="mb-4">
-        <h2 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-2 flex items-center gap-2">
-          <Sparkles className="w-4 h-4" /> Améliorations
-        </h2>
-        <div className="space-y-2">
-          <UpgradeRow
-            icon={<Zap className="w-5 h-5" />}
-            title="Réacteur"
-            level={state.reactorLevel}
-            current={`+${(reactorRate(state.reactorLevel) * 60).toFixed(1)} Brix/min`}
-            next={`+${(reactorRate(state.reactorLevel + 1) * 60).toFixed(1)} Brix/min`}
-            cost={reactorCost(state.reactorLevel)}
-            brix={state.brix}
-            onBuy={buyReactor}
-          />
-          <UpgradeRow
-            icon={<Package className="w-5 h-5" />}
-            title="Stockage"
-            level={state.storageLevel}
-            current={`${formatBrix(storageCapacity(state.storageLevel))}`}
-            next={`${formatBrix(storageCapacity(state.storageLevel + 1))}`}
-            cost={storageCost(state.storageLevel)}
-            brix={state.brix}
-            onBuy={buyStorage}
-          />
-          <UpgradeRow
-            icon={<Sparkles className="w-5 h-5" />}
-            title="Amplificateur"
-            level={state.amplifierLevel}
-            current={`×${amplifierMult(state.amplifierLevel).toFixed(2)}`}
-            next={`×${amplifierMult(state.amplifierLevel + 1).toFixed(2)}`}
-            cost={amplifierCost(state.amplifierLevel)}
-            brix={state.brix}
-            onBuy={buyAmplifier}
-          />
-        </div>
-      </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] uppercase tracking-[0.35em] text-text-muted">Idle Reactor</span>
+            <h1 className="text-lg font-black tracking-tight">
+              BRIX <span className="text-primary">FACTORY</span>
+            </h1>
+          </div>
 
-      {/* Daily bonus */}
-      <Card className="p-4 bg-wheel-segment/40 border-wheel-border mb-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Gift className="w-5 h-5 text-secondary" />
+          <Sheet open={lbOpen} onOpenChange={setLbOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={openLeaderboard}
+                className="rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 border border-white/10 hover:from-secondary/40 hover:to-primary/40 relative"
+              >
+                <Trophy className="w-4 h-4" />
+                {myRank >= 0 && myRank < 10 && (
+                  <span className="absolute -top-1 -right-1 text-[9px] font-bold bg-secondary text-black rounded-full w-4 h-4 flex items-center justify-center">
+                    {myRank + 1}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="bg-[hsl(240_28%_7%)] border-white/10 max-h-[85vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-secondary" />
+                    Classement mondial
+                  </span>
+                  <Button size="icon" variant="ghost" onClick={loadLeaderboard} disabled={lbLoading}>
+                    <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="mt-4">
+                {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
+                {!lbError && lbLoading && leaderboard.length === 0 && (
+                  <p className="text-xs text-text-muted text-center py-8">Chargement…</p>
+                )}
+                {!lbError && !lbLoading && leaderboard.length === 0 && (
+                  <p className="text-xs text-text-muted text-center py-8">Sois le premier à figurer au classement.</p>
+                )}
+                {leaderboard.length > 0 && (
+                  <ul className="divide-y divide-white/5">
+                    {leaderboard.map((row, i) => {
+                      const isMe = row.device_id === deviceId;
+                      const medal =
+                        i === 0
+                          ? 'from-yellow-400/30 to-yellow-500/10 text-yellow-300'
+                          : i === 1
+                            ? 'from-slate-300/30 to-slate-400/10 text-slate-200'
+                            : i === 2
+                              ? 'from-amber-600/30 to-amber-700/10 text-amber-400'
+                              : 'from-white/5 to-transparent text-text-muted';
+                      return (
+                        <li
+                          key={row.device_id}
+                          className={`flex items-center justify-between py-2.5 px-2 text-sm rounded-md ${
+                            isMe ? 'bg-primary/10 border border-primary/30' : ''
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span
+                              className={`w-8 h-8 rounded-lg bg-gradient-to-br ${medal} flex items-center justify-center text-xs font-black`}
+                            >
+                              {i + 1}
+                            </span>
+                            <span className="truncate font-medium">{row.username}</span>
+                            {isMe && (
+                              <Badge variant="outline" className="border-primary text-primary text-[9px] px-1 py-0">
+                                Toi
+                              </Badge>
+                            )}
+                          </div>
+                          <span className="font-bold text-primary tabular-nums">
+                            {formatBrix(row.total_brix_produced)}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Wallet card */}
+        <div className="relative rounded-2xl p-5 border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-sm">
+          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-primary/30 blur-3xl" />
+          <div className="relative flex items-center justify-between">
             <div>
-              <div className="font-semibold text-sm">Bonus quotidien</div>
-              <div className="text-xs text-text-muted">
-                {bonus.available
-                  ? `Récupère +${formatBrix(bonus.amount)} Brix (jour ${bonus.streak})`
-                  : `Prochain bonus dans ${formatDuration(bonus.nextIn)}`}
+              <div className="text-[10px] uppercase tracking-widest text-text-muted mb-1">Solde</div>
+              <div className="text-4xl font-black tabular-nums bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+                {formatBrix(state.brix)}
+              </div>
+              <div className="text-xs text-text-muted mt-1">Brix</div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] uppercase tracking-widest text-text-muted mb-1 flex items-center gap-1 justify-end">
+                <Zap className="w-3 h-3 text-secondary" /> Cadence
+              </div>
+              <div className="text-lg font-bold text-secondary tabular-nums">{ppMin.toFixed(2)}/min</div>
+              <div className="text-[10px] text-text-muted mt-1">
+                Total produit : <span className="text-text-secondary">{formatBrix(state.totalProduced)}</span>
               </div>
             </div>
           </div>
-          <Button size="sm" disabled={!bonus.available} onClick={handleClaimBonus} className="bg-secondary hover:bg-secondary/90">
-            Récupérer
-          </Button>
         </div>
-      </Card>
 
-      {/* Leaderboard */}
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-text-muted uppercase tracking-wider flex items-center gap-2">
-          <Trophy className="w-4 h-4" /> Classement
-        </h2>
-        <Button size="sm" variant="ghost" onClick={loadLeaderboard} disabled={lbLoading}>
-          <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
-        </Button>
+        {/* Reactor centerpiece */}
+        <div className="relative rounded-3xl p-6 border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent overflow-hidden">
+          <div className="absolute inset-0 opacity-40" style={{
+            background: 'radial-gradient(circle at 50% 40%, hsl(var(--primary) / 0.35), transparent 60%)'
+          }} />
+
+          <div className="relative flex flex-col items-center gap-5">
+            {/* Rotating ring reactor */}
+            <div className="relative w-40 h-40 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border border-primary/30" style={{ animation: 'spin 18s linear infinite' }} />
+              <div className="absolute inset-3 rounded-full border border-dashed border-secondary/40" style={{ animation: 'spin 12s linear infinite reverse' }} />
+              <div className="absolute inset-6 rounded-full bg-primary/10 blur-xl animate-pulse" />
+              <div
+                className="relative w-24 h-24 rounded-2xl flex items-center justify-center shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.8)]"
+                style={{
+                  background:
+                    'conic-gradient(from 210deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)))',
+                }}
+              >
+                <div className="absolute inset-1 rounded-xl bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                  <Factory className="w-10 h-10 text-white drop-shadow-[0_0_12px_hsl(var(--primary))]" />
+                </div>
+              </div>
+              <div ref={harvestFlashRef} className="absolute inset-0 rounded-full bg-secondary/50 opacity-0" />
+            </div>
+
+            {/* Storage capsule */}
+            <div className="w-full">
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-text-muted mb-1.5">
+                <span>Stockage</span>
+                <span className="tabular-nums text-text-secondary">
+                  {formatBrix(state.stored)} / {formatBrix(cap)}
+                </span>
+              </div>
+              <div className="relative h-3 rounded-full bg-white/5 overflow-hidden border border-white/10">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pctStorage}%`,
+                    background:
+                      'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)))',
+                    boxShadow: '0 0 20px hsl(var(--primary) / 0.6)',
+                  }}
+                />
+                {storageFull && (
+                  <div className="absolute inset-0 animate-pulse bg-danger/20" />
+                )}
+              </div>
+              {storageFull && (
+                <p className="mt-1.5 text-[11px] text-danger flex items-center gap-1">
+                  <Flame className="w-3 h-3" /> Stockage saturé — récolte pour relancer.
+                </p>
+              )}
+            </div>
+
+            <Button
+              onClick={handleHarvest}
+              disabled={state.stored < 1}
+              className="w-full h-14 text-base font-bold uppercase tracking-widest bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0] transition-[background-position] duration-700 disabled:opacity-40 disabled:from-white/10 disabled:to-white/10 shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.6)]"
+            >
+              <Hammer className="w-5 h-5 mr-2" />
+              Récolter{state.stored >= 1 ? ` · ${formatBrix(state.stored)}` : ''}
+            </Button>
+          </div>
+        </div>
+
+        {/* Daily bonus */}
+        <button
+          onClick={handleClaimBonus}
+          disabled={!bonus.available}
+          className={`group relative w-full rounded-2xl p-4 border text-left transition-all ${
+            bonus.available
+              ? 'border-secondary/40 bg-gradient-to-r from-secondary/15 to-primary/10 hover:from-secondary/25 hover:to-primary/20 cursor-pointer'
+              : 'border-white/10 bg-white/[0.03] cursor-default'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                bonus.available ? 'bg-secondary/30 text-secondary' : 'bg-white/5 text-text-muted'
+              }`}
+            >
+              <Gift className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-bold flex items-center gap-2">
+                Bonus quotidien
+                {bonus.streak > 1 && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-mono">
+                    J{bonus.streak}
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-text-muted mt-0.5">
+                {bonus.available
+                  ? `Récupère +${formatBrix(bonus.amount)} Brix`
+                  : `Revient dans ${formatDuration(bonus.nextIn)}`}
+              </div>
+            </div>
+            {bonus.available && (
+              <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">Ouvrir →</span>
+            )}
+          </div>
+        </button>
+
+        {/* Upgrades */}
+        <div>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <h2 className="text-[10px] font-bold text-text-muted uppercase tracking-[0.3em] flex items-center gap-2">
+              <Sparkles className="w-3 h-3" /> Modules
+            </h2>
+            <span className="text-[10px] text-text-muted">Améliore ton usine</span>
+          </div>
+          <div className="space-y-2">
+            <UpgradeRow
+              icon={<Zap className="w-5 h-5" />}
+              accent="from-primary/30 to-primary/10"
+              title="Réacteur"
+              level={state.reactorLevel}
+              current={`${(reactorRate(state.reactorLevel) * 60).toFixed(2)}/min`}
+              next={`${(reactorRate(state.reactorLevel + 1) * 60).toFixed(2)}/min`}
+              cost={reactorCost(state.reactorLevel)}
+              brix={state.brix}
+              onBuy={buyReactor}
+            />
+            <UpgradeRow
+              icon={<Package className="w-5 h-5" />}
+              accent="from-secondary/30 to-secondary/10"
+              title="Stockage"
+              level={state.storageLevel}
+              current={formatBrix(storageCapacity(state.storageLevel))}
+              next={formatBrix(storageCapacity(state.storageLevel + 1))}
+              cost={storageCost(state.storageLevel)}
+              brix={state.brix}
+              onBuy={buyStorage}
+            />
+            <UpgradeRow
+              icon={<Sparkles className="w-5 h-5" />}
+              accent="from-fuchsia-500/30 to-fuchsia-500/10"
+              title="Amplificateur"
+              level={state.amplifierLevel}
+              current={`×${amplifierMult(state.amplifierLevel).toFixed(2)}`}
+              next={`×${amplifierMult(state.amplifierLevel + 1).toFixed(2)}`}
+              cost={amplifierCost(state.amplifierLevel)}
+              brix={state.brix}
+              onBuy={buyAmplifier}
+            />
+          </div>
+        </div>
       </div>
-      <Card className="p-3 bg-wheel-segment/40 border-wheel-border">
-        {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
-        {!lbError && lbLoading && leaderboard.length === 0 && (
-          <p className="text-xs text-text-muted text-center py-4">Chargement…</p>
-        )}
-        {!lbError && !lbLoading && leaderboard.length === 0 && (
-          <p className="text-xs text-text-muted text-center py-4">Sois le premier à figurer au classement !</p>
-        )}
-        {leaderboard.length > 0 && (
-          <ul className="divide-y divide-wheel-border/50 max-h-80 overflow-y-auto">
-            {leaderboard.map((row, i) => {
-              const isMe = row.device_id === deviceId;
-              return (
-                <li
-                  key={row.device_id}
-                  className={`flex items-center justify-between py-2 px-1 text-sm ${isMe ? 'bg-primary/10 rounded' : ''}`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-6 text-xs font-bold ${i === 0 ? 'text-yellow-400' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-600' : 'text-text-muted'}`}>
-                      #{i + 1}
-                    </span>
-                    <span className="truncate">{row.username}</span>
-                    {isMe && <Badge variant="outline" className="border-primary text-primary text-[10px] px-1 py-0">Toi</Badge>}
-                  </div>
-                  <span className="font-semibold text-primary">{formatBrix(row.total_brix_produced)}</span>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {myRank >= 0 && (
-          <p className="text-xs text-text-muted mt-2 text-center">Ton rang : #{myRank + 1}</p>
-        )}
-      </Card>
 
       <UsernameModal
         isOpen={showUsername}
@@ -368,6 +498,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
 
 interface UpgradeRowProps {
   icon: React.ReactNode;
+  accent: string;
   title: string;
   level: number;
   current: string;
@@ -377,30 +508,38 @@ interface UpgradeRowProps {
   onBuy: () => void;
 }
 
-const UpgradeRow: React.FC<UpgradeRowProps> = ({ icon, title, level, current, next, cost, brix, onBuy }) => {
+const UpgradeRow: React.FC<UpgradeRowProps> = ({ icon, accent, title, level, current, next, cost, brix, onBuy }) => {
   const canAfford = brix >= cost;
   return (
-    <Card className="p-3 bg-wheel-segment/40 border-wheel-border">
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-primary/10 text-primary">{icon}</div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div className="font-semibold text-sm">{title}</div>
-            <Badge variant="outline" className="text-[10px]">Lv{level}</Badge>
-          </div>
-          <div className="text-xs text-text-muted truncate">
-            {current} → <span className="text-secondary">{next}</span>
-          </div>
-        </div>
-        <Button
-          size="sm"
-          onClick={onBuy}
-          disabled={!canAfford}
-          className={canAfford ? 'bg-primary hover:bg-primary/90' : 'bg-wheel-segment/50 text-text-muted cursor-not-allowed'}
-        >
-          {formatBrix(cost)}
-        </Button>
+    <div className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-3 flex items-center gap-3 overflow-hidden">
+      <div className={`absolute inset-y-0 left-0 w-24 bg-gradient-to-r ${accent} opacity-60 pointer-events-none`} />
+      <div className="relative w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-text-primary">
+        {icon}
       </div>
-    </Card>
+      <div className="relative flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-sm">{title}</span>
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-text-muted">
+            Lv{level}
+          </span>
+        </div>
+        <div className="text-[11px] text-text-muted mt-0.5 truncate">
+          {current} <span className="opacity-40">→</span>{' '}
+          <span className="text-secondary font-medium">{next}</span>
+        </div>
+      </div>
+      <Button
+        size="sm"
+        onClick={onBuy}
+        disabled={!canAfford}
+        className={
+          canAfford
+            ? 'bg-gradient-to-br from-primary to-secondary hover:opacity-90 text-white font-bold tabular-nums shadow-[0_6px_20px_-8px_hsl(var(--primary))]'
+            : 'bg-white/5 text-text-muted border border-white/10 cursor-not-allowed tabular-nums'
+        }
+      >
+        {formatBrix(cost)}
+      </Button>
+    </div>
   );
 };

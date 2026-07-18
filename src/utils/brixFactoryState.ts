@@ -46,18 +46,18 @@ export function saveState(s: BrixFactoryState) {
 }
 
 // ---- Formules ----
-export const reactorRate = (lvl: number) => 0.2 * lvl; // Brix/sec
+export const reactorRate = (lvl: number) => 0.02 * lvl; // Brix/sec
 export const amplifierMult = (lvl: number) => 1 + 0.2 * (lvl - 1);
 export const productionPerSec = (s: BrixFactoryState) =>
   reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel);
 export const productionPerMin = (s: BrixFactoryState) =>
   productionPerSec(s) * 60;
 
-export const storageCapacity = (lvl: number) => 500 * Math.pow(2, lvl - 1);
+export const storageCapacity = (lvl: number) => 50 * Math.pow(2, lvl - 1);
 
-export const reactorCost = (lvl: number) => 100 * lvl * lvl;
-export const storageCost = (lvl: number) => 250 * lvl * lvl;
-export const amplifierCost = (lvl: number) => 1000 * lvl * lvl;
+export const reactorCost = (lvl: number) => 10 * lvl * lvl;
+export const storageCost = (lvl: number) => 25 * lvl * lvl;
+export const amplifierCost = (lvl: number) => 100 * lvl * lvl;
 
 // ---- Production hors-ligne ----
 export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactoryState; gained: number } {
@@ -78,7 +78,7 @@ export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactor
 }
 
 // ---- Bonus quotidien ----
-const DAILY_TIERS = [250, 500, 1000, 1500, 2500, 4000, 7500];
+const DAILY_TIERS = [25, 50, 100, 150, 250, 400, 750];
 const DAY_MS = 24 * 3600 * 1000;
 
 export function dailyBonusStatus(s: BrixFactoryState) {
