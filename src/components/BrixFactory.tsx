@@ -37,7 +37,7 @@ import {
 } from '@/utils/brixFactoryState';
 import { fetchBrixLeaderboard, submitBrixScore, BrixLeaderboardEntry } from '@/utils/brixFactoryApi';
 import { getDeviceId, getUsername } from '@/utils/localIdentity';
-import { UsernameModal } from '@/components/UsernameModal';
+
 
 interface BrixFactoryProps {
   onBack: () => void;
