@@ -115,10 +115,7 @@ export const Shop: React.FC<ShopProps> = ({
       if (code === 'LEBRIX2026') {
         purchasePremiumPack();
         onAddCoins?.(1150);
-        try {
-          const { setBrixFactoryOverrideUnlocked } = await import('@/utils/pongUnlock');
-          setBrixFactoryOverrideUnlocked();
-        } catch {}
+        try { setBrixFactoryOverrideUnlocked(); } catch {}
         used.push(code);
         localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
         setPromoCode('');
