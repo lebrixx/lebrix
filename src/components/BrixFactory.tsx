@@ -333,71 +333,60 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Reactor centerpiece */}
-        <div className="relative rounded-3xl p-6 border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent overflow-hidden">
-          <div className="absolute inset-0 opacity-40" style={{
-            background: 'radial-gradient(circle at 50% 40%, hsl(var(--primary) / 0.35), transparent 60%)'
-          }} />
-
-          <div className="relative flex flex-col items-center gap-5">
-            {/* Rotating ring reactor */}
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border border-primary/30" style={{ animation: 'spin 18s linear infinite' }} />
-              <div className="absolute inset-3 rounded-full border border-dashed border-secondary/40" style={{ animation: 'spin 12s linear infinite reverse' }} />
-              <div className="absolute inset-6 rounded-full bg-primary/10 blur-xl animate-pulse" />
-              <div
-                className="relative w-24 h-24 rounded-2xl flex items-center justify-center shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.8)]"
-                style={{
-                  background:
-                    'conic-gradient(from 210deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)))',
-                }}
-              >
-                <div className="absolute inset-1 rounded-xl bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                  <Factory className="w-10 h-10 text-white drop-shadow-[0_0_12px_hsl(var(--primary))]" />
-                </div>
-              </div>
-              <div ref={harvestFlashRef} className="absolute inset-0 rounded-full bg-secondary/50 opacity-0" />
+        {/* Compact core: pulse + storage + harvest */}
+        <div className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 flex items-center justify-center shrink-0">
+              <span
+                className="absolute inset-0 rounded-full bg-primary/30 animate-ping"
+                style={{ animationDuration: '2.4s' }}
+              />
+              <span className="relative w-3 h-3 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary))]" />
             </div>
-
-            {/* Storage capsule */}
-            <div className="w-full">
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-text-muted mb-1.5">
-                <span>Stockage</span>
-                <span className="tabular-nums text-text-secondary">
-                  {formatBrix(state.stored)} / {formatBrix(cap)}
-                </span>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] uppercase tracking-widest text-text-muted">Cœur du réacteur</div>
+              <div className="text-sm font-semibold text-text-primary">
+                {ppMin < 0.01 ? '≈ 0.00' : ppMin.toFixed(3)} <span className="text-text-muted font-normal">Brix / min</span>
               </div>
-              <div className="relative h-3 rounded-full bg-white/5 overflow-hidden border border-white/10">
-                <div
-                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
-                  style={{
-                    width: `${pctStorage}%`,
-                    background:
-                      'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)))',
-                    boxShadow: '0 0 20px hsl(var(--primary) / 0.6)',
-                  }}
-                />
-                {storageFull && (
-                  <div className="absolute inset-0 animate-pulse bg-danger/20" />
-                )}
-              </div>
-              {storageFull && (
-                <p className="mt-1.5 text-[11px] text-danger flex items-center gap-1">
-                  <Flame className="w-3 h-3" /> Stockage saturé — récolte pour relancer.
-                </p>
-              )}
             </div>
-
-            <Button
-              onClick={handleHarvest}
-              disabled={state.stored < 1}
-              className="w-full h-14 text-base font-bold uppercase tracking-widest bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0] transition-[background-position] duration-700 disabled:opacity-40 disabled:from-white/10 disabled:to-white/10 shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.6)]"
-            >
-              <Hammer className="w-5 h-5 mr-2" />
-              Récolter{state.stored >= 1 ? ` · ${formatBrix(state.stored)}` : ''}
-            </Button>
+            <div className="text-right">
+              <div className="text-[10px] uppercase tracking-widest text-text-muted">Stock</div>
+              <div className="text-sm font-bold tabular-nums text-secondary">
+                {state.stored.toFixed(2)}
+                <span className="text-text-muted font-normal"> / {cap}</span>
+              </div>
+            </div>
           </div>
+
+          <div className="relative h-2 rounded-full bg-white/5 overflow-hidden border border-white/10">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+              style={{
+                width: `${pctStorage}%`,
+                background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)))',
+                boxShadow: '0 0 12px hsl(var(--primary) / 0.5)',
+              }}
+            />
+            {storageFull && <div className="absolute inset-0 animate-pulse bg-danger/20" />}
+            <div ref={harvestFlashRef} className="absolute inset-0 bg-secondary/40 opacity-0" />
+          </div>
+
+          {storageFull && (
+            <p className="text-[11px] text-danger flex items-center gap-1 -mt-2">
+              <Flame className="w-3 h-3" /> Stockage saturé — récolte pour relancer.
+            </p>
+          )}
+
+          <Button
+            onClick={handleHarvest}
+            disabled={state.stored <= 0}
+            className="w-full h-12 text-sm font-bold uppercase tracking-widest bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0] transition-[background-position] duration-700 disabled:opacity-40 disabled:from-white/10 disabled:to-white/10 shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.6)]"
+          >
+            <Hammer className="w-4 h-4 mr-2" />
+            Récolter{state.stored > 0 ? ` · ${state.stored.toFixed(2)}` : ''}
+          </Button>
         </div>
+
 
         {/* Daily bonus */}
         <button
