@@ -51,7 +51,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState<string | null>(null);
   const [lbOpen, setLbOpen] = useState(false);
-  const [showUsername, setShowUsername] = useState(false);
+  
   const lastSubmitRef = useRef(0);
   const harvestFlashRef = useRef<HTMLDivElement | null>(null);
 
