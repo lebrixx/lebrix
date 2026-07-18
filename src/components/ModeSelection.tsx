@@ -30,7 +30,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.ZONE_MOBILE: return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.ZONE_TRAITRESSE: return <Sparkles className="w-8 h-8" />;
     case ModeID.MEMOIRE_EXPERT: return <Grid3x3 className="w-8 h-8" />;
-    case ModeID.PONG_CIRCULAIRE: return <Gamepad2 className="w-8 h-8" />;
+    case ModeID.PONG_CIRCULAIRE: return <Factory className="w-8 h-8" />;
     default: return <Target className="w-8 h-8" />;
   }
 };
