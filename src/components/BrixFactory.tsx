@@ -96,11 +96,11 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     };
   }, [state]);
 
-  const loadLeaderboard = async () => {
+  const loadLeaderboard = async (force = false) => {
     setLbLoading(true);
     setLbError(null);
     try {
-      const rows = await fetchBrixLeaderboard(50);
+      const rows = await fetchBrixLeaderboard(50, { force });
       setLeaderboard(rows);
     } catch (e: any) {
       setLbError(e?.message ?? 'Erreur');
@@ -108,6 +108,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
       setLbLoading(false);
     }
   };
+
 
   const uploadScore = async (s: BrixFactoryState) => {
     const now = Date.now();
