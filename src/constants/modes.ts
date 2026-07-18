@@ -91,7 +91,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.PONG_CIRCULAIRE]: {
     name: "Brix Factory",
-    desc: "Bâtis ton usine idle : récolte des Brix, améliore ton réacteur et grimpe dans le classement dédié.",
+    desc: "Un petit mode un peu différent qui joue sur la régularité.",
     zoneArc: Math.PI / 4,
     keepMovingZone: false,
     survival: false,
