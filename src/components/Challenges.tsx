@@ -615,7 +615,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-lg text-text-primary">Débloquer Pong Circulaire</h3>
+                        <h3 className="font-bold text-lg text-text-primary">Débloquer Brix Factory</h3>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                           pongUnlocked ? 'bg-emerald-400/20 text-emerald-400' : 'bg-pink-500/20 text-pink-400'
                         }`}>
