@@ -57,10 +57,10 @@ export const productionPerMin = (s: BrixFactoryState) =>
 // Stockage linéaire, croissance plus lente
 export const storageCapacity = (lvl: number) => 4 + 3 * lvl;
 
-// Coûts en croissance plus soutenue pour ralentir la progression
-export const reactorCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.55, lvl - 1)));
-export const storageCost = (lvl: number) => Math.max(5, Math.ceil(5 * Math.pow(1.7, lvl - 1)));
-export const amplifierCost = (lvl: number) => Math.max(25, Math.ceil(25 * Math.pow(1.85, lvl - 1)));
+// Coûts en croissance modérée pour une progression plus accessible
+export const reactorCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.42, lvl - 1)));
+export const storageCost = (lvl: number) => Math.max(5, Math.ceil(5 * Math.pow(1.55, lvl - 1)));
+export const amplifierCost = (lvl: number) => Math.max(25, Math.ceil(25 * Math.pow(1.68, lvl - 1)));
 
 // ---- Production hors-ligne ----
 export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactoryState; gained: number } {
