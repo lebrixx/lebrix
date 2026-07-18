@@ -102,6 +102,18 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const [dailyChallenges, setDailyChallenges] = useState<DailyChallenge[]>([]);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showSeasonPass, setShowSeasonPass] = useState(false);
+  const brixUnlockRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('challenges_focus_brix') === '1') {
+        sessionStorage.removeItem('challenges_focus_brix');
+        setTimeout(() => {
+          brixUnlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+      }
+    } catch {}
+  }, []);
   
   
   // Lire le nombre de parties directement depuis localStorage à chaque rendu
