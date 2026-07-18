@@ -885,6 +885,10 @@ export const translations = {
     yourUsernamePlaceholder: 'VotrePseudo',
     recordLabel: 'Record',
     pongUnlockDesc: 'Atteins un score de {target}+ dans chacun des autres modes.',
+    brixFactoryInfoTitle: 'Comment jouer',
+    brixFactoryInfoDesc: 'Un petit mode un peu différent qui joue sur la régularité : ton réacteur produit des Brix en continu, même hors-ligne (dans la limite du stockage).',
+    brixFactoryModulesDesc: 'Les modules ne sont là que pour accélérer la production.',
+    brixFactoryInfoTip: 'Astuce : reviens régulièrement récolter et améliorer ton usine.',
   },
   en: {
     title: 'LUCKY STOP',
@@ -1699,6 +1703,10 @@ export const translations = {
     yourUsernamePlaceholder: 'YourUsername',
     recordLabel: 'Record',
     pongUnlockDesc: 'Reach a score of {target}+ in each of the other modes.',
+    brixFactoryInfoTitle: 'How to play',
+    brixFactoryInfoDesc: 'A small, slightly different mode based on regularity: your reactor produces Brix continuously, even offline (within storage limits).',
+    brixFactoryModulesDesc: 'Modules are only there to speed up production.',
+    brixFactoryInfoTip: 'Tip: come back regularly to harvest and upgrade your factory.',
   },
   es: {
     title: 'LUCKY STOP',
@@ -2513,5 +2521,9 @@ export const translations = {
     yourUsernamePlaceholder: 'TuApodo',
     recordLabel: 'Récord',
     pongUnlockDesc: 'Alcanza {target}+ puntos en cada uno de los otros modos.',
+    brixFactoryInfoTitle: 'Cómo jugar',
+    brixFactoryInfoDesc: 'Un modo pequeño y algo diferente que se basa en la regularidad: tu reactor produce Brix continuamente, incluso sin conexión (hasta el límite del almacenamiento).',
+    brixFactoryModulesDesc: 'Los módulos solo sirven para acelerar la producción.',
+    brixFactoryInfoTip: 'Consejo: vuelve regularmente para recolectar y mejorar tu fábrica.',
   },
 };
