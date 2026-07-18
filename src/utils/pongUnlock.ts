@@ -31,9 +31,28 @@ export function getPongUnlockProgress(): PongUnlockProgressItem[] {
   });
 }
 
+export const BRIX_FACTORY_UNLOCK_KEY = 'ls_brix_factory_unlocked';
+
+export function isBrixFactoryOverrideUnlocked(): boolean {
+  try {
+    return localStorage.getItem(BRIX_FACTORY_UNLOCK_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export function setBrixFactoryOverrideUnlocked(): void {
+  try {
+    localStorage.setItem(BRIX_FACTORY_UNLOCK_KEY, 'true');
+  } catch {}
+}
+
 export function isPongUnlocked(): boolean {
+  if (isBrixFactoryOverrideUnlocked()) return true;
   return getPongUnlockProgress().every((p) => p.completed);
 }
+
+export const isBrixFactoryUnlocked = isPongUnlocked;
 
 export function getPongUnlockCount(): { done: number; total: number } {
   const items = getPongUnlockProgress();
