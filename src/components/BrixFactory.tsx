@@ -144,6 +144,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
       ...state,
       brix: state.brix + gained,
       totalProduced: state.totalProduced + gained,
+      runProduced: state.runProduced + gained,
       stored: 0,
       lastTick: Date.now(),
     };
