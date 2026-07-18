@@ -550,7 +550,7 @@ const Index = () => {
           );
 
         case 'reflex_grid':
-          return <ReflexGrid onBack={() => setCurrentScreen('menu')} />;
+          return <BrixFactory onBack={() => setCurrentScreen('menu')} />;
 
 
           
