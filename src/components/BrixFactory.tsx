@@ -37,7 +37,7 @@ import {
 } from '@/utils/brixFactoryState';
 import { fetchBrixLeaderboard, submitBrixScore, BrixLeaderboardEntry } from '@/utils/brixFactoryApi';
 import { getDeviceId, getUsername } from '@/utils/localIdentity';
-import { UsernameModal } from '@/components/UsernameModal';
+
 
 interface BrixFactoryProps {
   onBack: () => void;
@@ -51,7 +51,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState<string | null>(null);
   const [lbOpen, setLbOpen] = useState(false);
-  const [showUsername, setShowUsername] = useState(false);
+  
   const lastSubmitRef = useRef(0);
   const harvestFlashRef = useRef<HTMLDivElement | null>(null);
 
@@ -145,8 +145,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
       void harvestFlashRef.current.offsetWidth;
       harvestFlashRef.current.classList.add('animate-ping');
     }
-    if (!getUsername()) setShowUsername(true);
-    else uploadScore(next);
+    if (getUsername()) uploadScore(next);
   };
 
   const buyReactor = () => {
@@ -178,8 +177,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     setState(next);
     saveState(next);
     toast({ title: '🎁 Bonus quotidien', description: `+${formatBrix(bonus.amount)} Brix (jour ${bonus.streak})` });
-    if (!getUsername()) setShowUsername(true);
-    else uploadScore(next);
+    if (getUsername()) uploadScore(next);
   };
 
   const deviceId = getDeviceId();
@@ -588,14 +586,6 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <UsernameModal
-        isOpen={showUsername}
-        onClose={() => setShowUsername(false)}
-        onUsernameSet={() => {
-          setShowUsername(false);
-          uploadScore(state);
-        }}
-      />
     </div>
   );
 };
