@@ -12,6 +12,9 @@ export interface BrixFactoryState {
   lastTick: number;
   lastDailyClaim: number;
   dailyStreak: number;
+  cores: number;
+  runProduced: number;
+  prestigeCount: number;
 }
 
 const defaultState = (): BrixFactoryState => ({
@@ -24,6 +27,9 @@ const defaultState = (): BrixFactoryState => ({
   lastTick: Date.now(),
   lastDailyClaim: 0,
   dailyStreak: 0,
+  cores: 0,
+  runProduced: 0,
+  prestigeCount: 0,
 });
 
 export function loadState(): BrixFactoryState {
@@ -46,13 +52,41 @@ export function saveState(s: BrixFactoryState) {
 }
 
 // ---- Formules ----
-// ---- Formules (progression douce, pas de doublement) ----
-export const reactorRate = (lvl: number) => 0.0008 * lvl; // Brix/sec — progression très lente
-export const amplifierMult = (lvl: number) => 1 + 0.03 * (lvl - 1); // +3% par niveau
+export const reactorRate = (lvl: number) => 0.0008 * lvl;
+export const amplifierMult = (lvl: number) => 1 + 0.03 * (lvl - 1);
+// Bonus permanent du prestige : +8% de production par Cœur de Fusion.
+export const coreMultiplier = (cores: number) => 1 + 0.08 * cores;
 export const productionPerSec = (s: BrixFactoryState) =>
-  reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel);
+  reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel) * coreMultiplier(s.cores);
 export const productionPerMin = (s: BrixFactoryState) =>
   productionPerSec(s) * 60;
+
+// ---- Prestige ----
+export const PRESTIGE_THRESHOLD = 500;
+export const coresFromRun = (runProduced: number) => {
+  if (runProduced < PRESTIGE_THRESHOLD) return 0;
+  return Math.floor(Math.sqrt(runProduced / PRESTIGE_THRESHOLD));
+};
+export const nextCoreThreshold = (currentGain: number) =>
+  Math.pow(currentGain + 1, 2) * PRESTIGE_THRESHOLD;
+
+export function performPrestige(s: BrixFactoryState): { state: BrixFactoryState; gained: number } {
+  const gained = coresFromRun(s.runProduced);
+  if (gained <= 0) return { state: s, gained: 0 };
+  const next: BrixFactoryState = {
+    ...s,
+    brix: 0,
+    stored: 0,
+    reactorLevel: 1,
+    storageLevel: 1,
+    amplifierLevel: 1,
+    lastTick: Date.now(),
+    cores: s.cores + gained,
+    runProduced: 0,
+    prestigeCount: s.prestigeCount + 1,
+  };
+  return { state: next, gained };
+}
 
 // Stockage linéaire, croissance plus lente
 export const storageCapacity = (lvl: number) => 4 + 3 * lvl;
