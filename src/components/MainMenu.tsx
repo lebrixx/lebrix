@@ -64,7 +64,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onToggleSound = () => {},
   onOpenRateDialog,
   onOpenDailyChallenge,
-  onReplayOnboarding
+  onReplayOnboarding,
+  onOpenBrixFactory
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
