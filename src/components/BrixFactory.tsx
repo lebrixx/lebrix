@@ -198,6 +198,31 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     loadLeaderboard();
   };
 
+  // ---- Prestige ----
+  const [prestigeOpen, setPrestigeOpen] = useState(false);
+  const pendingCores = coresFromRun(state.runProduced);
+  const nextGainAt = nextCoreThreshold(pendingCores);
+  const canPrestige = pendingCores > 0;
+  const prestigeProgress =
+    pendingCores === 0
+      ? Math.min(100, (state.runProduced / PRESTIGE_THRESHOLD) * 100)
+      : Math.min(100, ((state.runProduced - Math.pow(pendingCores, 2) * PRESTIGE_THRESHOLD) /
+          (nextGainAt - Math.pow(pendingCores, 2) * PRESTIGE_THRESHOLD)) * 100);
+
+  const handlePrestige = () => {
+    if (!canPrestige) return;
+    const { state: next, gained } = performPrestige(state);
+    if (gained <= 0) return;
+    setState(next);
+    saveState(next);
+    setPrestigeOpen(false);
+    toast({
+      title: '⚛️ Fusion réussie',
+      description: `+${gained} Cœur${gained > 1 ? 's' : ''} de Fusion · production ×${coreMultiplier(next.cores).toFixed(2)}`,
+    });
+    if (getUsername()) uploadScore(next);
+  };
+
   if (lbOpen) {
     return (
       <div className="relative min-h-screen text-text-primary overflow-hidden">
