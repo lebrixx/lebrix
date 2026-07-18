@@ -42,6 +42,7 @@ interface MainMenuProps {
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
   onReplayOnboarding?: () => void;
+  onOpenBrixFactory?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
