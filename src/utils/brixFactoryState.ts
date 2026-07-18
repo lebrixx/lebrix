@@ -46,18 +46,21 @@ export function saveState(s: BrixFactoryState) {
 }
 
 // ---- Formules ----
-export const reactorRate = (lvl: number) => 0.02 * lvl; // Brix/sec
-export const amplifierMult = (lvl: number) => 1 + 0.2 * (lvl - 1);
+// ---- Formules (progression douce, pas de doublement) ----
+export const reactorRate = (lvl: number) => 0.002 * lvl; // Brix/sec — linéaire, très progressif
+export const amplifierMult = (lvl: number) => 1 + 0.05 * (lvl - 1); // +5% par niveau
 export const productionPerSec = (s: BrixFactoryState) =>
   reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel);
 export const productionPerMin = (s: BrixFactoryState) =>
   productionPerSec(s) * 60;
 
-export const storageCapacity = (lvl: number) => 50 * Math.pow(2, lvl - 1);
+// Stockage linéaire au lieu de doublement
+export const storageCapacity = (lvl: number) => 5 + 4 * lvl;
 
-export const reactorCost = (lvl: number) => 10 * lvl * lvl;
-export const storageCost = (lvl: number) => 25 * lvl * lvl;
-export const amplifierCost = (lvl: number) => 100 * lvl * lvl;
+// Coûts en croissance douce (~35–60% par niveau) au lieu de quadratique
+export const reactorCost = (lvl: number) => Math.max(1, Math.ceil(1 * Math.pow(1.35, lvl - 1)));
+export const storageCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.5, lvl - 1)));
+export const amplifierCost = (lvl: number) => Math.max(10, Math.ceil(10 * Math.pow(1.6, lvl - 1)));
 
 // ---- Production hors-ligne ----
 export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactoryState; gained: number } {
@@ -78,7 +81,7 @@ export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactor
 }
 
 // ---- Bonus quotidien ----
-const DAILY_TIERS = [25, 50, 100, 150, 250, 400, 750];
+const DAILY_TIERS = [2, 5, 10, 15, 25, 40, 75];
 const DAY_MS = 24 * 3600 * 1000;
 
 export function dailyBonusStatus(s: BrixFactoryState) {
@@ -118,6 +121,7 @@ export function formatDuration(ms: number): string {
 }
 
 export function formatBrix(n: number): string {
+  if (n > 0 && n < 100) return n.toFixed(2).replace(/\.?0+$/, '') || '0';
   const v = Math.floor(n);
   if (v < 10_000) return v.toLocaleString('fr-FR');
   if (v < 1_000_000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
