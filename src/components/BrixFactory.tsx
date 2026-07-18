@@ -586,14 +586,6 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <UsernameModal
-        isOpen={showUsername}
-        onClose={() => setShowUsername(false)}
-        onUsernameSet={() => {
-          setShowUsername(false);
-          uploadScore(state);
-        }}
-      />
     </div>
   );
 };
