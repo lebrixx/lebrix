@@ -145,8 +145,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
       void harvestFlashRef.current.offsetWidth;
       harvestFlashRef.current.classList.add('animate-ping');
     }
-    if (!getUsername()) setShowUsername(true);
-    else uploadScore(next);
+    if (getUsername()) uploadScore(next);
   };
 
   const buyReactor = () => {
