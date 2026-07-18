@@ -17,6 +17,7 @@ import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { addDiamonds, purchasePremiumPack } from '@/utils/seasonPass';
+import { setBrixFactoryOverrideUnlocked } from '@/utils/pongUnlock';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
