@@ -15,6 +15,7 @@ import {
   Hammer,
   Flame,
   Info,
+  Atom,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
