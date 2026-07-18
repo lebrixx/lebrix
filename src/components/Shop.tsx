@@ -356,8 +356,8 @@ export const Shop: React.FC<ShopProps> = ({
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
         <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="themes">{t.themes}</TabsTrigger>
           <TabsTrigger value="modes">{t.modes}</TabsTrigger>
+          <TabsTrigger value="themes">{t.themes}</TabsTrigger>
           <TabsTrigger value="boosts">{t.boosts}</TabsTrigger>
         </TabsList>
 
