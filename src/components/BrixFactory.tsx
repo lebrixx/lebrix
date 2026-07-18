@@ -126,7 +126,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const ppMin = productionPerMin(state);
 
   const handleHarvest = () => {
-    const gained = Math.floor(state.stored);
+    const gained = state.stored;
     if (gained <= 0) return;
     const next: BrixFactoryState = {
       ...state,
