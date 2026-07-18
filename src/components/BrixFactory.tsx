@@ -529,7 +529,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
 
 
         {/* Prestige — Fusion du Cœur */}
-        {(state.totalProduced >= PRESTIGE_THRESHOLD / 2 || state.cores > 0) && (
+        {(
           <Dialog open={prestigeOpen} onOpenChange={setPrestigeOpen}>
             <DialogTrigger asChild>
               <button
