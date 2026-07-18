@@ -292,7 +292,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />
-                    Acheter en Boutique
+                    Débloquer
                   </Button>
                 )
               ) : modeId === ModeID.MEMOIRE_EXPERT && tickets === 0 ? (
@@ -309,7 +309,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />
-                    Acheter en Boutique
+                    Débloquer
                   </Button>
                 </div>
               ) : (
