@@ -295,7 +295,7 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
                       <Trophy className="w-5 h-5 text-secondary" />
                       Classement mondial
                     </span>
-                    <Button size="icon" variant="ghost" onClick={loadLeaderboard} disabled={lbLoading}>
+                    <Button size="icon" variant="ghost" onClick={() => loadLeaderboard(true)} disabled={lbLoading}>
                       <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
                     </Button>
                   </SheetTitle>
