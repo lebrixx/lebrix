@@ -462,6 +462,11 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
               <div className="text-[10px] text-text-muted mt-1">
                 Total produit : <span className="text-text-secondary">{formatBrix(state.totalProduced)}</span>
               </div>
+              {state.cores > 0 && (
+                <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-fuchsia-500/15 border border-fuchsia-400/30 text-fuchsia-200 text-[10px] font-bold">
+                  <Atom className="w-3 h-3" /> {state.cores} · ×{coreMultiplier(state.cores).toFixed(2)}
+                </div>
+              )}
             </div>
           </div>
         </div>
