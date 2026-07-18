@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   ArrowLeft,
   Factory,
@@ -13,6 +14,7 @@ import {
   RefreshCw,
   Hammer,
   Flame,
+  Info,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
