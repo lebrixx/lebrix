@@ -42,6 +42,7 @@ interface MainMenuProps {
   onOpenRateDialog?: () => void;
   onOpenDailyChallenge?: () => void;
   onReplayOnboarding?: () => void;
+  onOpenBrixFactory?: () => void;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
@@ -63,7 +64,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onToggleSound = () => {},
   onOpenRateDialog,
   onOpenDailyChallenge,
-  onReplayOnboarding
+  onReplayOnboarding,
+  onOpenBrixFactory
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
@@ -325,13 +327,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
 
           <Button
-            onClick={onOpenModes}
+            onClick={() => onOpenBrixFactory?.()}
             variant="outline"
             size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
+            className="relative border-secondary/50 bg-gradient-to-r from-secondary/10 via-primary/5 to-secondary/10 hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group overflow-hidden"
           >
-            <Gamepad2 className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-            {t.gameModes}
+            <Sparkles className="w-4 h-4 mr-2 text-secondary group-hover:animate-pulse" />
+            <span className="font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">Brix Factory</span>
           </Button>
 
           <div className="flex gap-2">

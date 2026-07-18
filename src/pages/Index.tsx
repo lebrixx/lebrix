@@ -351,6 +351,7 @@ const Index = () => {
             onOpenRateDialog={() => setShowRateDialog(true)}
             onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
             onReplayOnboarding={() => setReplayOnboarding(true)}
+            onOpenBrixFactory={() => setCurrentScreen('reflex_grid')}
           />
         );
         

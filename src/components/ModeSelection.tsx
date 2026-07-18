@@ -143,8 +143,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
-        {Object.entries(cfgModes).map(([modeId, config], idx) => {
-          const isReflexGrid = modeId === ModeID.PONG_CIRCULAIRE;
+        {Object.entries(cfgModes).filter(([modeId]) => modeId !== ModeID.PONG_CIRCULAIRE).map(([modeId, config], idx) => {
+          const isReflexGrid = false;
           const isComingSoon = false;
           const isCurrentMode = !isReflexGrid && modeId === currentMode;
           const isLocked = !isReflexGrid && !unlockedModes.includes(modeId);
