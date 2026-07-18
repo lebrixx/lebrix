@@ -47,20 +47,20 @@ export function saveState(s: BrixFactoryState) {
 
 // ---- Formules ----
 // ---- Formules (progression douce, pas de doublement) ----
-export const reactorRate = (lvl: number) => 0.002 * lvl; // Brix/sec — linéaire, très progressif
-export const amplifierMult = (lvl: number) => 1 + 0.05 * (lvl - 1); // +5% par niveau
+export const reactorRate = (lvl: number) => 0.0008 * lvl; // Brix/sec — progression très lente
+export const amplifierMult = (lvl: number) => 1 + 0.03 * (lvl - 1); // +3% par niveau
 export const productionPerSec = (s: BrixFactoryState) =>
   reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel);
 export const productionPerMin = (s: BrixFactoryState) =>
   productionPerSec(s) * 60;
 
-// Stockage linéaire au lieu de doublement
-export const storageCapacity = (lvl: number) => 5 + 4 * lvl;
+// Stockage linéaire, croissance plus lente
+export const storageCapacity = (lvl: number) => 4 + 3 * lvl;
 
-// Coûts en croissance douce (~35–60% par niveau) au lieu de quadratique
-export const reactorCost = (lvl: number) => Math.max(1, Math.ceil(1 * Math.pow(1.35, lvl - 1)));
-export const storageCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.5, lvl - 1)));
-export const amplifierCost = (lvl: number) => Math.max(10, Math.ceil(10 * Math.pow(1.6, lvl - 1)));
+// Coûts en croissance plus soutenue pour ralentir la progression
+export const reactorCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.55, lvl - 1)));
+export const storageCost = (lvl: number) => Math.max(5, Math.ceil(5 * Math.pow(1.7, lvl - 1)));
+export const amplifierCost = (lvl: number) => Math.max(25, Math.ceil(25 * Math.pow(1.85, lvl - 1)));
 
 // ---- Production hors-ligne ----
 export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactoryState; gained: number } {

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   ArrowLeft,
   Factory,
@@ -13,6 +14,7 @@ import {
   RefreshCw,
   Hammer,
   Flame,
+  Info,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -228,87 +230,129 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
             </h1>
           </div>
 
-          <Sheet open={lbOpen} onOpenChange={setLbOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={openLeaderboard}
-                className="rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 border border-white/10 hover:from-secondary/40 hover:to-primary/40 relative"
-              >
-                <Trophy className="w-4 h-4" />
-                {myRank >= 0 && myRank < 10 && (
-                  <span className="absolute -top-1 -right-1 text-[9px] font-bold bg-secondary text-black rounded-full w-4 h-4 flex items-center justify-center">
-                    {myRank + 1}
-                  </span>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="bg-[hsl(240_28%_7%)] border-white/10 max-h-[85vh] overflow-y-auto">
-              <SheetHeader>
-                <SheetTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-secondary" />
-                    Classement mondial
-                  </span>
-                  <Button size="icon" variant="ghost" onClick={loadLeaderboard} disabled={lbLoading}>
-                    <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
-                  </Button>
-                </SheetTitle>
-              </SheetHeader>
+          <div className="flex items-center gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
+                  aria-label="Comment jouer"
+                >
+                  <Info className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[hsl(240_28%_7%)] border-white/10 text-text-primary max-w-sm">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Info className="w-5 h-5 text-primary" /> Comment jouer
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3 text-sm text-text-secondary mt-2">
+                  <p>
+                    <span className="text-text-primary font-semibold">Brix Factory</span> est un mode idle : ton
+                    réacteur produit des Brix en continu, même hors-ligne (dans la limite du stockage).
+                  </p>
+                  <div>
+                    <p className="text-text-primary font-semibold mb-1">Comment progresser</p>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li><span className="text-primary">Récolter</span> vide le stockage et crédite ton solde.</li>
+                      <li><span className="text-primary">Réacteur</span> : augmente la cadence de production.</li>
+                      <li><span className="text-primary">Stockage</span> : agrandit la capacité (évite la saturation).</li>
+                      <li><span className="text-primary">Amplificateur</span> : multiplie toute ta production.</li>
+                      <li><span className="text-primary">Bonus quotidien</span> : reviens chaque jour pour un boost.</li>
+                    </ul>
+                  </div>
+                  <p className="text-xs text-text-muted">
+                    Astuce : monte le stockage assez tôt pour ne rien perdre pendant tes absences, puis investis dans
+                    l'amplificateur pour un vrai palier de progression.
+                  </p>
+                </div>
+              </DialogContent>
+            </Dialog>
 
-              <div className="mt-4">
-                {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
-                {!lbError && lbLoading && leaderboard.length === 0 && (
-                  <p className="text-xs text-text-muted text-center py-8">Chargement…</p>
-                )}
-                {!lbError && !lbLoading && leaderboard.length === 0 && (
-                  <p className="text-xs text-text-muted text-center py-8">Sois le premier à figurer au classement.</p>
-                )}
-                {leaderboard.length > 0 && (
-                  <ul className="divide-y divide-white/5">
-                    {leaderboard.map((row, i) => {
-                      const isMe = row.device_id === deviceId;
-                      const medal =
-                        i === 0
-                          ? 'from-yellow-400/30 to-yellow-500/10 text-yellow-300'
-                          : i === 1
-                            ? 'from-slate-300/30 to-slate-400/10 text-slate-200'
-                            : i === 2
-                              ? 'from-amber-600/30 to-amber-700/10 text-amber-400'
-                              : 'from-white/5 to-transparent text-text-muted';
-                      return (
-                        <li
-                          key={row.device_id}
-                          className={`flex items-center justify-between py-2.5 px-2 text-sm rounded-md ${
-                            isMe ? 'bg-primary/10 border border-primary/30' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <span
-                              className={`w-8 h-8 rounded-lg bg-gradient-to-br ${medal} flex items-center justify-center text-xs font-black`}
-                            >
-                              {i + 1}
+            <Sheet open={lbOpen} onOpenChange={setLbOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  onClick={openLeaderboard}
+                  className="h-9 px-3 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
+                >
+                  <Trophy className="w-4 h-4 mr-1.5" />
+                  Classement
+                  {myRank >= 0 && myRank < 10 && (
+                    <span className="ml-2 text-[10px] font-bold bg-black/30 rounded-full px-1.5 py-0.5">
+                      #{myRank + 1}
+                    </span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="bg-[hsl(240_28%_7%)] border-white/10 max-h-[85vh] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-secondary" />
+                      Classement mondial
+                    </span>
+                    <Button size="icon" variant="ghost" onClick={loadLeaderboard} disabled={lbLoading}>
+                      <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
+                    </Button>
+                  </SheetTitle>
+                </SheetHeader>
+
+                <div className="mt-4">
+                  {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
+                  {!lbError && lbLoading && leaderboard.length === 0 && (
+                    <p className="text-xs text-text-muted text-center py-8">Chargement…</p>
+                  )}
+                  {!lbError && !lbLoading && leaderboard.length === 0 && (
+                    <p className="text-xs text-text-muted text-center py-8">Sois le premier à figurer au classement.</p>
+                  )}
+                  {leaderboard.length > 0 && (
+                    <ul className="divide-y divide-white/5">
+                      {leaderboard.map((row, i) => {
+                        const isMe = row.device_id === deviceId;
+                        const medal =
+                          i === 0
+                            ? 'from-yellow-400/30 to-yellow-500/10 text-yellow-300'
+                            : i === 1
+                              ? 'from-slate-300/30 to-slate-400/10 text-slate-200'
+                              : i === 2
+                                ? 'from-amber-600/30 to-amber-700/10 text-amber-400'
+                                : 'from-white/5 to-transparent text-text-muted';
+                        return (
+                          <li
+                            key={row.device_id}
+                            className={`flex items-center justify-between py-2.5 px-2 text-sm rounded-md ${
+                              isMe ? 'bg-primary/10 border border-primary/30' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span
+                                className={`w-8 h-8 rounded-lg bg-gradient-to-br ${medal} flex items-center justify-center text-xs font-black`}
+                              >
+                                {i + 1}
+                              </span>
+                              <span className="truncate font-medium">{row.username}</span>
+                              {isMe && (
+                                <Badge variant="outline" className="border-primary text-primary text-[9px] px-1 py-0">
+                                  Toi
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="font-bold text-primary tabular-nums">
+                              {formatBrix(row.total_brix_produced)}
                             </span>
-                            <span className="truncate font-medium">{row.username}</span>
-                            {isMe && (
-                              <Badge variant="outline" className="border-primary text-primary text-[9px] px-1 py-0">
-                                Toi
-                              </Badge>
-                            )}
-                          </div>
-                          <span className="font-bold text-primary tabular-nums">
-                            {formatBrix(row.total_brix_produced)}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
+
 
         {/* Wallet card */}
         <div className="relative rounded-2xl p-5 border border-white/10 overflow-hidden bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-sm">
