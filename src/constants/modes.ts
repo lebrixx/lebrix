@@ -90,8 +90,8 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.PONG_CIRCULAIRE]: {
-    name: "Reflex Grid",
-    desc: "Grille 3×3 : tape la case verte avant qu'elle ne disparaisse, mais évite les leurres rouges. Rythme progressif, une erreur = fin.",
+    name: "Brix Factory",
+    desc: "Bâtis ton usine idle : récolte des Brix, améliore ton réacteur et grimpe dans le classement dédié.",
     zoneArc: Math.PI / 4,
     keepMovingZone: false,
     survival: false,

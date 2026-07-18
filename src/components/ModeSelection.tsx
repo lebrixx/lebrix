@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket } from 'lucide-react';
+import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket, Factory } from 'lucide-react';
 import { cfgModes, ModeType, ModeID } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
@@ -30,7 +30,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.ZONE_MOBILE: return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.ZONE_TRAITRESSE: return <Sparkles className="w-8 h-8" />;
     case ModeID.MEMOIRE_EXPERT: return <Grid3x3 className="w-8 h-8" />;
-    case ModeID.PONG_CIRCULAIRE: return <Gamepad2 className="w-8 h-8" />;
+    case ModeID.PONG_CIRCULAIRE: return <Factory className="w-8 h-8" />;
     default: return <Target className="w-8 h-8" />;
   }
 };

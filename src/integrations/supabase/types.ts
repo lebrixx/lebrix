@@ -32,6 +32,45 @@ export type Database = {
         }
         Relationships: []
       }
+      brix_factory_scores: {
+        Row: {
+          amplifier_level: number
+          created_at: string
+          decorations: string
+          device_id: string
+          id: string
+          reactor_level: number
+          storage_level: number
+          total_brix_produced: number
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          amplifier_level?: number
+          created_at?: string
+          decorations?: string
+          device_id: string
+          id?: string
+          reactor_level?: number
+          storage_level?: number
+          total_brix_produced?: number
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          amplifier_level?: number
+          created_at?: string
+          decorations?: string
+          device_id?: string
+          id?: string
+          reactor_level?: number
+          storage_level?: number
+          total_brix_produced?: number
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       daily_precision_scores: {
         Row: {
           challenge_date: string
