@@ -37,6 +37,7 @@ import {
 } from '@/utils/brixFactoryState';
 import { fetchBrixLeaderboard, submitBrixScore, BrixLeaderboardEntry } from '@/utils/brixFactoryApi';
 import { getDeviceId, getUsername } from '@/utils/localIdentity';
+import { useLanguage, translations } from '@/hooks/useLanguage';
 
 
 interface BrixFactoryProps {
@@ -45,6 +46,8 @@ interface BrixFactoryProps {
 
 export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const t = translations[language];
   const [state, setState] = useState<BrixFactoryState>(() => loadState());
   const [, setTick] = useState(0);
   const [leaderboard, setLeaderboard] = useState<BrixLeaderboardEntry[]>([]);
@@ -380,28 +383,13 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
               <DialogContent className="bg-[hsl(240_28%_7%)] border-white/10 text-text-primary max-w-sm">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
-                    <Info className="w-5 h-5 text-primary" /> Comment jouer
+                    <Info className="w-5 h-5 text-primary" /> {t.brixFactoryInfoTitle}
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 text-sm text-text-secondary mt-2">
-                  <p>
-                    <span className="text-text-primary font-semibold">Brix Factory</span> est un mode idle : ton
-                    réacteur produit des Brix en continu, même hors-ligne (dans la limite du stockage).
-                  </p>
-                  <div>
-                    <p className="text-text-primary font-semibold mb-1">Comment progresser</p>
-                    <ul className="list-disc pl-4 space-y-1">
-                      <li><span className="text-primary">Récolter</span> vide le stockage et crédite ton solde.</li>
-                      <li><span className="text-primary">Réacteur</span> : augmente la cadence de production.</li>
-                      <li><span className="text-primary">Stockage</span> : agrandit la capacité (évite la saturation).</li>
-                      <li><span className="text-primary">Amplificateur</span> : multiplie toute ta production.</li>
-                      <li><span className="text-primary">Bonus quotidien</span> : reviens chaque jour pour un boost.</li>
-                    </ul>
-                  </div>
-                  <p className="text-xs text-text-muted">
-                    Astuce : monte le stockage assez tôt pour ne rien perdre pendant tes absences, puis investis dans
-                    l'amplificateur pour un vrai palier de progression.
-                  </p>
+                  <p>{t.brixFactoryInfoDesc}</p>
+                  <p>{t.brixFactoryModulesDesc}</p>
+                  <p className="text-xs text-text-muted">{t.brixFactoryInfoTip}</p>
                 </div>
               </DialogContent>
             </Dialog>
