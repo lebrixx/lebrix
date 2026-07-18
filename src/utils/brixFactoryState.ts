@@ -121,6 +121,7 @@ export function formatDuration(ms: number): string {
 }
 
 export function formatBrix(n: number): string {
+  if (n > 0 && n < 100) return n.toFixed(2).replace(/\.?0+$/, '') || '0';
   const v = Math.floor(n);
   if (v < 10_000) return v.toLocaleString('fr-FR');
   if (v < 1_000_000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
