@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   ArrowLeft,
@@ -190,6 +190,141 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
     loadLeaderboard();
   };
 
+  if (lbOpen) {
+    return (
+      <div className="relative min-h-screen text-text-primary overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10"
+          style={{
+            background:
+              'radial-gradient(120% 80% at 50% -10%, hsl(var(--secondary) / 0.35) 0%, transparent 55%), radial-gradient(80% 60% at 0% 100%, hsl(var(--primary) / 0.25) 0%, transparent 60%), linear-gradient(180deg, hsl(240 30% 6%) 0%, hsl(240 25% 4%) 100%)',
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 opacity-[0.08] mix-blend-screen"
+          style={{
+            backgroundImage:
+              'linear-gradient(hsl(var(--secondary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--secondary)) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+          }}
+        />
+
+        <div className="max-w-md mx-auto px-4 pt-6 pb-16 flex flex-col gap-5">
+          {/* Header */}
+          <div className="relative w-full flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setLbOpen(false)}
+              className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] uppercase tracking-[0.35em] text-text-muted">Brix Factory</span>
+              <h1 className="text-xl font-black tracking-tight flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-secondary" /> CLASSEMENT
+              </h1>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => loadLeaderboard(true)}
+              disabled={lbLoading}
+              className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full bg-white/5 backdrop-blur border border-white/10 hover:bg-white/10"
+            >
+              <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+
+          {/* Podium */}
+          {leaderboard.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 items-end mt-2">
+              {[1, 0, 2].map((idx) => {
+                const row = leaderboard[idx];
+                if (!row) return <div key={idx} />;
+                const heights = ['h-20', 'h-28', 'h-16'];
+                const colors = [
+                  'from-slate-300/40 to-slate-500/10 text-slate-100',
+                  'from-yellow-300/50 to-yellow-600/10 text-yellow-200',
+                  'from-amber-600/40 to-amber-800/10 text-amber-300',
+                ];
+                const map = { 0: 1, 1: 0, 2: 2 } as Record<number, number>;
+                const pos = map[idx];
+                return (
+                  <div key={idx} className="flex flex-col items-center gap-1">
+                    <div className="text-lg">{idx === 0 ? '🥈' : idx === 1 ? '🥇' : '🥉'}</div>
+                    <span className="text-xs font-bold truncate max-w-full">{row.username}</span>
+                    <span className="text-[11px] font-bold text-secondary tabular-nums">
+                      {formatBrix(row.total_brix_produced)}
+                    </span>
+                    <div
+                      className={`w-full rounded-t-xl border border-white/10 bg-gradient-to-t ${colors[pos]} ${heights[pos]} flex items-start justify-center pt-1 font-black`}
+                    >
+                      #{idx + 1}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* List */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+            {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
+            {!lbError && lbLoading && leaderboard.length === 0 && (
+              <p className="text-xs text-text-muted text-center py-8">Chargement…</p>
+            )}
+            {!lbError && !lbLoading && leaderboard.length === 0 && (
+              <p className="text-xs text-text-muted text-center py-8">Sois le premier à figurer au classement.</p>
+            )}
+            {leaderboard.length > 0 && (
+              <ul className="divide-y divide-white/5">
+                {leaderboard.slice(3).map((row, i) => {
+                  const rank = i + 4;
+                  const isMe = row.device_id === deviceId;
+                  return (
+                    <li
+                      key={row.device_id}
+                      className={`flex items-center justify-between py-2.5 px-2 text-sm rounded-md ${
+                        isMe ? 'bg-primary/10 border border-primary/30' : ''
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-text-muted">
+                          {rank}
+                        </span>
+                        <span className="truncate font-medium">{row.username}</span>
+                        {isMe && (
+                          <Badge variant="outline" className="border-primary text-primary text-[9px] px-1 py-0">
+                            Toi
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="font-bold text-primary tabular-nums">
+                        {formatBrix(row.total_brix_produced)}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+
+          {myRank >= 0 && (
+            <div className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-widest text-primary/80">Ton rang</span>
+              <span className="font-black text-primary">#{myRank + 1}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen text-text-primary overflow-hidden">
       {/* Atmospheric background */}
@@ -273,85 +408,18 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
               </DialogContent>
             </Dialog>
 
-            <Sheet open={lbOpen} onOpenChange={setLbOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  onClick={openLeaderboard}
-                  className="h-9 px-4 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
-                >
-                  <Trophy className="w-4 h-4 mr-1.5" />
-                  Classement
-                  {myRank >= 0 && myRank < 10 && (
-                    <span className="ml-2 text-[10px] font-bold bg-black/30 rounded-full px-1.5 py-0.5">
-                      #{myRank + 1}
-                    </span>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="bg-[hsl(240_28%_7%)] border-white/10 max-h-[85vh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <Trophy className="w-5 h-5 text-secondary" />
-                      Classement mondial
-                    </span>
-                    <Button size="icon" variant="ghost" onClick={() => loadLeaderboard(true)} disabled={lbLoading}>
-                      <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                  </SheetTitle>
-                </SheetHeader>
-
-                <div className="mt-4">
-                  {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
-                  {!lbError && lbLoading && leaderboard.length === 0 && (
-                    <p className="text-xs text-text-muted text-center py-8">Chargement…</p>
-                  )}
-                  {!lbError && !lbLoading && leaderboard.length === 0 && (
-                    <p className="text-xs text-text-muted text-center py-8">Sois le premier à figurer au classement.</p>
-                  )}
-                  {leaderboard.length > 0 && (
-                    <ul className="divide-y divide-white/5">
-                      {leaderboard.map((row, i) => {
-                        const isMe = row.device_id === deviceId;
-                        const medal =
-                          i === 0
-                            ? 'from-yellow-400/30 to-yellow-500/10 text-yellow-300'
-                            : i === 1
-                              ? 'from-slate-300/30 to-slate-400/10 text-slate-200'
-                              : i === 2
-                                ? 'from-amber-600/30 to-amber-700/10 text-amber-400'
-                                : 'from-white/5 to-transparent text-text-muted';
-                        return (
-                          <li
-                            key={row.device_id}
-                            className={`flex items-center justify-between py-2.5 px-2 text-sm rounded-md ${
-                              isMe ? 'bg-primary/10 border border-primary/30' : ''
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span
-                                className={`w-8 h-8 rounded-lg bg-gradient-to-br ${medal} flex items-center justify-center text-xs font-black`}
-                              >
-                                {i + 1}
-                              </span>
-                              <span className="truncate font-medium">{row.username}</span>
-                              {isMe && (
-                                <Badge variant="outline" className="border-primary text-primary text-[9px] px-1 py-0">
-                                  Toi
-                                </Badge>
-                              )}
-                            </div>
-                            <span className="font-bold text-primary tabular-nums">
-                              {formatBrix(row.total_brix_produced)}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+            <Button
+              onClick={openLeaderboard}
+              className="h-9 px-4 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
+            >
+              <Trophy className="w-4 h-4 mr-1.5" />
+              Classement
+              {myRank >= 0 && myRank < 10 && (
+                <span className="ml-2 text-[10px] font-bold bg-black/30 rounded-full px-1.5 py-0.5">
+                  #{myRank + 1}
+                </span>
+              )}
+            </Button>
           </div>
         </div>
 

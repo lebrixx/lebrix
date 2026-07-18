@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock } from 'lucide-react';
+import { isBrixFactoryUnlocked } from '@/utils/pongUnlock';
+import { useToast } from '@/hooks/use-toast';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useNavigate } from 'react-router-dom';
@@ -83,6 +85,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
+  const { toast: uiToast } = useToast();
+  const [brixUnlocked, setBrixUnlocked] = useState<boolean>(() => isBrixFactoryUnlocked());
+  useEffect(() => {
+    const check = () => setBrixUnlocked(isBrixFactoryUnlocked());
+    check();
+    const id = setInterval(check, 1500);
+    window.addEventListener('storage', check);
+    return () => { clearInterval(id); window.removeEventListener('storage', check); };
+  }, []);
 
   // Auto-open premium offer every 4 app launches OR daily tip (flags set in main.tsx)
   useEffect(() => {
@@ -327,13 +338,34 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
 
           <Button
-            onClick={() => onOpenBrixFactory?.()}
+            onClick={() => {
+              if (!brixUnlocked) {
+                uiToast({
+                  title: '🔒 Brix Factory verrouillé',
+                  description: "Termine le défi « Débloquer Brix Factory » ou utilise un code pour y accéder.",
+                });
+                onOpenChallenges();
+                return;
+              }
+              onOpenBrixFactory?.();
+            }}
             variant="outline"
             size="lg"
-            className="relative border-secondary/50 bg-gradient-to-r from-secondary/10 via-primary/5 to-secondary/10 hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group overflow-hidden"
+            className={`relative border-secondary/50 bg-gradient-to-r from-secondary/10 via-primary/5 to-secondary/10 hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group overflow-hidden ${!brixUnlocked ? 'opacity-80' : ''}`}
           >
-            <Sparkles className="w-4 h-4 mr-2 text-secondary group-hover:animate-pulse" />
-            <span className="font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">Brix Factory</span>
+            {brixUnlocked ? (
+              <Sparkles className="w-4 h-4 mr-2 text-secondary group-hover:animate-pulse" />
+            ) : (
+              <Lock className="w-4 h-4 mr-2 text-secondary" />
+            )}
+            <span className="font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+              Brix Factory
+            </span>
+            {!brixUnlocked && (
+              <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/40 uppercase tracking-widest">
+                Verrouillé
+              </span>
+            )}
           </Button>
 
           <div className="flex gap-2">

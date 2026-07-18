@@ -17,6 +17,7 @@ import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { addDiamonds, purchasePremiumPack } from '@/utils/seasonPass';
+import { setBrixFactoryOverrideUnlocked } from '@/utils/pongUnlock';
 
 // Réorganiser les thèmes pour mettre theme-royal en premier
 const availableThemes = [
@@ -114,6 +115,7 @@ export const Shop: React.FC<ShopProps> = ({
       if (code === 'LEBRIX2026') {
         purchasePremiumPack();
         onAddCoins?.(1150);
+        try { setBrixFactoryOverrideUnlocked(); } catch {}
         used.push(code);
         localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
         setPromoCode('');
