@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SeasonPass } from '@/components/SeasonPass';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -102,6 +102,18 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const [dailyChallenges, setDailyChallenges] = useState<DailyChallenge[]>([]);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showSeasonPass, setShowSeasonPass] = useState(false);
+  const brixUnlockRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('challenges_focus_brix') === '1') {
+        sessionStorage.removeItem('challenges_focus_brix');
+        setTimeout(() => {
+          brixUnlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+      }
+    } catch {}
+  }, []);
   
   
   // Lire le nombre de parties directement depuis localStorage à chaque rendu
@@ -594,7 +606,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
             const total = pongProgress.length;
 
             return (
-              <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+              <div ref={brixUnlockRef} className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
                 pongUnlocked
                   ? 'border-emerald-400/50 bg-gradient-to-br from-emerald-500/15 via-emerald-400/5 to-transparent'
                   : 'border-pink-500/40 bg-gradient-to-br from-pink-500/15 via-pink-500/5 to-primary/5'

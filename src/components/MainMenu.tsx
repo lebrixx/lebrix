@@ -340,10 +340,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <Button
             onClick={() => {
               if (!brixUnlocked) {
-                uiToast({
-                  title: '🔒 Brix Factory verrouillé',
-                  description: "Termine le défi « Débloquer Brix Factory » ou utilise un code pour y accéder.",
-                });
+                try { sessionStorage.setItem('challenges_focus_brix', '1'); } catch {}
                 onOpenChallenges();
                 return;
               }
@@ -362,9 +359,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               Brix Factory
             </span>
             {!brixUnlocked && (
-              <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary border border-secondary/40 uppercase tracking-widest">
-                Verrouillé
-              </span>
+              <Lock className="w-4 h-4 ml-2 text-secondary" />
             )}
           </Button>
 
