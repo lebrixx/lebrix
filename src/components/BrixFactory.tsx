@@ -273,85 +273,18 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
               </DialogContent>
             </Dialog>
 
-            <Sheet open={lbOpen} onOpenChange={setLbOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  onClick={openLeaderboard}
-                  className="h-9 px-4 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
-                >
-                  <Trophy className="w-4 h-4 mr-1.5" />
-                  Classement
-                  {myRank >= 0 && myRank < 10 && (
-                    <span className="ml-2 text-[10px] font-bold bg-black/30 rounded-full px-1.5 py-0.5">
-                      #{myRank + 1}
-                    </span>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="bg-[hsl(240_28%_7%)] border-white/10 max-h-[85vh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <Trophy className="w-5 h-5 text-secondary" />
-                      Classement mondial
-                    </span>
-                    <Button size="icon" variant="ghost" onClick={() => loadLeaderboard(true)} disabled={lbLoading}>
-                      <RefreshCw className={`w-4 h-4 ${lbLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                  </SheetTitle>
-                </SheetHeader>
-
-                <div className="mt-4">
-                  {lbError && <p className="text-xs text-danger">Impossible de charger le classement.</p>}
-                  {!lbError && lbLoading && leaderboard.length === 0 && (
-                    <p className="text-xs text-text-muted text-center py-8">Chargement…</p>
-                  )}
-                  {!lbError && !lbLoading && leaderboard.length === 0 && (
-                    <p className="text-xs text-text-muted text-center py-8">Sois le premier à figurer au classement.</p>
-                  )}
-                  {leaderboard.length > 0 && (
-                    <ul className="divide-y divide-white/5">
-                      {leaderboard.map((row, i) => {
-                        const isMe = row.device_id === deviceId;
-                        const medal =
-                          i === 0
-                            ? 'from-yellow-400/30 to-yellow-500/10 text-yellow-300'
-                            : i === 1
-                              ? 'from-slate-300/30 to-slate-400/10 text-slate-200'
-                              : i === 2
-                                ? 'from-amber-600/30 to-amber-700/10 text-amber-400'
-                                : 'from-white/5 to-transparent text-text-muted';
-                        return (
-                          <li
-                            key={row.device_id}
-                            className={`flex items-center justify-between py-2.5 px-2 text-sm rounded-md ${
-                              isMe ? 'bg-primary/10 border border-primary/30' : ''
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <span
-                                className={`w-8 h-8 rounded-lg bg-gradient-to-br ${medal} flex items-center justify-center text-xs font-black`}
-                              >
-                                {i + 1}
-                              </span>
-                              <span className="truncate font-medium">{row.username}</span>
-                              {isMe && (
-                                <Badge variant="outline" className="border-primary text-primary text-[9px] px-1 py-0">
-                                  Toi
-                                </Badge>
-                              )}
-                            </div>
-                            <span className="font-bold text-primary tabular-nums">
-                              {formatBrix(row.total_brix_produced)}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+            <Button
+              onClick={openLeaderboard}
+              className="h-9 px-4 rounded-full bg-gradient-to-r from-secondary to-primary text-white font-bold text-xs uppercase tracking-widest shadow-[0_6px_20px_-8px_hsl(var(--primary))] hover:opacity-90 relative"
+            >
+              <Trophy className="w-4 h-4 mr-1.5" />
+              Classement
+              {myRank >= 0 && myRank < 10 && (
+                <span className="ml-2 text-[10px] font-bold bg-black/30 rounded-full px-1.5 py-0.5">
+                  #{myRank + 1}
+                </span>
+              )}
+            </Button>
           </div>
         </div>
 
