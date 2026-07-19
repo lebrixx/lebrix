@@ -29,6 +29,7 @@ export const PremiumOffer: React.FC<PremiumOfferProps> = ({ isOpen, onClose, onA
     { emoji: '\u{1FA99}', title: t.premiumCoins, description: t.premiumCoinsDesc, amount: '+1 500', tone: 'secondary' as const },
     { emoji: '\u{1F6E1}\uFE0F', title: t.shopShieldLabel, description: t.shopShieldProtect, amount: 'x4', tone: 'primary' as const },
     { emoji: '\u{1F4B0}', title: t.shopGreenZonePlus, description: t.shopGreenZoneDesc, amount: 'x4', tone: 'primary' as const },
+    { emoji: '\u{2764}\uFE0F\u200D\u{1F525}', title: language === 'en' ? 'Second chance' : language === 'es' ? 'Segunda oportunidad' : 'Seconde chance', description: language === 'en' ? 'Auto-revive once per game' : language === 'es' ? 'Revivir automáticamente una vez' : 'Revivre automatiquement une fois', amount: 'x4', tone: 'primary' as const },
     { emoji: '\u{1F680}', title: t.premiumStartAt20, description: t.premiumStartAt20Desc, amount: 'x4', tone: 'primary' as const },
   ];
 
