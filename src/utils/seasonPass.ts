@@ -231,7 +231,9 @@ export function purchasePremiumPack(): { coins: number } {
     boosts['shield'] = (boosts['shield'] || 0) + 4;
     boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 4;
     boosts['start_20'] = (boosts['start_20'] || 0) + 4;
+    boosts['revive'] = (boosts['revive'] || 0) + 4;
     localStorage.setItem('luckyStopBoosts', JSON.stringify(boosts));
+    window.dispatchEvent(new CustomEvent('boostsInventoryUpdate', { detail: boosts }));
   } catch {}
 
   return { coins: 1500 };
