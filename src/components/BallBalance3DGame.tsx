@@ -560,6 +560,14 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
             />
           </GameCanvas>
 
+          <ReviveUsedFlash triggerKey={reviveFlashKey} />
+          {phase === 'playing' && reviveArmed && (
+            <div className="absolute top-14 right-3 px-3 py-1.5 rounded-full bg-rose-500/25 backdrop-blur-sm border border-rose-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse z-10">
+              <span className="text-lg">❤️‍🔥</span>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-rose-100">Seconde chance</span>
+            </div>
+          )}
+
           {/* Overlays */}
           {phase === 'menu' && (
             <GameStartOverlay
