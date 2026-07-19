@@ -16,8 +16,11 @@ import {
   Flame,
   Info,
   Atom,
+  Rocket,
+  Tv,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 import {
   BrixFactoryState,
   loadState,
