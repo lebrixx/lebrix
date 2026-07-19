@@ -15,6 +15,7 @@ export interface BrixFactoryState {
   cores: number;
   runProduced: number;
   prestigeCount: number;
+  turboUntil?: number;
 }
 
 const defaultState = (): BrixFactoryState => ({
@@ -30,6 +31,7 @@ const defaultState = (): BrixFactoryState => ({
   cores: 0,
   runProduced: 0,
   prestigeCount: 0,
+  turboUntil: 0,
 });
 
 export function loadState(): BrixFactoryState {
@@ -54,10 +56,12 @@ export function saveState(s: BrixFactoryState) {
 // ---- Formules ----
 export const reactorRate = (lvl: number) => 0.0008 * lvl;
 export const amplifierMult = (lvl: number) => 1 + 0.03 * (lvl - 1);
-// Bonus permanent du prestige : +8% de production par Cœur de Fusion.
 export const coreMultiplier = (cores: number) => 1 + 0.08 * cores;
+export const TURBO_MULTIPLIER = 2;
+export const isTurboActive = (s: BrixFactoryState) => (s.turboUntil ?? 0) > Date.now();
+export const turboMult = (s: BrixFactoryState) => (isTurboActive(s) ? TURBO_MULTIPLIER : 1);
 export const productionPerSec = (s: BrixFactoryState) =>
-  reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel) * coreMultiplier(s.cores);
+  reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel) * coreMultiplier(s.cores) * turboMult(s);
 export const productionPerMin = (s: BrixFactoryState) =>
   productionPerSec(s) * 60;
 
@@ -100,7 +104,11 @@ export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactor
   const dtSec = Math.max(0, (now - s.lastTick) / 1000);
   const cap = storageCapacity(s.storageLevel);
   const room = Math.max(0, cap - s.stored);
-  const rawGain = productionPerSec(s) * dtSec;
+  const base = reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel) * coreMultiplier(s.cores);
+  const turboEnd = s.turboUntil ?? 0;
+  const turboSec = Math.max(0, Math.min(turboEnd, now) - s.lastTick) / 1000;
+  const normalSec = Math.max(0, dtSec - turboSec);
+  const rawGain = base * (normalSec + turboSec * TURBO_MULTIPLIER);
   const gain = Math.min(room, rawGain);
   return {
     state: {
