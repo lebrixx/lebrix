@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
+import { ReviveUsedFlash } from '@/components/ReviveUsedFlash';
 import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
@@ -441,16 +442,21 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const startedAt = useRef(0);
   const elapsedOffsetRef = useRef(0);
   const elapsedAtDeathRef = useRef(0);
+  const reviveActiveRef = useRef(false);
+  const [reviveArmed, setReviveArmed] = useState(false);
+  const [reviveFlashKey, setReviveFlashKey] = useState(0);
   const { pointer, handlers, elRef } = usePointerTrack();
   const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const handleStart = useCallback(() => {
-    const allowedBoosts = menuBoosts.filter((boost) => boost === 'bigger_zone');
+    const allowedBoosts = menuBoosts.filter((boost) => boost === 'bigger_zone' || boost === 'revive');
     pointer.current.x = 0;
     pointer.current.y = 0;
     sceneKey.current++;
     elapsedOffsetRef.current = 0;
     elapsedAtDeathRef.current = 0;
+    reviveActiveRef.current = menuBoosts.includes('revive');
+    setReviveArmed(menuBoosts.includes('revive'));
     startGameSession();
     onSetBoosts?.(allowedBoosts);
     setScore(0);
@@ -463,8 +469,21 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   }, []);
 
   const handleDie = useCallback((finalScore: number) => {
+    const now = Date.now();
+    if (reviveActiveRef.current) {
+      reviveActiveRef.current = false;
+      setReviveArmed(false);
+      pointer.current.x = 0;
+      pointer.current.y = 0;
+      elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
+      elapsedOffsetRef.current = elapsedAtDeathRef.current;
+      startedAt.current = now - elapsedAtDeathRef.current * 1000;
+      sceneKey.current++;
+      setReviveFlashKey(k => k + 1);
+      return;
+    }
     playFailure?.();
-    elapsedAtDeathRef.current = (Date.now() - startedAt.current) / 1000;
+    elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
     setPhase('gameover');
     // Persist best
     try {
