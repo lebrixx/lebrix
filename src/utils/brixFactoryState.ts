@@ -31,6 +31,7 @@ const defaultState = (): BrixFactoryState => ({
   cores: 0,
   runProduced: 0,
   prestigeCount: 0,
+  turboUntil: 0,
 });
 
 export function loadState(): BrixFactoryState {
