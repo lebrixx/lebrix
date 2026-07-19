@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { Capacitor } from '@capacitor/core';
+import { ReviveUsedFlash } from './ReviveUsedFlash';
 interface CircleTapProps {
   theme: string;
   currentMode: ModeType;
@@ -57,8 +58,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
   const [reviveUsed, setReviveUsed] = useState(false);
+  const [reviveFlashKey, setReviveFlashKey] = useState(0);
   const { language } = useLanguage();
   const t = translations[language];
+
+  useEffect(() => {
+    const onFlash = () => setReviveFlashKey(k => k + 1);
+    window.addEventListener('revive-boost-used', onFlash);
+    return () => window.removeEventListener('revive-boost-used', onFlash);
+  }, []);
 
   // Mettre à jour le chrono chaque seconde
   useEffect(() => {
@@ -256,6 +264,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         }
       }}
     >
+      <ReviveUsedFlash triggerKey={reviveFlashKey} />
       {/* Bouton retour au menu - visible uniquement hors partie */}
       {onBack && (gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover') && (
         <Button

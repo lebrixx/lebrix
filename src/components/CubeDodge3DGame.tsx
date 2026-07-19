@@ -10,6 +10,7 @@ import { useBoosts } from '@/hooks/useBoosts';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
+import { ReviveUsedFlash } from '@/components/ReviveUsedFlash';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
 
@@ -578,6 +579,9 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const elapsedAtDeathRef = useRef(0);
   const [shieldActive, setShieldActive] = useState(false);
   const [shieldFlashKey, setShieldFlashKey] = useState(0);
+  const reviveActiveRef = useRef(false);
+  const [reviveArmed, setReviveArmed] = useState(false);
+  const [reviveFlashKey, setReviveFlashKey] = useState(0);
   const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const laneRef = useRef(1);
@@ -609,6 +613,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     sceneKey.current++;
     offsetRef.current = menuBoosts.includes('start_20') ? 20 : 0;
     setShieldActive(menuBoosts.includes('shield'));
+    reviveActiveRef.current = menuBoosts.includes('revive');
+    setReviveArmed(menuBoosts.includes('revive'));
     elapsedOffsetRef.current = 0;
     elapsedAtDeathRef.current = 0;
     startGameSession();
@@ -622,9 +628,22 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const handleScore = useCallback((n: number) => setScore(offsetRef.current + n), []);
 
   const handleDie = useCallback((finalRaw: number) => {
+    const now = Date.now();
+    // Seconde chance : auto-revive avant tout traitement de mort
+    if (reviveActiveRef.current) {
+      reviveActiveRef.current = false;
+      setReviveArmed(false);
+      elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
+      elapsedOffsetRef.current = elapsedAtDeathRef.current;
+      startedAt.current = now - elapsedAtDeathRef.current * 1000;
+      sceneKey.current++;
+      laneRef.current = 1;
+      setReviveFlashKey(k => k + 1);
+      return;
+    }
     const finalScore = offsetRef.current + finalRaw;
     playFailure?.();
-    elapsedAtDeathRef.current = (Date.now() - startedAt.current) / 1000;
+    elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
     setPhase('gameover');
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -733,6 +752,14 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               )}
 
               <ShieldUsedFlash triggerKey={shieldFlashKey} />
+              <ReviveUsedFlash triggerKey={reviveFlashKey} />
+
+              {reviveArmed && (
+                <div className="absolute top-14 right-3 px-3 py-1.5 rounded-full bg-rose-500/25 backdrop-blur-sm border border-rose-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse">
+                  <span className="text-lg">❤️‍🔥</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-rose-100">Seconde chance</span>
+                </div>
+              )}
 
               {/* Legend */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[9px] uppercase tracking-wider text-white/70 pointer-events-none">

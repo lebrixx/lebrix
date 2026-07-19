@@ -8,6 +8,7 @@ import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { BoostType } from '@/types/boosts';
 import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
+import { ReviveUsedFlash } from '@/components/ReviveUsedFlash';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
 import { useLanguage, translations } from '@/hooks/useLanguage';
@@ -469,6 +470,9 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const sceneScoreOffsetRef = useRef(0);
   const shieldsInitRef = useRef(0);
   const [shieldFlashKey, setShieldFlashKey] = useState(0);
+  const reviveActiveRef = useRef(false);
+  const [reviveArmed, setReviveArmed] = useState(false);
+  const [reviveFlashKey, setReviveFlashKey] = useState(0);
   const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const handleStart = useCallback(() => {
@@ -480,6 +484,8 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
     elapsedOffsetRef.current = 0;
     elapsedAtDeathRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    reviveActiveRef.current = menuBoosts.includes('revive');
+    setReviveArmed(menuBoosts.includes('revive'));
     startGameSession();
     onSetBoosts?.(menuBoosts);
     setScore(offsetRef.current);
@@ -494,9 +500,24 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   }, [playSuccess]);
 
   const handleDie = useCallback((finalRaw: number) => {
+    const now = Date.now();
+    if (reviveActiveRef.current) {
+      reviveActiveRef.current = false;
+      setReviveArmed(false);
+      elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
+      elapsedOffsetRef.current = elapsedAtDeathRef.current;
+      startedAt.current = now - elapsedAtDeathRef.current * 1000;
+      sceneScoreOffsetRef.current = finalRaw;
+      shieldsInitRef.current = 0;
+      sceneKey.current++;
+      posRef.current = { i: 1, j: 1 };
+      cmdRef.current.dir = null;
+      setReviveFlashKey(k => k + 1);
+      return;
+    }
     const finalScore = offsetRef.current + finalRaw;
     playFailure?.();
-    elapsedAtDeathRef.current = (Date.now() - startedAt.current) / 1000;
+    elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
     setPhase('gameover');
     try {
       const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
@@ -590,6 +611,13 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
         </SwipeArea>
 
         {phase === 'playing' && <ShieldUsedFlash triggerKey={shieldFlashKey} />}
+        <ReviveUsedFlash triggerKey={reviveFlashKey} />
+        {phase === 'playing' && reviveArmed && (
+          <div className="absolute top-14 right-3 px-3 py-1.5 rounded-full bg-rose-500/25 backdrop-blur-sm border border-rose-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse z-10">
+            <span className="text-lg">❤️‍🔥</span>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-rose-100">Seconde chance</span>
+          </div>
+        )}
 
         {phase === 'menu' && (
           <GameStartOverlay

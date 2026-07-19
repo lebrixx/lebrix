@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Sparkles, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
+import { ReviveUsedFlash } from '@/components/ReviveUsedFlash';
 import { BoostType } from '@/types/boosts';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
@@ -498,6 +499,9 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   const elapsedOffsetRef = useRef(0);
   const elapsedAtDeathRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
+  const reviveActiveRef = useRef(false);
+  const [reviveArmed, setReviveArmed] = useState(false);
+  const [reviveFlashKey, setReviveFlashKey] = useState(0);
   const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const handleStart = useCallback(() => {
@@ -507,6 +511,8 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     shieldRef.current = false;
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    reviveActiveRef.current = menuBoosts.includes('revive');
+    setReviveArmed(menuBoosts.includes('revive'));
     startGameSession();
     onSetBoosts?.(allowedBoosts);
     setScore(offsetRef.current);
@@ -523,6 +529,22 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   }, [playSuccess]);
 
   const handleDie = useCallback((finalRaw: number) => {
+    const now = Date.now();
+    if (reviveActiveRef.current) {
+      reviveActiveRef.current = false;
+      setReviveArmed(false);
+      elapsedAtDeathRef.current = (now - startedAt.current) / 1000;
+      elapsedOffsetRef.current = elapsedAtDeathRef.current;
+      startedAt.current = now - elapsedAtDeathRef.current * 1000;
+      sceneScoreOffsetRef.current = finalRaw;
+      shieldRef.current = false;
+      sceneKey.current++;
+      cmdRef.current.drop = false;
+      setRedWarn(false);
+      setScore(offsetRef.current + finalRaw);
+      setReviveFlashKey(k => k + 1);
+      return;
+    }
     const finalScore = offsetRef.current + finalRaw;
     if (shieldRef.current) {
       shieldRef.current = false;
@@ -636,6 +658,14 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               graceMs={2000}
             />
           </GameCanvas>
+
+          <ReviveUsedFlash triggerKey={reviveFlashKey} />
+          {phase === 'playing' && reviveArmed && (
+            <div className="absolute top-4 right-3 px-3 py-1.5 rounded-full bg-rose-500/25 backdrop-blur-sm border border-rose-300/60 flex items-center gap-1.5 pointer-events-none animate-pulse">
+              <span className="text-lg">❤️‍🔥</span>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-rose-100">Seconde chance</span>
+            </div>
+          )}
 
           {/* Red warning banner */}
           {phase === 'playing' && redWarn && (
