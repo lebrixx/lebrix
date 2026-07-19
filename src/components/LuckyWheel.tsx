@@ -62,6 +62,7 @@ export const LuckyWheel: React.FC<LuckyWheelProps> = ({ isOpen, onClose, onCoins
         shield: t.shield || 'Bouclier',
         bigger_zone: t.convertScoreName,
         start_20: t.start20 || 'Départ +20',
+        revive: (t as any).reviveBoostName || 'Seconde chance',
       };
       toast({
         title: "🎉 " + (t.youWon || "Tu as gagné :"),
