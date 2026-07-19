@@ -62,13 +62,11 @@ export const productionPerMin = (s: BrixFactoryState) =>
   productionPerSec(s) * 60;
 
 // ---- Prestige ----
-export const PRESTIGE_THRESHOLD = 500;
-export const coresFromRun = (runProduced: number) => {
-  if (runProduced < PRESTIGE_THRESHOLD) return 0;
-  return Math.floor(Math.sqrt(runProduced / PRESTIGE_THRESHOLD));
-};
+export const PRESTIGE_THRESHOLD = 100;
+export const coresFromRun = (runProduced: number) =>
+  Math.floor(runProduced / PRESTIGE_THRESHOLD);
 export const nextCoreThreshold = (currentGain: number) =>
-  Math.pow(currentGain + 1, 2) * PRESTIGE_THRESHOLD;
+  (currentGain + 1) * PRESTIGE_THRESHOLD;
 
 export function performPrestige(s: BrixFactoryState): { state: BrixFactoryState; gained: number } {
   const gained = coresFromRun(s.runProduced);

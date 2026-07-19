@@ -203,11 +203,11 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const pendingCores = coresFromRun(state.runProduced);
   const nextGainAt = nextCoreThreshold(pendingCores);
   const canPrestige = pendingCores > 0;
-  const prestigeProgress =
-    pendingCores === 0
-      ? Math.min(100, (state.runProduced / PRESTIGE_THRESHOLD) * 100)
-      : Math.min(100, ((state.runProduced - Math.pow(pendingCores, 2) * PRESTIGE_THRESHOLD) /
-          (nextGainAt - Math.pow(pendingCores, 2) * PRESTIGE_THRESHOLD)) * 100);
+  const previousThreshold = pendingCores * PRESTIGE_THRESHOLD;
+  const prestigeProgress = Math.min(
+    100,
+    ((state.runProduced - previousThreshold) / PRESTIGE_THRESHOLD) * 100
+  );
 
   const handlePrestige = () => {
     if (!canPrestige) return;
