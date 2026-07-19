@@ -19,6 +19,7 @@ function applyEssentialRewards(): void {
     boosts['shield'] = (boosts['shield'] || 0) + 5;
     boosts['bigger_zone'] = (boosts['bigger_zone'] || 0) + 5;
     boosts['start_20'] = (boosts['start_20'] || 0) + 5;
+    boosts['revive'] = (boosts['revive'] || 0) + 5;
     localStorage.setItem('luckyStopBoosts', JSON.stringify(boosts));
     window.dispatchEvent(new CustomEvent('boostsInventoryUpdate', { detail: boosts }));
   } catch (e) {
