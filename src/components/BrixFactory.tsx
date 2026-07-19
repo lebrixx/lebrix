@@ -39,6 +39,8 @@ import {
   nextCoreThreshold,
   performPrestige,
   PRESTIGE_THRESHOLD,
+  isTurboActive,
+  TURBO_MULTIPLIER,
   dailyBonusStatus,
   claimDailyBonus,
   formatBrix,
