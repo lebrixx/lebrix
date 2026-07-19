@@ -104,7 +104,11 @@ export function applyOfflineProduction(s: BrixFactoryState): { state: BrixFactor
   const dtSec = Math.max(0, (now - s.lastTick) / 1000);
   const cap = storageCapacity(s.storageLevel);
   const room = Math.max(0, cap - s.stored);
-  const rawGain = productionPerSec(s) * dtSec;
+  const base = reactorRate(s.reactorLevel) * amplifierMult(s.amplifierLevel) * coreMultiplier(s.cores);
+  const turboEnd = s.turboUntil ?? 0;
+  const turboSec = Math.max(0, Math.min(turboEnd, now) - s.lastTick) / 1000;
+  const normalSec = Math.max(0, dtSec - turboSec);
+  const rawGain = base * (normalSec + turboSec * TURBO_MULTIPLIER);
   const gain = Math.min(room, rawGain);
   return {
     state: {
