@@ -65,9 +65,26 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
   const [lbLoading, setLbLoading] = useState(false);
   const [lbError, setLbError] = useState<string | null>(null);
   const [lbOpen, setLbOpen] = useState(false);
-  
+  const [turboOpen, setTurboOpen] = useState(false);
+  const { showRewardedAd, isReady, isShowing } = useRewardedAd();
+
   const lastSubmitRef = useRef(0);
   const harvestFlashRef = useRef<HTMLDivElement | null>(null);
+
+  const turboActive = isTurboActive(state);
+  const turboRemaining = Math.max(0, (state.turboUntil ?? 0) - Date.now());
+
+  const handleActivateTurbo = async () => {
+    if (turboActive) return;
+    const ok = await showRewardedAd('coins80');
+    if (!ok) return;
+    const now = Date.now();
+    const next = { ...state, turboUntil: now + 12 * 3600 * 1000, lastTick: now };
+    setState(next);
+    saveState(next);
+    setTurboOpen(false);
+    toast({ title: '🚀 Turbo activé', description: `Production ×${TURBO_MULTIPLIER} pendant 12h.` });
+  };
 
   // Offline gain on mount
   useEffect(() => {
