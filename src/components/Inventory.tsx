@@ -32,6 +32,7 @@ const BOOST_ICONS: Record<BoostType, React.ReactNode> = {
   shield: <Shield className="w-5 h-5 text-blue-400" />,
   bigger_zone: <Coins className="w-5 h-5 text-yellow-300" />,
   start_20: <Rocket className="w-5 h-5 text-orange-400" />,
+  revive: <span className="text-xl leading-none">❤️‍🔥</span>,
 };
 
 const getStoredBoosts = (): Record<string, number> => {
