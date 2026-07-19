@@ -550,6 +550,78 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
 
 
 
+        {/* Turbo — Rewarded ad boost */}
+        <Dialog open={turboOpen} onOpenChange={setTurboOpen}>
+          <DialogTrigger asChild>
+            <button
+              className={`group relative w-full rounded-2xl p-4 border text-left overflow-hidden transition-all ${
+                turboActive
+                  ? 'border-orange-400/40 bg-gradient-to-r from-orange-500/15 via-amber-500/10 to-orange-500/15'
+                  : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.05] cursor-pointer'
+              }`}
+            >
+              <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-orange-500/20 blur-3xl pointer-events-none" />
+              <div className="relative flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${turboActive ? 'bg-orange-500/25 text-orange-200' : 'bg-white/5 text-text-muted'}`}>
+                  <Rocket className={`w-5 h-5 ${turboActive ? 'animate-pulse' : ''}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold flex items-center gap-2">
+                    Turbo Production
+                    {turboActive && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-200 font-mono">
+                        ×{TURBO_MULTIPLIER}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-text-muted mt-0.5">
+                    {turboActive
+                      ? `Actif encore ${formatDuration(turboRemaining)}`
+                      : `Regarde une pub pour ×${TURBO_MULTIPLIER} pendant 12h`}
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-orange-200">
+                  {turboActive ? 'Actif' : 'Activer →'}
+                </span>
+              </div>
+            </button>
+          </DialogTrigger>
+          <DialogContent className="bg-[hsl(240_28%_7%)] border-white/10 text-text-primary max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Rocket className="w-5 h-5 text-orange-300" /> Turbo Production
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 text-sm text-text-secondary mt-2">
+              <p>
+                Regarde une courte publicité pour doubler ta production
+                (<span className="text-orange-200 font-semibold">×{TURBO_MULTIPLIER}</span>) pendant{' '}
+                <span className="text-orange-200 font-semibold">12 heures</span>.
+              </p>
+              <p className="text-[11px] text-text-muted">
+                L'effet se cumule avec l'Amplificateur et les Cœurs de Fusion, et s'applique aussi à la production hors-ligne.
+              </p>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Button
+                variant="ghost"
+                onClick={() => setTurboOpen(false)}
+                className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10"
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleActivateTurbo}
+                disabled={turboActive || isShowing || !isReady()}
+                className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold disabled:opacity-40"
+              >
+                <Tv className="w-4 h-4 mr-2" />
+                Regarder la pub
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Prestige — Fusion du Cœur */}
         {(
           <Dialog open={prestigeOpen} onOpenChange={setPrestigeOpen}>
