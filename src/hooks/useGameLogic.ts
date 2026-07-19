@@ -60,6 +60,7 @@ export interface GameState {
   // Boosts actifs
   activeBoosts: BoostType[];
   hasShield: boolean;
+  hasRevive: boolean;
 }
 
 // Configuration du jeu
@@ -190,6 +191,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       trapZoneIndex,
       activeBoosts: [],
       hasShield: false,
+      hasRevive: false,
     };
     
     if (saved) {
@@ -474,6 +476,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
       memoryZoneVisible,
       activeBoosts: boosts,
       hasShield: boosts.includes('shield'),
+      hasRevive: boosts.includes('revive'),
     }));
   }, [currentMode]);
 
@@ -686,6 +689,21 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         return;
       }
       
+      // ÉCHEC - Vérifier ensuite si la Seconde chance est armée
+      if (gameState.hasRevive) {
+        // Consomme le boost et continue exactement comme un revive via pub
+        setGameState(prev => ({
+          ...prev,
+          hasRevive: false,
+          activeBoosts: prev.activeBoosts.filter(b => b !== 'revive'),
+          showResult: false,
+          lastResult: null,
+          gameStatus: 'running',
+        }));
+        window.dispatchEvent(new CustomEvent('revive-boost-used'));
+        return;
+      }
+      
       // ÉCHEC - Fin de partie pour tous les modes
       // Vérifier si la partie a duré au moins 5 secondes
       const gameDuration = (Date.now() - gameState.gameStartTime) / 1000;
@@ -701,7 +719,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         totalGamesPlayed: shouldCount ? prev.totalGamesPlayed + 1 : prev.totalGamesPlayed,
       }));
     }
-  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, startGame, currentMode, addTimeout]);
+  }, [gameState.gameStatus, gameState.ballAngle, gameState.zoneStart, gameState.zoneEnd, gameState.currentScore, gameState.ballSpeed, gameState.hasShield, gameState.hasRevive, startGame, currentMode, addTimeout]);
 
   // Réinitialiser le jeu
   const resetGame = useCallback(() => {
