@@ -747,14 +747,14 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
       'shield': 'boost1',
       'bigger_zone': 'boost2',
       'start_20': 'boost3',
+      'revive': 'boost1',
     };
     const kind = boostKindMap[boostId];
     if (!kind) return;
     
     const success = await showRewardedAd(kind);
     if (success) {
-      const boostMap = { boost1: 'shield', boost2: 'bigger_zone', boost3: 'start_20' };
-      addBoost(boostMap[kind] as any);
+      addBoost(boostId);
       toast({ title: t.boostReceivedShort, description: t.boostReceivedDesc.replace('{name}', BOOSTS[boostId].name).replace('{icon}', BOOSTS[boostId].icon) });
     }
   };
