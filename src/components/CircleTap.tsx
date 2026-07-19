@@ -264,6 +264,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
         }
       }}
     >
+      <ReviveUsedFlash triggerKey={reviveFlashKey} />
       {/* Bouton retour au menu - visible uniquement hors partie */}
       {onBack && (gameState.gameStatus === 'idle' || gameState.gameStatus === 'gameover') && (
         <Button
