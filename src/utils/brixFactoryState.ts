@@ -15,6 +15,7 @@ export interface BrixFactoryState {
   cores: number;
   runProduced: number;
   prestigeCount: number;
+  turboUntil?: number;
 }
 
 const defaultState = (): BrixFactoryState => ({
