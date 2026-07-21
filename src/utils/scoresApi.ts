@@ -141,22 +141,36 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     const clientFingerprint = generateDeviceFingerprint();
     const decorations = buildDecorationsString();
     const submissionId = currentSubmissionId || generateSubmissionId();
+    const shouldConsolidate = usernameRecentlyChanged;
+
+    const payload = {
+      device_id: deviceId,
+      username,
+      score,
+      mode,
+      session_start_time: gameSessionStart || now - 10000,
+      client_fingerprint: clientFingerprint,
+      decorations,
+      submission_id: submissionId,
+      username_changed: shouldConsolidate,
+    };
+
+    // If we know we're offline, don't even try — queue and report success to the UI.
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      enqueuePendingScore({ ...payload, queued_at: Date.now() });
+      lastSubmitTime = now;
+      hasSubmittedThisGame = true;
+      trackSkipped('submit-score', 'offline-queued');
+      return true;
+    }
+
+    // Opportunistic flush of anything queued from a previous session
+    flushPendingScores().catch(() => { /* best effort */ });
 
     // Call the secure Edge Function
-    const shouldConsolidate = usernameRecentlyChanged;
     trackSent('submit-score');
     const { data, error } = await supabase.functions.invoke('submit-score', {
-      body: {
-        device_id: deviceId,
-        username,
-        score,
-        mode,
-        session_start_time: gameSessionStart || now - 10000,
-        client_fingerprint: clientFingerprint,
-        decorations,
-        submission_id: submissionId,
-        username_changed: shouldConsolidate
-      }
+      body: payload,
     });
 
     // Clear the flag after successful submission with consolidation
@@ -165,14 +179,19 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
     }
 
     if (error) {
-      console.error('Edge Function error:', error);
-      return false;
+      // Transport / network error — queue for retry
+      console.error('Edge Function error (queued for retry):', error);
+      enqueuePendingScore({ ...payload, queued_at: Date.now() });
+      lastSubmitTime = now;
+      hasSubmittedThisGame = true;
+      return true;
     }
 
     if (!data?.success) {
       console.warn('Score submission failed:', data?.error);
       return false;
     }
+
 
     lastSubmitTime = now;
     hasSubmittedThisGame = true;
