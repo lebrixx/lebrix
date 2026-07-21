@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,10 +8,18 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Multiplayer from "./pages/Multiplayer";
 import { ForceUpdate } from "./components/ForceUpdate";
+import { flushPendingScores, installPendingScoresAutoFlush } from "./utils/pendingScoresQueue";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    installPendingScoresAutoFlush();
+    flushPendingScores();
+  }, []);
+
+  return (
+
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ForceUpdate />
@@ -26,6 +35,7 @@ const App = () => (
       </HashRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
