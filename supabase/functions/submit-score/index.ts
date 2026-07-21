@@ -16,7 +16,7 @@ const SCORE_LIMITS: Record<string, number> = {
 };
 
 const RATE_LIMIT_WINDOW = 15000;
-const MAX_SUBMISSIONS_PER_WINDOW = 100;
+const MAX_SUBMISSIONS_PER_WINDOW = 20;
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const processedSubmissions = new Set<string>();

@@ -7,7 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { clearGlobalCache } from './globalScoresApi';
 
 const STORAGE_KEY = 'pending_scores_v1';
-const MAX_ENTRIES = 50;
+const MAX_ENTRIES = 20;
+const RETRY_SPACING_MS = 250; // small gap between retries to avoid burst
 const MAX_AGE_MS = 48 * 60 * 60 * 1000; // 48h — beyond that we drop silently
 
 export interface PendingScore {
@@ -70,9 +71,16 @@ export async function flushPendingScores(): Promise<void> {
     const remaining: PendingScore[] = [];
     let anySuccess = false;
 
+    let firstIter = true;
     for (const entry of all) {
       // Drop entries older than max age
       if (Date.now() - entry.queued_at >= MAX_AGE_MS) continue;
+
+      // Small gap between retries to avoid hitting server rate limits in a burst
+      if (!firstIter) {
+        await new Promise(r => setTimeout(r, RETRY_SPACING_MS));
+      }
+      firstIter = false;
 
       try {
         const { data, error } = await supabase.functions.invoke('submit-score', {

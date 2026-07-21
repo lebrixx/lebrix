@@ -164,8 +164,8 @@ export async function submitScore({ score, mode }: SubmitScoreParams): Promise<b
       return true;
     }
 
-    // Opportunistic flush of anything queued from a previous session
-    flushPendingScores().catch(() => { /* best effort */ });
+    // No opportunistic flush here — auto-flush on `online` / `visibilitychange`
+    // already covers it, avoiding duplicate attempts during a normal submit.
 
     // Call the secure Edge Function
     trackSent('submit-score');
