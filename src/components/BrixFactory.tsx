@@ -577,11 +577,16 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
                   <div className="text-xs text-text-muted mt-0.5">
                     {turboActive
                       ? `Actif encore ${formatDuration(turboRemaining)}`
-                      : `Regarde une pub pour ×${TURBO_MULTIPLIER} pendant 12h`}
+                      : `×${TURBO_MULTIPLIER} pendant 12h en regardant une pub`}
                   </div>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-orange-200">
-                  {turboActive ? 'Actif' : 'Activer →'}
+                <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-orange-200">
+                  {turboActive ? 'Actif' : (
+                    <>
+                      <Tv className="w-3 h-3" />
+                      Pub →
+                    </>
+                  )}
                 </span>
               </div>
             </button>
