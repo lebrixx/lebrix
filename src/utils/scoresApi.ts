@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { buildDecorationsString } from './decorations';
 import { trackSent, trackSkipped } from './edgeFunctionMetrics';
 import { clearGlobalCache } from './globalScoresApi';
+import { enqueuePendingScore, flushPendingScores } from './pendingScoresQueue';
 
 // Track if username was recently changed (reset after first successful submission)
 let usernameRecentlyChanged = false;
