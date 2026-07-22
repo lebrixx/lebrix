@@ -54,8 +54,8 @@ export function saveState(s: BrixFactoryState) {
 }
 
 // ---- Formules ----
-export const reactorRate = (lvl: number) => 0.0008 * lvl;
-export const amplifierMult = (lvl: number) => 1 + 0.03 * (lvl - 1);
+export const reactorRate = (lvl: number) => 0.0002 + 0.0004 * (lvl - 1);
+export const amplifierMult = (lvl: number) => 1 + 0.015 * (lvl - 1);
 export const coreMultiplier = (cores: number) => 1 + 0.08 * cores;
 export const TURBO_MULTIPLIER = 2;
 export const isTurboActive = (s: BrixFactoryState) => (s.turboUntil ?? 0) > Date.now();
@@ -91,7 +91,7 @@ export function performPrestige(s: BrixFactoryState): { state: BrixFactoryState;
 }
 
 // Stockage linéaire, croissance plus lente
-export const storageCapacity = (lvl: number) => 4 + 3 * lvl;
+export const storageCapacity = (lvl: number) => 4 + 1.5 * lvl;
 
 // Coûts en croissance modérée pour une progression plus accessible
 export const reactorCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.42, lvl - 1)));
