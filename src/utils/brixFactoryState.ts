@@ -91,7 +91,7 @@ export function performPrestige(s: BrixFactoryState): { state: BrixFactoryState;
 }
 
 // Stockage linéaire, croissance plus lente
-export const storageCapacity = (lvl: number) => 4 + 3 * lvl;
+export const storageCapacity = (lvl: number) => 4 + 1.5 * lvl;
 
 // Coûts en croissance modérée pour une progression plus accessible
 export const reactorCost = (lvl: number) => Math.max(2, Math.ceil(2 * Math.pow(1.42, lvl - 1)));
