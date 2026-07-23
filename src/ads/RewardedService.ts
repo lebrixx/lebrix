@@ -94,6 +94,7 @@ private async preload(): Promise<void> {
 }
 
 isReady(): boolean {
+  if (areAdsDisabled()) return true;
   const now = Date.now();
   const cooldownPassed = now - this.lastShown >= COOLDOWN_MS;
   const ready = this.preloaded && !this.inFlight && cooldownPassed;
