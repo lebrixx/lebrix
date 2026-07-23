@@ -10,6 +10,10 @@ export const REWARDED_COOLDOWN_EVENT = 'rewarded_cooldown_change';
 
 export type RewardKind = 'revive' | 'boost1' | 'boost2' | 'boost3' | 'coins80' | 'ticket';
 
+export const areAdsDisabled = (): boolean => {
+  try { return localStorage.getItem('ls_ads_disabled') === 'true'; } catch { return false; }
+};
+
 type FSMState = 'idle' | 'loading' | 'ready' | 'showing' | 'cooldown';
 
 export interface RewardedResult {
@@ -90,6 +94,7 @@ private async preload(): Promise<void> {
 }
 
 isReady(): boolean {
+  if (areAdsDisabled()) return true;
   const now = Date.now();
   const cooldownPassed = now - this.lastShown >= COOLDOWN_MS;
   const ready = this.preloaded && !this.inFlight && cooldownPassed;
@@ -107,6 +112,7 @@ isReady(): boolean {
 }
 
   getCooldownRemaining(): number {
+    if (areAdsDisabled()) return 0;
     const now = Date.now();
     const elapsed = now - this.lastShown;
     if (elapsed >= COOLDOWN_MS) return 0;
@@ -114,6 +120,11 @@ isReady(): boolean {
   }
 
   async show(kind: RewardKind): Promise<RewardedResult> {
+    // Ads globally disabled via promo code — auto-grant reward without showing
+    if (areAdsDisabled()) {
+      console.log('[Rewarded] Ads disabled — auto-granting reward:', kind);
+      return { status: 'rewarded', ms: 0, kind };
+    }
     // Vérifications de base
     if (this.inFlight) {
       console.warn('[Rewarded] blocked: already showing an ad');
