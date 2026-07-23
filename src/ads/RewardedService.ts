@@ -10,6 +10,10 @@ export const REWARDED_COOLDOWN_EVENT = 'rewarded_cooldown_change';
 
 export type RewardKind = 'revive' | 'boost1' | 'boost2' | 'boost3' | 'coins80' | 'ticket';
 
+export const areAdsDisabled = (): boolean => {
+  try { return localStorage.getItem('ls_ads_disabled') === 'true'; } catch { return false; }
+};
+
 type FSMState = 'idle' | 'loading' | 'ready' | 'showing' | 'cooldown';
 
 export interface RewardedResult {
