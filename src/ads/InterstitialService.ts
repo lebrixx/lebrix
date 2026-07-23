@@ -56,6 +56,10 @@ class InterstitialService {
   }
 
   isInterstitialReady(): boolean {
+    // Ads globally disabled via promo code
+    if (localStorage.getItem('ls_ads_disabled') === 'true') {
+      return false;
+    }
     // Premium users never see interstitials
     if (localStorage.getItem('ls_premium_no_ads') === 'true') {
       console.log('[Interstitial] Skipped — user is premium (no ads)');
