@@ -120,6 +120,12 @@ export const Shop: React.FC<ShopProps> = ({
         localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
         setPromoCode('');
         toast({ title: t.codeActivatedTitle, description: t.codeActivatedDesc });
+      } else if (code === 'LEBRIXPUB') {
+        localStorage.setItem('ls_ads_disabled', 'true');
+        used.push(code);
+        localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
+        setPromoCode('');
+        toast({ title: t.codeActivatedTitle, description: 'Toutes les pubs sont désactivées.' });
       } else {
         toast({ title: t.codeInvalidTitle, description: t.codeInvalidDesc, variant: 'destructive' });
       }
