@@ -716,7 +716,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
                     <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                   )}
                 </div>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="survie_60s" />
               </div>
             </div>
           )}

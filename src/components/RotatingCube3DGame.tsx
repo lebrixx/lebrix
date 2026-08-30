@@ -649,7 +649,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
                   <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                 )}
               </div>
-              <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
+              <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="memoire_expert" />
             </div>
           </div>
         )}

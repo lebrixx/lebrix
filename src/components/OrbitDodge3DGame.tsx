@@ -708,7 +708,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
                     <>Meilleur : <span className="text-primary font-bold">{best}</span></>
                   )}
                 </div>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} />
+                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="zone_traitresse" />
               </div>
             </div>
           )}
