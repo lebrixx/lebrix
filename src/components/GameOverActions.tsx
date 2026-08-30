@@ -80,6 +80,17 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
         <ArrowLeft className="w-4 h-4 mr-2" /> {t.menu}
       </Button>
 
+      {score !== undefined && (
+        <Button
+          onClick={handleShare}
+          variant="outline"
+          size="sm"
+          className="absolute top-4 right-4 z-10 border-wheel-border hover:bg-button-hover text-text-primary"
+        >
+          <Share2 className="w-4 h-4 mr-2" /> {t.shareScore || 'Partager'}
+        </Button>
+      )}
+
       <div className="flex flex-col gap-3 items-stretch w-full max-w-xs mx-auto">
         {onOpenBoosts && (
           <Button
@@ -92,15 +103,6 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
         <Button onClick={onReplay} className="bg-gradient-primary">
           <RotateCcw className="w-4 h-4 mr-2" /> {t.replay}
         </Button>
-        {score !== undefined && (
-          <Button
-            onClick={handleShare}
-            variant="outline"
-            className="border-wheel-border hover:bg-button-hover text-text-primary"
-          >
-            <Share2 className="w-4 h-4 mr-2" /> {t.shareScore || 'Partager'}
-          </Button>
-        )}
       </div>
 
       {onRevive && (
