@@ -735,6 +735,18 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
           {/* In-game overlay */}
           {phase === 'playing' && (
             <>
+              {/* Hint pop-up — 2 premières secondes */}
+              {showHint && (
+                <div className="absolute left-1/2 top-6 -translate-x-1/2 z-30 pointer-events-none animate-fade-in">
+                  <div className="flex items-center gap-2.5 rounded-2xl border border-fuchsia-300/70 bg-fuchsia-500/30 px-5 py-3 shadow-xl shadow-fuchsia-500/30 backdrop-blur-md">
+                    <span className="inline-block w-5 h-5 rounded-full ring-2 ring-white/50 animate-bounce" style={{ backgroundColor: colorCss, boxShadow: `0 0 18px ${colorCss}` }} />
+                    <span className="text-sm font-extrabold uppercase tracking-wide text-white whitespace-nowrap">
+                      Tape pour changer de couleur
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Color indicator */}
               <div className="absolute top-3 left-3 px-4 py-2.5 rounded-2xl bg-black/65 backdrop-blur-sm border border-white/15 shadow-lg flex items-center gap-2 pointer-events-none">
                 <span
