@@ -582,6 +582,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   const reviveActiveRef = useRef(false);
   const [reviveArmed, setReviveArmed] = useState(false);
   const [reviveFlashKey, setReviveFlashKey] = useState(0);
+  const [showHint, setShowHint] = useState(false);
   const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const laneRef = useRef(1);
