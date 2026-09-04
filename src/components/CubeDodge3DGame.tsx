@@ -625,7 +625,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     startedAt.current = Date.now();
     setPhase('playing');
     setShowHint(true);
-    window.setTimeout(() => setShowHint(false), 2000);
+    window.setTimeout(() => setShowHint(false), 3000);
   }, [menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((n: number) => setScore(offsetRef.current + n), []);
@@ -737,7 +737,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
             <>
               {/* Hint pop-up — 2 premières secondes */}
               {showHint && (
-                <div className="absolute left-1/2 top-6 -translate-x-1/2 z-30 pointer-events-none animate-fade-in">
+                <div className="absolute left-1/2 top-20 -translate-x-1/2 z-30 pointer-events-none animate-fade-in">
                   <div className="flex items-center gap-2.5 rounded-2xl border border-fuchsia-300/70 bg-fuchsia-500/30 px-5 py-3 shadow-xl shadow-fuchsia-500/30 backdrop-blur-md">
                     <span className="inline-block w-5 h-5 rounded-full ring-2 ring-white/50 animate-bounce" style={{ backgroundColor: colorCss, boxShadow: `0 0 18px ${colorCss}` }} />
                     <span className="text-sm font-extrabold uppercase tracking-wide text-white whitespace-nowrap">
