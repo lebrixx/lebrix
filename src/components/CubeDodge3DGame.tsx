@@ -624,6 +624,8 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
     setUiColor(0);
     startedAt.current = Date.now();
     setPhase('playing');
+    setShowHint(true);
+    window.setTimeout(() => setShowHint(false), 2000);
   }, [menuBoosts, onSetBoosts]);
 
   const handleScore = useCallback((n: number) => setScore(offsetRef.current + n), []);
