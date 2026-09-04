@@ -256,15 +256,15 @@ export const Shop: React.FC<ShopProps> = ({
       {/* Pack Essentiel Banner */}
       <div
         onClick={() => setShowEssentialPack(true)}
-        className="w-full max-w-6xl mx-auto mb-6 flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg
+        className="w-full max-w-6xl mx-auto mb-6 flex items-center justify-between gap-3 px-5 py-3.5 rounded-lg
                    border border-wheel-border bg-button-bg/60 hover:bg-button-hover/60 cursor-pointer transition-all duration-200 hover:border-primary/40"
       >
-        <div className="flex items-center gap-2.5">
-          <Package className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-text-secondary">{t.shopPackEssential}</span>
-          <span className="text-xs text-text-muted">• {t.shopPackEssentialItems}</span>
+        <div className="flex items-center gap-3">
+          <Package className="w-5 h-5 text-primary" />
+          <span className="text-base font-semibold text-text-secondary">{t.shopPackEssential}</span>
+          <span className="text-sm text-text-muted">• {t.shopPackEssentialItems}</span>
         </div>
-        <ArrowLeft className="w-4 h-4 text-text-muted rotate-180" />
+        <ArrowLeft className="w-5 h-5 text-text-muted rotate-180" />
       </div>
 
       {/* Pack Essentiel Dialog */}
