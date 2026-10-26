@@ -1,4 +1,6 @@
 # Tasks
+- [x] Keep only "Activer des Boosts" on the game-over boost button (no subtitle line); verified in Cube Dodge play.
+
 - [x] Shorten the monthly ranking explanation in all three languages; verified the French text in the monthly ranking.
 - [x] Accentuate smooth airplane banking, turning and climbing in Falling Tunnel without changing movement or collisions; verified the loaded airplane during upward/right and downward/left movements.
 - [x] Replace the game-over title with a static LUCKY STOP-style wordmark image (fr/en/es), no animation; verified during play, no black bar above.
