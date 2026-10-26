@@ -234,7 +234,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           size="icon"
           className="h-11 w-11 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
         >
-          <SettingsIcon className="w-7 h-7 text-text-muted" />
+          <SettingsIcon className="!w-7 !h-7 text-text-muted" />
         </Button>
       </div>
 
