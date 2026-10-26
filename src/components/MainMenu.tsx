@@ -192,7 +192,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClick={() => setShowLuckyWheel(true)}
         variant="ghost"
         size="sm"
-        className={`absolute top-0 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
+        className={`absolute top-2 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
       >
         <RotateCcw className={`w-4 h-4 ${hasFreeSpin ? 'text-primary animate-spin' : 'text-text-muted'}`} style={hasFreeSpin ? { animationDuration: '3s' } : {}} />
         <div className="flex flex-col items-start">
@@ -213,7 +213,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       </Button>
 
       {/* Top Right: Offres + Settings */}
-      <div className="absolute top-0 right-4 flex items-center gap-2">
+      <div className="absolute top-2 right-4 flex items-center gap-2">
         <Button
           onClick={() => setShowPremiumOffer(true)}
           variant="ghost"
@@ -232,15 +232,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           onClick={() => setShowSettings(true)}
           variant="ghost"
           size="icon"
-          className="hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
+          className="h-11 w-11 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
         >
-          <SettingsIcon className="w-5 h-5 text-text-muted" />
+          <SettingsIcon className="w-7 h-7 text-text-muted" />
         </Button>
       </div>
 
 
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-16 mb-8">
+      <div className="text-center animate-fade-in pt-20 mb-8">
         <h1 className="flex justify-center" aria-label="Lucky Stop">
           <img
             src={luckyStopLogo}
