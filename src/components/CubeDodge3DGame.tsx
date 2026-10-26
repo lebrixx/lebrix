@@ -3,8 +3,6 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import rockAsset from '@/assets/models/rocks-high.glb.asset.json';
-import treeAsset from '@/assets/models/tree.glb.asset.json';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Play, Volume2, VolumeX, RotateCcw, MoveHorizontal, Hand, Sparkles, Zap, X, Trophy, Coins } from 'lucide-react';
@@ -45,9 +43,31 @@ const COLOR_A = { hex: 0x22d3ee, emissive: 0x0891b2, css: '#22d3ee' };
 const COLOR_B = { hex: 0xf472b6, emissive: 0xdb2777, css: '#f472b6' };
 const COLORS = [COLOR_A, COLOR_B];
 const BEST_KEY = 'bestScore_classic';
-const ROCK_SPACING = 1.5;
-const ROCKS_PER_SIDE = 44;
+const ROCK_SPACING = 3.4;
+const ROCKS_PER_SIDE = 20;
 const ROCK_LOOP = ROCK_SPACING * ROCKS_PER_SIDE;
+
+const BLANK_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/akz2wAAAABJRU5ErkJggg==';
+
+/** Colore le modèle par hauteur (texture externe absente du fichier). */
+function paintByHeight(root: THREE.Object3D, pick: (t: number) => THREE.Color) {
+  root.traverse((c: any) => {
+    if (!c.isMesh) return;
+    const g = c.geometry as THREE.BufferGeometry;
+    g.computeBoundingBox();
+    const bb = g.boundingBox!;
+    const pos = g.getAttribute('position');
+    const cols = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) {
+      const t = (pos.getY(i) - bb.min.y) / Math.max(bb.max.y - bb.min.y, 0.0001);
+      const col = pick(t);
+      cols[i * 3] = col.r; cols[i * 3 + 1] = col.g; cols[i * 3 + 2] = col.b;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+    c.material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0, flatShading: true });
+    c.userData.shared = true;
+  });
+}
 
 /** Normalise un modèle : posé au sol (y=0), centré en x/z, hauteur cible. */
 function normalizeModel(root: THREE.Object3D, height: number): THREE.Group {
@@ -136,15 +156,22 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
   // Chargement des modèles 3D (arbres = obstacles, roches = décor)
   useEffect(() => {
     let cancelled = false;
-    const loader = new GLTFLoader();
-    loader.load(treeAsset.url, (g) => {
+    const manager = new THREE.LoadingManager();
+    manager.setURLModifier((u) => (u.endsWith('.png') ? BLANK_PNG : u));
+    const loader = new GLTFLoader(manager);
+    const trunk = new THREE.Color('#7a4a2a');
+    const leafLow = new THREE.Color('#2f8f3a');
+    const leafHigh = new THREE.Color('#7fd65a');
+    const rockDark = new THREE.Color('#6b6478');
+    const rockLight = new THREE.Color('#b9b2c6');
+    loader.load('/models/tree.glb', (g) => {
       if (cancelled) return;
-      g.scene.traverse((c: any) => { if (c.isMesh) c.userData.shared = true; });
+      paintByHeight(g.scene, (t) => (t < 0.28 ? trunk : leafLow.clone().lerp(leafHigh, (t - 0.28) / 0.72)));
       treeTemplate.current = normalizeModel(g.scene, 1.9);
     });
-    loader.load(rockAsset.url, (g) => {
+    loader.load('/models/rocks-high.glb', (g) => {
       if (cancelled || !rockGroupRef.current) return;
-      g.scene.traverse((c: any) => { if (c.isMesh) c.userData.shared = true; });
+      paintByHeight(g.scene, (t) => rockDark.clone().lerp(rockLight, t));
       const base = normalizeModel(g.scene, 1);
       const grp = rockGroupRef.current;
       [-1, 1].forEach((side) => {
