@@ -240,7 +240,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
 
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-16 mb-6">
+      <div className="text-center animate-fade-in pt-16 mb-8">
         <h1 className="flex justify-center" aria-label="Lucky Stop">
           <img
             src={luckyStopLogo}
