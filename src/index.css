@@ -635,8 +635,10 @@
 }
 
 @layer components {
-  /* Titre Brix Factory : extrusion 3D en couleurs opaques (aucune couture interne),
-     avec une dernière couche légèrement floutée pour lisser le bord inférieur. */
+  /* Titre Brix Factory : extrusion 3D en une seule couleur opaque.
+     La couche à décalage nul remplit le bord antialiasé des lettres : aucune ligne
+     sombre ne peut donc se glisser entre la face et le relief. */
+
   .title-3d {
     --title-side: color-mix(in srgb, hsl(var(--primary)) 62%, hsl(var(--game-darker)));
     color: hsl(var(--text-primary));
