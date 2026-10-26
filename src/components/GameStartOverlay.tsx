@@ -27,6 +27,8 @@ interface GameStartOverlayProps {
   onSelectedBoostsChange: (b: BoostType[]) => void;
   onStart: () => void;
   hideBoosts?: boolean;
+  /** Ouvre directement la sélection de boosts au montage (depuis l'écran de fin de partie) */
+  defaultBoostsOpen?: boolean;
 }
 
 export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
@@ -40,8 +42,9 @@ export const GameStartOverlay: React.FC<GameStartOverlayProps> = ({
   onSelectedBoostsChange,
   onStart,
   hideBoosts = false,
+  defaultBoostsOpen = false,
 }) => {
-  const [showBoostPicker, setShowBoostPicker] = useState(false);
+  const [showBoostPicker, setShowBoostPicker] = useState(defaultBoostsOpen);
   const { getBoostCount } = useBoosts();
   const { language } = useLanguage();
   const t = translations[language];

@@ -27,9 +27,9 @@ const MODE_NAMES: Record<string, string> = {
 };
 
 const COPY = {
-  fr: { lost: 'Perdu', record: 'Record', newRecord: 'Nouveau record !', boostSub: 'Double ton score !', reviveSub: 'Continue ta partie' },
-  en: { lost: 'Game Over', record: 'Best', newRecord: 'New record!', boostSub: 'Double your score!', reviveSub: 'Keep playing' },
-  es: { lost: 'Perdiste', record: 'Récord', newRecord: '¡Nuevo récord!', boostSub: '¡Duplica tu puntuación!', reviveSub: 'Continúa tu partida' },
+  fr: { lost: 'Perdu', record: 'Record', newRecord: 'Nouveau record !', boostSub: 'Pour ta prochaine partie', reviveSub: 'Continue ta partie' },
+  en: { lost: 'Game Over', record: 'Best', newRecord: 'New record!', boostSub: 'For your next game', reviveSub: 'Keep playing' },
+  es: { lost: 'Perdiste', record: 'Récord', newRecord: '¡Nuevo récord!', boostSub: 'Para tu próxima partida', reviveSub: 'Continúa tu partida' },
 } as const;
 
 export const GameOverActions: React.FC<GameOverActionsProps> = ({
@@ -138,7 +138,7 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
                 <Zap className="h-7 w-7 shrink-0" />
                 <span className="flex-1 text-center">
                   <span className="block text-lg font-bold leading-tight">{t.activateBoosts}</span>
-                  <span className="block text-xs opacity-85">{c.boostSub}</span>
+                  <span className="block text-lg font-bold leading-tight">{c.boostSub}</span>
                 </span>
               </button>
             )}
