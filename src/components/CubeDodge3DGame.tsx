@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import rockAsset from '@/assets/models/rocks-high.glb.asset.json';
+import treeAsset from '@/assets/models/tree.glb.asset.json';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Play, Volume2, VolumeX, RotateCcw, MoveHorizontal, Hand, Sparkles, Zap, X, Trophy, Coins } from 'lucide-react';
@@ -42,6 +45,22 @@ const COLOR_A = { hex: 0x22d3ee, emissive: 0x0891b2, css: '#22d3ee' };
 const COLOR_B = { hex: 0xf472b6, emissive: 0xdb2777, css: '#f472b6' };
 const COLORS = [COLOR_A, COLOR_B];
 const BEST_KEY = 'bestScore_classic';
+const ROCK_SPACING = 1.5;
+const ROCKS_PER_SIDE = 44;
+const ROCK_LOOP = ROCK_SPACING * ROCKS_PER_SIDE;
+
+/** Normalise un modèle : posé au sol (y=0), centré en x/z, hauteur cible. */
+function normalizeModel(root: THREE.Object3D, height: number): THREE.Group {
+  const box = new THREE.Box3().setFromObject(root);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const k = height / Math.max(size.y, 0.0001);
+  root.position.set(-center.x, -box.min.y, -center.z);
+  const wrap = new THREE.Group();
+  wrap.add(root);
+  wrap.scale.setScalar(k);
+  return wrap;
+}
 
 // ===== Caméra responsive =====
 const ResponsiveCamera: React.FC = () => {
@@ -101,7 +120,7 @@ interface SceneProps {
   onShieldUsed?: () => void;
 }
 
-interface Block { mesh: THREE.Mesh; lane: number; passed: boolean; }
+interface Block { mesh: THREE.Object3D; lane: number; passed: boolean; }
 interface Wall { group: THREE.Group; color: number; passed: boolean; }
 interface Portal { group: THREE.Group; lane: number; color: number; ring: THREE.Mesh; passed: boolean; }
 
@@ -111,7 +130,37 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
   const groupRef = useRef<THREE.Group>(null);
   const wallGroupRef = useRef<THREE.Group>(null);
   const portalGroupRef = useRef<THREE.Group>(null);
-  const pillarRefs = useRef<THREE.Mesh[]>([]);
+  const rockGroupRef = useRef<THREE.Group>(null);
+  const treeTemplate = useRef<THREE.Group | null>(null);
+
+  // Chargement des modèles 3D (arbres = obstacles, roches = décor)
+  useEffect(() => {
+    let cancelled = false;
+    const loader = new GLTFLoader();
+    loader.load(treeAsset.url, (g) => {
+      if (cancelled) return;
+      g.scene.traverse((c: any) => { if (c.isMesh) c.userData.shared = true; });
+      treeTemplate.current = normalizeModel(g.scene, 1.9);
+    });
+    loader.load(rockAsset.url, (g) => {
+      if (cancelled || !rockGroupRef.current) return;
+      g.scene.traverse((c: any) => { if (c.isMesh) c.userData.shared = true; });
+      const base = normalizeModel(g.scene, 1);
+      const grp = rockGroupRef.current;
+      [-1, 1].forEach((side) => {
+        for (let i = 0; i < ROCKS_PER_SIDE; i++) {
+          const r = base.clone(true);
+          const sc = 1.1 + Math.random() * 0.9;
+          r.scale.multiplyScalar(sc);
+          r.scale.x *= 1.3 + Math.random() * 0.5;
+          r.rotation.y = Math.random() * Math.PI * 2;
+          r.position.set(side * (3.1 + Math.random() * 0.5), -0.1, -i * ROCK_SPACING + 6);
+          grp.add(r);
+        }
+      });
+    });
+    return () => { cancelled = true; };
+  }, []);
   const starsRef = useRef<THREE.Points>(null);
   const horizonRef = useRef<THREE.Mesh>(null);
 
@@ -154,6 +203,13 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
 
   // Helpers — build entities
   const buildBlock = useCallback((lane: number, z: number): Block => {
+    if (treeTemplate.current) {
+      const t = treeTemplate.current.clone(true);
+      t.rotation.y = Math.random() * Math.PI * 2;
+      t.position.set(LANES[lane], 0, z);
+      groupRef.current?.add(t);
+      return { mesh: t, lane, passed: false };
+    }
     const m = new THREE.Mesh(
       new THREE.BoxGeometry(1.1, 1.1, 1.1),
       new THREE.MeshStandardMaterial({
@@ -268,6 +324,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
 
   const dispose = (obj: THREE.Object3D) => {
     obj.traverse((c: any) => {
+      if (c.userData?.shared) return;
       c.geometry?.dispose?.();
       const mat = c.material;
       if (Array.isArray(mat)) mat.forEach((m) => m.dispose?.());
@@ -306,9 +363,9 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     }
 
     // Pillars scroll
-    pillarRefs.current.forEach((m) => {
+    rockGroupRef.current?.children.forEach((m) => {
       m.position.z += speed * dt;
-      if (m.position.z > 8) m.position.z -= 60;
+      if (m.position.z > 8) m.position.z -= ROCK_LOOP;
     });
 
     // Stars scroll
@@ -374,9 +431,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     let killPortal: Portal | null = null;
     s.blocks.forEach((b) => {
       b.mesh.position.z += speed * dt;
-      const mat = b.mesh.material as THREE.MeshStandardMaterial;
-      mat.opacity = 1;
-      b.mesh.scale.setScalar(1);
       const dz = b.mesh.position.z - PLAYER_Z;
       if (!b.passed) {
         if (Math.abs(dz) <= 0.5) {
@@ -509,21 +563,10 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
         <planeGeometry args={[30, 6]} />
         <meshBasicMaterial color="#7c3aed" transparent opacity={0.35} />
       </mesh>
-      {/* Piliers */}
-      {Array.from({ length: 24 }).map((_, i) => {
-        const side = i % 2 === 0 ? -3.2 : 3.2;
-        const z = -((i >> 1)) * 5;
-        return (
-          <mesh
-            key={`p${i}`}
-            ref={(m) => { if (m) pillarRefs.current[i] = m; }}
-            position={[side, 1.2, z]}
-          >
-            <boxGeometry args={[0.3, 2.4, 0.3]} />
-            <meshStandardMaterial color="#a855f7" emissive="#7c3aed" emissiveIntensity={0.9} />
-          </mesh>
-        );
-      })}
+      {/* Roches continues (décor) */}
+      <group ref={rockGroupRef} />
+      <hemisphereLight args={['#fde7ff', '#2a1758', 0.8]} />
+      <directionalLight position={[3, 6, 4]} intensity={1.1} />
       {/* Stars */}
       <points ref={starsRef}>
         <bufferGeometry>
