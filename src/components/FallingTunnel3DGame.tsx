@@ -473,17 +473,25 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
       <pointLight position={[-4, 4, -16]} intensity={0.8} color="#ec4899" />
       <fog attach="fog" args={['#08041a', 14, 30]} />
 
-      {/* Ball */}
-      <mesh ref={ballRef} position={[0, PLAYER_Y, PLAYER_Z]}>
-        <icosahedronGeometry args={[0.34, 0]} />
-        <meshStandardMaterial
-          color="#e879f9"
-          emissive="#ec4899"
-          emissiveIntensity={0.9}
-          metalness={0.4}
-          roughness={0.3}
-        />
-      </mesh>
+      {/* Avion du joueur (balle de secours tant que le modèle charge) */}
+      <group ref={ballRef} position={[0, PLAYER_Y, PLAYER_Z]}>
+        {planeObj ? (
+          <group ref={planeInnerRef} scale={PLANE_SCALE} position={[0, -0.1, 0]}>
+            <primitive object={planeObj} />
+          </group>
+        ) : (
+          <mesh>
+            <icosahedronGeometry args={[0.34, 0]} />
+            <meshStandardMaterial
+              color="#e879f9"
+              emissive="#ec4899"
+              emissiveIntensity={0.9}
+              metalness={0.4}
+              roughness={0.3}
+            />
+          </mesh>
+        )}
+      </group>
 
       <group ref={platesGroupRef} />
 
