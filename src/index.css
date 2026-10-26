@@ -641,11 +641,11 @@
     --title-side: color-mix(in srgb, hsl(var(--primary)) 62%, hsl(var(--game-darker)));
     color: hsl(var(--text-primary));
     text-shadow:
-      0 0 0 hsl(var(--game-darker)),
-      0 1px 0 hsl(var(--game-darker)),
-      0 2px 0 var(--title-side),
-      0 3px 0 var(--title-side);
+      0 0 0 var(--title-side),
+      0 1px 0 var(--title-side),
+      0 2px 0 var(--title-side);
   }
+
 
 
 
