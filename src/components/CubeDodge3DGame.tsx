@@ -635,8 +635,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       <group ref={portalGroupRef} />
 
       {/* Joueur */}
-      <mesh ref={playerRef} position={[0, 0.5, PLAYER_Z]}>
-        <boxGeometry args={[0.8, 0.8, 0.8]} />
+      <mesh ref={playerRef} position={[0, 0.34, PLAYER_Z]}>
+        <sphereGeometry args={[0.34, 32, 32]} />
         <meshStandardMaterial color={COLOR_A.css} emissive={COLOR_A.css} emissiveIntensity={0.9} metalness={0.5} roughness={0.3} />
       </mesh>
     </>
