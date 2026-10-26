@@ -43,8 +43,10 @@ const COLOR_A = { hex: 0x22d3ee, emissive: 0x0891b2, css: '#22d3ee' };
 const COLOR_B = { hex: 0xf472b6, emissive: 0xdb2777, css: '#f472b6' };
 const COLORS = [COLOR_A, COLOR_B];
 const BEST_KEY = 'bestScore_classic';
-const ROCK_SPACING = 3.4;
-const ROCKS_PER_SIDE = 20;
+const ROCK_SPACING = 1.7;
+const ROCKS_PER_SIDE = 40;
+const TILE = 1.4;
+const TILE_ROWS = 52;
 const ROCK_LOOP = ROCK_SPACING * ROCKS_PER_SIDE;
 
 const BLANK_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/akz2wAAAABJRU5ErkJggg==';
@@ -152,6 +154,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
   const portalGroupRef = useRef<THREE.Group>(null);
   const rockGroupRef = useRef<THREE.Group>(null);
   const treeTemplate = useRef<THREE.Group | null>(null);
+  const groundRef = useRef<THREE.Group>(null);
+  const groundOffset = useRef(0);
 
   // Chargement des modèles 3D (arbres = obstacles, roches = décor)
   useEffect(() => {
@@ -169,6 +173,37 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       paintByHeight(g.scene, (t) => (t < 0.28 ? trunk : leafLow.clone().lerp(leafHigh, (t - 0.28) / 0.72)));
       treeTemplate.current = normalizeModel(g.scene, 1.9);
     });
+    const buildGround = (url: string, lanes: number[], pick: (t: number) => THREE.Color) => {
+      loader.load(url, (g) => {
+        if (cancelled || !groundRef.current) return;
+        paintByHeight(g.scene, pick);
+        let mesh: THREE.Mesh | null = null;
+        g.scene.traverse((c: any) => { if (c.isMesh && !mesh) mesh = c; });
+        if (!mesh) return;
+        const m = mesh as THREE.Mesh;
+        const inst = new THREE.InstancedMesh(m.geometry, m.material as THREE.Material, lanes.length * TILE_ROWS);
+        const mat = new THREE.Matrix4();
+        let k = 0;
+        lanes.forEach((x) => {
+          for (let r = 0; r < TILE_ROWS; r++) {
+            mat.compose(
+              new THREE.Vector3(x, 0, 8 - r * TILE),
+              new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.floor((r * 7 + x * 3) % 4)) * Math.PI / 2),
+              new THREE.Vector3(TILE + 0.02, 1, TILE + 0.02),
+            );
+            inst.setMatrixAt(k++, mat);
+          }
+        });
+        inst.frustumCulled = false;
+        groundRef.current.add(inst);
+      });
+    };
+    const grassA = new THREE.Color('#3f8f3c');
+    const grassB = new THREE.Color('#86d45e');
+    const dirtA = new THREE.Color('#6b4426');
+    const dirtB = new THREE.Color('#a87445');
+    buildGround('/models/patch-grass.glb', [LANES[0], LANES[2]], (t) => grassA.clone().lerp(grassB, t));
+    buildGround('/models/patch-dirt.glb', [LANES[1]], (t) => dirtA.clone().lerp(dirtB, t));
     loader.load('/models/rocks-high.glb', (g) => {
       if (cancelled || !rockGroupRef.current) return;
       paintByHeight(g.scene, (t) => rockDark.clone().lerp(rockLight, t));
@@ -390,6 +425,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     }
 
     // Pillars scroll
+    groundOffset.current = (groundOffset.current + speed * dt) % TILE;
+    if (groundRef.current) groundRef.current.position.z = groundOffset.current;
     rockGroupRef.current?.children.forEach((m) => {
       m.position.z += speed * dt;
       if (m.position.z > 8) m.position.z -= ROCK_LOOP;
@@ -565,26 +602,12 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       <pointLight position={[0, 2, 3]} color="#22d3ee" intensity={0.8} />
 
       {/* Sol */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -15]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, -15]}>
         <planeGeometry args={[5, 100]} />
         <meshStandardMaterial color="#1a0f33" emissive="#2a1758" emissiveIntensity={0.3} />
       </mesh>
-      {/* Bords magenta */}
-      {[-2.5, 2.5].map((x, i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.005, -15]}>
-          <planeGeometry args={[0.1, 100]} />
-          <meshBasicMaterial color="#e879f9" />
-        </mesh>
-      ))}
-      {/* Lignes cyan centrales */}
-      {[-0.7, 0.7].map((x, i) => (
-        <mesh key={`c${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.006, -15]}>
-          <planeGeometry args={[0.06, 100]} />
-          <meshBasicMaterial color="#22d3ee" />
-        </mesh>
-      ))}
-      {/* Grid */}
-      <gridHelper args={[40, 20, '#4c1d95', '#2a1758']} position={[0, 0.001, -25]} />
+      {/* Sol en tuiles : herbe sur les côtés, terre au milieu */}
+      <group ref={groundRef} />
       {/* Horizon */}
       <mesh ref={horizonRef} position={[0, 3, -35]}>
         <planeGeometry args={[30, 6]} />
