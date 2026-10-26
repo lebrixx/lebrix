@@ -322,6 +322,18 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
     camera.lookAt(0, CAMERA_LOOK_Y, -10);
   }, [camera]);
 
+  // Charge l'avion F-104 (une seule fois, cloné à chaque partie)
+  useEffect(() => {
+    let cancelled = false;
+    requestPlane((tpl) => {
+      if (cancelled) return;
+      const inst = tpl.clone(true);
+      inst.rotation.y = Math.PI; // nez vers le tunnel
+      setPlaneObj(inst);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
   // Reset on (re)mount
   useEffect(() => {
     stateRef.current = { elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit };
