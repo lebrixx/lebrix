@@ -69,11 +69,14 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 z-20 overflow-y-auto bg-game-darker/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-40 overflow-hidden overscroll-none touch-none bg-game-darker/85 backdrop-blur-md">
       {/* Halo néon de fond */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,hsl(var(--secondary)/0.25),transparent_60%)]" />
 
-      <div className="relative flex min-h-full flex-col px-5 pb-8 pt-4">
+      <div
+        className="relative flex h-full flex-col px-5 pb-[max(1rem,env(safe-area-inset-bottom))] [&_*]:touch-manipulation"
+        style={{ paddingTop: 'var(--app-top-clearance, 64px)' }}
+      >
         {/* Barre du haut */}
         <div className="flex items-center justify-between">
           <button
@@ -92,12 +95,12 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
           )}
         </div>
 
-        <div className="flex flex-1 flex-col items-center justify-center py-6">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-2">
           {/* Titre */}
-          <div className="relative mb-5 text-center">
-            <Crown className="mx-auto mb-1 h-12 w-12 -rotate-6 text-secondary drop-shadow-[0_0_14px_hsl(var(--secondary)/0.8)]" strokeWidth={2.2} />
+          <div className="relative mb-3 text-center">
+            <Crown className="mx-auto mb-1 h-10 w-10 -rotate-6 text-secondary drop-shadow-[0_0_14px_hsl(var(--secondary)/0.8)]" strokeWidth={2.2} />
             <h2
-              className="text-6xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-text-primary to-secondary"
+              className="text-5xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-text-primary to-secondary"
               style={{ filter: 'drop-shadow(0 4px 0 hsl(var(--secondary) / 0.55)) drop-shadow(0 0 18px hsl(var(--secondary) / 0.6))' }}
             >
               {c.lost}&nbsp;!
@@ -105,9 +108,9 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
           </div>
 
           {/* Carte score */}
-          <div className="mb-6 w-full max-w-[19rem] rounded-3xl border border-secondary/60 bg-game-dark/70 px-6 py-4 text-center shadow-[0_0_24px_hsl(var(--secondary)/0.3)]">
+          <div className="mb-4 w-full max-w-[19rem] rounded-3xl border border-secondary/60 bg-game-dark/70 px-6 py-4 text-center shadow-[0_0_24px_hsl(var(--secondary)/0.3)]">
             <div className="text-base text-text-secondary">Score</div>
-            <div className="text-6xl font-black leading-tight tabular-nums text-primary drop-shadow-[0_0_14px_hsl(var(--primary)/0.7)]">
+            <div className="text-5xl font-black leading-tight tabular-nums text-primary drop-shadow-[0_0_14px_hsl(var(--primary)/0.7)]">
               {score ?? 0}
             </div>
             {best !== undefined && (
@@ -140,7 +143,7 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
             )}
             <button
               onClick={onReplay}
-              className="flex items-center justify-center gap-3 rounded-2xl border border-secondary/50 bg-game-dark/80 px-5 py-4 text-lg font-bold text-text-primary active:scale-[0.98] transition-transform"
+              className="flex items-center justify-center gap-3 rounded-2xl border border-secondary/50 bg-game-dark/80 px-5 py-3 text-lg font-bold text-text-primary active:scale-[0.98] transition-transform"
             >
               <RotateCcw className="h-6 w-6" /> {t.replay}
             </button>
