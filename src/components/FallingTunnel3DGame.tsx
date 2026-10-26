@@ -70,19 +70,24 @@ function buildPlate(hole: number, ox: number, oy: number): Plate {
   (frameMat as any).__base = 0.92;
   materials.push(frameMat);
 
-  const panels = [
-    { w: R + ox - hole, h: R * 2, x: -R + (R + ox - hole) / 2, y: 0 },
-    { w: R - ox - hole, h: R * 2, x: R - (R - ox - hole) / 2, y: 0 },
-    { w: hole * 2, h: R + oy - hole, x: ox, y: -R + (R + oy - hole) / 2 },
-    { w: hole * 2, h: R - oy - hole, x: ox, y: R - (R - oy - hole) / 2 },
-  ];
-  for (const p of panels) {
-    if (p.w > 0.05 && p.h > 0.05) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.h, t), frameMat);
-      m.position.set(p.x, p.y, 0);
-      group.add(m);
-    }
-  }
+  // Plaque pleine percée d'un vrai trou rond (plus de découpe carrée)
+  const shape = new THREE.Shape();
+  shape.moveTo(-R, -R);
+  shape.lineTo(R, -R);
+  shape.lineTo(R, R);
+  shape.lineTo(-R, R);
+  shape.lineTo(-R, -R);
+  const holePath = new THREE.Path();
+  holePath.absarc(ox, oy, hole, 0, Math.PI * 2, true);
+  shape.holes.push(holePath);
+  const plateGeo = new THREE.ExtrudeGeometry(shape, {
+    depth: t,
+    bevelEnabled: false,
+    curveSegments: 128,
+  });
+  plateGeo.translate(0, 0, -t / 2);
+  const plateMesh = new THREE.Mesh(plateGeo, frameMat);
+  group.add(plateMesh);
 
   // Ring (green torus around hole)
   const ringMat = new THREE.MeshBasicMaterial({ color: 0x4ade80, transparent: true, opacity: 1 });
