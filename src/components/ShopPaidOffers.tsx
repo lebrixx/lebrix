@@ -19,9 +19,9 @@ export function ShopPaidOffers({ onPremium, onEssential, onRainbow }: ShopPaidOf
   const copy = COPY[language];
   const t = translations[language];
   const offers = [
-    { title: copy.premium, description: copy.premiumItems, price: '3,99 €', icon: Crown, rewards: [copy.coins, copy.premiumBoosts], onOpen: onPremium, tone: 'border-secondary/40 bg-secondary/5', iconTone: 'bg-secondary/15 text-secondary' },
+    { title: copy.premium, description: copy.premiumItems, price: '3,99 €', icon: Crown, rewards: [], onOpen: onPremium, tone: 'border-secondary/40 bg-secondary/5', iconTone: 'bg-secondary/15 text-secondary', titleEffect: 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' },
     { title: copy.essential, description: copy.essentialItems, price: '1,99 €', icon: Package, rewards: [copy.essentialBoosts, copy.tickets], onOpen: onEssential, tone: 'border-primary/40 bg-primary/5', iconTone: 'bg-primary/15 text-primary' },
-    { title: copy.rainbow, description: copy.rainbowItems, price: '1,99 €', icon: Sparkles, rewards: [copy.permanent], onOpen: onRainbow, tone: 'border-wheel-border bg-button-bg', iconTone: 'bg-button-hover text-text-primary' },
+    { title: copy.rainbow, description: copy.rainbowItems, price: '1,99 €', icon: Sparkles, rewards: [copy.permanent], onOpen: onRainbow, tone: 'border-wheel-border bg-button-bg', iconTone: 'bg-button-hover text-text-primary', titleEffect: 'animate-[username-rainbow_3s_linear_infinite]' },
   ];
 
   return (
@@ -34,11 +34,13 @@ export function ShopPaidOffers({ onPremium, onEssential, onRainbow }: ShopPaidOf
             </div>
             <span className="text-2xl font-extrabold text-text-primary whitespace-nowrap">{offer.price}</span>
           </div>
-          <h2 className="mb-2 text-xl font-bold text-text-primary">{offer.title}</h2>
+          <h2 className={`mb-2 text-xl font-bold text-text-primary ${offer.titleEffect ?? ''}`}>{offer.title}</h2>
           <p className="mb-4 text-sm leading-relaxed text-text-secondary">{offer.description}</p>
-          <ul className="mb-5 flex flex-wrap gap-2">
-            {offer.rewards.map(reward => <li key={reward} className="rounded-full border border-wheel-border bg-button-bg px-3 py-1 text-xs font-semibold text-text-primary">{reward}</li>)}
-          </ul>
+          {offer.rewards.length > 0 && (
+            <ul className="mb-5 flex flex-wrap gap-2">
+              {offer.rewards.map(reward => <li key={reward} className="rounded-full border border-wheel-border bg-button-bg px-3 py-1 text-xs font-semibold text-text-primary">{reward}</li>)}
+            </ul>
+          )}
           <Button onClick={offer.onOpen} variant="outline" className="mt-auto w-full border-wheel-border hover:bg-button-hover">
             {copy.details}<ArrowRight className="ml-2 h-4 w-4" />
           </Button>
