@@ -429,6 +429,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const { language } = useLanguage();
   const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
   useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
@@ -578,6 +579,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
               currentMode={'arc_changeant' as any}
               selectedBoosts={menuBoosts}
               onSelectedBoostsChange={setMenuBoosts}
+              defaultBoostsOpen={boostsFromGameOver}
               onStart={handleStart}
               rules={[
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Glisse', desc: 'ton doigt pour guider la bille sur la piste' },
@@ -587,7 +589,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
           )}
 
           {phase === 'gameover' && (
-            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="arc_changeant" best={best} bestSuffix="s" />
+            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => { setBoostsFromGameOver(true); setPhase('menu'); }} onRevive={handleRevive} score={score} mode="arc_changeant" best={best} bestSuffix="s" />
           )}
         </div>
       </div>

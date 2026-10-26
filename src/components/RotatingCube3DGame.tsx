@@ -449,6 +449,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
   const { language } = useLanguage();
   const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [shields, setShields] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
@@ -627,6 +628,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
             currentMode={'memoire_expert' as any}
             selectedBoosts={menuBoosts}
             onSelectedBoostsChange={setMenuBoosts}
+            defaultBoostsOpen={boostsFromGameOver}
             onStart={handleStart}
             rules={[
               { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Swipe', desc: '↑ ↓ ← → pour bouger d\'une case' },
@@ -637,7 +639,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
         )}
 
         {phase === 'gameover' && (
-          <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="memoire_expert" best={best} />
+          <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => { setBoostsFromGameOver(true); setPhase('menu'); }} onRevive={handleRevive} score={score} mode="memoire_expert" best={best} />
         )}
       </div>
     </div>
