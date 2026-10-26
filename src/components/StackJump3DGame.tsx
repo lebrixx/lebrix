@@ -134,11 +134,72 @@ interface SceneProps {
 const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const { camera } = useThree();
   const stackRef = useRef<THREE.Group>(null);
-  const movingRef = useRef<THREE.Mesh>(null);
-  const twinRef = useRef<THREE.Mesh>(null);
+  const movingRef = useRef<THREE.Group>(null);
+  const twinRef = useRef<THREE.Group>(null);
   const guideRef = useRef<THREE.Mesh>(null);
   const camY = useRef(2);
   const msgKey = useRef(0);
+  const plateTemplate = useRef<THREE.Group | null>(null);
+  const movingMatsRef = useRef<THREE.MeshBasicMaterial[]>([]);
+  const twinMatsRef = useRef<THREE.MeshBasicMaterial[]>([]);
+
+  // (Re)construit le visuel de la plaque mobile : modèle 3D si chargé, sinon boîte de secours
+  const rebuildMovingVisuals = useCallback(() => {
+    const buildInto = (
+      grp: THREE.Group | null,
+      matsRef: React.MutableRefObject<THREE.MeshBasicMaterial[]>,
+      color: string
+    ) => {
+      if (!grp) return;
+      while (grp.children.length) grp.remove(grp.children[0]);
+      if (plateTemplate.current) {
+        const { group, mats } = makeModelPlate(plateTemplate.current, BASE_SIZE, color);
+        grp.add(group);
+        matsRef.current = mats;
+      } else {
+        const mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(BASE_SIZE, PLATE_H, BASE_SIZE),
+          new THREE.MeshBasicMaterial({ color })
+        );
+        const top = new THREE.Mesh(
+          new THREE.PlaneGeometry(BASE_SIZE * 0.995, BASE_SIZE * 0.995),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        top.rotation.x = -Math.PI / 2;
+        top.position.y = PLATE_H / 2 + 0.002;
+        mesh.add(top);
+        grp.add(mesh);
+        matsRef.current = [mesh.material as THREE.MeshBasicMaterial];
+      }
+    };
+    buildInto(movingRef.current, movingMatsRef, '#e879f9');
+    buildInto(twinRef.current, twinMatsRef, '#22d3ee');
+  }, []);
+
+  // Chargement du modèle de plaque
+  useEffect(() => {
+    rebuildMovingVisuals();
+    let cancelled = false;
+    const manager = new THREE.LoadingManager();
+    manager.setURLModifier((u) => (u.endsWith('.png') ? BLANK_PNG : u));
+    new GLTFLoader(manager).load(plateAsset.url, (g) => {
+      if (cancelled) return;
+      plateTemplate.current = g.scene;
+      rebuildMovingVisuals();
+    });
+    return () => { cancelled = true; };
+  }, [rebuildMovingVisuals]);
+
+  // Pose une plaque dans la pile : modèle 3D si disponible, sinon boîte de secours
+  const placePlate = (size: number, color: THREE.Color | string, topAccent: number) => {
+    const g = stackRef.current!;
+    if (plateTemplate.current) {
+      const { group } = makeModelPlate(plateTemplate.current, size, color);
+      g.add(group);
+      return group;
+    }
+    return addPlate(g, size, color, topAccent);
+  };
 
   const state = useRef({
     stack: [] as Plate[],
