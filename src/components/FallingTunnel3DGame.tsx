@@ -88,7 +88,7 @@ function buildPlate(hole: number, ox: number, oy: number): Plate {
   const ringMat = new THREE.MeshBasicMaterial({ color: 0x4ade80, transparent: true, opacity: 1 });
   (ringMat as any).__base = 1;
   materials.push(ringMat);
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(hole * 1.05, 0.05, 8, 28), ringMat);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(hole * 1.05, 0.05, 16, 128), ringMat);
   ring.position.set(ox, oy, t / 2 + 0.01);
   group.add(ring);
 
@@ -102,7 +102,7 @@ function buildPlate(hole: number, ox: number, oy: number): Plate {
   });
   (glowMat as any).__base = 0.12;
   materials.push(glowMat);
-  const glow = new THREE.Mesh(new THREE.CircleGeometry(hole * 0.98, 40), glowMat);
+  const glow = new THREE.Mesh(new THREE.CircleGeometry(hole * 0.98, 128), glowMat);
   glow.position.set(ox, oy, t / 2 + 0.005);
   group.add(glow);
 
@@ -117,7 +117,7 @@ function buildPlate(hole: number, ox: number, oy: number): Plate {
   });
   (ghostMat as any).__base = 0.55;
   materials.push(ghostMat);
-  const ghost = new THREE.Mesh(new THREE.RingGeometry(0.18, 0.26, 24), ghostMat);
+  const ghost = new THREE.Mesh(new THREE.RingGeometry(0.18, 0.26, 96), ghostMat);
   ghost.position.set(0, 0, t / 2 + 0.02);
   group.add(ghost);
 
