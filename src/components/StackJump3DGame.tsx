@@ -237,7 +237,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
 
     // Initial cyan plate
     const initColor = new THREE.Color('#22d3ee');
-    const base = addPlate(g, BASE_SIZE, initColor, 0xffffff);
+    const base = placePlate(BASE_SIZE, initColor, 0xffffff);
     base.position.set(0, 0, 0);
     state.current.stack.push({ x: 0, y: 0, size: BASE_SIZE });
     state.current.moving = { x: -3.2, size: BASE_SIZE, dir: 1 };
@@ -249,9 +249,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
   }, [playing]);
 
   const applyMovingMaterial = (kind: PlateKind) => {
-    const m = movingRef.current;
-    const tw = twinRef.current;
-    if (!m) return;
     const colorMap: Record<PlateKind, string> = {
       normal: '#e879f9',
       gold: '#fde047',
@@ -259,8 +256,8 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       twin: '#22d3ee',
     };
     const col = colorMap[kind];
-    (m.material as THREE.MeshBasicMaterial).color.set(col);
-    if (tw) (tw.material as THREE.MeshBasicMaterial).color.set(col);
+    movingMatsRef.current.forEach((mat) => mat.color.set(col));
+    twinMatsRef.current.forEach((mat) => mat.color.set(col));
   };
 
 
@@ -314,16 +311,17 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     const m = movingRef.current;
     const tw = twinRef.current;
     if (m) {
-      m.scale.set(s.moving.size, 1, s.moving.size);
+      const k = s.moving.size / BASE_SIZE;
+      m.scale.set(k, 1, k);
       m.position.y = movingY;
       if (s.kind === 'twin' && tw) {
         const half = s.moving.size / 2;
         const gap = half * 0.55;
         const offset = s.moving.x;
-        m.scale.set(half, 1, s.moving.size);
+        m.scale.set(half / BASE_SIZE, 1, k);
         m.position.x = top.x - offset - gap;
         tw.visible = true;
-        tw.scale.set(half, 1, s.moving.size);
+        tw.scale.set(half / BASE_SIZE, 1, k);
         tw.position.set(top.x + offset + gap, movingY, 0);
         m.scale.y = 1;
         tw.scale.y = 1;
@@ -431,7 +429,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       s.kind === 'twin' ? new THREE.Color('#22d3ee') : baseHsl;
     const topAccent = s.kind === 'gold' ? 0xfff7c2 : 0xffffff;
 
-    const mesh = addPlate(stackRef.current!, newSize, plateColor, topAccent);
+    const mesh = placePlate(newSize, plateColor, topAccent);
     mesh.position.set(placedX, movingY, 0);
 
     s.stack.push({ x: placedX, y: movingY, size: newSize });
@@ -454,31 +452,9 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
         <meshBasicMaterial color={0xfde047} transparent opacity={0.4} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Moving plate (flat fuchsia with white top + white edges) */}
-      <mesh ref={movingRef}>
-        <boxGeometry args={[1, PLATE_H, 1]} />
-        <meshBasicMaterial color="#e879f9" />
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, PLATE_H / 2 + 0.002, 0]}>
-          <planeGeometry args={[0.995, 0.995]} />
-          <meshBasicMaterial color={0xffffff} />
-        </mesh>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.BoxGeometry(1, PLATE_H, 1)]} />
-          <lineBasicMaterial color={0xffffff} transparent opacity={0.95} />
-        </lineSegments>
-      </mesh>
-      <mesh ref={twinRef} visible={false}>
-        <boxGeometry args={[1, PLATE_H, 1]} />
-        <meshBasicMaterial color="#22d3ee" />
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, PLATE_H / 2 + 0.002, 0]}>
-          <planeGeometry args={[0.995, 0.995]} />
-          <meshBasicMaterial color={0xffffff} />
-        </mesh>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.BoxGeometry(1, PLATE_H, 1)]} />
-          <lineBasicMaterial color={0xffffff} transparent opacity={0.95} />
-        </lineSegments>
-      </mesh>
+      {/* Moving plate + twin (remplis avec le modèle 3D, ou boîte de secours) */}
+      <group ref={movingRef} />
+      <group ref={twinRef} visible={false} />
 
       <BackgroundDecor />
     </>
