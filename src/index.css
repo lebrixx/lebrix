@@ -251,6 +251,12 @@
     overflow-y: auto !important;
   }
 
+  /* Dialogs qui gardent leur position d'origine (plein écran) */
+  .app-dialog-content.app-dialog-free {
+    top: 50% !important;
+    max-height: calc(100dvh - 16px);
+  }
+
   .app-content .main-menu-backdrop {
     top: calc(-1 * var(--app-top-clearance));
   }

@@ -69,11 +69,14 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 z-20 overflow-y-auto bg-game-darker/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-40 overflow-hidden overscroll-none touch-none bg-game-darker/85 backdrop-blur-md">
       {/* Halo néon de fond */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,hsl(var(--secondary)/0.25),transparent_60%)]" />
 
-      <div className="relative flex min-h-full flex-col px-5 pb-8 pt-4">
+      <div
+        className="relative flex h-full flex-col px-5 pb-[max(1rem,env(safe-area-inset-bottom))] [&_*]:touch-manipulation"
+        style={{ paddingTop: 'var(--app-top-clearance, 64px)' }}
+      >
         {/* Barre du haut */}
         <div className="flex items-center justify-between">
           <button
