@@ -28,12 +28,14 @@ const App = () => {
       <Sonner />
       <HashRouter>
         <div className="app-content">
+        <div className="app-screens">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/multiplayer" element={<Multiplayer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </div>
         </div>
       </HashRouter>
     </TooltipProvider>
