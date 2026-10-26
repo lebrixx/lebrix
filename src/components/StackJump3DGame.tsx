@@ -499,6 +499,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   const elapsedOffsetRef = useRef(0);
   const elapsedAtDeathRef = useRef(0);
   const sceneScoreOffsetRef = useRef(0);
+  const graceMsRef = useRef(0);
   const reviveActiveRef = useRef(false);
   const [reviveArmed, setReviveArmed] = useState(false);
   const [reviveFlashKey, setReviveFlashKey] = useState(0);
@@ -511,6 +512,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     shieldRef.current = false;
     elapsedOffsetRef.current = 0;
     sceneScoreOffsetRef.current = 0;
+    graceMsRef.current = 0;
     reviveActiveRef.current = menuBoosts.includes('revive');
     setReviveArmed(menuBoosts.includes('revive'));
     startGameSession();
@@ -538,6 +540,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
       startedAt.current = now - elapsedAtDeathRef.current * 1000;
       sceneScoreOffsetRef.current = finalRaw;
       shieldRef.current = false;
+      graceMsRef.current = 2000;
       sceneKey.current++;
       cmdRef.current.drop = false;
       setRedWarn(false);
@@ -551,6 +554,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
       // Préserve difficulté + score interne
       elapsedOffsetRef.current = (Date.now() - startedAt.current) / 1000;
       sceneScoreOffsetRef.current = finalRaw;
+      graceMsRef.current = 2000;
       sceneKey.current++;
       cmdRef.current.drop = false;
       setRedWarn(false);
@@ -580,6 +584,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     startedAt.current = Date.now() - elapsedAtDeathRef.current * 1000;
     sceneScoreOffsetRef.current = Math.max(0, score - offsetRef.current);
     shieldRef.current = false;
+    graceMsRef.current = 2000;
     sceneKey.current++;
     cmdRef.current.drop = false;
     setRedWarn(false);
@@ -655,7 +660,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
-              graceMs={2000}
+              graceMs={graceMsRef.current}
             />
           </GameCanvas>
 
