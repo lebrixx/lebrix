@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
 const COPY = {
-  fr: { title: 'Achats intégrés', details: 'Voir l’offre', premium: 'Pack Premium', premiumItems: 'Sans publicité · Saison VIP · Pseudo doré pulsé', coins: '1 500 pièces', premiumBoosts: '4 de chaque boost', essential: 'Pack Essentiel', essentialItems: 'Les quatre boosts pour tes prochaines parties', essentialBoosts: '5 de chaque boost', tickets: '15 tickets Rotating Cube', rainbow: 'Pseudo Multicolore', rainbowItems: 'Ton pseudo animé aux couleurs de l’arc-en-ciel dans le classement', permanent: 'Déblocage permanent' },
-  en: { title: 'In-app purchases', details: 'View offer', premium: 'Premium Pack', premiumItems: 'No ads · VIP Season · Pulsing gold username', coins: '1,500 coins', premiumBoosts: '4 of each boost', essential: 'Essential Pack', essentialItems: 'All four boosts for your next games', essentialBoosts: '5 of each boost', tickets: '15 Rotating Cube tickets', rainbow: 'Rainbow Username', rainbowItems: 'An animated rainbow username on the leaderboard', permanent: 'Permanent unlock' },
-  es: { title: 'Compras integradas', details: 'Ver oferta', premium: 'Pack Premium', premiumItems: 'Sin anuncios · Temporada VIP · Nombre dorado pulsante', coins: '1.500 monedas', premiumBoosts: '4 de cada boost', essential: 'Pack Esencial', essentialItems: 'Los cuatro boosts para tus próximas partidas', essentialBoosts: '5 de cada boost', tickets: '15 tickets Rotating Cube', rainbow: 'Nombre Multicolor', rainbowItems: 'Tu nombre animado con los colores del arcoíris en la clasificación', permanent: 'Desbloqueo permanente' },
+  fr: { title: 'Achats intégrés', details: 'Voir l’offre', premium: 'Pack Premium', premiumItems: 'Bien plus encore', essential: 'Pack Essentiel', essentialItems: 'Les quatre boosts pour tes prochaines parties', essentialBoosts: '5 de chaque boost', tickets: '15 tickets Rotating Cube', rainbow: 'Pseudo Multicolore', rainbowItems: 'Ton pseudo animé aux couleurs de l’arc-en-ciel dans le classement', permanent: 'Déblocage permanent' },
+  en: { title: 'In-app purchases', details: 'View offer', premium: 'Premium Pack', premiumItems: 'And much more', essential: 'Essential Pack', essentialItems: 'All four boosts for your next games', essentialBoosts: '5 of each boost', tickets: '15 Rotating Cube tickets', rainbow: 'Rainbow Username', rainbowItems: 'An animated rainbow username on the leaderboard', permanent: 'Permanent unlock' },
+  es: { title: 'Compras integradas', details: 'Ver oferta', premium: 'Pack Premium', premiumItems: 'Y mucho más', essential: 'Pack Esencial', essentialItems: 'Los cuatro boosts para tus próximas partidas', essentialBoosts: '5 de cada boost', tickets: '15 tickets Rotating Cube', rainbow: 'Nombre Multicolor', rainbowItems: 'Tu nombre animado con los colores del arcoíris en la clasificación', permanent: 'Desbloqueo permanente' },
 };
 
 interface ShopPaidOffersProps {
@@ -18,10 +18,11 @@ export function ShopPaidOffers({ onPremium, onEssential, onRainbow }: ShopPaidOf
   const { language } = useLanguage();
   const copy = COPY[language];
   const t = translations[language];
-  const offers = [
-    { title: copy.premium, description: copy.premiumItems, price: '3,99 €', icon: Crown, rewards: [copy.coins, copy.premiumBoosts], onOpen: onPremium, tone: 'border-secondary/40 bg-secondary/5', iconTone: 'bg-secondary/15 text-secondary' },
+  type Offer = { title: string; description: string; price: string; icon: typeof Crown; rewards: string[]; onOpen: () => void; tone: string; iconTone: string; titleEffect?: string };
+  const offers: Offer[] = [
+    { title: copy.premium, description: copy.premiumItems, price: '3,99 €', icon: Crown, rewards: [], onOpen: onPremium, tone: 'border-secondary/40 bg-secondary/5', iconTone: 'bg-secondary/15 text-secondary', titleEffect: 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' },
     { title: copy.essential, description: copy.essentialItems, price: '1,99 €', icon: Package, rewards: [copy.essentialBoosts, copy.tickets], onOpen: onEssential, tone: 'border-primary/40 bg-primary/5', iconTone: 'bg-primary/15 text-primary' },
-    { title: copy.rainbow, description: copy.rainbowItems, price: '1,99 €', icon: Sparkles, rewards: [copy.permanent], onOpen: onRainbow, tone: 'border-wheel-border bg-button-bg', iconTone: 'bg-button-hover text-text-primary' },
+    { title: copy.rainbow, description: copy.rainbowItems, price: '1,99 €', icon: Sparkles, rewards: [copy.permanent], onOpen: onRainbow, tone: 'border-wheel-border bg-button-bg', iconTone: 'bg-button-hover text-text-primary', titleEffect: 'animate-[username-rainbow_3s_linear_infinite]' },
   ];
 
   return (
@@ -34,11 +35,13 @@ export function ShopPaidOffers({ onPremium, onEssential, onRainbow }: ShopPaidOf
             </div>
             <span className="text-2xl font-extrabold text-text-primary whitespace-nowrap">{offer.price}</span>
           </div>
-          <h2 className="mb-2 text-xl font-bold text-text-primary">{offer.title}</h2>
+          <h2 className={`mb-2 text-xl font-bold text-text-primary ${offer.titleEffect ?? ''}`}>{offer.title}</h2>
           <p className="mb-4 text-sm leading-relaxed text-text-secondary">{offer.description}</p>
-          <ul className="mb-5 flex flex-wrap gap-2">
-            {offer.rewards.map(reward => <li key={reward} className="rounded-full border border-wheel-border bg-button-bg px-3 py-1 text-xs font-semibold text-text-primary">{reward}</li>)}
-          </ul>
+          {offer.rewards.length > 0 && (
+            <ul className="mb-5 flex flex-wrap gap-2">
+              {offer.rewards.map(reward => <li key={reward} className="rounded-full border border-wheel-border bg-button-bg px-3 py-1 text-xs font-semibold text-text-primary">{reward}</li>)}
+            </ul>
+          )}
           <Button onClick={offer.onOpen} variant="outline" className="mt-auto w-full border-wheel-border hover:bg-button-hover">
             {copy.details}<ArrowRight className="ml-2 h-4 w-4" />
           </Button>
