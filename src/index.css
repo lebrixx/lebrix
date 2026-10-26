@@ -245,9 +245,8 @@
     overflow-y: auto !important;
   }
 
-  [data-radix-popper-content-wrapper] {
-    max-height: calc(var(--app-usable-height) - 16px);
-    clip-path: inset(max(0px, calc(var(--app-top-clearance) - var(--radix-popper-anchor-height, 0px))) 0 0 0);
+  .app-content .main-menu-backdrop {
+    top: calc(-1 * var(--app-top-clearance));
   }
 
 
