@@ -589,6 +589,19 @@
 
   /* Optimisations pour mobile - menu principal uniquement */
   @media (max-height: 700px) {
+    .app-content .main-menu-container {
+      overflow-y: auto;
+      justify-content: flex-start;
+    }
+    .app-content .main-menu-container > .flex-1 {
+      flex: none;
+    }
+    .app-content .main-menu-container > .text-center {
+      flex-shrink: 0;
+    }
+    .app-content .main-menu-container > div:last-child {
+      margin-top: 0;
+    }
     .main-menu-container .text-6xl {
       font-size: 2.25rem;
       line-height: 2.5rem;
