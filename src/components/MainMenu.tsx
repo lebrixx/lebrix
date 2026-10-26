@@ -282,7 +282,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <Crown className={`!w-6 !h-6 text-secondary fill-secondary/25 ${isAndroid ? '' : 'drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]'}`} />
             <div className="flex flex-col items-start leading-none">
               <span className="text-lg font-black text-secondary">Pass</span>
-              <span className="text-[11px] font-semibold tracking-wide text-text-muted">Saison</span>
+              <span className="text-[11px] font-semibold tracking-wide text-secondary/70">Saison</span>
             </div>
             {hasPassReward && (
               <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_hsl(var(--secondary)/0.8)]" />
