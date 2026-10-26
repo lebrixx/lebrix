@@ -32,9 +32,10 @@ const MODE_NAMES: Record<string, string> = {
 };
 
 const COPY = {
-  fr: { lost: 'Perdu', record: 'Record', newRecord: 'Nouveau record !', boostSub: 'Pour ta prochaine partie', reviveSub: 'Continue ta partie' },
-  en: { lost: 'Game Over', record: 'Best', newRecord: 'New record!', boostSub: 'For your next game', reviveSub: 'Keep playing' },
-  es: { lost: 'Perdiste', record: 'Récord', newRecord: '¡Nuevo récord!', boostSub: 'Para tu próxima partida', reviveSub: 'Continúa tu partida' },
+  fr: { lost: 'Perdu', record: 'Record', newRecord: 'Nouveau record !', reviveSub: 'Continue ta partie' },
+  en: { lost: 'Game Over', record: 'Best', newRecord: 'New record!', reviveSub: 'Keep playing' },
+  es: { lost: 'Perdiste', record: 'Récord', newRecord: '¡Nuevo récord!', reviveSub: 'Continúa tu partida' },
+
 } as const;
 
 export const GameOverActions: React.FC<GameOverActionsProps> = ({
@@ -143,10 +144,8 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
                 className="flex items-center gap-4 rounded-2xl border border-text-primary/30 bg-gradient-to-r from-violet-600 to-fuchsia-500 px-5 py-3 text-left text-white shadow-[0_0_20px_rgba(217,70,239,0.45)] active:scale-[0.98] transition-transform"
               >
                 <Zap className="h-7 w-7 shrink-0" />
-                <span className="flex-1 text-center">
-                  <span className="block text-lg font-bold leading-tight">{t.activateBoosts}</span>
-                  <span className="block text-lg font-bold leading-tight">{c.boostSub}</span>
-                </span>
+                <span className="flex-1 text-center text-lg font-bold leading-tight">{t.activateBoosts}</span>
+
               </button>
             )}
             <button
