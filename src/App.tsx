@@ -22,16 +22,19 @@ const App = () => {
 
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <div className="app-backdrop" aria-hidden="true" />
       <ForceUpdate />
       <Toaster />
       <Sonner />
       <HashRouter>
+        <div className="app-content">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/multiplayer" element={<Multiplayer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </div>
       </HashRouter>
     </TooltipProvider>
   </QueryClientProvider>

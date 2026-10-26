@@ -70,7 +70,9 @@
 
     /* App-optimized spacing */
     --app-padding: 1rem;
-    --app-safe-area: env(safe-area-inset-top, 0px);
+    --app-top-clearance: 64px;
+    --app-safe-area: var(--app-top-clearance);
+    --app-usable-height: calc(100dvh - var(--app-top-clearance));
     --app-content-max-width: 100vw;
     
     /* Zone Pulsation */
@@ -206,6 +208,45 @@
   body {
     @apply bg-background text-foreground;
     background-color: #000;
+  }
+
+  /* Full-height decoration, independently of the reserved UI area. */
+  .app-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--gradient-game);
+    pointer-events: none;
+  }
+
+  .app-content {
+    position: fixed;
+    inset: var(--app-top-clearance) 0 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Fixed screen overlays now use the usable area, not the phone's top. */
+    transform: translateZ(0);
+    isolation: isolate;
+  }
+
+  .app-content .min-h-screen {
+    min-height: var(--app-usable-height) !important;
+  }
+
+  .app-content .h-screen,
+  .app-content .main-menu-container {
+    height: var(--app-usable-height) !important;
+  }
+
+  /* Radix dialogs live outside the screen container. Keep their entire
+     contents in the same reserved area, including tall, scrollable dialogs. */
+  .app-dialog-content {
+    top: calc(var(--app-top-clearance) + var(--app-usable-height) / 2) !important;
+    max-height: calc(var(--app-usable-height) - 24px);
+    overflow-y: auto !important;
+  }
+
+  .app-content .main-menu-backdrop {
+    top: calc(-1 * var(--app-top-clearance));
   }
 
 
@@ -548,6 +589,19 @@
 
   /* Optimisations pour mobile - menu principal uniquement */
   @media (max-height: 700px) {
+    .app-content .main-menu-container {
+      overflow-y: auto;
+      justify-content: flex-start;
+    }
+    .app-content .main-menu-container > .flex-1 {
+      flex: none;
+    }
+    .app-content .main-menu-container > .text-center {
+      flex-shrink: 0;
+    }
+    .app-content .main-menu-container > div:last-child {
+      margin-top: 0;
+    }
     .main-menu-container .text-6xl {
       font-size: 2.25rem;
       line-height: 2.5rem;

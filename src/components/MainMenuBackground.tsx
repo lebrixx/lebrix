@@ -107,7 +107,7 @@ export const MainMenuBackground: React.FC = () => {
   return (
     <div
       aria-hidden
-      className="fixed inset-0 z-0 pointer-events-none"
+      className="main-menu-backdrop fixed inset-0 z-0 pointer-events-none"
       style={{ background: '#0a0518' }}
     >
       <GameCanvas
