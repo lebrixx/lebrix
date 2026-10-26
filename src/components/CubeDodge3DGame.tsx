@@ -181,20 +181,14 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
         g.scene.traverse((c: any) => { if (c.isMesh && !mesh) mesh = c; });
         if (!mesh) return;
         const m = mesh as THREE.Mesh;
-        const inst = new THREE.InstancedMesh(m.geometry, m.material as THREE.Material, lanes.length * TILE_ROWS);
-        const mat = new THREE.Matrix4();
-        let k = 0;
+        const inst = new THREE.Group();
         lanes.forEach((x) => {
-          for (let r = 0; r < TILE_ROWS; r++) {
-            mat.compose(
-              new THREE.Vector3(x, 0, 8 - r * TILE),
-              new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.floor((r * 7 + x * 3) % 4)) * Math.PI / 2),
-              new THREE.Vector3(TILE + 0.02, 1, TILE + 0.02),
-            );
-            inst.setMatrixAt(k++, mat);
-          }
+          const strip = new THREE.Mesh(m.geometry, m.material as THREE.Material);
+          strip.position.set(x, 0, -30);
+          strip.scale.set(TILE + 0.04, 1, 80);
+          strip.userData.shared = true;
+          inst.add(strip);
         });
-        inst.frustumCulled = false;
         groundRef.current.add(inst);
       });
     };
@@ -425,8 +419,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     }
 
     // Pillars scroll
-    groundOffset.current = (groundOffset.current + speed * dt) % TILE;
-    if (groundRef.current) groundRef.current.position.z = groundOffset.current;
     rockGroupRef.current?.children.forEach((m) => {
       m.position.z += speed * dt;
       if (m.position.z > 8) m.position.z -= ROCK_LOOP;
