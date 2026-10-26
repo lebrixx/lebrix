@@ -415,7 +415,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
 
     // Spawn intervals
     s.blockTimer -= dt;
-    if (s.blockTimer <= 0) {
+    if (s.blockTimer <= 0 && treeTemplate.current) {
       const lane = Math.floor(Math.random() * 3);
       s.blocks.push(buildBlock(lane, SPAWN_Z));
       if (diff > 1.3 && Math.random() < 0.35) {
