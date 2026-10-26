@@ -220,12 +220,18 @@
 
   .app-content {
     position: fixed;
-    inset: var(--app-top-clearance) 0 0;
+    inset: 0;
     overflow-x: hidden;
     overflow-y: auto;
-    /* Fixed screen overlays now use the usable area, not the phone's top. */
-    transform: translateZ(0);
     isolation: isolate;
+  }
+
+  .app-screens {
+    margin-top: var(--app-top-clearance);
+    min-height: var(--app-usable-height);
+    position: relative;
+    /* Fixed controls start lower; scrolling still uses the whole viewport. */
+    transform: translateZ(0);
   }
 
   .app-content .min-h-screen {
@@ -590,7 +596,10 @@
   /* Optimisations pour mobile - menu principal uniquement */
   @media (max-height: 700px) {
     .app-content .main-menu-container {
-      overflow-y: auto;
+      position: relative;
+      height: auto !important;
+      min-height: var(--app-usable-height);
+      overflow: visible;
       justify-content: flex-start;
     }
     .app-content .main-menu-container > .flex-1 {
