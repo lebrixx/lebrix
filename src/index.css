@@ -635,19 +635,21 @@
 }
 
 @layer components {
-  /* Titre Brix Factory : extrusion 3D pleine, teinte unique, sans halo */
+  /* Titre Brix Factory : extrusion 3D pleine (couleurs opaques = aucune couture) */
   .title-3d {
+    --title-side: color-mix(in srgb, hsl(var(--primary)) 55%, hsl(var(--game-darker)));
     color: hsl(var(--text-primary));
     text-shadow:
-      0 1px 0 hsl(var(--primary) / 0.55),
-      0 2px 0 hsl(var(--primary) / 0.55),
-      0 3px 0 hsl(var(--primary) / 0.55),
-      0 4px 5px hsl(var(--game-darker) / 0.9);
+      0 1px 0 var(--title-side),
+      0 2px 0 var(--title-side),
+      0 3px 0 var(--title-side),
+      0 4px 0 var(--title-side);
   }
 
   .title-3d .title-3d-accent {
     color: hsl(var(--primary));
   }
 }
+
 
 
