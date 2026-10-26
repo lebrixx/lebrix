@@ -638,14 +638,14 @@
   /* Titre Brix Factory : extrusion 3D en couleurs opaques (aucune couture interne),
      avec une dernière couche légèrement floutée pour lisser le bord inférieur. */
   .title-3d {
-    --title-side: color-mix(in srgb, hsl(var(--primary)) 55%, hsl(var(--game-darker)));
+    --title-side: color-mix(in srgb, hsl(var(--primary)) 60%, hsl(var(--game-darker)));
     color: hsl(var(--text-primary));
     text-shadow:
-      0 1px 0 var(--title-side),
-      0 2px 0 var(--title-side),
-      0 3px 0 var(--title-side),
-      0 3px 1px var(--title-side);
+      0 0.5px 0 var(--title-side),
+      0 1.5px 0 var(--title-side),
+      0 2.5px 0 var(--title-side);
   }
+
 
   .title-3d .title-3d-accent {
     color: hsl(var(--primary));
