@@ -18,6 +18,7 @@ import { SeasonPass } from '@/components/SeasonPass';
 import { Inventory } from '@/components/Inventory';
 import { DailyTip } from '@/components/DailyTip';
 import { MainMenuBackground } from '@/components/MainMenuBackground';
+import luckyStopLogo from '@/assets/lucky-stop-logo.png';
 import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -238,9 +239,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
       {/* Logo/Title */}
       <div className="text-center animate-fade-in pt-28 mb-6">
-        <h1 className="font-bold bg-gradient-primary bg-clip-text text-transparent drop-shadow-2xl animate-float leading-tight">
-          <div className="text-6xl md:text-7xl">LUCKY</div>
-          <div className="text-6xl md:text-7xl">STOP</div>
+        <h1 className="flex justify-center" aria-label="Lucky Stop">
+          <img
+            src={luckyStopLogo}
+            alt="Lucky Stop"
+            width={1306}
+            height={735}
+            className="h-[120px] md:h-[168px] max-w-full object-contain"
+            draggable={false}
+          />
         </h1>
       </div>
 
