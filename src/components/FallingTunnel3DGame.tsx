@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, Zap, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
@@ -39,6 +40,33 @@ const CAMERA_LOOK_Y = PLAYER_Y - 4.2; // 1.4
 const SPAWN_Z = -26;
 const FINGER_LIFT = 0.5;
 const BEST_KEY = 'bestScore_zone_mobile';
+
+// ===== Avion F-104 (chargé une seule fois, puis cloné) =====
+const PLANE_SCALE = 0.065;
+let planeTemplate: THREE.Group | null = null;
+let planeRequested = false;
+const planeListeners: ((g: THREE.Group) => void)[] = [];
+
+function requestPlane(cb: (g: THREE.Group) => void) {
+  if (planeTemplate) { cb(planeTemplate); return; }
+  planeListeners.push(cb);
+  if (planeRequested) return;
+  planeRequested = true;
+  new GLTFLoader().load('/models/f104.glb', (g) => {
+    const root = g.scene;
+    root.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) {
+        (o as THREE.Mesh).material = new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          metalness: 0.6,
+          roughness: 0.4,
+        });
+      }
+    });
+    planeTemplate = root;
+    planeListeners.splice(0).forEach((l) => l(root));
+  });
+}
 
 interface Plate {
   group: THREE.Group;
