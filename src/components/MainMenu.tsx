@@ -245,7 +245,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             alt="Lucky Stop"
             width={1306}
             height={735}
-            className="h-[134px] md:h-[168px] max-w-full object-contain"
+            className="h-[120px] md:h-[168px] max-w-full object-contain"
             draggable={false}
           />
         </h1>
