@@ -42,7 +42,7 @@ const FINGER_LIFT = 0.5;
 const BEST_KEY = 'bestScore_zone_mobile';
 
 // ===== Avion F-104 (chargé une seule fois, puis cloné) =====
-const PLANE_SCALE = 0.075;
+const PLANE_SCALE = 0.09;
 let planeTemplate: THREE.Group | null = null;
 let planeRequested = false;
 const planeListeners: ((g: THREE.Group) => void)[] = [];
