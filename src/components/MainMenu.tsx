@@ -190,7 +190,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClick={() => setShowLuckyWheel(true)}
         variant="ghost"
         size="sm"
-        className={`absolute top-16 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
+        className={`absolute top-0 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
       >
         <RotateCcw className={`w-4 h-4 ${hasFreeSpin ? 'text-primary animate-spin' : 'text-text-muted'}`} style={hasFreeSpin ? { animationDuration: '3s' } : {}} />
         <div className="flex flex-col items-start">
@@ -204,14 +204,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           )}
         </div>
         {hasFreeSpin && (
-          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full animate-bounce flex items-center justify-center shadow-glow-primary">
+          <div className="absolute top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full flex items-center justify-center shadow-glow-primary">
             <span className="text-[8px] text-game-dark font-bold">1</span>
           </div>
         )}
       </Button>
 
       {/* Top Right: Offres + Settings */}
-      <div className="absolute top-16 right-4 flex items-center gap-2">
+      <div className="absolute top-0 right-4 flex items-center gap-2">
         <Button
           onClick={() => setShowPremiumOffer(true)}
           variant="ghost"
@@ -222,7 +222,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <span className="text-xs font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
             Offres
           </span>
-          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full animate-bounce flex items-center justify-center shadow-[0_0_8px_hsl(var(--secondary)/0.8)]">
+          <div className="absolute top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full flex items-center justify-center shadow-[0_0_8px_hsl(var(--secondary)/0.8)]">
             <span className="text-[7px] text-game-dark font-black">€</span>
           </div>
         </Button>
@@ -238,7 +238,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
 
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-28 mb-6">
+      <div className="text-center animate-fade-in pt-12 mb-6">
         <h1 className="flex justify-center" aria-label="Lucky Stop">
           <img
             src={luckyStopLogo}
