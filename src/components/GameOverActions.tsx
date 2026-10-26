@@ -39,6 +39,7 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
   const t = translations[language];
   const c = COPY[(language as keyof typeof COPY)] || COPY.en;
   const { toast } = useToast();
+  const isAndroid = Capacitor.getPlatform() === 'android';
   const isNewRecord = score !== undefined && best !== undefined && score > 0 && score >= best;
 
   const handleShare = async () => {
@@ -97,15 +98,16 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-2">
-          {/* Titre */}
+          {/* Titre arcade néon */}
           <div className="relative mb-3 text-center">
-            <Crown className="mx-auto mb-1 h-10 w-10 -rotate-6 text-secondary drop-shadow-[0_0_14px_hsl(var(--secondary)/0.8)]" strokeWidth={2.2} />
+            <Crown className={`mx-auto mb-1 h-10 w-10 -rotate-6 text-secondary ${isAndroid ? '' : 'drop-shadow-[0_0_14px_hsl(var(--secondary)/0.8)]'}`} strokeWidth={2.2} />
             <h2
-              className="text-5xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-text-primary to-secondary"
-              style={{ filter: 'drop-shadow(0 4px 0 hsl(var(--secondary) / 0.55)) drop-shadow(0 0 18px hsl(var(--secondary) / 0.6))' }}
+              className={`text-6xl font-black uppercase italic tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-secondary bg-[length:200%_auto] ${isAndroid ? '' : 'animate-[game-over-neon_2.2s_ease-in-out_infinite,game-over-gradient_4s_linear_infinite]'}`}
+              style={isAndroid ? { filter: 'drop-shadow(0 3px 0 hsl(var(--secondary) / 0.5))' } : undefined}
             >
               {c.lost}&nbsp;!
             </h2>
+            <div className="mx-auto mt-1 h-1 w-40 rounded-full bg-gradient-to-r from-transparent via-secondary to-transparent" />
           </div>
 
           {/* Carte score */}
