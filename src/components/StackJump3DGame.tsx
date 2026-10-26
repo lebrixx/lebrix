@@ -45,6 +45,8 @@ const PLATE_MODEL_D = 0.316;
 // Les plaques s'enfoncent légèrement les unes dans les autres (effet LEGO emboîté)
 const STACK_STEP = PLATE_H * 0.8;
 const plateEdgeMat = new THREE.LineBasicMaterial({ color: 0x0c0518 });
+// Cache du modèle : survit aux remontages de la scène (nouvelle partie, revivre…)
+let plateTemplateCache: THREE.Group | null = null;
 const BLANK_PNG =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
@@ -182,14 +184,20 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     buildInto(twinRef.current, twinMatsRef, '#22d3ee');
   }, []);
 
-  // Chargement du modèle de plaque
+  // Chargement du modèle de plaque (instantané si déjà en cache)
   useEffect(() => {
+    if (plateTemplateCache) {
+      plateTemplate.current = plateTemplateCache;
+      rebuildMovingVisuals();
+      return;
+    }
     rebuildMovingVisuals();
     let cancelled = false;
     const manager = new THREE.LoadingManager();
     manager.setURLModifier((u) => (u.endsWith('.png') ? BLANK_PNG : u));
     new GLTFLoader(manager).load('/models/square-lq-plate-4x4.glb', (g) => {
       if (cancelled) return;
+      plateTemplateCache = g.scene;
       plateTemplate.current = g.scene;
       rebuildMovingVisuals();
     });
