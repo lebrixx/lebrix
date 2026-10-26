@@ -1,6 +1,6 @@
 # Tasks
-- [ ] Shorten the monthly ranking explanation in all three languages.
-- [ ] Accentuate smooth airplane banking, turning and climbing in Falling Tunnel without changing movement or collisions; verify during play.
+- [x] Shorten the monthly ranking explanation in all three languages; verified the French text in the monthly ranking.
+- [x] Accentuate smooth airplane banking, turning and climbing in Falling Tunnel without changing movement or collisions; verified the loaded airplane during upward/right and downward/left movements.
 - [x] Replace the game-over title with a static LUCKY STOP-style wordmark image (fr/en/es), no animation; verified during play, no black bar above.
 - [x] Make the Pass Saison button bigger and more polished (pill shape, subtle pink gradient, larger crown, glow disabled on Android); verified in the menu at phone size with no overlap.
 - [x] Simplify the Premium Pack offer card: drop its reward bubbles, keep the original items in its phrase followed by "Bien plus encore", and animate the card titles (gold pulse on Pack Premium, rainbow on Pseudo Multicolore); verified in the shop in French and English.
