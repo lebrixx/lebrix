@@ -637,21 +637,7 @@ export const RotatingCube3DGame: React.FC<RotatingCube3DGameProps> = ({
         )}
 
         {phase === 'gameover' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-game-dark/80 backdrop-blur-sm">
-            <div className="text-center max-w-sm px-6">
-              <h2 className="text-3xl font-bold text-danger mb-3">Game Over</h2>
-              <div className="mb-2 text-text-secondary">Score</div>
-              <div className="text-5xl font-bold text-primary mb-4 tabular-nums">{score}</div>
-              <div className="mb-6 text-text-muted text-sm">
-                {score > 0 && score >= best ? (
-                  <span className="text-yellow-300 font-bold">★ Nouveau record</span>
-                ) : (
-                  <>Meilleur : <span className="text-primary font-bold">{best}</span></>
-                )}
-              </div>
-              <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="memoire_expert" />
-            </div>
-          </div>
+          <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="memoire_expert" best={best} />
         )}
       </div>
     </div>

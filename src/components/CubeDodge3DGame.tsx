@@ -978,17 +978,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
           {/* Game over */}
           {phase === 'gameover' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-game-dark/80 backdrop-blur-sm">
-              <div className="text-center max-w-sm px-6">
-                <h2 className="text-3xl font-bold text-danger mb-3">Perdu !</h2>
-                <div className="mb-2 text-text-secondary">Score</div>
-                <div className="text-5xl font-bold text-primary mb-4 tabular-nums">{score}</div>
-                <div className="mb-6 text-text-muted text-sm">
-                  Record : <span className="text-primary font-bold">{best}</span>
-                </div>
-                <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="classic" />
-              </div>
-            </div>
+            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="classic" best={best} />
           )}
         </div>
       </div>
