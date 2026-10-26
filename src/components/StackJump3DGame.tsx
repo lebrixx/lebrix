@@ -42,6 +42,9 @@ const BEST_KEY = 'bestScore_survie_60s';
 const PLATE_MODEL_W = 0.318;
 const PLATE_MODEL_H = 0.05;
 const PLATE_MODEL_D = 0.316;
+// Les plaques s'enfoncent légèrement les unes dans les autres (effet LEGO emboîté)
+const STACK_STEP = PLATE_H * 0.8;
+const plateEdgeMat = new THREE.LineBasicMaterial({ color: 0x0c0518 });
 const BLANK_PNG =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
@@ -52,9 +55,13 @@ function makeModelPlate(template: THREE.Group, size: number, color: THREE.Color 
   const mats: THREE.MeshBasicMaterial[] = [];
   clone.traverse((o) => {
     if ((o as THREE.Mesh).isMesh) {
+      const mesh = o as THREE.Mesh;
       const mat = new THREE.MeshBasicMaterial({ color: colorObj });
-      (o as THREE.Mesh).material = mat;
+      mesh.material = mat;
       mats.push(mat);
+      // Contours sombres pour bien délimiter la plaque et ses picots
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), plateEdgeMat);
+      mesh.add(edges);
     }
   });
   const group = new THREE.Group();
@@ -296,7 +303,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     else if (s.moving.x < -3.2) { s.moving.x = -3.2; s.moving.dir = 1; }
 
     const top = s.stack[s.stack.length - 1];
-    const movingY = top.y + PLATE_H;
+    const movingY = top.y + STACK_STEP;
 
     // Update guide
     if (guideRef.current) {
@@ -422,7 +429,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       placedX = (leftEdge + rightEdge) / 2;
     }
 
-    const baseHsl = new THREE.Color().setHSL((0.7 + s.score * 0.04) % 1, 0.7, 0.6);
+    const baseHsl = new THREE.Color().setHSL((0.7 + s.score * 0.04) % 1, 0.85, 0.52);
     const plateColor =
       s.kind === 'gold' ? new THREE.Color('#fde047') :
       s.kind === 'twin' ? new THREE.Color('#22d3ee') : baseHsl;
