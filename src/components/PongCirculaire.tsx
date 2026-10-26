@@ -311,8 +311,8 @@ export const PongCirculaire: React.FC<PongCirculaireProps> = ({
       )}
 
       {/* HUD */}
-      <div className="text-center mb-8 animate-fade-in mt-16">
-        <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">{score}</div>
+      <div className="w-full text-center mb-8 animate-fade-in mt-16">
+        <div className="text-7xl font-bold text-primary mb-2 drop-shadow-lg tabular-nums">{score}</div>
         <div className="text-text-secondary text-lg font-semibold">
           {t.bestScore}: {bestScore}
         </div>
