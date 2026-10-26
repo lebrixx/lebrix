@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
+import { GameHUD } from '@/components/GameHUD';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles, Coins } from 'lucide-react';
@@ -515,26 +516,13 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     <div className="min-h-screen bg-gradient-game flex flex-col">
       {/* Top bar — masqué en gameover */}
       {phase !== 'gameover' && (
-        <div className="flex items-center justify-between p-4 z-20 relative">
-          <Button variant="outline" size="sm" onClick={onBack} className="border-wheel-border">
-            <ArrowLeft className="w-4 h-4 mr-1" /> Menu
-          </Button>
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/15 border border-secondary/40">
-              <Coins className="w-4 h-4 text-secondary" />
-              <span className="text-secondary font-bold text-sm tabular-nums">{coinsDisplay}</span>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-text-muted uppercase tracking-wider">Score</div>
-              <div className="text-3xl font-bold text-primary tabular-nums">{score}</div>
-            </div>
-          </div>
-          {onToggleSound && (
-            <Button variant="outline" size="sm" onClick={onToggleSound} className="border-wheel-border">
-              {isSoundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </Button>
-          )}
-        </div>
+        <GameHUD
+          score={score}
+          coins={coinsDisplay}
+          onBack={onBack}
+          isSoundMuted={isSoundMuted}
+          onToggleSound={onToggleSound}
+        />
       )}
 
       {/* Canvas */}

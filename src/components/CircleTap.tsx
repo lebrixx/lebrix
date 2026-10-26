@@ -3,7 +3,7 @@ import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video, Zap, Ticket } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, ArrowLeft, Video, Zap, Ticket, Coins } from 'lucide-react';
 import { THEMES } from '@/constants/themes';
 import { ModeType } from '@/constants/modes';
 import { BOOSTS, BoostType } from '@/types/boosts';
@@ -278,15 +278,15 @@ export const CircleTap: React.FC<CircleTapProps> = ({
       )}
 
       {/* HUD - Score en gros et best score */}
-      <div className="text-center mb-8 animate-fade-in mt-16">
-        <div className="text-6xl font-bold text-primary mb-2 drop-shadow-lg">
+      <div className="w-full text-center mb-8 animate-fade-in mt-16">
+        <div className="text-7xl font-bold text-primary mb-2 drop-shadow-lg tabular-nums">
           {gameState.currentScore}
         </div>
         <div className="text-text-secondary text-lg font-semibold">
           {t.bestScore}: {gameState.bestScore}
         </div>
         <div className="text-text-muted text-sm mt-2">
-          {t.coins}: {gameState.coins} • {t.level}: {gameState.level}
+          {t.level}: {gameState.level}
           {gameState.currentMode === 'survie_60s' && gameState.timeLeft && (
             <span className="ml-2 text-red-400 font-bold">⏱ {Math.ceil(gameState.timeLeft)}s</span>
           )}
@@ -524,14 +524,21 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           <RotateCcw className="w-5 h-5" />
         </Button>
 
-        <Button
-          onClick={onToggleSound}
-          variant="outline"
-          size="lg"
-          className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
-        >
-          {isSoundMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-        </Button>
+        <div className="relative">
+          <Button
+            onClick={onToggleSound}
+            variant="outline"
+            size="lg"
+            aria-label={t.sound}
+            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300"
+          >
+            {isSoundMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </Button>
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 flex items-center gap-1 rounded-full border border-secondary/40 bg-secondary/15 px-2 py-1 whitespace-nowrap">
+            <Coins className="h-4 w-4 text-secondary" />
+            <span className="text-sm font-bold text-secondary tabular-nums">{gameState.coins}</span>
+          </div>
+        </div>
       </div>
 
       {/* Post-Game Boost Menu */}
