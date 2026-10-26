@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, RotateCcw, Zap, Share2 } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Zap, Share2, Crown } from 'lucide-react';
 import { RewardButton } from '@/ads/RewardIntegration';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +11,8 @@ interface GameOverActionsProps {
   onOpenBoosts?: () => void;
   onRevive?: () => void;
   score?: number;
+  best?: number;
+  bestSuffix?: string;
   mode?: string;
 }
 
@@ -24,17 +25,20 @@ const MODE_NAMES: Record<string, string> = {
   memoire_expert: 'Rotating Cube',
 };
 
+const COPY = {
+  fr: { lost: 'Perdu', record: 'Record', newRecord: 'Nouveau record !', boostSub: 'Double ton score !', reviveSub: 'Continue ta partie' },
+  en: { lost: 'Game Over', record: 'Best', newRecord: 'New record!', boostSub: 'Double your score!', reviveSub: 'Keep playing' },
+  es: { lost: 'Perdiste', record: 'Récord', newRecord: '¡Nuevo récord!', boostSub: '¡Duplica tu puntuación!', reviveSub: 'Continúa tu partida' },
+} as const;
+
 export const GameOverActions: React.FC<GameOverActionsProps> = ({
-  onMenu,
-  onReplay,
-  onOpenBoosts,
-  onRevive,
-  score,
-  mode,
+  onMenu, onReplay, onOpenBoosts, onRevive, score, best, bestSuffix = '', mode,
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const c = COPY[(language as keyof typeof COPY)] || COPY.en;
   const { toast } = useToast();
+  const isNewRecord = score !== undefined && best !== undefined && score > 0 && score >= best;
 
   const handleShare = async () => {
     if (score === undefined) return;
@@ -43,7 +47,6 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
       .replace('{score}', String(score))
       .replace('{mode}', modeName);
     const url = 'https://lebrix.lovable.app';
-
     try {
       if (Capacitor.isNativePlatform()) {
         const { Share } = await import('@capacitor/share');
@@ -54,67 +57,107 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
         await navigator.share({ title: 'Lucky Stop', text, url });
         return;
       }
-      // Fallback : copie dans le presse-papier
       await navigator.clipboard.writeText(`${text} ${url}`);
       toast({ title: t.shareCopied || 'Copié !', description: t.shareCopiedDesc || 'Résultat copié dans le presse-papier.' });
     } catch (error: any) {
-      // Annulation utilisateur : pas d'erreur affichée
       if (error?.name === 'AbortError' || /cancel/i.test(error?.message || '')) return;
       try {
         await navigator.clipboard.writeText(`${text} ${url}`);
         toast({ title: t.shareCopied || 'Copié !', description: t.shareCopiedDesc || 'Résultat copié dans le presse-papier.' });
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
     }
   };
 
   return (
-    <>
-      <Button
-        onClick={onMenu}
-        variant="outline"
-        size="sm"
-        className="absolute top-4 left-4 z-10 border-wheel-border"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" /> {t.menu}
-      </Button>
+    <div className="absolute inset-0 z-20 overflow-y-auto bg-game-darker/85 backdrop-blur-md">
+      {/* Halo néon de fond */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,hsl(var(--secondary)/0.25),transparent_60%)]" />
 
-      {score !== undefined && (
-        <Button
-          onClick={handleShare}
-          variant="outline"
-          size="sm"
-          className="absolute top-4 right-4 z-10 border-wheel-border hover:bg-button-hover text-text-primary"
-        >
-          <Share2 className="w-4 h-4 mr-2" /> {t.shareScore || 'Partager'}
-        </Button>
-      )}
-
-      <div className="flex flex-col gap-3 items-stretch w-full max-w-xs mx-auto">
-        {onOpenBoosts && (
-          <Button
-            onClick={onOpenBoosts}
-            className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white font-bold hover:opacity-90 hover:scale-[1.02] transition-all shadow-lg shadow-fuchsia-500/30"
+      <div className="relative flex min-h-full flex-col px-5 pb-8 pt-4">
+        {/* Barre du haut */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onMenu}
+            className="flex items-center gap-2 rounded-full border border-secondary/50 bg-game-dark/60 px-4 py-2 text-sm font-semibold text-text-primary shadow-[0_0_12px_hsl(var(--secondary)/0.35)] active:scale-95 transition-transform"
           >
-            <Zap className="w-4 h-4 mr-2" /> {t.activateBoosts}
-          </Button>
-        )}
-        <Button onClick={onReplay} className="bg-gradient-primary">
-          <RotateCcw className="w-4 h-4 mr-2" /> {t.replay}
-        </Button>
-      </div>
-
-      {onRevive && (
-        <div className="absolute bottom-28 left-4 z-10">
-          <RewardButton
-            kind="revive"
-            onReward={() => onRevive()}
-            label={t.reviveWithAd}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold shadow-lg shadow-amber-500/30 h-11"
-          />
+            <ArrowLeft className="h-4 w-4" /> {t.menu}
+          </button>
+          {score !== undefined && (
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 rounded-full border border-secondary/50 bg-game-dark/60 px-4 py-2 text-sm font-semibold text-text-primary shadow-[0_0_12px_hsl(var(--secondary)/0.35)] active:scale-95 transition-transform"
+            >
+              <Share2 className="h-4 w-4" /> {t.shareScore || 'Partager'}
+            </button>
+          )}
         </div>
-      )}
-    </>
+
+        <div className="flex flex-1 flex-col items-center justify-center py-6">
+          {/* Titre */}
+          <div className="relative mb-5 text-center">
+            <Crown className="mx-auto mb-1 h-12 w-12 -rotate-6 text-secondary drop-shadow-[0_0_14px_hsl(var(--secondary)/0.8)]" strokeWidth={2.2} />
+            <h2
+              className="text-6xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-text-primary to-secondary"
+              style={{ filter: 'drop-shadow(0 4px 0 hsl(var(--secondary) / 0.55)) drop-shadow(0 0 18px hsl(var(--secondary) / 0.6))' }}
+            >
+              {c.lost}&nbsp;!
+            </h2>
+          </div>
+
+          {/* Carte score */}
+          <div className="mb-6 w-full max-w-[19rem] rounded-3xl border border-secondary/60 bg-game-dark/70 px-6 py-4 text-center shadow-[0_0_24px_hsl(var(--secondary)/0.3)]">
+            <div className="text-base text-text-secondary">Score</div>
+            <div className="text-6xl font-black leading-tight tabular-nums text-primary drop-shadow-[0_0_14px_hsl(var(--primary)/0.7)]">
+              {score ?? 0}
+            </div>
+            {best !== undefined && (
+              <div className="mt-2 flex items-center justify-center gap-2 border-t border-text-primary/10 pt-2 text-base">
+                <Crown className="h-4 w-4 text-secondary" />
+                {isNewRecord ? (
+                  <span className="font-bold text-secondary">{c.newRecord}</span>
+                ) : (
+                  <span className="text-text-secondary">
+                    {c.record} : <span className="font-bold text-secondary">{best}{bestSuffix}</span>
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex w-full max-w-xs flex-col gap-3">
+            {onOpenBoosts && (
+              <button
+                onClick={onOpenBoosts}
+                className="flex items-center gap-4 rounded-2xl border border-text-primary/30 bg-gradient-to-r from-violet-600 to-fuchsia-500 px-5 py-3 text-left text-white shadow-[0_0_20px_rgba(217,70,239,0.45)] active:scale-[0.98] transition-transform"
+              >
+                <Zap className="h-7 w-7 shrink-0" />
+                <span className="flex-1 text-center">
+                  <span className="block text-lg font-bold leading-tight">{t.activateBoosts}</span>
+                  <span className="block text-xs opacity-85">{c.boostSub}</span>
+                </span>
+              </button>
+            )}
+            <button
+              onClick={onReplay}
+              className="flex items-center justify-center gap-3 rounded-2xl border border-secondary/50 bg-game-dark/80 px-5 py-4 text-lg font-bold text-text-primary active:scale-[0.98] transition-transform"
+            >
+              <RotateCcw className="h-6 w-6" /> {t.replay}
+            </button>
+            {onRevive && (
+              <div className="flex flex-col">
+                <RewardButton
+                  kind="revive"
+                  onReward={() => onRevive()}
+                  label={t.reviveWithAd}
+                  className="h-14 w-full rounded-2xl border border-yellow-300/60 bg-gradient-to-r from-amber-500 to-orange-500 text-lg font-bold text-white shadow-[0_0_20px_rgba(245,158,11,0.45)] hover:from-amber-400 hover:to-orange-400"
+                />
+                <span className="mt-1 text-center text-xs text-amber-300/80">{c.reviveSub}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
