@@ -473,6 +473,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
   const { language } = useLanguage();
   const t = translations[language];
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
   useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
@@ -686,6 +687,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
               currentMode={'zone_traitresse' as any}
               selectedBoosts={menuBoosts}
               onSelectedBoostsChange={setMenuBoosts}
+              defaultBoostsOpen={boostsFromGameOver}
               onStart={handleStart}
               rules={[
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Glisse', desc: 'horizontalement — la bille orbite autour de la tour' },
@@ -696,7 +698,7 @@ export const OrbitDodge3DGame: React.FC<OrbitDodge3DGameProps> = ({
           )}
 
           {phase === 'gameover' && (
-            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="zone_traitresse" best={best} />
+            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => { setBoostsFromGameOver(true); setPhase('menu'); }} onRevive={handleRevive} score={score} mode="zone_traitresse" best={best} />
           )}
         </div>
       </div>

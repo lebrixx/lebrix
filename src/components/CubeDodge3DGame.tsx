@@ -725,6 +725,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
   onEarnCoin,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [uiColor, setUiColor] = useState(0);
   
@@ -966,6 +967,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
               currentMode={'classic' as any}
               selectedBoosts={menuBoosts}
               onSelectedBoostsChange={setMenuBoosts}
+              defaultBoostsOpen={boostsFromGameOver}
               onStart={handleStart}
               rules={[
                 { icon: <MoveHorizontal className="w-4 h-4 text-cyan-300" />, title: 'Swipe', desc: 'gauche/droite pour changer de voie' },
@@ -978,7 +980,7 @@ export const CubeDodge3DGame: React.FC<CubeDodge3DGameProps> = ({
 
           {/* Game over */}
           {phase === 'gameover' && (
-            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="classic" best={best} />
+            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => { setBoostsFromGameOver(true); setPhase('menu'); }} onRevive={handleRevive} score={score} mode="classic" best={best} />
           )}
         </div>
       </div>

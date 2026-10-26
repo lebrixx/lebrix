@@ -558,6 +558,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
   onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
   useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
@@ -777,6 +778,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               currentMode={'survie_60s' as any}
               selectedBoosts={menuBoosts}
               onSelectedBoostsChange={setMenuBoosts}
+              defaultBoostsOpen={boostsFromGameOver}
               onStart={handleStart}
               rules={[
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Tap', desc: 'pose la plaque qui glisse au bon moment' },
@@ -787,7 +789,7 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
           )}
 
           {phase === 'gameover' && (
-            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="survie_60s" best={best} />
+            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => { setBoostsFromGameOver(true); setPhase('menu'); }} onRevive={handleRevive} score={score} mode="survie_60s" best={best} />
           )}
         </div>
       </div>

@@ -527,6 +527,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
   onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin,
 }) => {
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [menuBoosts, setMenuBoosts] = useState<BoostType[]>(() => (selectedBoosts || []) as BoostType[]);
   useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
@@ -700,6 +701,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
               currentMode={'zone_mobile' as any}
               selectedBoosts={menuBoosts}
               onSelectedBoostsChange={setMenuBoosts}
+              defaultBoostsOpen={boostsFromGameOver}
               onStart={handleStart}
               rules={[
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Glisse', desc: 'ton doigt n\'importe où — la bille suit' },
@@ -710,7 +712,7 @@ export const FallingTunnel3DGame: React.FC<FallingTunnel3DGameProps> = ({
           )}
 
           {phase === 'gameover' && (
-            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => setPhase('menu')} onRevive={handleRevive} score={score} mode="zone_mobile" best={best} />
+            <GameOverActions onMenu={onBack!} onReplay={handleStart} onOpenBoosts={() => { setBoostsFromGameOver(true); setPhase('menu'); }} onRevive={handleRevive} score={score} mode="zone_mobile" best={best} />
           )}
         </div>
       </div>
