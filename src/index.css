@@ -635,36 +635,23 @@
 }
 
 @layer components {
-  /* Titre Brix Factory : relief 3D obtenu par une copie du texte décalée derrière
-     la face. Les contours restent antialiasés : pas de marches d'escalier. */
+  /* Titre Brix Factory : extrusion 3D en couleurs opaques (aucune couture interne),
+     avec une dernière couche légèrement floutée pour lisser le bord inférieur. */
   .title-3d {
     --title-side: color-mix(in srgb, hsl(var(--primary)) 55%, hsl(var(--game-darker)));
-    position: relative;
-    display: inline-block;
     color: hsl(var(--text-primary));
+    text-shadow:
+      0 1px 0 var(--title-side),
+      0 2px 0 var(--title-side),
+      0 3px 0 var(--title-side),
+      0 3px 1px var(--title-side);
   }
 
-  .title-3d-depth {
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: var(--title-side);
-    transform: translateY(3px);
-    pointer-events: none;
-  }
-
-  .title-3d-depth .title-3d-accent {
-    color: var(--title-side);
-  }
-
-  .title-3d-face {
-    position: relative;
-  }
-
-  .title-3d-face .title-3d-accent {
+  .title-3d .title-3d-accent {
     color: hsl(var(--primary));
   }
 }
+
 
 
 
