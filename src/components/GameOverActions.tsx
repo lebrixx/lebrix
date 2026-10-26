@@ -5,6 +5,11 @@ import { RewardButton } from '@/ads/RewardIntegration';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
 import { Capacitor } from '@capacitor/core';
+import lostTitleFr from '@/assets/game-over-lost-fr.png';
+import lostTitleEn from '@/assets/game-over-lost-en.png';
+import lostTitleEs from '@/assets/game-over-lost-es.png';
+
+const LOST_TITLES = { fr: lostTitleFr, en: lostTitleEn, es: lostTitleEs } as const;
 
 interface GameOverActionsProps {
   onMenu: () => void;
@@ -101,12 +106,12 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
           {/* Titre arcade néon */}
           <div className="relative mb-3 text-center">
             <Crown className={`mx-auto mb-1 h-10 w-10 -rotate-6 text-secondary ${isAndroid ? '' : 'drop-shadow-[0_0_14px_hsl(var(--secondary)/0.8)]'}`} strokeWidth={2.2} />
-            <h2
-              className={`text-6xl font-black uppercase italic tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-secondary bg-[length:200%_auto] ${isAndroid ? '' : 'animate-[game-over-neon_2.2s_ease-in-out_infinite,game-over-gradient_4s_linear_infinite]'}`}
-              style={isAndroid ? { filter: 'drop-shadow(0 3px 0 hsl(var(--secondary) / 0.5))' } : undefined}
-            >
-              {c.lost}&nbsp;!
-            </h2>
+            <img
+              src={LOST_TITLES[(language as keyof typeof LOST_TITLES)] || LOST_TITLES.en}
+              alt={c.lost}
+              draggable={false}
+              className="mx-auto h-auto w-full max-w-[18rem] select-none"
+            />
             <div className="mx-auto mt-1 h-1 w-40 rounded-full bg-gradient-to-r from-transparent via-secondary to-transparent" />
           </div>
 
