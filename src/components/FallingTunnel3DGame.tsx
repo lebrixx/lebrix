@@ -365,14 +365,26 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
     const tx = rawX * (FIELD_R + 0.5);
     const ty = liftedY * (FIELD_R + 0.5) + PLAYER_Y;
     if (ballRef.current) {
-      ballRef.current.position.x += (tx - ballRef.current.position.x) * 0.52;
-      ballRef.current.position.y += (ty - ballRef.current.position.y) * 0.52;
-      ballRef.current.position.z = PLAYER_Z;
-      ballRef.current.rotation.x += dt * 1.2;
-      ballRef.current.rotation.y += dt * 1.5;
+      const g = ballRef.current;
+      const vx = tx - g.position.x;
+      const vy = ty - g.position.y;
+      g.position.x += vx * 0.52;
+      g.position.y += vy * 0.52;
+      g.position.z = PLAYER_Z;
+      // Illusion de vol : roulis et tangage selon le déplacement
+      const targetRoll = THREE.MathUtils.clamp(-vx * 1.1, -0.8, 0.8);
+      const targetPitch = THREE.MathUtils.clamp(vy * 0.6, -0.5, 0.5);
+      const k = Math.min(1, dt * 7);
+      g.rotation.z += (targetRoll - g.rotation.z) * k;
+      g.rotation.x += (targetPitch - g.rotation.x) * k;
+      // Léger flottement de l'avion
+      if (planeInnerRef.current) {
+        planeInnerRef.current.position.y = Math.sin(s.elapsed * 2.3) * 0.05;
+        planeInnerRef.current.rotation.z = Math.sin(s.elapsed * 1.6) * 0.04;
+      }
       // pulse scale on pass
       const scl = 1 + s.pulse * 0.6;
-      ballRef.current.scale.setScalar(scl);
+      g.scale.setScalar(scl);
       s.pulse = Math.max(0, s.pulse - dt * 3);
     }
 
