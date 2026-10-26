@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowLeft, RotateCcw, Zap, Share2, Crown } from 'lucide-react';
 import { RewardButton } from '@/ads/RewardIntegration';
 import { useLanguage, translations } from '@/hooks/useLanguage';
@@ -68,7 +69,7 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-40 overflow-hidden overscroll-none touch-none bg-game-darker/85 backdrop-blur-md">
       {/* Halo néon de fond */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,hsl(var(--secondary)/0.25),transparent_60%)]" />
@@ -161,6 +162,7 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
