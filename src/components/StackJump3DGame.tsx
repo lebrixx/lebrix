@@ -3,7 +3,6 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import plateAsset from '@/assets/square-lq-plate-4x4.glb.asset.json';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Sparkles, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
@@ -182,7 +181,7 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     let cancelled = false;
     const manager = new THREE.LoadingManager();
     manager.setURLModifier((u) => (u.endsWith('.png') ? BLANK_PNG : u));
-    new GLTFLoader(manager).load(plateAsset.url, (g) => {
+    new GLTFLoader(manager).load('/models/square-lq-plate-4x4.glb', (g) => {
       if (cancelled) return;
       plateTemplate.current = g.scene;
       rebuildMovingVisuals();
