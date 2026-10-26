@@ -51,6 +51,28 @@ const ROCK_LOOP = ROCK_SPACING * ROCKS_PER_SIDE;
 
 const BLANK_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/akz2wAAAABJRU5ErkJggg==';
 
+function makeGroundTexture(kind: 'grass' | 'dirt'): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 256;
+  const x = c.getContext('2d')!;
+  x.fillStyle = kind === 'grass' ? '#4f9a3f' : '#8a5a34';
+  x.fillRect(0, 0, 256, 256);
+  const pal = kind === 'grass'
+    ? ['#3f8434', '#5fae4a', '#6fbf55', '#478f3a', '#86cf63']
+    : ['#7a4d2b', '#9a6a40', '#a8794c', '#6e4426', '#b58658'];
+  for (let i = 0; i < 2600; i++) {
+    x.fillStyle = pal[(Math.random() * pal.length) | 0];
+    const px = Math.random() * 256, py = Math.random() * 256;
+    if (kind === 'grass') x.fillRect(px, py, 1.5, 3 + Math.random() * 4);
+    else { x.beginPath(); x.arc(px, py, 0.8 + Math.random() * 2.2, 0, Math.PI * 2); x.fill(); }
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+
 /** Colore le modèle par hauteur (texture externe absente du fichier). */
 function paintByHeight(root: THREE.Object3D, pick: (t: number) => THREE.Color) {
   root.traverse((c: any) => {
@@ -155,7 +177,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
   const rockGroupRef = useRef<THREE.Group>(null);
   const treeTemplate = useRef<THREE.Group | null>(null);
   const groundRef = useRef<THREE.Group>(null);
-  const groundOffset = useRef(0);
+  const grassTex = useMemo(() => { const t = makeGroundTexture('grass'); t.repeat.set(2, 50); return t; }, []);
+  const dirtTex = useMemo(() => { const t = makeGroundTexture('dirt'); t.repeat.set(1, 50); return t; }, []);
 
   // Chargement des modèles 3D (arbres = obstacles, roches = décor)
   useEffect(() => {
@@ -173,31 +196,6 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       paintByHeight(g.scene, (t) => (t < 0.28 ? trunk : leafLow.clone().lerp(leafHigh, (t - 0.28) / 0.72)));
       treeTemplate.current = normalizeModel(g.scene, 1.9);
     });
-    const buildGround = (url: string, lanes: number[], pick: (t: number) => THREE.Color) => {
-      loader.load(url, (g) => {
-        if (cancelled || !groundRef.current) return;
-        paintByHeight(g.scene, pick);
-        let mesh: THREE.Mesh | null = null;
-        g.scene.traverse((c: any) => { if (c.isMesh && !mesh) mesh = c; });
-        if (!mesh) return;
-        const m = mesh as THREE.Mesh;
-        const inst = new THREE.Group();
-        lanes.forEach((x) => {
-          const strip = new THREE.Mesh(m.geometry, m.material as THREE.Material);
-          strip.position.set(x, 0, -30);
-          strip.scale.set(TILE + 0.04, 1, 80);
-          strip.userData.shared = true;
-          inst.add(strip);
-        });
-        groundRef.current.add(inst);
-      });
-    };
-    const grassA = new THREE.Color('#3f8f3c');
-    const grassB = new THREE.Color('#86d45e');
-    const dirtA = new THREE.Color('#6b4426');
-    const dirtB = new THREE.Color('#a87445');
-    buildGround('/models/patch-grass.glb', [LANES[0], LANES[2]], (t) => grassA.clone().lerp(grassB, t));
-    buildGround('/models/patch-dirt.glb', [LANES[1]], (t) => dirtA.clone().lerp(dirtB, t));
     loader.load('/models/rocks-high.glb', (g) => {
       if (cancelled || !rockGroupRef.current) return;
       paintByHeight(g.scene, (t) => rockDark.clone().lerp(rockLight, t));
@@ -419,6 +417,9 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     }
 
     // Pillars scroll
+    const scroll = (speed * dt) / 2; // 100 unités / 50 répétitions
+    grassTex.offset.y += scroll;
+    dirtTex.offset.y += scroll;
     rockGroupRef.current?.children.forEach((m) => {
       m.position.z += speed * dt;
       if (m.position.z > 8) m.position.z -= ROCK_LOOP;
@@ -599,7 +600,18 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
         <meshStandardMaterial color="#1a0f33" emissive="#2a1758" emissiveIntensity={0.3} />
       </mesh>
       {/* Sol en tuiles : herbe sur les côtés, terre au milieu */}
-      <group ref={groundRef} />
+      <group ref={groundRef}>
+        {[-2.05, 2.05].map((x) => (
+          <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.01, -15]}>
+            <planeGeometry args={[2.7, 100]} />
+            <meshStandardMaterial map={grassTex} roughness={0.95} />
+          </mesh>
+        ))}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -15]}>
+          <planeGeometry args={[1.42, 100]} />
+          <meshStandardMaterial map={dirtTex} roughness={1} />
+        </mesh>
+      </group>
       {/* Horizon */}
       <mesh ref={horizonRef} position={[0, 3, -35]}>
         <planeGeometry args={[30, 6]} />
