@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import plateAsset from '@/assets/square-lq-plate-4x4.glb.asset.json';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Sparkles, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
@@ -36,6 +38,31 @@ const BASE_SIZE = 2.2;
 const TWIN_EVERY = 6;
 const RED_DURATION = 2.5;
 const BEST_KEY = 'bestScore_survie_60s';
+
+// Dimensions réelles du modèle de plaque (GLB)
+const PLATE_MODEL_W = 0.318;
+const PLATE_MODEL_H = 0.05;
+const PLATE_MODEL_D = 0.316;
+const BLANK_PNG =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+// Clone le modèle de plaque, le met à la taille voulue et le teinte
+function makeModelPlate(template: THREE.Group, size: number, color: THREE.Color | string) {
+  const colorObj = color instanceof THREE.Color ? color.clone() : new THREE.Color(color);
+  const clone = template.clone(true);
+  const mats: THREE.MeshBasicMaterial[] = [];
+  clone.traverse((o) => {
+    if ((o as THREE.Mesh).isMesh) {
+      const mat = new THREE.MeshBasicMaterial({ color: colorObj });
+      (o as THREE.Mesh).material = mat;
+      mats.push(mat);
+    }
+  });
+  const group = new THREE.Group();
+  clone.scale.set(size / PLATE_MODEL_W, PLATE_H / PLATE_MODEL_H, size / PLATE_MODEL_D);
+  group.add(clone);
+  return { group, mats };
+}
 
 type PlateKind = 'normal' | 'gold' | 'red' | 'twin';
 
