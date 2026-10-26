@@ -5,25 +5,17 @@ import { Badge } from '@/components/ui/badge';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowLeft, Check, Coins, Palette, Star, Crown, Zap, Sparkles, Lock, AlertTriangle, Video, Ticket, Package, Loader2, Gift } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { THEMES } from '@/constants/themes';
+import { ArrowLeft, Check, Coins, Star, Lock, AlertTriangle, Video, Ticket, Package, Loader2 } from 'lucide-react';
+import { ShopPaidOffers } from '@/components/ShopPaidOffers';
+import { PremiumOffer } from '@/components/PremiumOffer';
+import { RainbowOffer } from '@/components/RainbowOffer';
 import { cfgModes, ModeID } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
-import { getDailyRewardState } from '@/utils/dailyRewards';
 import { getTickets, addTickets } from '@/utils/ticketSystem';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useLanguage, translations } from '@/hooks/useLanguage';
-import { addDiamonds, purchasePremiumPack } from '@/utils/seasonPass';
-import { setBrixFactoryOverrideUnlocked } from '@/utils/pongUnlock';
-
-// Réorganiser les thèmes pour mettre theme-royal en premier
-const availableThemes = [
-  THEMES.find(t => t.id === 'theme-royal')!,
-  ...THEMES.filter(t => t.id !== 'theme-royal')
-];
 
 interface ShopProps {
   coins: number;
@@ -59,12 +51,8 @@ const GAME_MODES_SHOP = [
 
 export const Shop: React.FC<ShopProps> = ({
   coins,
-  ownedThemes,
-  currentTheme,
   unlockedModes,
   onBack,
-  onPurchaseTheme,
-  onEquipTheme,
   onPurchaseMode,
   onSpendCoins,
   onAddCoins,
@@ -73,7 +61,7 @@ export const Shop: React.FC<ShopProps> = ({
   const { language } = useLanguage();
   const t = translations[language];
   
-  const [activeTab, setActiveTab] = useState(initialTarget ? 'modes' : 'themes');
+  const [activeTab, setActiveTab] = useState('modes');
 
   useEffect(() => {
     if (!initialTarget) return;
@@ -94,47 +82,11 @@ export const Shop: React.FC<ShopProps> = ({
   
   const [showEssentialPack, setShowEssentialPack] = useState(false);
   const [isEssentialPurchasing, setIsEssentialPurchasing] = useState(false);
-  const [promoCode, setPromoCode] = useState('');
-  const [redeemingCode, setRedeemingCode] = useState(false);
+  const [showPremium, setShowPremium] = useState(false);
+  const [showRainbow, setShowRainbow] = useState(false);
   const { showRewardedAd, isShowing: isAdShowing, isReady: isAdReady, getCooldown: getAdCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const { toast } = useToast();
-
-  const handleRedeemCode = () => {
-    if (redeemingCode) return;
-    const code = promoCode.trim().toUpperCase();
-    if (!code) return;
-    setRedeemingCode(true);
-    try {
-      const usedRaw = localStorage.getItem('ls_used_promo_codes');
-      const used: string[] = usedRaw ? JSON.parse(usedRaw) : [];
-      if (used.includes(code)) {
-        toast({ title: t.codeAlreadyUsedTitle, description: t.codeAlreadyUsedDesc, variant: 'destructive' });
-        return;
-      }
-      if (code === 'LEBRIX2026') {
-        purchasePremiumPack();
-        onAddCoins?.(1150);
-        try { setBrixFactoryOverrideUnlocked(); } catch {}
-        used.push(code);
-        localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
-        setPromoCode('');
-        toast({ title: t.codeActivatedTitle, description: t.codeActivatedDesc });
-      } else if (code === 'LEBRIXPUB') {
-        localStorage.setItem('ls_ads_disabled', 'true');
-        used.push(code);
-        localStorage.setItem('ls_used_promo_codes', JSON.stringify(used));
-        setPromoCode('');
-        toast({ title: t.codeActivatedTitle, description: 'Toutes les pubs sont désactivées.' });
-      } else {
-        toast({ title: t.codeInvalidTitle, description: t.codeInvalidDesc, variant: 'destructive' });
-      }
-    } catch {
-      toast({ title: 'Erreur', description: 'Impossible d\'activer le code.', variant: 'destructive' });
-    } finally {
-      setRedeemingCode(false);
-    }
-  };
 
   useEffect(() => {
     const updateCooldown = () => {
@@ -145,55 +97,6 @@ export const Shop: React.FC<ShopProps> = ({
     return () => clearInterval(interval);
   }, [getAdCooldown]);
   
-  // Vérifier si l'utilisateur a atteint 7 jours de récompenses
-  const dailyRewardState = getDailyRewardState();
-  const hasReached7Days = dailyRewardState.currentStreak >= 7 || dailyRewardState.totalClaimed >= 7;
-  
-  const handlePurchase = (theme: any) => {
-    if (ownedThemes.includes(theme.id)) {
-      onEquipTheme(theme.id);
-      return;
-    }
-
-    // Vérifier si c'est le thème royal
-    if (theme.id === 'theme-royal' && !hasReached7Days) {
-      toast({
-        title: t.themeLocked,
-        description: t.themeLockedDesc,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const success = onPurchaseTheme(theme);
-    if (success) {
-      onEquipTheme(theme.id);
-    }
-  };
-
-  const getDifficultyIcon = (rarity: string) => {
-    switch (rarity) {
-      case 'common': return <Palette className="w-5 h-5" />;
-      case 'rare': return <Star className="w-5 h-5" />;
-      case 'epic': return <Crown className="w-5 h-5" />;
-      case 'legendary': return <Sparkles className="w-5 h-5" />;
-      default: return <Palette className="w-5 h-5" />;
-    }
-  };
-
-  const getDifficultyColor = (rarity: string) => {
-    switch (rarity) {
-      case 'common': return 'text-green-400';
-      case 'rare': return 'text-blue-400';
-      case 'epic': return 'text-purple-400';
-      case 'legendary': return 'text-yellow-400';
-      default: return 'text-gray-400';
-    }
-  };
-
-  const isOwned = (themeId: string) => ownedThemes.includes(themeId);
-  const isEquipped = (themeId: string) => currentTheme === themeId;
-
   const handleModeUnlock = (modeId: string, price: number) => {
     // Cas spécial pour l'achat de tickets
     if (modeId === 'expert_tickets') {
@@ -251,21 +154,6 @@ export const Shop: React.FC<ShopProps> = ({
         <p className="text-text-secondary text-lg">
           {t.shopDesc}
         </p>
-      </div>
-
-      {/* Pack Essentiel Banner */}
-      <div
-        onClick={() => setShowEssentialPack(true)}
-        className="relative overflow-hidden w-full max-w-6xl mx-auto mb-6 flex items-center justify-between gap-3 px-4.5 py-3 rounded-lg
-                   border border-wheel-border bg-button-bg/60 hover:bg-button-hover/60 cursor-pointer transition-all duration-200 hover:border-primary/40"
-      >
-        <span className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-        <div className="relative flex items-center gap-2.5 min-w-0">
-          <Package className="w-[18px] h-[18px] text-primary shrink-0" />
-          <span className="text-sm font-semibold text-text-secondary whitespace-nowrap truncate">{t.shopPackEssential}</span>
-          <span className="text-xs text-text-muted whitespace-nowrap truncate">• {t.shopPackEssentialItems}</span>
-        </div>
-        <ArrowLeft className="relative w-[18px] h-[18px] text-text-muted rotate-180 shrink-0" />
       </div>
 
       {/* Pack Essentiel Dialog */}
@@ -380,208 +268,9 @@ export const Shop: React.FC<ShopProps> = ({
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
         <TabsList className="grid w-full grid-cols-3 mb-8">
           <TabsTrigger value="modes">{t.modes}</TabsTrigger>
-          <TabsTrigger value="themes">{t.themes}</TabsTrigger>
           <TabsTrigger value="boosts">{t.boosts}</TabsTrigger>
+          <TabsTrigger value="offers">{language === 'en' ? 'Offers' : language === 'es' ? 'Ofertas' : 'Offres'}</TabsTrigger>
         </TabsList>
-
-        {/* Themes Tab */}
-        <TabsContent value="themes">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availableThemes.map((theme) => {
-              const owned = isOwned(theme.id);
-              const equipped = isEquipped(theme.id);
-              const isRoyalTheme = theme.id === 'theme-royal';
-              const isRoyalLocked = isRoyalTheme && !hasReached7Days;
-              
-              return (
-                <Card 
-                  key={theme.id}
-                  className={`
-                    relative overflow-hidden border-2 transition-all duration-300 hover:scale-105
-                    ${isRoyalLocked
-                      ? 'border-yellow-400/50 bg-yellow-400/5 opacity-90'
-                      : equipped 
-                        ? 'border-primary bg-primary/5 shadow-glow-primary' 
-                        : owned 
-                          ? 'border-success bg-success/5' 
-                          : 'border-wheel-border bg-button-bg hover:border-primary/50'
-                    }
-                  `}
-                >
-                  {/* Theme Preview */}
-                  <div 
-                    className="h-32 relative"
-                    style={{ 
-                      background: theme.preview.background,
-                    }}
-                  >
-                    <div className={`absolute inset-0 ${isRoyalLocked ? 'bg-black/60' : 'bg-gradient-to-br from-transparent to-black/30'}`} />
-                    
-                    {/* Locked Badge pour thème royal */}
-                    {isRoyalLocked && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-yellow-400/20 backdrop-blur-sm border-2 border-yellow-400 rounded-full p-4">
-                          <Lock className="w-10 h-10 text-yellow-400" />
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Equipped Badge */}
-                    {equipped && (
-                      <div className="absolute top-2 right-2">
-                        <Badge className="bg-primary text-game-dark">
-                          <Check className="w-3 h-3 mr-1" />
-                          {t.equipped}
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    {/* Owned Badge */}
-                    {owned && !equipped && !isRoyalLocked && (
-                      <div className="absolute top-2 right-2">
-                        <Badge className="bg-success text-game-dark">
-                          <Check className="w-3 h-3 mr-1" />
-                          {t.owned}
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    {/* Tier Badge */}
-                    <div className="absolute top-2 left-2">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getDifficultyColor(theme.rarity)} border-current`}
-                      >
-                        {getDifficultyIcon(theme.rarity)}
-                        <span className="ml-1 capitalize">{theme.rarity}</span>
-                      </Badge>
-                    </div>
-
-                    {/* Mini Preview Circle */}
-                    <div className="absolute bottom-4 left-4">
-                      <div 
-                        className="w-12 h-12 rounded-full border-2 border-white/50"
-                        style={{ 
-                          background: `conic-gradient(${theme.preview.successZone} 0deg 60deg, transparent 60deg 360deg)` 
-                        }}
-                      >
-                        <div 
-                          className="w-2 h-2 rounded-full absolute top-1 left-1/2 transform -translate-x-1/2"
-                          style={{ background: theme.preview.circle }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Theme Info */}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold text-text-primary">{theme.name}</h3>
-                      {!isRoyalLocked && theme.price > 0 && (
-                        <div className="flex items-center gap-1 text-secondary">
-                          <Coins className="w-4 h-4" />
-                          <span className="font-bold">{theme.price}</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <p className="text-text-secondary text-sm mb-4 line-clamp-2">
-                      {theme.description}
-                    </p>
-
-                    {/* Message de déblocage pour thème royal */}
-                    {isRoyalLocked && (
-                      <div className="mb-4 p-3 bg-yellow-400/10 border border-yellow-400/30 rounded-lg">
-                        <p className="text-xs text-yellow-400 flex items-center gap-2">
-                          <Crown className="w-4 h-4" />
-                          <span>{t.sevenDaysLockedHint}</span>
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Action Button */}
-                    <div className="space-y-2">
-                      {isRoyalLocked ? (
-                        <Button 
-                          className="w-full bg-yellow-400/20 border border-yellow-400 text-yellow-400 hover:bg-yellow-400/30" 
-                          disabled
-                        >
-                          <Lock className="w-4 h-4 mr-2" />
-                          Verrouillé - 7 jours requis
-                        </Button>
-                      ) : equipped ? (
-                        <Button 
-                          className="w-full bg-primary hover:bg-primary/90" 
-                          disabled
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          Thème Actuel
-                        </Button>
-                      ) : owned ? (
-                        <Button 
-                          onClick={() => onEquipTheme(theme.id)}
-                          className="w-full bg-success hover:bg-success/90"
-                        >
-                          <Zap className="w-4 h-4 mr-2" />
-                          Équiper
-                        </Button>
-                      ) : theme.price <= 0 ? (
-                        <Button 
-                          onClick={() => handlePurchase(theme)}
-                          className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
-                        >
-                          <Crown className="w-4 h-4 mr-2" />
-                          Débloquer
-                        </Button>
-                      ) : (
-                        <Button 
-                          onClick={() => handlePurchase(theme)}
-                          className="w-full bg-gradient-primary hover:scale-105 transition-all duration-300"
-                          disabled={coins < theme.price}
-                        >
-                          <Coins className="w-4 h-4 mr-2" />
-                          Acheter ({theme.price} coins)
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-
-          {/* Promo Code Section */}
-          <Card className="mt-8 p-5 border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary">
-                <Gift className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-text-primary">Code promo</h3>
-                <p className="text-xs text-text-muted">Entre un code pour débloquer des récompenses</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                placeholder="CODE PROMO"
-                maxLength={32}
-                className="bg-button-bg border-wheel-border uppercase tracking-wider font-mono"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleRedeemCode(); }}
-              />
-              <Button
-                onClick={handleRedeemCode}
-                disabled={redeemingCode || !promoCode.trim()}
-                className="bg-gradient-primary hover:scale-105 transition-all duration-200 shrink-0"
-              >
-                {redeemingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Activer'}
-              </Button>
-            </div>
-          </Card>
-
-        </TabsContent>
-
 
         {/* Game Modes Tab */}
         <TabsContent value="modes">
@@ -711,7 +400,12 @@ export const Shop: React.FC<ShopProps> = ({
         <TabsContent value="boosts">
           <BoostsSection coins={coins} onSpendCoins={onSpendCoins} />
         </TabsContent>
+        <TabsContent value="offers">
+          <ShopPaidOffers onPremium={() => setShowPremium(true)} onEssential={() => setShowEssentialPack(true)} onRainbow={() => setShowRainbow(true)} />
+        </TabsContent>
       </Tabs>
+      <PremiumOffer isOpen={showPremium} onClose={() => setShowPremium(false)} onAddCoins={onAddCoins} />
+      <RainbowOffer isOpen={showRainbow} onClose={() => setShowRainbow(false)} />
 
       {/* Footer Info */}
       <div className="text-center mt-8 text-text-muted">
