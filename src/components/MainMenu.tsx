@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +21,7 @@ import { MainMenuBackground } from '@/components/MainMenuBackground';
 import luckyStopLogo from '@/assets/lucky-stop-logo.png';
 import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
+import { Capacitor } from '@capacitor/core';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 import { canSpinFree, getTimeUntilNextFreeSpin, formatTimeRemaining } from '@/utils/luckyWheel';
 import { hasPlayedToday, getSecondsUntilNextChallenge, formatCountdown } from '@/utils/dailyChallenge';
@@ -86,6 +87,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
+  const isAndroid = useMemo(() => Capacitor.getPlatform() === 'android', []);
   const { toast: uiToast } = useToast();
   const [brixUnlocked, setBrixUnlocked] = useState<boolean>(() => isBrixFactoryUnlocked());
   useEffect(() => {
@@ -238,7 +240,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
 
       {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-16 mb-6">
+      <div className="text-center animate-fade-in pt-16 mb-8">
         <h1 className="flex justify-center" aria-label="Lucky Stop">
           <img
             src={luckyStopLogo}
@@ -275,12 +277,12 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onClick={() => setShowSeasonPass(true)}
             variant="ghost"
             size="sm"
-            className={`relative hover:bg-secondary/20 transition-all duration-300 gap-2 px-3.5 py-2.5 border ${hasPassReward ? 'animate-pulse-glow border-secondary/60 bg-secondary/10' : 'border-secondary/30 bg-secondary/5'}`}
+            className={`relative transition-all duration-300 gap-2 h-11 px-4 rounded-full border border-secondary/50 bg-gradient-to-b from-secondary/25 to-secondary/5 hover:from-secondary/35 hover:to-secondary/10 hover:border-secondary/75 ${hasPassReward ? 'animate-pulse-glow' : ''} ${isAndroid ? '' : 'shadow-[0_0_16px_hsl(var(--secondary)/0.35)]'}`}
           >
-            <Crown className="w-7 h-7 text-secondary drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]" />
+            <Crown className={`!w-6 !h-6 text-secondary fill-secondary/25 ${isAndroid ? '' : 'drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]'}`} />
             <div className="flex flex-col items-start leading-none">
-              <span className="text-base font-bold text-secondary">Pass</span>
-              <span className="text-[11px] text-text-muted">Saison</span>
+              <span className="text-lg font-black text-secondary">Pass</span>
+              <span className="text-[11px] font-semibold tracking-wide text-secondary/70">Saison</span>
             </div>
             {hasPassReward && (
               <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_hsl(var(--secondary)/0.8)]" />
