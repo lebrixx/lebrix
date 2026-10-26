@@ -314,6 +314,7 @@ interface SceneProps {
 const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
   const ballRef = useRef<THREE.Group>(null);
   const planeInnerRef = useRef<THREE.Group>(null);
+  const flightVelocityRef = useRef({ x: 0, y: 0 });
   const [planeObj, setPlaneObj] = useState<THREE.Group | null>(null);
   const platesGroupRef = useRef<THREE.Group>(null);
   const platesRef = useRef<Plate[]>([]);
@@ -374,12 +375,20 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
       g.position.x += vx * 0.52;
       g.position.y += vy * 0.52;
       g.position.z = PLAYER_Z;
-      // Illusion de vol : roulis et tangage selon le déplacement
-      const targetRoll = THREE.MathUtils.clamp(-vx * 1.1, -0.8, 0.8);
-      const targetPitch = THREE.MathUtils.clamp(vy * 0.6, -0.5, 0.5);
-      const k = Math.min(1, dt * 7);
+      // Vitesse visuelle lissée : virages lisibles, puis retour progressif à plat.
+      // Les positions et la hitbox restent strictement inchangées.
+      const flight = flightVelocityRef.current;
+      const velocityBlend = 1 - Math.exp(-dt * 8);
+      const frameTime = Math.max(dt, 1 / 240);
+      flight.x += (vx * 0.52 / frameTime - flight.x) * velocityBlend;
+      flight.y += (vy * 0.52 / frameTime - flight.y) * velocityBlend;
+      const targetRoll = -Math.tanh(flight.x * 0.16) * 1.05;
+      const targetPitch = Math.tanh(flight.y * 0.14) * 0.7;
+      const targetYaw = -Math.tanh(flight.x * 0.12) * 0.38;
+      const k = 1 - Math.exp(-dt * 10);
       g.rotation.z += (targetRoll - g.rotation.z) * k;
       g.rotation.x += (targetPitch - g.rotation.x) * k;
+      g.rotation.y += (targetYaw - g.rotation.y) * k;
       // Léger flottement de l'avion
       if (planeInnerRef.current) {
         planeInnerRef.current.position.y = Math.sin(s.elapsed * 2.3) * 0.05;
