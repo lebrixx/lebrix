@@ -51,25 +51,110 @@ const ROCK_LOOP = ROCK_SPACING * ROCKS_PER_SIDE;
 
 const BLANK_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/akz2wAAAABJRU5ErkJggg==';
 
-function makeGroundTexture(kind: 'grass' | 'dirt'): THREE.CanvasTexture {
+/**
+ * Texture unique du chemin : terre au centre, herbe sur les côtés.
+ * Les limites sont ondulées et estompées (aucune ligne parfaitement droite).
+ * Tout est périodique en y => défilement sans couture.
+ */
+const PATH_W = 8;          // largeur du plan au sol (unités monde)
+const PATH_REPEAT_Y = 16;  // répétitions verticales sur 100 unités
+
+function makePathTexture(): THREE.CanvasTexture {
+  const W = 384, H = 1024;
   const c = document.createElement('canvas');
-  c.width = 256; c.height = 256;
-  const x = c.getContext('2d')!;
-  x.fillStyle = kind === 'grass' ? '#4f9a3f' : '#8a5a34';
-  x.fillRect(0, 0, 256, 256);
-  const pal = kind === 'grass'
-    ? ['#3f8434', '#5fae4a', '#6fbf55', '#478f3a', '#86cf63']
-    : ['#7a4d2b', '#9a6a40', '#a8794c', '#6e4426', '#b58658'];
-  for (let i = 0; i < 2600; i++) {
-    x.fillStyle = pal[(Math.random() * pal.length) | 0];
-    const px = Math.random() * 256, py = Math.random() * 256;
-    if (kind === 'grass') x.fillRect(px, py, 1.5, 3 + Math.random() * 4);
-    else { x.beginPath(); x.arc(px, py, 0.8 + Math.random() * 2.2, 0, Math.PI * 2); x.fill(); }
+  c.width = W; c.height = H;
+  const g = c.getContext('2d')!;
+
+  // bruit de valeur, périodique en y (ny cellules sur toute la hauteur)
+  const hash2 = (x: number, y: number) => {
+    let h = (x | 0) * 374761393 + (y | 0) * 668265263;
+    h = (h ^ (h >>> 13)) * 1274126177;
+    h = (h ^ (h >>> 16)) >>> 0;
+    return h / 4294967295;
+  };
+  const vnoise = (x: number, y: number, ny: number) => {
+    const xi = Math.floor(x);
+    const yf = (y / H) * ny;
+    const yi = Math.floor(yf);
+    const fx = x - xi, fy = yf - yi;
+    const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+    const y0 = yi % ny, y1 = (yi + 1) % ny;
+    const a = hash2(xi, y0), b = hash2(xi + 1, y0);
+    const cc = hash2(xi, y1), d = hash2(xi + 1, y1);
+    return a + (b - a) * u + (cc - a) * v + (a - b - cc + d) * u * v;
+  };
+  // 1 à l'intérieur (dx <= hw - f), 0 au-delà (dx >= hw + f), fondu au milieu
+  const edge = (dx: number, hw: number, f: number) => {
+    const t = (hw + f - dx) / (2 * f);
+    const u = t < 0 ? 0 : t > 1 ? 1 : t;
+    return u * u * (3 - 2 * u);
+  };
+
+  // contours ondulés : harmoniques entières => couture invisible au bouclage
+  const TAU = Math.PI * 2;
+  const ph = [0, 1, 2, 3, 4, 5].map(() => Math.random() * TAU);
+  const dirtHalf = (y: number) => {
+    const t = (y / H) * TAU;
+    return 36 + 7 * Math.sin(t + ph[0]) + 4 * Math.sin(2 * t + ph[1])
+      + 2.5 * Math.sin(3 * t + ph[2]) + 1.5 * Math.sin(5 * t + ph[3]);
+  };
+  const grassHalf = (y: number) => {
+    const t = (y / H) * TAU;
+    return 165 + 8 * Math.sin(t + ph[4]) + 5 * Math.sin(2 * t + ph[5]) + 3 * Math.sin(3 * t + ph[0]);
+  };
+
+  const img = g.createImageData(W, H);
+  const px = img.data;
+  const cx = W / 2;
+  for (let y = 0; y < H; y++) {
+    const dHW = dirtHalf(y), gHW = grassHalf(y);
+    for (let x = 0; x < W; x++) {
+      const dx = Math.abs(x - cx);
+      const dirtAmt = edge(dx, dHW, 5);
+      const grassAmt = edge(dx, gHW, 10);
+
+      // herbe : grandes taches + brins verticaux
+      const gm = Math.min(1, vnoise(x * 0.5, y, 40) * 0.65 + vnoise(x * 1.7, y, 18) * 0.35);
+      let r = 63 + 64 * gm;
+      let gr = 132 + 64 * gm;
+      let b = 52 + 30 * gm;
+
+      // terre : mouchetis + cailloux
+      const dn = vnoise(x * 0.3, y, 90);
+      const db = vnoise(x * 0.09, y, 24);
+      const dm = dn * 0.7 + db * 0.3;
+      let dr = 110 + 71 * dm;
+      let dg = 68 + 66 * dm;
+      let dbb = 38 + 50 * dm;
+      if (dn > 0.86) { dr += 40; dg += 34; dbb += 26; }
+
+      // mélange void -> herbe -> terre
+      r = 16 + (r - 16) * grassAmt;
+      gr = 10 + (gr - 10) * grassAmt;
+      b = 36 + (b - 36) * grassAmt;
+      r += (dr - r) * dirtAmt;
+      gr += (dg - gr) * dirtAmt;
+      b += (dbb - b) * dirtAmt;
+
+      // éparpillement : terre qui déborde sur l'herbe, herbe qui repousse dans la terre
+      const out = dx - dHW;
+      if (out > 0 && out < 18) {
+        if (hash2(x, y * 7 + x) < 0.22 * (1 - out / 18)) { r = dr; gr = dg; b = dbb; }
+      } else if (out < 0 && out > -10) {
+        if (hash2(x + 977, y * 7) < 0.16 * (1 + out / 10)) { r = 83; gr = 162; b = 62; }
+      }
+
+      const i = (y * W + x) * 4;
+      px[i] = r; px[i + 1] = gr; px[i + 2] = b; px[i + 3] = 255;
+    }
   }
+  g.putImageData(img, 0, 0);
+
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 4;
+  t.anisotropy = 8;
+  t.repeat.set(1, PATH_REPEAT_Y);
   return t;
 }
 
@@ -176,9 +261,7 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
   const portalGroupRef = useRef<THREE.Group>(null);
   const rockGroupRef = useRef<THREE.Group>(null);
   const treeTemplate = useRef<THREE.Group | null>(null);
-  const groundRef = useRef<THREE.Group>(null);
-  const grassTex = useMemo(() => { const t = makeGroundTexture('grass'); t.repeat.set(2, 50); return t; }, []);
-  const dirtTex = useMemo(() => { const t = makeGroundTexture('dirt'); t.repeat.set(1, 50); return t; }, []);
+  const pathTex = useMemo(() => makePathTexture(), []);
 
   // Chargement des modèles 3D (arbres = obstacles, roches = décor)
   useEffect(() => {
@@ -417,9 +500,8 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
     }
 
     // Pillars scroll
-    const scroll = (speed * dt) / 2; // 100 unités / 50 répétitions
-    grassTex.offset.y += scroll;
-    dirtTex.offset.y += scroll;
+    const scroll = (speed * dt * PATH_REPEAT_Y) / 100;
+    pathTex.offset.y += scroll;
     rockGroupRef.current?.children.forEach((m) => {
       m.position.z += speed * dt;
       if (m.position.z > 8) m.position.z -= ROCK_LOOP;
@@ -594,24 +676,11 @@ const GameScene: React.FC<SceneProps> = ({ laneRef, colorRef, onScore, onDie, pl
       <pointLight position={[0, 5, 3]} color="#a855f7" intensity={1.3} />
       <pointLight position={[0, 2, 3]} color="#22d3ee" intensity={0.8} />
 
-      {/* Sol */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, -15]}>
-        <planeGeometry args={[5, 100]} />
-        <meshStandardMaterial color="#1a0f33" emissive="#2a1758" emissiveIntensity={0.3} />
+      {/* Sol : chemin continu, limites ondulées et estompées */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -15]}>
+        <planeGeometry args={[PATH_W, 100]} />
+        <meshStandardMaterial map={pathTex} roughness={0.95} metalness={0} />
       </mesh>
-      {/* Sol en tuiles : herbe sur les côtés, terre au milieu */}
-      <group ref={groundRef}>
-        {[-2.05, 2.05].map((x) => (
-          <mesh key={x} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.01, -15]}>
-            <planeGeometry args={[2.7, 100]} />
-            <meshStandardMaterial map={grassTex} roughness={0.95} />
-          </mesh>
-        ))}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -15]}>
-          <planeGeometry args={[1.42, 100]} />
-          <meshStandardMaterial map={dirtTex} roughness={1} />
-        </mesh>
-      </group>
       {/* Horizon */}
       <mesh ref={horizonRef} position={[0, 3, -35]}>
         <planeGeometry args={[30, 6]} />
