@@ -42,7 +42,7 @@ const FINGER_LIFT = 0.5;
 const BEST_KEY = 'bestScore_zone_mobile';
 
 // ===== Avion F-104 (chargé une seule fois, puis cloné) =====
-const PLANE_SCALE = 0.065;
+const PLANE_SCALE = 0.075;
 let planeTemplate: THREE.Group | null = null;
 let planeRequested = false;
 const planeListeners: ((g: THREE.Group) => void)[] = [];
@@ -58,8 +58,10 @@ function requestPlane(cb: (g: THREE.Group) => void) {
       if ((o as THREE.Mesh).isMesh) {
         (o as THREE.Mesh).material = new THREE.MeshStandardMaterial({
           vertexColors: true,
-          metalness: 0.6,
-          roughness: 0.4,
+          metalness: 0.35,
+          roughness: 0.45,
+          emissive: 0x3a3a44,
+          emissiveIntensity: 0.6,
         });
       }
     });
