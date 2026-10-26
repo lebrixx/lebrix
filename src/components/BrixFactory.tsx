@@ -417,9 +417,12 @@ export const BrixFactory: React.FC<BrixFactoryProps> = ({ onBack }) => {
 
             <div className="flex flex-col items-center">
               <span className="text-[10px] uppercase tracking-[0.35em] text-text-muted">Idle Reactor</span>
-              <h1 className="text-xl font-black tracking-tight">
-                BRIX <span className="text-primary">FACTORY</span>
+              <h1 className="text-xl font-black tracking-tight title-3d">
+                BRIX <span className="title-3d-accent">FACTORY</span>
               </h1>
+
+
+
             </div>
           </div>
 
