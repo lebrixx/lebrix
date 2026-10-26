@@ -13,7 +13,8 @@ export async function restoreNativeUi(reason?: string): Promise<void> {
 
   const run = async (step: string) => {
     try {
-      await StatusBar.setOverlaysWebView({ overlay: false });
+      // Overlay activé : le contenu s'étend sous la barre de statut (plein écran en haut)
+      await StatusBar.setOverlaysWebView({ overlay: true });
       await StatusBar.show();
       requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
       console.log(`[NativeUI] restored${label} - ${step}`);

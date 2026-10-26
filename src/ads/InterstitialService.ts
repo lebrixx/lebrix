@@ -101,7 +101,7 @@ class InterstitialService {
       let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
       const restoreScreen = async () => {
-        // Restaurer plusieurs fois via helper (overlay=false + resize)
+        // Restaurer plusieurs fois via helper (overlay plein écran + resize)
         await restoreNativeUi('interstitial');
       };
 
