@@ -309,7 +309,9 @@ interface SceneProps {
 }
 
 const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
-  const ballRef = useRef<THREE.Mesh>(null);
+  const ballRef = useRef<THREE.Group>(null);
+  const planeInnerRef = useRef<THREE.Group>(null);
+  const [planeObj, setPlaneObj] = useState<THREE.Group | null>(null);
   const platesGroupRef = useRef<THREE.Group>(null);
   const platesRef = useRef<Plate[]>([]);
   const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit });
