@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { GameCanvas } from '@/components/GameCanvas';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Target, Zap, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
@@ -39,6 +40,35 @@ const CAMERA_LOOK_Y = PLAYER_Y - 4.2; // 1.4
 const SPAWN_Z = -26;
 const FINGER_LIFT = 0.5;
 const BEST_KEY = 'bestScore_zone_mobile';
+
+// ===== Avion F-104 (chargé une seule fois, puis cloné) =====
+const PLANE_SCALE = 0.075;
+let planeTemplate: THREE.Group | null = null;
+let planeRequested = false;
+const planeListeners: ((g: THREE.Group) => void)[] = [];
+
+function requestPlane(cb: (g: THREE.Group) => void) {
+  if (planeTemplate) { cb(planeTemplate); return; }
+  planeListeners.push(cb);
+  if (planeRequested) return;
+  planeRequested = true;
+  new GLTFLoader().load('/models/f104.glb', (g) => {
+    const root = g.scene;
+    root.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) {
+        (o as THREE.Mesh).material = new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          metalness: 0.35,
+          roughness: 0.45,
+          emissive: 0x3a3a44,
+          emissiveIntensity: 0.6,
+        });
+      }
+    });
+    planeTemplate = root;
+    planeListeners.splice(0).forEach((l) => l(root));
+  });
+}
 
 interface Plate {
   group: THREE.Group;
@@ -281,7 +311,9 @@ interface SceneProps {
 }
 
 const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0, shieldInit = false, onShieldUsed }) => {
-  const ballRef = useRef<THREE.Mesh>(null);
+  const ballRef = useRef<THREE.Group>(null);
+  const planeInnerRef = useRef<THREE.Group>(null);
+  const [planeObj, setPlaneObj] = useState<THREE.Group | null>(null);
   const platesGroupRef = useRef<THREE.Group>(null);
   const platesRef = useRef<Plate[]>([]);
   const stateRef = useRef({ elapsed: elapsedOffset, spawnTimer: 0, score: scoreOffset, dead: false, pulse: 0, shield: shieldInit });
@@ -291,6 +323,18 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
   useEffect(() => {
     camera.lookAt(0, CAMERA_LOOK_Y, -10);
   }, [camera]);
+
+  // Charge l'avion F-104 (une seule fois, cloné à chaque partie)
+  useEffect(() => {
+    let cancelled = false;
+    requestPlane((tpl) => {
+      if (cancelled) return;
+      const inst = tpl.clone(true);
+      inst.rotation.y = Math.PI; // nez vers le tunnel
+      setPlaneObj(inst);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   // Reset on (re)mount
   useEffect(() => {
@@ -323,14 +367,26 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
     const tx = rawX * (FIELD_R + 0.5);
     const ty = liftedY * (FIELD_R + 0.5) + PLAYER_Y;
     if (ballRef.current) {
-      ballRef.current.position.x += (tx - ballRef.current.position.x) * 0.52;
-      ballRef.current.position.y += (ty - ballRef.current.position.y) * 0.52;
-      ballRef.current.position.z = PLAYER_Z;
-      ballRef.current.rotation.x += dt * 1.2;
-      ballRef.current.rotation.y += dt * 1.5;
+      const g = ballRef.current;
+      const vx = tx - g.position.x;
+      const vy = ty - g.position.y;
+      g.position.x += vx * 0.52;
+      g.position.y += vy * 0.52;
+      g.position.z = PLAYER_Z;
+      // Illusion de vol : roulis et tangage selon le déplacement
+      const targetRoll = THREE.MathUtils.clamp(-vx * 1.1, -0.8, 0.8);
+      const targetPitch = THREE.MathUtils.clamp(vy * 0.6, -0.5, 0.5);
+      const k = Math.min(1, dt * 7);
+      g.rotation.z += (targetRoll - g.rotation.z) * k;
+      g.rotation.x += (targetPitch - g.rotation.x) * k;
+      // Léger flottement de l'avion
+      if (planeInnerRef.current) {
+        planeInnerRef.current.position.y = Math.sin(s.elapsed * 2.3) * 0.05;
+        planeInnerRef.current.rotation.z = Math.sin(s.elapsed * 1.6) * 0.04;
+      }
       // pulse scale on pass
       const scl = 1 + s.pulse * 0.6;
-      ballRef.current.scale.setScalar(scl);
+      g.scale.setScalar(scl);
       s.pulse = Math.max(0, s.pulse - dt * 3);
     }
 
@@ -419,17 +475,25 @@ const Scene: React.FC<SceneProps> = ({ pointerRef, onScore, onDie, playing, elap
       <pointLight position={[-4, 4, -16]} intensity={0.8} color="#ec4899" />
       <fog attach="fog" args={['#08041a', 14, 30]} />
 
-      {/* Ball */}
-      <mesh ref={ballRef} position={[0, PLAYER_Y, PLAYER_Z]}>
-        <icosahedronGeometry args={[0.34, 0]} />
-        <meshStandardMaterial
-          color="#e879f9"
-          emissive="#ec4899"
-          emissiveIntensity={0.9}
-          metalness={0.4}
-          roughness={0.3}
-        />
-      </mesh>
+      {/* Avion du joueur (balle de secours tant que le modèle charge) */}
+      <group ref={ballRef} position={[0, PLAYER_Y, PLAYER_Z]}>
+        {planeObj ? (
+          <group ref={planeInnerRef} scale={PLANE_SCALE} position={[0, -0.1, 0]}>
+            <primitive object={planeObj} />
+          </group>
+        ) : (
+          <mesh>
+            <icosahedronGeometry args={[0.34, 0]} />
+            <meshStandardMaterial
+              color="#e879f9"
+              emissive="#ec4899"
+              emissiveIntensity={0.9}
+              metalness={0.4}
+              roughness={0.3}
+            />
+          </mesh>
+        )}
+      </group>
 
       <group ref={platesGroupRef} />
 
