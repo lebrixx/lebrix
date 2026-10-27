@@ -4,6 +4,7 @@
 - Keep a single Brix Rush lobby subscription for the screen lifetime and a separate room subscription per active race; cleanup both on exit to avoid discovery races and duplicate realtime channels.
 - Resolve Brix Rush player identity exclusively from the shared local identity and recheck it before room entry; never use a separate stored Brix name or truncate the canonical name.
 - Bundle Brix Rush sprites as source-controlled imports for native offline play; asset-serving URLs are not available in the local/native runtime.
+- Prepare and reuse Brix Rush decoded images, vehicle tint canvases and terrain patterns before entering a race, and cache painter theme colors outside the animation loop to avoid startup/replay work and per-frame style recalculation.
 - Use the distinct `brix_rush` score identity and the shared ranked/free mode lists; keep historical Orbit Dodge data untouched and excluded so different games never share records.
 
 - Render the main-menu wordmark as a transparent image with constrained dimensions to preserve the supplied lettering style without changing navigation layout.

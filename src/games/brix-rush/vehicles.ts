@@ -8,6 +8,7 @@ import truck0 from "@/assets/brix-rush/vehicles/truck-0.png";
 import truck1 from "@/assets/brix-rush/vehicles/truck-1.png";
 import truck2 from "@/assets/brix-rush/vehicles/truck-2.png";
 import { vehicleVariant } from "./vehicle-variants";
+import { brixImage, imageReady } from "./images";
 
 type Sprite = { img: HTMLImageElement; side?: HTMLCanvasElement; shadow?: HTMLCanvasElement };
 
@@ -22,21 +23,33 @@ function tint(img: HTMLImageElement, filter: string) {
   return cv;
 }
 
-/** Browser-only image construction is called from the canvas effect, never at import time. */
-export function createVehiclePainter() {
+let sprites: ReturnType<typeof loadSprites> | undefined;
+
+function loadSprites() {
   const load = (url: string): Sprite => {
-    const s: Sprite = { img: new Image() };
-    s.img.onload = () => {
+    const s: Sprite = { img: brixImage(url) };
+    imageReady(url).then(() => {
+      if (!s.img.naturalWidth) return;
       s.side = tint(s.img, "brightness(0.45) saturate(1.2)");
       s.shadow = tint(s.img, "brightness(0) blur(3px)");
-    };
-    s.img.src = url;
+    });
     return s;
   };
-  const images = {
+  return {
     car: [car0, car1, car2, car3, car4, car5].map((url) => load(url)),
     truck: [truck0, truck1, truck2].map((url) => load(url)),
   };
+}
+
+export function prepareVehicleSprites() {
+  sprites ??= loadSprites();
+  return Promise.all([car0, car1, car2, car3, car4, car5, truck0, truck1, truck2].map(imageReady));
+}
+
+/** Reuse prepared sprites; sample theme colors once, not once per car per frame. */
+export function createVehiclePainter() {
+  const images = sprites ??= loadSprites();
+  const highlight = getComputedStyle(document.documentElement).getPropertyValue("--brix-highlight").trim();
   return (ctx: CanvasRenderingContext2D, seed: string, col: number, index: number, carLen: number,
     direction: 1 | -1, x: number, y: number, width: number, height: number) => {
     const { kind, variant } = vehicleVariant(seed, col, index, carLen);
@@ -58,7 +71,7 @@ export function createVehiclePainter() {
     // Glossy roof highlight
     ctx.save();
     ctx.globalAlpha = 0.12;
-    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--brix-highlight").trim();
+    ctx.fillStyle = highlight;
     ctx.beginPath(); ctx.roundRect(x + width * 0.2, y + height * 0.15, width * 0.25, height * 0.7, 4); ctx.fill();
     ctx.restore();
   };
