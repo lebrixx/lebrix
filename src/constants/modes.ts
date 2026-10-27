@@ -12,7 +12,8 @@ export const ModeID = {
 
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
-export const RANKED_MODES = [ModeID.CLASSIC, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE, ModeID.BRIX_RUSH, ModeID.MEMOIRE_EXPERT] as const;
+// Ordre d'affichage partagé : Brix Rush est classé juste après Cube Dodge.
+export const RANKED_MODES = [ModeID.CLASSIC, ModeID.BRIX_RUSH, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE, ModeID.MEMOIRE_EXPERT] as const;
 export const FREE_MODES = RANKED_MODES;
 
 export const cfgBase = {
@@ -41,11 +42,20 @@ interface ModeConfig {
   trapZone?: boolean;
 }
 
+// Les clés sont déclarées dans l'ordre d'affichage des modes (Brix Rush en deuxième position).
 export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.CLASSIC]: {
     name: "Cube Dodge",
     desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
     zoneArc: Math.PI / 5,
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.BRIX_RUSH]: {
+    name: "Brix Rush",
+    desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -70,14 +80,6 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.ZONE_MOBILE]: {
     name: "Falling Tunnel",
     desc: "Glisse ton doigt pour aligner la bille avec le trou vert. Évite les plaques qui foncent sur toi !",
-    keepMovingZone: false,
-    survival: false,
-    survivalTime: 0,
-    variableArc: false
-  },
-  [ModeID.BRIX_RUSH]: {
-    name: "Brix Rush",
-    desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,

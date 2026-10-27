@@ -43,10 +43,10 @@ interface OnlineLeaderboardProps {
 
 const modeNames = {
   classic: 'Cube Dodge',
+  brix_rush: 'Brix Rush',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
   zone_mobile: 'Falling Tunnel',
-  brix_rush: 'Brix Rush',
   memoire_expert: 'Rotating Cube'
 };
 
