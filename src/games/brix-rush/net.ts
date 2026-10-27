@@ -18,7 +18,7 @@ export function randomCode() {
 /** Finds a public room that has players but isn't full; returns null if none. */
 export function findPublicRoom(): Promise<string | null> {
   return new Promise((resolve) => {
-    const ch = supabase.channel(LOBBY, { config: { presence: { key: `scout-${Math.random()}` } } });
+    const ch = supabase.channel(LOBBY, { config: { presence: { key: `scout-${Math.random()}`, enabled: true } } });
     let done = false;
     let settle: ReturnType<typeof setTimeout> | undefined;
     const finish = () => {
@@ -109,7 +109,7 @@ export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = f
       if (!active || full) return;
       setStatus((st) => (st === "full" ? st : "ok"));
       if (isPublic && !lobby) {
-        lobby = supabase.channel(LOBBY, { config: { presence: { key: me.id } } });
+        lobby = supabase.channel(LOBBY, { config: { presence: { key: me.id, enabled: true } } });
         lobby.subscribe(async (ls) => {
           if (ls === "SUBSCRIBED" && !full && active) await lobby?.track({ room: code });
         });
