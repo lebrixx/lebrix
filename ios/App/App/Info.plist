@@ -41,7 +41,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-6790106624716732~9273155360</string>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<!-- MODE TEST AdMob. Production : ca-app-pub-6790106624716732~9273155360 -->
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Nous utilisons vos données pour vous proposer des publicités pertinentes et soutenir la gratuité du jeu.</string>
 	<key>NSUserNotificationsUsageDescription</key>
