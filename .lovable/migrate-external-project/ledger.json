@@ -6,8 +6,8 @@
       "capability": "game code and artwork",
       "source": "src/game and src/assets",
       "outcome": "migrate",
-      "status": "pending",
-      "next_action": "Restore original canvas, menu, buttons, fonts and death/respawn behavior; verify landscape rendering"
+      "status": "verified",
+      "next_action": null
     },
     {
       "capability": "schema, records and auth identities",
@@ -20,8 +20,8 @@
       "capability": "real-time rooms and presence",
       "source": "net.ts and room route",
       "outcome": "restore source presence and broadcast rooms on the existing Supabase connection; user explicitly authorized live multiplayer",
-      "status": "pending",
-      "next_action": "Verify public matchmaking and two-player private room movement"
+      "status": "verified",
+      "next_action": null
     },
     {
       "capability": "leaderboards and authorization",
@@ -45,5 +45,5 @@
       "next_action": null
     }
   ],
-  "verification": "Previous integration verified; restoration of the exact supplied experience is in progress. Source contains no audio files or audio code, database records, authentication, schedules, webhooks or secrets."
+  "verification": "Original canvas, round controls, grass Menu, score/current-record board, menu and 1200ms respawn restored. 23 tests pass; browser checks at 735x393 and 393x735 verify landscape, solo, two-player private/public rooms, remote score movement, collision and automatic return retaining record, and exit to Lucky Stop. Latest build OK. Source contains no audio code or files, database records, authentication, schedules, webhooks or secrets. Physical native-device verification remains unavailable in this sandbox."
 }
