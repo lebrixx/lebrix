@@ -5,7 +5,7 @@ import { GameHUD } from '@/components/GameHUD';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, AlertTriangle, Sparkles, Coins } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, RotateCcw, Play, Hand, Sparkles, Coins } from 'lucide-react';
 import { GameStartOverlay } from '@/components/GameStartOverlay';
 import { GameOverActions } from '@/components/GameOverActions';
 import { ReviveUsedFlash } from '@/components/ReviveUsedFlash';
@@ -131,14 +131,13 @@ interface SceneProps {
   onScore: (s: number) => void;
   onDie: (s: number) => void;
   onMsg: (msg: { kind: string; key: number } | null) => void;
-  onRedWarn: (v: boolean) => void;
   playing: boolean;
   elapsedOffset?: number;
   scoreOffset?: number;
   graceMs?: number;
 }
 
-const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
+const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, playing, elapsedOffset = 0, scoreOffset = 0, graceMs = 0 }) => {
   const { camera } = useThree();
   const stackRef = useRef<THREE.Group>(null);
   const movingRef = useRef<THREE.Group>(null);
@@ -222,7 +221,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     score: scoreOffset,
     elapsed: elapsedOffset,
     dead: false,
-    redTimer: 0,
     bursts: [] as Burst[],
   });
   const graceUntil = elapsedOffset + graceMs / 1000;
@@ -244,7 +242,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     state.current.dead = false;
     state.current.twinCounter = 0;
     state.current.kind = 'normal';
-    state.current.redTimer = 0;
     state.current.bursts = [];
     camY.current = 2;
 
@@ -257,7 +254,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
 
     // Style moving
     applyMovingMaterial('normal');
-    onRedWarn(false);
     onScore(scoreOffset);
   }, [playing]);
 
@@ -265,7 +261,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     const colorMap: Record<PlateKind, string> = {
       normal: '#e879f9',
       gold: '#fde047',
-      red: '#ef4444',
       twin: '#22d3ee',
     };
     const col = colorMap[kind];
@@ -280,8 +275,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     const kind = pickNextKind(s.score, s.twinCounter);
     if (kind === 'twin') s.twinCounter = 0;
     s.kind = kind;
-    s.redTimer = kind === 'red' ? RED_DURATION : 0;
-    onRedWarn(kind === 'red');
     // Reposition moving from opposite side of last direction
     s.moving.x = s.moving.dir > 0 ? -3.2 : 3.2;
     applyMovingMaterial(kind);
@@ -294,15 +287,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
     dt = Math.min(dt, 0.05);
     s.elapsed += dt;
 
-    // Red countdown
-    if (s.kind === 'red') {
-      s.redTimer -= dt;
-      if (s.redTimer <= 0) {
-        s.kind = 'normal';
-        onRedWarn(false);
-        applyMovingMaterial('normal');
-      }
-    }
 
     const speed = 2.2 + Math.min(s.score, 32) * 0.07;
     s.moving.x += speed * s.moving.dir * dt;
@@ -341,7 +325,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
       } else {
         if (tw) tw.visible = false;
         m.position.x = s.moving.x;
-        m.scale.y = s.kind === 'red' ? 1 + 0.15 * Math.sin(s.elapsed * 12) : 1;
       }
     }
 
@@ -383,15 +366,6 @@ const Scene: React.FC<SceneProps> = ({ cmdRef, onScore, onDie, onMsg, onRedWarn,
   const handleDrop = (movingY: number) => {
     const s = state.current;
     const top = s.stack[s.stack.length - 1];
-
-    if (s.kind === 'red') {
-      s.dead = true;
-      msgKey.current++;
-      onMsg({ kind: 'redDie', key: msgKey.current });
-      onRedWarn(false);
-      onDie(s.score);
-      return;
-    }
 
     let cx: number, dx: number;
     const movingSize = s.moving.size;
@@ -568,7 +542,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     } catch { return 0; }
   });
   const [msg, setMsg] = useState<{ kind: string; key: number } | null>(null);
-  const [redWarn, setRedWarn] = useState(false);
   const cmdRef = useRef({ drop: false });
   const startedAt = useRef(0);
   const sceneKey = useRef(0);
@@ -597,7 +570,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     onSetBoosts?.(allowedBoosts);
     setScore(offsetRef.current);
     setMsg(null);
-    setRedWarn(false);
     cmdRef.current.drop = false;
     startedAt.current = Date.now();
     setPhase('playing');
@@ -621,7 +593,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
       graceMsRef.current = 2000;
       sceneKey.current++;
       cmdRef.current.drop = false;
-      setRedWarn(false);
       setScore(offsetRef.current + finalRaw);
       setReviveFlashKey(k => k + 1);
       return;
@@ -635,7 +606,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
       graceMsRef.current = 2000;
       sceneKey.current++;
       cmdRef.current.drop = false;
-      setRedWarn(false);
       setScore(finalScore);
       return;
     }
@@ -665,7 +635,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
     graceMsRef.current = 2000;
     sceneKey.current++;
     cmdRef.current.drop = false;
-    setRedWarn(false);
     setPhase('playing');
   }, [score]);
 
@@ -688,7 +657,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
       case 'gold': return 'BONUS DORÉ — TAILLE RESTAURÉE';
       case 'grow': return 'PARFAIT +';
       case 'perfect': return 'PARFAIT';
-      case 'redDie': return 'PIÈGE ROUGE !';
       default: return '';
     }
   })();
@@ -721,7 +689,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               onScore={handleScore}
               onDie={handleDie}
               onMsg={setMsg}
-              onRedWarn={setRedWarn}
               playing={phase === 'playing'}
               elapsedOffset={elapsedOffsetRef.current}
               scoreOffset={sceneScoreOffsetRef.current}
@@ -737,12 +704,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
             </div>
           )}
 
-          {/* Red warning banner */}
-          {phase === 'playing' && redWarn && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-red-600/85 text-white text-sm font-bold animate-pulse shadow-lg pointer-events-none">
-              ⛔ Plaque rouge — NE PAS POSER
-            </div>
-          )}
 
           {/* Feedback message */}
           {phase === 'playing' && msg && (
@@ -769,7 +730,6 @@ export const StackJump3DGame: React.FC<StackJump3DGameProps> = ({
               rules={[
                 { icon: <Hand className="w-4 h-4 text-fuchsia-300" />, title: 'Tap', desc: 'pose la plaque qui glisse au bon moment' },
                 { icon: <Sparkles className="w-4 h-4 text-yellow-300" />, title: 'Or', desc: 'taille restaurée. Parfait = +8% de taille', accent: 'highlight' },
-                { icon: <AlertTriangle className="w-4 h-4 text-red-400" />, title: 'Rouge', desc: 'piège ! Attends 2.5s qu\'elle redevienne normale', accent: 'danger' },
               ]}
             />
           )}
