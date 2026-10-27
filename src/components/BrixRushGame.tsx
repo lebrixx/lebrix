@@ -9,6 +9,9 @@ import { usePublicLobby, randomCode, useRoom } from '@/games/brix-rush/net';
 import { COURSE_SEED, MAX_PLAYERS } from '@/games/brix-rush/world';
 import { startGameSession } from '@/utils/scoresApi';
 import type { BoostType } from '@/types/boosts';
+import { getUsername } from '@/utils/localIdentity';
+import { resolveBrixUsername } from '@/games/brix-rush/username';
+import brixRushLogo from '@/assets/brix-rush-logo.png';
 
 interface Props {
   onBack?: () => void;
@@ -26,8 +29,8 @@ interface Props {
 type Room = { code: string; public: boolean; solo: boolean };
 
 export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
-  const { me, ready, setName } = useIdentity();
-  const [name, setDraft] = useState(() => localStorage.getItem('brix-name') ?? '');
+  const { me, ready } = useIdentity();
+  const name = resolveBrixUsername(getUsername());
   const [code, setCode] = useState('');
   const [room, setRoom] = useState<Room | null>(null);
   const [busy, setBusy] = useState(false);
@@ -36,7 +39,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const findPublicRoom = usePublicLobby(me, room?.public && !room.solo ? room.code : null);
   const gameOver = useRef(onGameOver);
   gameOver.current = onGameOver;
-  const ok = name.trim().length >= 2;
+  const ok = !!name && me?.name === name;
 
   const setBoosts = useRef(onSetBoosts);
   useEffect(() => {
@@ -49,14 +52,15 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   }, []);
 
   const go = useCallback((next: Room) => {
-    setName(name);
+    const currentName = resolveBrixUsername(getUsername());
+    if (!ready || !me || !currentName || me.name !== currentName) return;
     setRows([]);
     startGameSession();
     setRoom(next);
-  }, [name, setName]);
+  }, [me, ready]);
 
   useEffect(() => {
-    if (!busy) return;
+    if (!busy || !ok || !ready) return;
     let active = true;
     findPublicRoom().then(found => {
       if (!active) return;
@@ -64,7 +68,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
       setBusy(false);
     });
     return () => { active = false; };
-  }, [busy, go, findPublicRoom]);
+  }, [busy, ok, ready, go, findPublicRoom]);
 
   const death = useCallback((score: number, duration: number) => {
     gameOver.current?.(score, duration);
@@ -78,11 +82,11 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
       {!room ? <main className="arcade-bg brix-home">
         <Button variant="ghost" className="brix-exit" onClick={onBack} aria-label="Retour à Lucky Stop"><Home /></Button>
         <div className="brix-home-inner">
-          <h1 className="brix-display brix-primary text-center text-6xl leading-none text-glow">BRIX<br />RUSH</h1>
+          <h1 className="flex justify-center"><img src={brixRushLogo} alt="BRIX RUSH" className="h-36 w-full max-w-72 object-contain" /></h1>
           <p className="mt-4 text-center brix-muted">Même ligne de départ. {MAX_PLAYERS} coureurs max. Pas de fin.</p>
           <div className="panel mt-8 space-y-4 p-6">
             <label htmlFor="brix-name" className="block text-sm uppercase brix-muted">Pseudo</label>
-            <input id="brix-name" className="arcade-input" maxLength={14} value={name} onChange={e => setDraft(e.target.value)} placeholder="Ton pseudo" />
+            <input id="brix-name" className="arcade-input" value={name ?? ''} readOnly placeholder="Pseudo requis" />
             <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
             <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? "Recherche d’une salle…" : 'Multijoueur'}</Button>
             <div className="brix-friends pt-4">
