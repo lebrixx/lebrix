@@ -21,12 +21,14 @@ export function findPublicRoom(): Promise<string | null> {
     const ch = supabase.channel(LOBBY, { config: { presence: { key: `scout-${Math.random()}`, enabled: true } } });
     let done = false;
     let settle: ReturnType<typeof setTimeout> | undefined;
+    const discovered = new Map<string, number>();
     const finish = () => {
       if (done) return;
       done = true;
       if (settle) clearTimeout(settle);
       clearTimeout(timeout);
       const counts = new Map<string, number>();
+      discovered.forEach((count, room) => counts.set(room, count));
       for (const metas of Object.values(ch.presenceState<{ room?: string }>())) {
         const room = metas[0]?.room;
         if (room) counts.set(room, (counts.get(room) ?? 0) + 1);
@@ -39,11 +41,16 @@ export function findPublicRoom(): Promise<string | null> {
       supabase.removeChannel(ch);
       resolve(best);
     };
-    ch.on("presence", { event: "sync" }, () => {
+    ch.on("broadcast", { event: "room" }, ({ payload }) => {
+      if (typeof payload?.room === "string" && Number.isInteger(payload.count) && payload.count > 0 && payload.count < MAX_PLAYERS) discovered.set(payload.room, payload.count);
+    }).on("presence", { event: "sync" }, () => {
       if (settle) clearTimeout(settle);
       settle = setTimeout(finish, 1000);
     }).subscribe(async state => {
-      if (state === "SUBSCRIBED" && !done) await ch.track({ scout: true });
+      if (state === "SUBSCRIBED" && !done) {
+        await ch.track({ scout: true });
+        await ch.send({ type: "broadcast", event: "discover", payload: {} });
+      }
     });
     const timeout = setTimeout(finish, 6000);
   });
@@ -112,6 +119,9 @@ export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = f
       setStatus((st) => (st === "full" ? st : "ok"));
       if (isPublic && !lobby) {
         lobby = supabase.channel(LOBBY, { config: { presence: { key: me.id, enabled: true } } });
+        lobby.on("broadcast", { event: "discover" }, () => {
+          if (active && !full) lobby?.send({ type: "broadcast", event: "room", payload: { room: code, count: Math.max(1, ids.size) } });
+        });
         lobby.subscribe(async (ls) => {
           if (ls === "SUBSCRIBED" && !full && active) await lobby?.track({ room: code });
         });
