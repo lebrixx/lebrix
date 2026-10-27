@@ -1,13 +1,13 @@
 {
-  "source": "brix-rush-transfert.zip",
-  "scope": "Replace Orbit Dodge inside Lucky Stop",
+  "source": "brix-rush-transfert-2.zip",
+  "scope": "Restore the original standalone Brix Rush experience inside its existing mode",
   "capabilities": [
     {
       "capability": "game code and artwork",
       "source": "src/game and src/assets",
       "outcome": "migrate",
-      "status": "verified",
-      "next_action": null
+      "status": "pending",
+      "next_action": "Restore original canvas, menu, buttons, fonts and death/respawn behavior; verify landscape rendering"
     },
     {
       "capability": "schema, records and auth identities",
@@ -19,9 +19,9 @@
     {
       "capability": "real-time rooms and presence",
       "source": "net.ts and room route",
-      "outcome": "omit per existing user rejection of real-time multiplayer",
-      "status": "accepted exclusion",
-      "next_action": null
+      "outcome": "restore source presence and broadcast rooms on the existing Supabase connection; user explicitly authorized live multiplayer",
+      "status": "pending",
+      "next_action": "Verify public matchmaking and two-player private room movement"
     },
     {
       "capability": "leaderboards and authorization",
@@ -45,5 +45,5 @@
       "next_action": null
     }
   ],
-  "verification": "5 tests passed; real solo game, replay and 11-point secure submission read back in per-mode/monthly/general UI; verification row removed. Existing deployment unchanged."
+  "verification": "Previous integration verified; restoration of the exact supplied experience is in progress. Source contains no audio files or audio code, database records, authentication, schedules, webhooks or secrets."
 }
