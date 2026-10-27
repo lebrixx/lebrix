@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FREE_MODES, RANKED_MODES, ModeID } from '../../constants/modes';
+import { cfgModes, FREE_MODES, RANKED_MODES, ModeID } from '../../constants/modes';
 import { blockedByFence, CELL, fencesAt, hitByCar, laneAt, toMeters } from './world';
 
 describe('Brix Rush replacement', () => {
@@ -9,6 +9,11 @@ describe('Brix Rush replacement', () => {
     expect(RANKED_MODES).not.toContain('zone_traitresse');
     expect(RANKED_MODES).toHaveLength(6);
     expect(ModeID.BRIX_RUSH).toBe('brix_rush');
+  });
+  it('is listed second, right after Cube Dodge, in menus and rankings', () => {
+    expect(RANKED_MODES.slice(0, 2)).toEqual([ModeID.CLASSIC, ModeID.BRIX_RUSH]);
+    const modeListOrder = Object.keys(cfgModes).filter((mode) => mode !== ModeID.PONG_CIRCULAIRE);
+    expect(modeListOrder.slice(0, 2)).toEqual([ModeID.CLASSIC, ModeID.BRIX_RUSH]);
   });
   it('scores distance reached rather than repeated backwards movements', () => {
     expect(toMeters(8 * CELL)).toBe(8);
