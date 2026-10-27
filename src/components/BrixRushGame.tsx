@@ -1,16 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowRight, Car, Fence } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { RunnerGame } from '@/games/brix-rush/RunnerGame';
-import { GameHUD } from '@/components/GameHUD';
-import { GameStartOverlay } from '@/components/GameStartOverlay';
-import { GameOverActions } from '@/components/GameOverActions';
-import { ShieldUsedFlash } from '@/components/ShieldUsedFlash';
-import { ReviveUsedFlash } from '@/components/ReviveUsedFlash';
-import { ModeID } from '@/constants/modes';
-import { BoostType } from '@/types/boosts';
-import { useLanguage, translations } from '@/hooks/useLanguage';
-import { useInGameCoins } from '@/hooks/useInGameCoins';
-import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
+import { Leaderboard, type ScoreRow } from '@/games/brix-rush/Leaderboard';
+import { useIdentity } from '@/games/brix-rush/identity';
+import { findPublicRoom, randomCode, useRoom } from '@/games/brix-rush/net';
+import { COURSE_SEED, MAX_PLAYERS } from '@/games/brix-rush/world';
+import { startGameSession } from '@/utils/scoresApi';
+import type { BoostType } from '@/types/boosts';
 
 interface Props {
   onBack?: () => void;
@@ -25,89 +23,88 @@ interface Props {
   onEarnCoin?: (amount: number) => void;
 }
 
-export function BrixRushGame({ onBack, onGameOver, isSoundMuted, onToggleSound, playSuccess, playFailure, selectedBoosts, onSetBoosts, coins = 0, onEarnCoin }: Props) {
-  const { language } = useLanguage();
-  const t = translations[language];
-  const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
-  const [score, setScore] = useState(0);
-  const [best, setBest] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('luckyStopGame') || '{}').bestScore_brix_rush || 0; }
-    catch { return 0; }
-  });
-  const [menuBoosts, setMenuBoosts] = useState<BoostType[]>((selectedBoosts || []) as BoostType[]);
-  useEffect(() => { setMenuBoosts((selectedBoosts || []) as BoostType[]); }, [selectedBoosts]);
-  const [boostPicker, setBoostPicker] = useState(false);
-  const [run, setRun] = useState({ key: 0, initialCol: 0, graceMs: 0, shield: false });
-  const [shieldFlash, setShieldFlash] = useState(0);
-  const [reviveFlash, setReviveFlash] = useState(0);
-  const reviveArmed = useRef(false);
-  const startedAt = useRef(0);
-  const elapsedAtDeath = useRef(0);
-  const lastScore = useRef(0);
-  const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
+type Room = { code: string; public: boolean; solo: boolean };
 
-  const start = useCallback(() => {
-    const initialCol = menuBoosts.includes('start_20') ? 20 : 0;
-    lastScore.current = initialCol;
-    setScore(initialCol);
-    reviveArmed.current = menuBoosts.includes('revive');
-    startedAt.current = Date.now();
-    elapsedAtDeath.current = 0;
+export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
+  const { me, ready, setName } = useIdentity();
+  const [name, setDraft] = useState(() => localStorage.getItem('brix-name') ?? '');
+  const [code, setCode] = useState('');
+  const [room, setRoom] = useState<Room | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [rows, setRows] = useState<ScoreRow[]>([]);
+  const { players, status, remote, send, animalsRef } = useRoom(room?.code ?? '', room ? me : null, room?.public ?? false, room?.solo ?? false);
+  const gameOver = useRef(onGameOver);
+  gameOver.current = onGameOver;
+  const ok = name.trim().length >= 2;
+
+  useEffect(() => {
+    onSetBoosts?.([]);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
+    document.head.appendChild(link);
+    return () => { link.remove(); };
+  }, [onSetBoosts]);
+
+  const go = useCallback((next: Room) => {
+    setName(name);
+    setRows([]);
     startGameSession();
-    onSetBoosts?.(menuBoosts);
-    setRun(previous => ({ key: previous.key + 1, initialCol, graceMs: initialCol > 0 ? 2000 : 0, shield: menuBoosts.includes('shield') }));
-    setPhase('playing');
-  }, [menuBoosts, onSetBoosts]);
+    setRoom(next);
+  }, [name, setName]);
 
-  const revive = useCallback(() => {
-    resetSubmissionAfterRevive();
-    startedAt.current = Date.now() - elapsedAtDeath.current * 1000;
-    setRun(previous => ({ key: previous.key + 1, initialCol: lastScore.current, graceMs: 2000, shield: false }));
-    setPhase('playing');
-    setReviveFlash(previous => previous + 1);
+  useEffect(() => {
+    if (!busy) return;
+    let active = true;
+    findPublicRoom().then(found => {
+      if (!active) return;
+      go({ code: found ?? randomCode(), public: true, solo: false });
+      setBusy(false);
+    });
+    return () => { active = false; };
+  }, [busy, go]);
+
+  const death = useCallback((score: number, duration: number) => {
+    gameOver.current?.(score, duration);
+    startGameSession();
   }, []);
 
-  const die = useCallback((finalScore: number) => {
-    lastScore.current = finalScore;
-    elapsedAtDeath.current = Math.max(0, (Date.now() - startedAt.current) / 1000);
-    if (reviveArmed.current) {
-      reviveArmed.current = false;
-      revive();
-      return;
-    }
-    setScore(finalScore);
-    playFailure?.();
-    try {
-      const saved = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
-      const nextBest = Math.max(saved.bestScore_brix_rush || 0, finalScore);
-      saved.bestScore_brix_rush = nextBest;
-      localStorage.setItem('luckyStopGame', JSON.stringify(saved));
-      setBest(nextBest);
-    } catch { /* Storage unavailable */ }
-    setPhase('gameover');
-    onGameOver?.(finalScore, elapsedAtDeath.current);
-  }, [onGameOver, playFailure, revive]);
+  const menu = useCallback(() => { setRoom(null); setRows([]); }, []);
 
-  const handleScore = useCallback((next: number) => {
-    lastScore.current = Math.max(lastScore.current, next);
-    setScore(previous => Math.max(previous, next));
-    playSuccess?.();
-  }, [playSuccess]);
-
-  return (
-    <div className="brix-game">
-      {phase !== 'gameover' && <GameHUD score={score} coins={coinsDisplay} onBack={onBack} isSoundMuted={isSoundMuted} onToggleSound={onToggleSound} />}
-      <div className="brix-playfield">
-        {phase === 'playing' && <RunnerGame key={run.key} initialCol={run.initialCol} graceMs={run.graceMs} shield={run.shield} onShieldUsed={() => setShieldFlash(previous => previous + 1)} onScore={handleScore} onDie={die} />}
-        <ShieldUsedFlash triggerKey={shieldFlash} />
-        <ReviveUsedFlash triggerKey={reviveFlash} />
-        {phase === 'menu' && <div className="brix-start"><GameStartOverlay title="Brix Rush" bestValue={best} currentMode={ModeID.BRIX_RUSH} selectedBoosts={menuBoosts} onSelectedBoostsChange={setMenuBoosts} defaultBoostsOpen={boostPicker} onStart={start} rules={[
-          { icon: <ArrowRight className="h-4 w-4 text-primary" />, title: t.brixCross, desc: t.brixCrossDesc },
-          { icon: <Car className="h-4 w-4 text-danger" />, title: t.brixDodge, desc: t.brixDodgeDesc, accent: 'danger' },
-          { icon: <Fence className="h-4 w-4 text-success" />, title: t.brixFences, desc: t.brixFencesDesc },
-        ]} /></div>}
-        {phase === 'gameover' && <GameOverActions onMenu={() => onBack?.()} onReplay={start} onOpenBoosts={() => { setBoostPicker(true); setPhase('menu'); }} onRevive={revive} score={score} best={best} mode={ModeID.BRIX_RUSH} />}
-      </div>
-    </div>
-  );
+  return createPortal(
+    <div className="brix-original game-screen">
+      {!room ? <main className="arcade-bg brix-home">
+        <Button variant="ghost" className="brix-exit" onClick={onBack} aria-label="Retour à Lucky Stop"><Home /></Button>
+        <div className="brix-home-inner">
+          <h1 className="brix-display brix-primary text-center text-6xl leading-none text-glow">BRIX<br />RUSH</h1>
+          <p className="mt-4 text-center brix-muted">Même ligne de départ. {MAX_PLAYERS} coureurs max. Pas de fin.</p>
+          <div className="panel mt-8 space-y-4 p-6">
+            <label htmlFor="brix-name" className="block text-sm uppercase brix-muted">Pseudo</label>
+            <input id="brix-name" className="arcade-input" maxLength={14} value={name} onChange={e => setDraft(e.target.value)} placeholder="Ton pseudo" />
+            <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
+            <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? "Recherche d’une salle…" : 'Multijoueur'}</Button>
+            <div className="brix-friends pt-4">
+              <p className="mb-2 text-sm uppercase brix-muted">Entre amis</p>
+              <div className="flex gap-2">
+                <input aria-label="Code de salle" className="arcade-input uppercase" maxLength={5} value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="CODE" />
+                <Button variant="ghost" className="arcade-btn arcade-btn-ghost" disabled={!ok || code.length < 4 || !ready} onClick={() => go({ code, public: false, solo: false })}>Rejoindre</Button>
+              </div>
+              <Button variant="link" className="brix-private mt-3 w-full text-sm" disabled={!ok || !ready} onClick={() => go({ code: randomCode(), public: false, solo: false })}>Créer une salle privée</Button>
+            </div>
+          </div>
+        </div>
+      </main> : status === 'full' ? <main className="arcade-bg brix-full">
+        <p className="brix-display text-4xl brix-danger">Salle pleine</p>
+        <p className="brix-muted">{MAX_PLAYERS} coureurs sont déjà dans la salle {room.code}.</p>
+        <Button variant="ghost" className="arcade-btn" onClick={menu}>Retour</Button>
+      </main> : me && <>
+        <RunnerGame key={room.code} seed={COURSE_SEED} me={me} remote={remote} send={send} animals={animalsRef} onScores={setRows} onMenu={menu} onDeath={death} />
+        <div className="game-hud">
+          <Button variant="ghost" className="brix-hud-title brix-display brix-primary text-glow" onClick={menu}>BRIX RUSH</Button>
+          <span className="chip">{room.public ? 'Publique' : 'Privée'} · {room.code}</span>
+          <span className="chip">{players.length}/{MAX_PLAYERS}{status === 'connecting' ? ' · connexion…' : status === 'error' ? ' · hors ligne' : ''}</span>
+        </div>
+        <Leaderboard rows={rows} />
+      </>}
+    </div>, document.body);
 }
