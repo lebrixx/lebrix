@@ -13,7 +13,7 @@ describe("world", () => {
   it("traffic stays easy enough to slip through, even far along", () => {
     for (let col = SAFE_START; col < 400; col++) {
       const lane = laneAt("ABCD", col);
-      if (lane.safe) continue;
+      if (lane.safe === true) continue;
       // cars never run away from the player
       expect(lane.speed).toBeLessThanOrEqual(180);
       // always a real gap to slip between two cars

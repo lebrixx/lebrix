@@ -744,6 +744,8 @@
 
 /* The imported Brix Rush theme is deliberately isolated from Lucky Stop. */
 .brix-original {
+  --font-display: "Russo One", sans-serif;
+  --font-body: "Chakra Petch", sans-serif;
   --background: oklch(0.13 0.035 268);
   --foreground: oklch(0.96 0.015 268);
   --primary: oklch(0.8 0.17 190);
@@ -804,11 +806,11 @@
   .brix-original .runner-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.7rem; border-radius: calc(var(--radius) - 4px); background: var(--muted); font-variant-numeric: tabular-nums; }
   .brix-original .runner-row-me { outline: 1px solid var(--primary); }
   .brix-original .runner-dot { width: 0.75rem; height: 0.75rem; border-radius: 3px; background: oklch(0.75 0.2 var(--hue)); box-shadow: 0 0 8px oklch(0.75 0.2 var(--hue)); }
-  .brix-original .game-screen {
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-right: env(safe-area-inset-right, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-left: env(safe-area-inset-left, 0px);
+  .brix-original.game-screen {
+    --safe-top: 0px;
+    --safe-right: 0px;
+    --safe-bottom: 0px;
+    --safe-left: 0px;
     --hud-gap: 24px;
     position: fixed; inset: 0; background: var(--game-sky); overflow: hidden;
   }
