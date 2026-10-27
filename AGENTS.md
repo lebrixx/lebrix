@@ -1,5 +1,7 @@
 # Project rules
-- Keep Brix Rush's solo world and sprite painters in `src/games/brix-rush`; adapt shared HUD, boosts and game-over flows outside the engine so original gameplay stays isolated.
+- Keep Brix Rush's original world, sprite painters, realtime rooms and standalone interface in `src/games/brix-rush`; isolate its styles and adapt only navigation and secure score reporting outside the engine so other modes remain unchanged.
+- Rotate the complete Brix Rush surface in portrait viewports using the source landscape transform; this works within the native app's portrait lock without changing other modes' orientation.
+- Keep a single Brix Rush lobby subscription for the screen lifetime and a separate room subscription per active race; cleanup both on exit to avoid discovery races and duplicate realtime channels.
 - Bundle Brix Rush sprites as source-controlled imports for native offline play; asset-serving URLs are not available in the local/native runtime.
 - Use the distinct `brix_rush` score identity and the shared ranked/free mode lists; keep historical Orbit Dodge data untouched and excluded so different games never share records.
 

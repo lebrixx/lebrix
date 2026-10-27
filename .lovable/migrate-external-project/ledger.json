@@ -1,6 +1,6 @@
 {
-  "source": "brix-rush-transfert.zip",
-  "scope": "Replace Orbit Dodge inside Lucky Stop",
+  "source": "brix-rush-transfert-2.zip",
+  "scope": "Restore the original standalone Brix Rush experience inside its existing mode",
   "capabilities": [
     {
       "capability": "game code and artwork",
@@ -19,8 +19,8 @@
     {
       "capability": "real-time rooms and presence",
       "source": "net.ts and room route",
-      "outcome": "omit per existing user rejection of real-time multiplayer",
-      "status": "accepted exclusion",
+      "outcome": "restore source presence and broadcast rooms on the existing Supabase connection; user explicitly authorized live multiplayer",
+      "status": "verified",
       "next_action": null
     },
     {
@@ -45,5 +45,5 @@
       "next_action": null
     }
   ],
-  "verification": "5 tests passed; real solo game, replay and 11-point secure submission read back in per-mode/monthly/general UI; verification row removed. Existing deployment unchanged."
+  "verification": "Original canvas, round controls, grass Menu, score/current-record board, menu and 1200ms respawn restored. 23 tests pass; browser checks at 735x393 and 393x735 verify landscape, solo, two-player private/public rooms, remote score movement, collision and automatic return retaining record, and exit to Lucky Stop. Latest build OK. Source contains no audio code or files, database records, authentication, schedules, webhooks or secrets. Physical native-device verification remains unavailable in this sandbox."
 }

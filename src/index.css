@@ -742,12 +742,147 @@
 
 
 
-.brix-game { position: fixed; inset: 0; z-index: 35; padding-top: var(--app-top-clearance); background: var(--brix-void); overflow: hidden; display: flex; flex-direction: column; }
-.brix-playfield { position: relative; flex: 1; min-height: 0; overflow: hidden; }
-.brix-stage { position: absolute; inset: 0 0 100px; overflow: hidden; }
-.brix-stage canvas { display: block; }
-.brix-controls { position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.brix-pad { width: 56px; height: 56px; border-radius: 8px; touch-action: none; background: hsl(var(--button-bg)); color: hsl(var(--text-primary)); border: 2px solid hsl(var(--wheel-border)); }
-.brix-pad svg { width: 26px; height: 26px; }
-.brix-forward { width: 72px; background: hsl(var(--primary)); color: hsl(var(--game-darker)); border-color: hsl(var(--primary)); }
-.brix-start { position: absolute; inset: 0; overflow: auto; }
+/* The imported Brix Rush theme is deliberately isolated from Lucky Stop. */
+.brix-original {
+  --font-display: "Russo One", sans-serif;
+  --font-body: "Chakra Petch", sans-serif;
+  --background: oklch(0.13 0.035 268);
+  --foreground: oklch(0.96 0.015 268);
+  --primary: oklch(0.8 0.17 190);
+  --primary-foreground: oklch(0.16 0.03 268);
+  --accent: oklch(0.75 0.2 330);
+  --accent-foreground: oklch(0.16 0.03 268);
+  --secondary: oklch(0.24 0.05 268);
+  --secondary-foreground: var(--foreground);
+  --card: oklch(0.19 0.04 268);
+  --muted: oklch(0.22 0.035 268);
+  --muted-foreground: oklch(0.65 0.035 268);
+  --border: oklch(0.32 0.04 268);
+  --input: var(--border);
+  --ring: var(--primary);
+  --radius: 12px;
+  --game-sky: oklch(0.13 0.035 268);
+  --game-grid: oklch(0.24 0.05 268);
+  --game-ground: oklch(0.19 0.04 268);
+  --game-obstacle: oklch(0.7 0.23 15);
+  --game-grass: oklch(0.36 0.09 150);
+  --game-grass-2: oklch(0.33 0.085 150);
+  --game-road: oklch(0.2 0.02 265);
+  --game-mark: oklch(0.55 0.02 265);
+  font-family: "Chakra Petch", sans-serif;
+  color: var(--foreground);
+  letter-spacing: 0;
+  z-index: 100;
+}
+.brix-original .brix-primary { color: var(--primary); }
+.brix-original .brix-muted { color: var(--muted-foreground); }
+.brix-original .brix-danger { color: var(--game-obstacle); }
+.brix-original .brix-home { position: absolute; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
+.brix-original .brix-home-inner { width: 100%; max-width: 448px; }
+.brix-original .brix-exit { position: fixed; left: 24px; top: 24px; width: 40px; height: 40px; color: var(--primary); }
+.brix-original .brix-friends { border-top: 1px solid var(--border); }
+.brix-original .brix-private { color: var(--accent); height: auto; padding: 0; }
+.brix-original .brix-full { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.brix-original .brix-hud-title { flex-basis: 100%; justify-content: flex-start; height: auto; padding: 0; font-size: 0.9rem; margin-bottom: 2px; }
+  .brix-original .brix-display { font-family: var(--font-display); letter-spacing: 0; }
+  .brix-original .text-glow { text-shadow: 0 0 24px color-mix(in oklch, var(--primary) 60%, transparent); }
+  .brix-original .arcade-bg {
+    background:
+      radial-gradient(ellipse at 20% 0%, color-mix(in oklch, var(--accent) 18%, transparent), transparent 55%),
+      radial-gradient(ellipse at 90% 100%, color-mix(in oklch, var(--primary) 12%, transparent), transparent 50%),
+      var(--background);
+  }
+  .brix-original .panel { background: color-mix(in oklch, var(--card) 85%, transparent); border: 1px solid var(--border); border-radius: var(--radius); backdrop-filter: blur(8px); }
+  .brix-original .arcade-input { width: 100%; background: var(--muted); border: 1px solid var(--input); border-radius: calc(var(--radius) - 4px); padding: 0.7rem 0.9rem; color: var(--foreground); outline: none; }
+  .brix-original .arcade-input:focus { border-color: var(--ring); }
+  .brix-original .arcade-btn { display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0; padding: 0.8rem 1.2rem; border-radius: calc(var(--radius) - 4px); background: var(--primary); color: var(--primary-foreground); box-shadow: 0 4px 0 color-mix(in oklch, var(--primary) 50%, black), 0 0 24px color-mix(in oklch, var(--primary) 30%, transparent); transition: transform .1s; }
+  .brix-original .arcade-btn:active:not(:disabled) { transform: translateY(3px); }
+  .brix-original .arcade-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .brix-original .arcade-btn-alt { background: var(--accent); color: var(--accent-foreground); box-shadow: 0 4px 0 color-mix(in oklch, var(--accent) 50%, black), 0 0 24px color-mix(in oklch, var(--accent) 30%, transparent); }
+  .brix-original .arcade-btn-ghost { background: var(--secondary); color: var(--secondary-foreground); box-shadow: 0 4px 0 color-mix(in oklch, var(--secondary) 50%, black); }
+  .brix-original .chip { border: 1px solid var(--border); border-radius: 999px; padding: 0.25rem 0.75rem; background: var(--muted); }
+  .brix-original .game-frame { width: 100%; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 0 40px color-mix(in oklch, var(--accent) 15%, transparent); cursor: pointer; }
+  .brix-original .game-frame canvas { display: block; }
+  .brix-original .runner-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.7rem; border-radius: calc(var(--radius) - 4px); background: var(--muted); font-variant-numeric: tabular-nums; }
+  .brix-original .runner-row-me { outline: 1px solid var(--primary); }
+  .brix-original .runner-dot { width: 0.75rem; height: 0.75rem; border-radius: 3px; background: oklch(0.75 0.2 var(--hue)); box-shadow: 0 0 8px oklch(0.75 0.2 var(--hue)); }
+  .brix-original.game-screen {
+    --safe-top: 0px;
+    --safe-right: 0px;
+    --safe-bottom: 0px;
+    --safe-left: 0px;
+    --hud-gap: 24px;
+    position: fixed; inset: 0; background: var(--game-sky); overflow: hidden;
+  }
+  .brix-original .game-stage { position: absolute; inset: 0; overflow: hidden; }
+  .brix-original .game-stage canvas { display: block; }
+  .brix-original .game-hud { position: absolute; top: calc(var(--safe-top) + var(--hud-gap)); left: calc(var(--safe-left) + var(--hud-gap)); display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; max-width: 210px; font-size: 0.7rem; pointer-events: auto; }
+  .brix-original .game-hud > a { flex-basis: 100%; font-size: 0.9rem; margin-bottom: 2px; }
+  .brix-original .game-hud .chip { padding: 0.2rem 0.5rem; }
+  .brix-original .animal-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid transparent; display: grid; place-items: center; }
+  .brix-original .animal-btn img { width: 30px; height: 30px; object-fit: contain; }
+  .brix-original .animal-btn.is-mine { border-color: var(--primary); background: color-mix(in oklch, var(--primary) 22%, transparent); }
+  .brix-original .animal-btn:disabled { opacity: 0.25; filter: grayscale(1); }
+  .brix-original .game-board { position: absolute; top: calc(var(--safe-top) + var(--hud-gap)); right: calc(var(--safe-right) + var(--hud-gap)); width: 190px; max-width: 30%; border: 1px solid var(--border); border-radius: 8px; background: color-mix(in oklch, var(--game-sky) 90%, transparent); backdrop-filter: blur(12px); overflow: hidden; pointer-events: none; font-size: 0.75rem; }
+  .brix-original .game-board-heading { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .brix-original .game-board-heading h2 { font-family: var(--font-display); font-size: 10px; text-transform: uppercase; letter-spacing: 0; flex: 1; }
+  .brix-original .game-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+  .brix-original .game-board ol { padding: 4px; display: flex; flex-direction: column; gap: 2px; }
+  .brix-original .game-board-columns { display: grid; grid-template-columns: minmax(0, 1fr) 32px 32px; gap: 5px; padding: 6px 8px 2px; font-size: 8px; color: var(--muted-foreground); }
+  .brix-original .game-board-columns > span:not(:first-child) { text-align: right; }
+  .brix-original .game-board .runner-row { display: grid; grid-template-columns: 14px 8px minmax(0, 1fr) 32px 32px; min-width: 0; height: 28px; padding: 0 5px; gap: 5px; border-radius: 4px; background: transparent; }
+  .brix-original .game-board .runner-row-me { outline: none; background: color-mix(in oklch, var(--primary) 12%, transparent); }
+  .brix-original .runner-rank { width: 16px; text-align: center; flex-shrink: 0; font-weight: 700; color: var(--muted-foreground); }
+  .brix-original .runner-rank-first { color: var(--primary); }
+  .brix-original .game-board .runner-dot { width: 8px; height: 8px; flex-shrink: 0; box-shadow: none; }
+  .brix-original .runner-name { display: flex; align-items: center; gap: 3px; overflow: hidden; white-space: nowrap; min-width: 0; font-weight: 600; }
+  .brix-original .runner-name-label { overflow: hidden; text-overflow: ellipsis; }
+  .brix-original .runner-name small { margin-left: 4px; color: var(--primary); font-size: 9px; font-weight: 400; }
+  .brix-original .runner-score { min-width: 24px; text-align: right; font-weight: 700; color: var(--foreground); }
+  .brix-original .runner-best { color: var(--primary); }
+  .brix-original .game-pad { position: absolute; bottom: calc(var(--safe-bottom) + var(--hud-gap)); display: flex; gap: 0.75rem; }
+  .brix-original .game-pad-left { left: calc(var(--safe-left) + var(--hud-gap)); }
+  .brix-original .game-pad-right { right: calc(var(--safe-right) + var(--hud-gap)); bottom: calc(var(--safe-bottom) + var(--hud-gap) + 1.1rem); }
+  .brix-original .pad-btn { width: 5.5rem; height: 5.5rem; border-radius: 999px; font-family: var(--font-display); font-size: 1.7rem; color: var(--foreground); background: color-mix(in oklch, var(--secondary) 65%, transparent); border: 2px solid var(--border); touch-action: none; user-select: none; -webkit-user-select: none; }
+  .brix-original .pad-btn:active { background: color-mix(in oklch, var(--accent) 45%, transparent); }
+  .brix-original .pad-btn-jump { width: 7.25rem; height: 7.25rem; font-size: 2.3rem; color: var(--primary-foreground); background: color-mix(in oklch, var(--primary) 80%, transparent); border-color: var(--primary); }
+  .brix-original .game-pad-right .pad-btn:not(.pad-btn-jump) { width: 6.4rem; height: 6.4rem; font-size: 1.9rem; }
+.brix-original .grass-menu-btn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  font-family: "Russo One", sans-serif;
+  font-size: 0.85rem;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  box-shadow: 0 4px 0 color-mix(in oklab, var(--primary) 55%, black), 0 8px 18px color-mix(in oklab, black 35%, transparent);
+  will-change: transform;
+}
+.brix-original .grass-menu-btn:active { box-shadow: 0 1px 0 color-mix(in oklab, var(--primary) 55%, black); }
+
+.brix-original .arcade-btn { height: auto; }
+.brix-original .pad-btn { padding: 0; }
+.brix-original .grass-menu-btn { height: auto; }
+.brix-original .game-hud .brix-hud-title:hover { background: transparent; color: var(--primary); }
+@media (orientation: portrait) {
+  .brix-original.game-screen { --safe-top: 0px; --safe-right: 0px; --safe-bottom: 0px; --safe-left: 0px; inset: auto; top: 0; left: 100vw; width: 100dvh; height: 100vw; transform-origin: top left; transform: rotate(90deg); }
+}
+@media (max-height: 450px) and (orientation: landscape), (max-width: 450px) and (orientation: portrait) {
+  .brix-original .game-board .runner-row { height: 24px; }
+  .brix-original .game-board-heading { padding: 8px 10px; }
+  .brix-original .game-pad { gap: 10px; }
+  .brix-original .game-pad-right { bottom: calc(var(--safe-bottom) + var(--hud-gap) + 10px); }
+  .brix-original .pad-btn { width: 68px; height: 68px; font-size: 1.5rem; }
+  .brix-original .pad-btn-jump { width: 94px; height: 94px; font-size: 2.1rem; }
+  .brix-original .game-pad-right .pad-btn:not(.pad-btn-jump) { width: 80px; height: 80px; font-size: 1.7rem; }
+}
+@media (hover: hover) and (pointer: fine) { .brix-original .game-pad { display: none; } }
+@media (max-height: 600px) and (orientation: landscape), (max-width: 600px) and (orientation: portrait) {
+  .brix-original .brix-home { align-items: flex-start; }
+}

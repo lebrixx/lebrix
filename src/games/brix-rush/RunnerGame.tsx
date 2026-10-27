@@ -1,46 +1,42 @@
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
-import { useLanguage, translations } from "@/hooks/useLanguage";
-
+import { respawnDue, resetToStart } from "./respawn";
+import { Home } from "lucide-react";
+import type { Me, RemoteState } from "./net";
 import { CELL, HOP_MS, ROWS, VIEW_H, blockedByFence, carsAt, fencesAt, hitByCar, laneAt, toMeters } from "./world";
-
+import { positionUpdateDue } from "./sync";
 import { createVehiclePainter } from "./vehicles";
 import { ANIMALS, type AnimalId } from "./animals";
 import { createTerrainPainter } from "./terrain";
-import fenceAsset from "@/assets/brix-rush/terrain/fence.png.asset.json";
-const fenceUrl = fenceAsset.url;
+import fenceUrl from "@/assets/brix-rush/terrain/fence.png";
 
 type Props = {
-  initialCol?: number;
-  graceMs?: number;
-  shield?: boolean;
-  onShieldUsed: () => void;
-  onScore: (score: number) => void;
-  onDie: (score: number) => void;
+  onMenu: () => void;
+  onDeath?: (score: number, duration: number) => void;
+  seed: string;
+  me: Me;
+  remote: React.MutableRefObject<Record<string, RemoteState>>;
+  send: (s: Omit<RemoteState, "t">) => void;
+  animals: React.MutableRefObject<Record<string, AnimalId>>;
+  onScores: (rows: { id: string; name: string; hue: number; x: number; best: number; dead: boolean; me: boolean }[]) => void;
 };
 
 type Dir = "up" | "down" | "left" | "right";
 
 function cssVar(name: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return getComputedStyle(document.querySelector(".brix-original") ?? document.documentElement).getPropertyValue(name).trim();
 }
 
 /** Shared clock so traffic is identical on every screen. */
 const sharedTime = () => Date.now() / 1000;
 
-export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShieldUsed, onScore, onDie }: Props) {
-  const { language } = useLanguage();
-  const t = translations[language];
-  const seed = "BRIX";
-  const me = { id: "solo", name: "", hue: 190 };
-  const animal = useRef(ANIMALS[Math.floor(Math.random() * ANIMALS.length)]?.id ?? "dog");
-  const callbacks = useRef({ onShieldUsed, onScore, onDie });
-  callbacks.current = { onShieldUsed, onScore, onDie };
+export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, onDeath }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const queue = useRef<Dir[]>([]);
-
+  const deathCallback = useRef(onDeath);
+  deathCallback.current = onDeath;
+  const menuRef = useRef<HTMLButtonElement>(null);
 
   const press = (d: Dir) => { if (queue.current.length < 2) queue.current.push(d); };
 
@@ -67,34 +63,31 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
     const fenceImg = new Image();
     fenceImg.src = fenceUrl;
     const c = {
-      grass: cssVar("--brix-grass"), grass2: cssVar("--brix-grass-2"), road: cssVar("--brix-road"),
-      mark: cssVar("--brix-mark"), void: cssVar("--brix-void"), car: cssVar("--brix-obstacle"), text: cssVar("--brix-highlight"), line: cssVar("--brix-line"),
+      grass: cssVar("--game-grass"), grass2: cssVar("--game-grass-2"), road: cssVar("--game-road"),
+      mark: cssVar("--game-mark"), void: cssVar("--background"), car: cssVar("--game-obstacle"), text: cssVar("--foreground"), line: cssVar("--primary"),
     };
     let W = 800;
     let scale = 1;
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const cw = wrap.clientWidth, ch = wrap.clientHeight;
-      scale = Math.min(ch / VIEW_H, cw / 520);
+      scale = ch / VIEW_H;
       W = cw / scale;
       canvas.width = cw * dpr; canvas.height = ch * dpr;
       canvas.style.width = `${cw}px`; canvas.style.height = `${ch}px`;
-      ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, dpr * (ch - VIEW_H * scale) / 2);
+      ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
     };
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(wrap);
 
     const startRow = Math.floor(ROWS / 2);
-    const p = { col: initialCol, row: startRow, fromCol: initialCol, fromRow: startRow, hopT: 0, dead: false, deadT: 0, best: initialCol * CELL, started: false };
-    let protectedUntil = performance.now() + graceMs;
-    let shieldLeft = shield;
-    let lastScore = initialCol;
-    let lastNow = performance.now();
-    let camX = initialCol * CELL - Math.min(W * 0.3, 200);
+    const p = { col: 0, row: startRow, fromCol: 0, fromRow: startRow, hopT: 0, dead: false, deadT: 0, best: 0, started: false };
+    let runStartedAt = Date.now();
+    let camX = 0;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let raf = 0;
+    const rendered: Record<string, { x: number; y: number; targetX: number; targetY: number; stepT: number; dx: number; dy: number }> = {};
+    let sendT = 0, scoreT = 0, raf = 0;
 
     // Visual-only step: wind-up, push-off, directional stride, then springy landing.
     // Neither the grid position nor the collision/broadcast timing uses this pose.
@@ -144,7 +137,7 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
         ctx.restore();
         ctx.filter = "none";
         ctx.fillStyle = `oklch(0.85 0.15 ${hue})`;
-        ctx.font = "600 11px sans-serif"; ctx.textAlign = "center";
+        ctx.font = "600 11px 'Chakra Petch', sans-serif"; ctx.textAlign = "center";
         ctx.fillText(name, sx + CELL / 2, sy - 6 - lift);
         ctx.globalAlpha = 1;
         return;
@@ -166,15 +159,13 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
       ctx.fillStyle = c.road; // eye
       ctx.fillRect(x + s - 10, y + 7, 4, 4);
       ctx.fillStyle = c.text;
-      ctx.font = "600 11px sans-serif"; ctx.textAlign = "center";
+      ctx.font = "600 11px 'Chakra Petch', sans-serif"; ctx.textAlign = "center";
       ctx.fillText(name, sx + CELL / 2, sy - 2 - lift);
       ctx.globalAlpha = 1;
     };
 
     const loop = (now: number) => {
       const t = sharedTime();
-      if (now - lastNow > 500) protectedUntil = now + 1000;
-      lastNow = now;
 
       if (!p.dead && now - p.hopT >= HOP_MS && queue.current.length) {
         const d = queue.current.shift();
@@ -188,24 +179,21 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
         if (!blockedByFence(seed, nc, nr)) { p.col = nc; p.row = nr; }
         p.hopT = now;
         p.best = Math.max(p.best, p.col * CELL);
-        const nextScore = toMeters(p.best);
-        if (nextScore > lastScore) { lastScore = nextScore; callbacks.current.onScore(nextScore); }
+      }
+      if (p.dead && respawnDue(now, p.deadT)) {
+        resetToStart(p, startRow); queue.current = []; runStartedAt = Date.now();
       }
       const k = Math.min(1, (now - p.hopT) / HOP_MS);
       const px = (p.fromCol + (p.col - p.fromCol) * k) * CELL;
       const py = (p.fromRow + (p.row - p.fromRow) * k) * CELL;
-      if (!p.dead && now > protectedUntil && hitByCar(seed, Math.round(px / CELL), py, t)) {
-        if (shieldLeft) { shieldLeft = false; protectedUntil = now + 1800; callbacks.current.onShieldUsed(); }
-        else { p.dead = true; p.deadT = now; queue.current = []; callbacks.current.onDie(toMeters(p.best)); }
-      }
+      if (!p.dead && hitByCar(seed, Math.round(px / CELL), py, t)) { p.dead = true; p.deadT = now; queue.current = []; deathCallback.current?.(p.col, (Date.now() - runStartedAt) / 1000); }
 
       const target = px - Math.min(W * 0.3, 200);
       camX += (target - camX) * 0.12;
 
       // Cosmetic orthographic incline: game coordinates and all collision logic stay unchanged.
       ctx.fillStyle = c.road;
-      const extraHeight = wrap.clientHeight / scale - VIEW_H;
-      ctx.fillRect(0, -extraHeight / 2, W, VIEW_H + extraHeight);
+      ctx.fillRect(0, 0, W, VIEW_H);
       ctx.save();
       ctx.transform(1, 0, -0.16, 0.86, VIEW_H * 0.08, VIEW_H * 0.07);
 
@@ -231,10 +219,10 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
       }
       // "BRIX RUSH" title floating in the void behind the spawn, anchored in the world.
       {
-        const tx = -CELL * 1.5 - camX;
+        const tx = -CELL * 2.6 - camX;
         if (tx > -W && tx < W + 200) {
           ctx.textAlign = "center"; ctx.textBaseline = "middle";
-          ctx.font = "800 24px sans-serif";
+          ctx.font = "400 40px 'Russo One', sans-serif";
           const lines: [string, number][] = [["BRIX", VIEW_H / 2 - 26], ["RUSH", VIEW_H / 2 + 26]];
           for (let d = 8; d > 0; d--) {
             ctx.fillStyle = d === 8 ? cssVar("--brix-shadow") : `color-mix(in oklab, ${c.line} ${35 + d * 3}%, black)`;
@@ -278,32 +266,89 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
         }
       }
 
-      drawChick(px - camX, py, me.hue, p.dead ? 0.5 : 1, "", p.dead, stepPose(now - p.hopT, p.col - p.fromCol, p.row - p.fromRow, p.dead), animal.current);
+      // other players
+      const offLeft: RemoteState[] = [], offRight: RemoteState[] = [];
+      for (const r of Object.values(remote.current)) {
+        const rr = (rendered[r.id] ??= { x: r.x, y: r.y, targetX: r.x, targetY: r.y, stepT: 0, dx: 0, dy: 0 });
+        if (r.x !== rr.targetX || r.y !== rr.targetY) {
+          const reset = Math.abs(r.x - rr.targetX) > CELL * 2 || Math.abs(r.y - rr.targetY) > CELL * 2;
+          rr.dx = reset ? 0 : Math.sign(r.x - rr.targetX);
+          rr.dy = reset ? 0 : Math.sign(r.y - rr.targetY);
+          rr.stepT = now;
+          rr.targetX = r.x; rr.targetY = r.y;
+        }
+        if (Math.abs(r.x - rr.x) > 400) rr.x = r.x; else rr.x += (r.x - rr.x) * 0.3;
+        rr.y += (r.y - rr.y) * 0.3;
+        const sx = rr.x - camX;
+        if (sx < -CELL) offLeft.push(r);
+        else if (sx > W) offRight.push(r);
+        else drawChick(sx, rr.y, r.hue, 0.7, r.name, r.dead, stepPose(now - rr.stepT, rr.dx, rr.dy, r.dead), animals.current[r.id]);
+      }
+      drawChick(px - camX, py, me.hue, p.dead ? 0.5 : 1, me.name, p.dead, stepPose(now - p.hopT, p.col - p.fromCol, p.row - p.fromRow, p.dead), animals.current[me.id]);
       ctx.restore();
+      // Menu button is anchored in the start grass: same incline transform as the world.
+      if (menuRef.current) {
+        const wx = CELL * 1.5 - camX, wy = CELL * 1.6;
+        const mx = (wx - 0.16 * wy + VIEW_H * 0.08) * scale, my = (0.86 * wy + VIEW_H * 0.07) * scale;
+        menuRef.current.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+      }
+      ctx.font = "600 12px 'Chakra Petch', sans-serif";
+      offLeft.forEach((r, i) => {
+        ctx.fillStyle = `oklch(0.8 0.17 ${r.hue})`; ctx.textAlign = "left";
+        ctx.fillText(`◀ ${r.name} -${toMeters(px - r.x)}`, 10, 60 + i * 18);
+      });
+      offRight.forEach((r, i) => {
+        ctx.fillStyle = `oklch(0.8 0.17 ${r.hue})`; ctx.textAlign = "right";
+        ctx.fillText(`${r.name} +${toMeters(r.x - px)} ▶`, W - 10, 60 + i * 18);
+      });
+
+      ctx.fillStyle = c.text; ctx.textAlign = "center";
+      ctx.font = "400 22px 'Russo One', sans-serif";
+      ctx.fillText(`${p.col}`, W / 2, 30);
+      if (!p.started) {
+        ctx.font = "400 16px 'Russo One', sans-serif";
+        ctx.fillText("▶ POUR TRAVERSER · ▲ ▼ POUR ESQUIVER", W / 2, VIEW_H / 2 - 40);
+      } else if (p.dead) {
+        ctx.fillStyle = c.car; ctx.font = "400 26px 'Russo One', sans-serif";
+        ctx.fillText(`ÉCRASÉ · record ${toMeters(p.best)}`, W / 2, VIEW_H / 2 - 40);
+      }
+
+      if (positionUpdateDue(now, sendT)) {
+        sendT = now;
+        send({ id: me.id, name: me.name, hue: me.hue, x: px, y: py, dead: p.dead, best: p.best });
+      }
+      if (now - scoreT > 250) {
+        scoreT = now;
+        onScores([
+          { id: me.id, name: me.name, hue: me.hue, x: px, best: p.best, dead: p.dead, me: true },
+          ...Object.values(remote.current).map((r) => ({ id: r.id, name: r.name, hue: r.hue, x: r.x, best: r.best, dead: r.dead, me: false })),
+        ]);
+      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => { cancelAnimationFrame(raf); ro.disconnect(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialCol, graceMs, shield]);
+  }, [seed, me]);
 
   const btn = (d: Dir) => ({
     onPointerDown: (e: React.PointerEvent) => { e.preventDefault(); press(d); },
   });
 
   return (
-    <>
-      <div ref={wrapRef} className="brix-stage touch-none select-none"><canvas ref={canvasRef} aria-label="Brix Rush" /></div>
-      <div className="brix-controls">
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" className="brix-pad" aria-label={t.brixUp} {...btn("up")}><ArrowUp /></Button>
-          <Button variant="outline" size="icon" className="brix-pad" aria-label={t.brixDown} {...btn("down")}><ArrowDown /></Button>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" className="brix-pad" aria-label={t.brixBack} {...btn("left")}><ArrowLeft /></Button>
-          <Button size="icon" className="brix-pad brix-forward" aria-label={t.brixForward} {...btn("right")}><ArrowRight /></Button>
-        </div>
+    <div ref={wrapRef} className="game-stage touch-none select-none">
+      <canvas ref={canvasRef} aria-label="Brix Rush" />
+      <Button ref={menuRef} onClick={onMenu} variant="ghost" className="grass-menu-btn" aria-label="Retour au menu">
+        <Home className="h-4 w-4" /> Menu
+      </Button>
+      <div className="game-pad game-pad-left flex-col">
+        <Button variant="ghost" className="pad-btn" aria-label="Monter" {...btn("up")}>▲</Button>
+        <Button variant="ghost" className="pad-btn" aria-label="Descendre" {...btn("down")}>▼</Button>
       </div>
-    </>
+      <div className="game-pad game-pad-right items-end">
+        <Button variant="ghost" className="pad-btn" aria-label="Reculer" {...btn("left")}>◀</Button>
+        <Button variant="ghost" className="pad-btn pad-btn-jump" aria-label="Avancer" {...btn("right")}>▶</Button>
+      </div>
+    </div>
   );
 }
