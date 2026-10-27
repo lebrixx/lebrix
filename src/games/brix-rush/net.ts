@@ -27,7 +27,6 @@ export function findPublicRoom(): Promise<string | null> {
       if (settle) clearTimeout(settle);
       clearTimeout(timeout);
       const counts = new Map<string, number>();
-      console.debug('Brix discovery state', ch.presenceState());
       for (const metas of Object.values(ch.presenceState<{ room?: string }>())) {
         const room = metas[0]?.room;
         if (room) counts.set(room, (counts.get(room) ?? 0) + 1);
@@ -43,7 +42,9 @@ export function findPublicRoom(): Promise<string | null> {
     ch.on("presence", { event: "sync" }, () => {
       if (settle) clearTimeout(settle);
       settle = setTimeout(finish, 1000);
-    }).subscribe();
+    }).subscribe(async state => {
+      if (state === "SUBSCRIBED" && !done) await ch.track({ scout: true });
+    });
     const timeout = setTimeout(finish, 6000);
   });
 }
