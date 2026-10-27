@@ -9,6 +9,7 @@ import { createVehiclePainter } from "./vehicles";
 import { ANIMALS, type AnimalId } from "./animals";
 import { createTerrainPainter } from "./terrain";
 import fenceUrl from "@/assets/brix-rush/terrain/fence.png";
+import brixRushLogo from '@/assets/brix-rush-logo.png';
 
 type Props = {
   onMenu: () => void;
@@ -62,6 +63,8 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
     const drawTerrain = createTerrainPainter();
     const fenceImg = new Image();
     fenceImg.src = fenceUrl;
+    const titleImg = new Image();
+    titleImg.src = brixRushLogo;
     const c = {
       grass: cssVar("--game-grass"), grass2: cssVar("--game-grass-2"), road: cssVar("--game-road"),
       mark: cssVar("--game-mark"), void: cssVar("--background"), car: cssVar("--game-obstacle"), text: cssVar("--foreground"), line: cssVar("--primary"),
@@ -220,21 +223,10 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
       // "BRIX RUSH" title floating in the void behind the spawn, anchored in the world.
       {
         const tx = -CELL * 2.6 - camX;
-        if (tx > -W && tx < W + 200) {
-          ctx.textAlign = "center"; ctx.textBaseline = "middle";
-          ctx.font = "400 40px 'Russo One', sans-serif";
-          const lines: [string, number][] = [["BRIX", VIEW_H / 2 - 26], ["RUSH", VIEW_H / 2 + 26]];
-          for (let d = 8; d > 0; d--) {
-            ctx.fillStyle = d === 8 ? cssVar("--brix-shadow") : `color-mix(in oklab, ${c.line} ${35 + d * 3}%, black)`;
-            for (const [txt, ty] of lines) ctx.fillText(txt, tx + d * 0.9, ty + d);
-          }
-          ctx.fillStyle = c.line;
-          for (const [txt, ty] of lines) ctx.fillText(txt, tx, ty);
-          ctx.fillStyle = cssVar("--brix-highlight-soft");
-          for (const [txt, ty] of lines) ctx.fillText(txt, tx - 1, ty - 1.5);
-          ctx.fillStyle = c.line;
-          for (const [txt, ty] of lines) ctx.fillText(txt, tx, ty);
-          ctx.textBaseline = "alphabetic";
+        if (tx > -W && tx < W + 200 && titleImg.complete && titleImg.naturalWidth) {
+          const titleWidth = 160;
+          const titleHeight = titleWidth * titleImg.naturalHeight / titleImg.naturalWidth;
+          ctx.drawImage(titleImg, tx - titleWidth / 2, VIEW_H / 2 - titleHeight / 2, titleWidth, titleHeight);
         }
       }
       // fences (block the cell they stand on)

@@ -8,7 +8,7 @@ describe('Brix Rush main-game username', () => {
     }
   });
   it('keeps the chosen main-game username unchanged, including all 16 characters', () => {
-    expect(resolveBrixUsername('Player_1234567890')).toBe('Player_1234567890');
+    expect(resolveBrixUsername('Player1234567890')).toBe('Player1234567890');
     expect(resolveBrixUsername('Lebrix')).toBe('Lebrix');
   });
 });
