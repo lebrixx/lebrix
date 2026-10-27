@@ -1,4 +1,6 @@
 # Tasks
+- [ ] Reproduce the supplied Brix Rush landscape experience, round movement buttons, Menu in the grass and Solo/Multiplayer pre-game screen. Blocked: original ZIP is no longer accessible; awaiting re-upload.
+- [ ] Restore the supplied Brix Rush live multiplayer and verify two-player gameplay. Blocked: original multiplayer source requires re-upload.
 - [x] Replace Orbit Dodge with the supplied Brix Rush solo game and original artwork; verified rendered animals, roads and vehicles.
 - [x] Unlock Brix Rush by default and update all ranking, challenge and shop references without mixing historical Orbit Dodge scores.
 - [x] Verify gameplay, replay, secure score submission and cumulative rankings; real score 11 read back in per-mode, monthly and general rankings.
