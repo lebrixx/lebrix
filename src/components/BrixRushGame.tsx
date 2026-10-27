@@ -37,14 +37,15 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   gameOver.current = onGameOver;
   const ok = name.trim().length >= 2;
 
+  const setBoosts = useRef(onSetBoosts);
   useEffect(() => {
-    onSetBoosts?.([]);
+    setBoosts.current?.([]);
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
     document.head.appendChild(link);
     return () => { link.remove(); };
-  }, [onSetBoosts]);
+  }, []);
 
   const go = useCallback((next: Room) => {
     setName(name);

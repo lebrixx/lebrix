@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { MAX_PLAYERS } from "./world";
@@ -41,26 +41,38 @@ export function findPublicRoom(): Promise<string | null> {
   });
 }
 
-export function useRoom(code: string, me: Me | null, isPublic: boolean) {
+export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = false) {
   const [players, setPlayers] = useState<PresencePlayer[]>([]);
-  const [status, setStatus] = useState<"connecting" | "ok" | "full">("connecting");
+  const [status, setStatus] = useState<"connecting" | "ok" | "full" | "error">("connecting");
   const remote = useRef<Record<string, RemoteState>>({});
   const chRef = useRef<RealtimeChannel | null>(null);
   const animalsRef = useRef<Record<string, AnimalId>>({});
 
   useEffect(() => {
+    remote.current = {};
+    animalsRef.current = {};
+    setPlayers([]);
+    setStatus("connecting");
     if (!me) return;
     const joinedAt = Date.now();
     const wants = randomAnimal();
+    animalsRef.current = { [me.id]: wants };
+    if (solo) {
+      setPlayers([{ ...me, joinedAt, wants }]);
+      setStatus("ok");
+      return;
+    }
     const ch = supabase.channel(`brix-room:${code}`, {
       config: { presence: { key: me.id }, broadcast: { self: false } },
     });
     let lobby: RealtimeChannel | null = null;
     let full = false;
+    let active = true;
     let ids = new Set<string>();
     chRef.current = ch;
 
     ch.on("presence", { event: "sync" }, () => {
+      if (!active) return;
       const list: PresencePlayer[] = Object.entries(ch.presenceState<PresencePlayer>())
         .map(([id, metas]) => ({ name: metas[0]?.name ?? "?", hue: metas[0]?.hue ?? 0, joinedAt: metas[0]?.joinedAt ?? 0, wants: metas[0]?.wants, id }))
         .sort((a, b) => a.joinedAt - b.joinedAt || a.id.localeCompare(b.id));
@@ -80,31 +92,35 @@ export function useRoom(code: string, me: Me | null, isPublic: boolean) {
     });
     ch.on("broadcast", { event: "pos" }, ({ payload }) => {
       const p = payload as RemoteState;
-      if (p.id === me.id || !ids.has(p.id)) return;
+      if (!active || !p || p.id === me.id || !ids.has(p.id) || typeof p.name !== "string" || !Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.best) || !Number.isFinite(p.hue) || typeof p.dead !== "boolean") return;
       remote.current[p.id] = { ...p, t: performance.now() };
     });
     ch.subscribe(async (s) => {
-      if (s !== "SUBSCRIBED" || full) return;
+      if (!active || full) return;
+      if (s === "CHANNEL_ERROR" || s === "TIMED_OUT") { setStatus("error"); return; }
+      if (s !== "SUBSCRIBED") return;
       await ch.track({ name: me.name, hue: me.hue, joinedAt, wants });
+      if (!active || full) return;
       setStatus((st) => (st === "full" ? st : "ok"));
-      if (isPublic) {
+      if (isPublic && !lobby) {
         lobby = supabase.channel(LOBBY, { config: { presence: { key: me.id } } });
         lobby.subscribe(async (ls) => {
-          if (ls === "SUBSCRIBED" && !full) await lobby?.track({ room: code });
+          if (ls === "SUBSCRIBED" && !full && active) await lobby?.track({ room: code });
         });
       }
     });
 
     return () => {
+      active = false;
       chRef.current = null;
       supabase.removeChannel(ch);
       if (lobby) supabase.removeChannel(lobby);
     };
-  }, [code, me, isPublic]);
+  }, [code, me, isPublic, solo]);
 
-  const send = (s: Omit<RemoteState, "t">) => {
+  const send = useCallback((s: Omit<RemoteState, "t">) => {
     chRef.current?.send({ type: "broadcast", event: "pos", payload: s });
-  };
+  }, []);
 
   return { players, status, remote, send, animalsRef };
 }

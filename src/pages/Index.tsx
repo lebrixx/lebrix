@@ -207,7 +207,7 @@ const Index = () => {
             // Erreurs silencieuses - pas de notifications
           });
       });
-    } else {
+    } else if (currentMode !== 'brix_rush') {
       setShowUsernameModal(true);
     }
 
@@ -217,7 +217,7 @@ const Index = () => {
     // Rate dialog logic:
     // 1st trigger: score >30 in non-classic mode (if never triggered before)
     // 2nd trigger: score >=55 in non-classic mode (only if user dismissed first time)
-    if (currentMode !== 'classic') {
+    if (currentMode !== 'classic' && currentMode !== 'brix_rush') {
       const rateData = JSON.parse(localStorage.getItem('ls_rate_app') || '{}');
       if (!rateData.rated) {
         const alreadyTriggered30 = localStorage.getItem('ls_rate_triggered_30');
@@ -234,7 +234,7 @@ const Index = () => {
     }
 
     // Afficher une interstitielle si toutes les conditions sont remplies
-    import('@/ads/InterstitialService').then(({ Interstitials }) => {
+    if (currentMode !== 'brix_rush') import('@/ads/InterstitialService').then(({ Interstitials }) => {
       Interstitials.showInterstitialIfReady().catch(error => {
         console.log('Interstitial not shown:', error);
       });
