@@ -15,53 +15,36 @@ export function randomCode() {
   return Array.from({ length: 5 }, () => a[Math.floor(Math.random() * a.length)]).join("");
 }
 
-/** Finds a public room that has players but isn't full; returns null if none. */
-export function findPublicRoom(): Promise<string | null> {
-  return new Promise((resolve) => {
-    const ch = supabase.channel(LOBBY, { config: { presence: { key: `scout-${Math.random()}`, enabled: true } } });
-    let done = false;
-    let settle: ReturnType<typeof setTimeout> | undefined;
-    const discovered = new Map<string, number>();
-    const finish = () => {
-      if (done) return;
-      done = true;
-      if (settle) clearTimeout(settle);
-      clearTimeout(timeout);
-      const counts = new Map<string, number>();
-      discovered.forEach((count, room) => counts.set(room, count));
-      for (const metas of Object.values(ch.presenceState<{ room?: string }>())) {
-        const room = metas[0]?.room;
-        if (room) counts.set(room, (counts.get(room) ?? 0) + 1);
-      }
-      let best: string | null = null;
-      let bestN = 0;
-      counts.forEach((n, room) => {
-        if (n < MAX_PLAYERS && n > bestN) { best = room; bestN = n; }
-      });
-      supabase.removeChannel(ch);
-      resolve(best);
-    };
-    ch.on("broadcast", { event: "room" }, ({ payload }) => {
-      if (typeof payload?.room === "string" && Number.isInteger(payload.count) && payload.count > 0 && payload.count < MAX_PLAYERS) discovered.set(payload.room, payload.count);
-    }).on("presence", { event: "sync" }, () => {
-      const state = ch.presenceState<{ room?: string }>();
-      const counts = new Map<string, number>();
-      for (const metas of Object.values(state)) {
-        const room = metas[0]?.room;
-        if (room) counts.set(room, (counts.get(room) ?? 0) + 1);
-      }
-      counts.forEach((count, room) => discovered.set(room, count));
-      if (discovered.size) { finish(); return; }
-      if (settle) clearTimeout(settle);
-      settle = setTimeout(finish, 1000);
-    }).subscribe(async state => {
-      if (state === "SUBSCRIBED" && !done) {
-        await ch.track({ scout: true });
-        await ch.send({ type: "broadcast", event: "discover", payload: {} });
-      }
+/** One lobby connection survives menu-to-room transitions. */
+export function usePublicLobby(me: Me | null, room: string | null) {
+  const lobbyRef = useRef<RealtimeChannel | null>(null);
+  const roomRef = useRef(room);
+  roomRef.current = room;
+  const playerId = me?.id;
+  useEffect(() => {
+    if (!playerId) return;
+    let active = true;
+    const ch = supabase.channel(LOBBY, { config: { presence: { key: playerId, enabled: true } } });
+    lobbyRef.current = ch;
+    ch.on("presence", { event: "sync" }, () => {}).subscribe(async state => {
+      if (state === "SUBSCRIBED" && active) await ch.track({ room: roomRef.current });
     });
-    const timeout = setTimeout(finish, 15000);
-  });
+    return () => { active = false; lobbyRef.current = null; supabase.removeChannel(ch); };
+  }, [playerId]);
+  useEffect(() => {
+    const ch = lobbyRef.current;
+    if (ch?.state === "joined") void ch.track({ room });
+  }, [room]);
+  return useCallback(async () => {
+    const ch = lobbyRef.current;
+    if (!ch) return null;
+    const counts = new Map<string, number>();
+    for (const metas of Object.values(ch.presenceState<{ room?: string }>())) {
+      const code = metas[0]?.room;
+      if (code) counts.set(code, (counts.get(code) ?? 0) + 1);
+    }
+    return [...counts].filter(([, n]) => n < MAX_PLAYERS).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  }, []);
 }
 
 export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = false) {
@@ -88,7 +71,6 @@ export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = f
     const ch = supabase.channel(`brix-room:${code}`, {
       config: { presence: { key: me.id }, broadcast: { self: false } },
     });
-    let lobby: RealtimeChannel | null = null;
     let full = false;
     let active = true;
     let ids = new Set<string>();
@@ -104,7 +86,6 @@ export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = f
         full = true;
         setStatus("full");
         supabase.removeChannel(ch);
-        if (lobby) supabase.removeChannel(lobby);
         return;
       }
       ids = new Set(allowed.map((p) => p.id));
@@ -125,22 +106,12 @@ export function useRoom(code: string, me: Me | null, isPublic: boolean, solo = f
       await ch.track({ name: me.name, hue: me.hue, joinedAt, wants });
       if (!active || full) return;
       setStatus((st) => (st === "full" ? st : "ok"));
-      if (isPublic && !lobby) {
-        lobby = supabase.channel(LOBBY, { config: { presence: { key: me.id, enabled: true } } });
-        lobby.on("broadcast", { event: "discover" }, () => {
-          if (active && !full) lobby?.send({ type: "broadcast", event: "room", payload: { room: code, count: Math.max(1, ids.size) } });
-        });
-        lobby.subscribe(async (ls) => {
-          if (ls === "SUBSCRIBED" && !full && active) await lobby?.track({ room: code });
-        });
-      }
     });
 
     return () => {
       active = false;
       chRef.current = null;
       supabase.removeChannel(ch);
-      if (lobby) supabase.removeChannel(lobby);
     };
   }, [code, me, isPublic, solo]);
 
