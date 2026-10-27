@@ -80,7 +80,7 @@ export function laneAt(seed: string, col: number): Lane {
 
 /** Car top positions (px) in a road lane at shared time t (seconds). */
 export function carsAt(lane: Lane, t: number): number[] {
-  if (lane.safe) return [];
+  if (lane.safe === true) return [];
   const h = lane.carLen * CELL;
   const off = (((lane.phase + lane.dir * lane.speed * t) % lane.period) + lane.period) % lane.period;
   const out: number[] = [];
@@ -90,7 +90,7 @@ export function carsAt(lane: Lane, t: number): number[] {
 
 export function hitByCar(seed: string, col: number, rowY: number, t: number) {
   const lane = laneAt(seed, col);
-  if (lane.safe) return false;
+  if (lane.safe === true) return false;
   const h = lane.carLen * CELL;
   const pad = 6;
   return carsAt(lane, t).some((y) => rowY + pad < y + h - 3 && rowY + CELL - pad > y + 3);

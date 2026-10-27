@@ -219,7 +219,7 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
           continue;
         }
         const lane = laneAt(seed, col);
-        if (lane.safe) {
+        if (lane.safe === true) {
           ctx.fillStyle = col % 2 ? c.grass : c.grass2;
           ctx.fillRect(sx, -VIEW_H, CELL + 1, VIEW_H * 3);
         } else {
@@ -269,7 +269,7 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
       // Colored artwork uses the original traffic positions and collision dimensions.
       for (let col = Math.max(0, c0); col < cEnd; col++) {
         const lane = laneAt(seed, col);
-        if (lane.safe) continue;
+        if (lane.safe === true) continue;
         const sx = col * CELL - camX;
         for (const y of carsAt(lane, t)) {
           const index = Math.round((y - lane.phase - lane.dir * lane.speed * t) / lane.period);
