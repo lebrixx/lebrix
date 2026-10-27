@@ -1,7 +1,5 @@
-import roadUrlAsset from "@/assets/brix-rush/terrain/road.png.asset.json";
-const roadUrl = roadUrlAsset.url;
-import grassUrlAsset from "@/assets/brix-rush/terrain/grass.jpg.asset.json";
-const grassUrl = grassUrlAsset.url;
+import roadUrl from "@/assets/brix-rush/terrain/road.png";
+import grassUrl from "@/assets/brix-rush/terrain/grass.jpg";
 import { CELL, VIEW_H } from "./world";
 
 /** Model-derived roads and generated turf, loaded once per mounted game. */

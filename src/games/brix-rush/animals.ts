@@ -1,15 +1,9 @@
-import deerAsset from "@/assets/brix-rush/animals/deer.png.asset.json";
-const deer = deerAsset.url;
-import dogAsset from "@/assets/brix-rush/animals/dog.png.asset.json";
-const dog = dogAsset.url;
-import horseAsset from "@/assets/brix-rush/animals/horse.png.asset.json";
-const horse = horseAsset.url;
-import kittyAsset from "@/assets/brix-rush/animals/kitty.png.asset.json";
-const kitty = kittyAsset.url;
-import pinguinAsset from "@/assets/brix-rush/animals/pinguin.png.asset.json";
-const pinguin = pinguinAsset.url;
-import tigerAsset from "@/assets/brix-rush/animals/tiger.png.asset.json";
-const tiger = tigerAsset.url;
+import deer from "@/assets/brix-rush/animals/deer.png";
+import dog from "@/assets/brix-rush/animals/dog.png";
+import horse from "@/assets/brix-rush/animals/horse.png";
+import kitty from "@/assets/brix-rush/animals/kitty.png";
+import pinguin from "@/assets/brix-rush/animals/pinguin.png";
+import tiger from "@/assets/brix-rush/animals/tiger.png";
 
 export const ANIMALS = [
   { id: "dog", label: "Chien", url: dog },
