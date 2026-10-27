@@ -1,12 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { getUsername } from '@/utils/localIdentity';
+import { resolveBrixUsername } from './username';
 import { hueFor } from "./world";
 import type { Me } from "./net";
-
-const KEY = "brix-name";
-
-export function saveName(name: string) {
-  localStorage.setItem(KEY, name.trim().slice(0, 14));
-}
 
 /** Per-tab identity; null until hydrated or if no pseudo saved yet. */
 export function useIdentity() {
@@ -15,15 +11,9 @@ export function useIdentity() {
   useEffect(() => {
     let id = sessionStorage.getItem("brix-id");
     if (!id) { id = crypto.randomUUID(); sessionStorage.setItem("brix-id", id); }
-    const name = localStorage.getItem(KEY);
+    const name = resolveBrixUsername(getUsername());
     if (name) setMe({ id, name, hue: hueFor(id) });
     setReady(true);
   }, []);
-  const setName = useCallback((name: string) => {
-    saveName(name);
-    const id = sessionStorage.getItem("brix-id") ?? crypto.randomUUID();
-    sessionStorage.setItem("brix-id", id);
-    setMe({ id, name: name.trim().slice(0, 14), hue: hueFor(id) });
-  }, []);
-  return { me, ready, setName };
+  return { me, ready };
 }
