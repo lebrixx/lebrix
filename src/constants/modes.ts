@@ -71,7 +71,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.SURVIE_60S]: {
     name: "Stack Jump",
-    desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, évite les pièges rouges.",
+    desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, vise les plaques dorées.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
