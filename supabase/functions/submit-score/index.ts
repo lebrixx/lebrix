@@ -12,6 +12,7 @@ const SCORE_LIMITS: Record<string, number> = {
   survie_60s: 6000,
   zone_mobile: 7000,
   brix_rush: 8000,
+  zone_traitresse: 8000, // Accept older installed app versions; current rankings exclude this identity.
   memoire_expert: 5000
 };
 
@@ -22,7 +23,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const processedSubmissions = new Set<string>();
 const SUBMISSION_ID_TTL = 60000;
 
-const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'brix_rush', 'memoire_expert'];
+const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'brix_rush', 'zone_traitresse', 'memoire_expert'];
 
 function getMondayOfCurrentWeek(): Date {
   const now = new Date();

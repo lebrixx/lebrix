@@ -1,7 +1,7 @@
 # Tasks
-- [ ] Replace Orbit Dodge with the supplied Brix Rush solo game and original artwork.
-- [ ] Unlock Brix Rush by default and update all ranking, challenge and shop references without mixing historical Orbit Dodge scores.
-- [ ] Verify gameplay, replay, secure score submission and cumulative rankings.
+- [x] Replace Orbit Dodge with the supplied Brix Rush solo game and original artwork; verified rendered animals, roads and vehicles.
+- [x] Unlock Brix Rush by default and update all ranking, challenge and shop references without mixing historical Orbit Dodge scores.
+- [x] Verify gameplay, replay, secure score submission and cumulative rankings; real score 11 read back in per-mode, monthly and general rankings.
 - [x] Keep only "Activer des Boosts" on the game-over boost button (no subtitle line); verified in Cube Dodge play.
 
 - [x] Shorten the monthly ranking explanation in all three languages; verified the French text in the monthly ranking.
