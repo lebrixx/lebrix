@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Home } from 'lucide-react';
+import { Home, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RunnerGame } from '@/games/brix-rush/RunnerGame';
 import { Leaderboard, type ScoreRow } from '@/games/brix-rush/Leaderboard';
@@ -28,6 +28,9 @@ interface Props {
 
 type Room = { code: string; public: boolean; solo: boolean };
 
+/** Temporarily off: flip to true to re-enable live rooms. */
+const MULTIPLAYER_ENABLED = false;
+
 export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const { me, ready } = useIdentity();
   const name = resolveBrixUsername(getUsername());
@@ -35,8 +38,9 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const [room, setRoom] = useState<Room | null>(null);
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<ScoreRow[]>([]);
-  const { players, status, remote, send, animalsRef } = useRoom(room?.code ?? '', room ? me : null, room?.public ?? false, room?.solo ?? false);
-  const findPublicRoom = usePublicLobby(me, room?.public && !room.solo ? room.code : null);
+  // Multiplayer paused: solo never opens a realtime channel, and the lobby is not subscribed.
+  const { players, status, remote, send, animalsRef } = useRoom(room?.code ?? '', room ? me : null, room?.public ?? false, MULTIPLAYER_ENABLED ? (room?.solo ?? false) : true);
+  const findPublicRoom = usePublicLobby(MULTIPLAYER_ENABLED ? me : null, room?.public && !room.solo ? room.code : null);
   const gameOver = useRef(onGameOver);
   gameOver.current = onGameOver;
   const ok = !!name && me?.name === name;
@@ -88,6 +92,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
             <p className="text-sm uppercase brix-muted">Pseudo</p>
             <p className="brix-username">{name ?? 'Pseudo requis'}</p>
             <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
+            {MULTIPLAYER_ENABLED ? <>
             <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? "Recherche d’une salle…" : 'Multijoueur'}</Button>
             <div className="brix-friends pt-4">
               <p className="mb-2 text-sm uppercase brix-muted">Entre amis</p>
@@ -97,6 +102,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
               </div>
               <Button variant="link" className="brix-private mt-3 w-full text-sm" disabled={!ok || !ready} onClick={() => go({ code: randomCode(), public: false, solo: false })}>Créer une salle privée</Button>
             </div>
+            </> : <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full gap-2" disabled aria-label="Multijoueur bientôt disponible"><Lock className="h-5 w-5" />Multijoueur <span className="text-xs opacity-80">SOON</span></Button>}
           </div>
         </div>
       </main> : status === 'full' ? <main className="arcade-bg brix-full">
