@@ -75,11 +75,11 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const cw = wrap.clientWidth, ch = wrap.clientHeight;
-      scale = ch / VIEW_H;
+      scale = Math.min(ch / VIEW_H, cw / 520);
       W = cw / scale;
       canvas.width = cw * dpr; canvas.height = ch * dpr;
       canvas.style.width = `${cw}px`; canvas.style.height = `${ch}px`;
-      ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+      ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, dpr * (ch - VIEW_H * scale) / 2);
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -204,7 +204,8 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
 
       // Cosmetic orthographic incline: game coordinates and all collision logic stay unchanged.
       ctx.fillStyle = c.road;
-      ctx.fillRect(0, 0, W, VIEW_H);
+      const extraHeight = wrap.clientHeight / scale - VIEW_H;
+      ctx.fillRect(0, -extraHeight / 2, W, VIEW_H + extraHeight);
       ctx.save();
       ctx.transform(1, 0, -0.16, 0.86, VIEW_H * 0.08, VIEW_H * 0.07);
 
@@ -230,10 +231,10 @@ export function RunnerGame({ initialCol = 0, graceMs = 0, shield = false, onShie
       }
       // "BRIX RUSH" title floating in the void behind the spawn, anchored in the world.
       {
-        const tx = -CELL * 2.6 - camX;
+        const tx = -CELL * 1.5 - camX;
         if (tx > -W && tx < W + 200) {
           ctx.textAlign = "center"; ctx.textBaseline = "middle";
-          ctx.font = "400 40px sans-serif";
+          ctx.font = "800 24px sans-serif";
           const lines: [string, number][] = [["BRIX", VIEW_H / 2 - 26], ["RUSH", VIEW_H / 2 + 26]];
           for (let d = 8; d > 0; d--) {
             ctx.fillStyle = d === 8 ? cssVar("--brix-shadow") : `color-mix(in oklab, ${c.line} ${35 + d * 3}%, black)`;
