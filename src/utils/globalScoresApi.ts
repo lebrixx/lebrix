@@ -1,3 +1,4 @@
+import { RANKED_MODES } from '@/constants/modes';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface GlobalPlayerScore {
@@ -16,7 +17,7 @@ export function clearGlobalCache() {
   monthlyCachedData = null;
 }
 
-const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
+const VALID_MODES: readonly string[] = RANKED_MODES;
 
 export async function fetchGlobalLeaderboard(limit = 1000): Promise<GlobalPlayerScore[]> {
   if (cachedData && Date.now() - cachedData.ts < CACHE_TTL) {

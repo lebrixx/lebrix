@@ -23,7 +23,7 @@ const modeNames = {
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
   zone_mobile: 'Falling Tunnel',
-  zone_traitresse: 'Orbit Dodge',
+  brix_rush: 'Brix Rush',
   memoire_expert: 'Rotating Cube'
 };
 

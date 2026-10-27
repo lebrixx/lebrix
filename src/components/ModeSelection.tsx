@@ -17,7 +17,7 @@ interface ModeSelectionProps {
   unlockedModes: string[];
   onSelectMode: (mode: ModeType, selectedBoosts?: string[]) => void;
   onBack: () => void;
-  onOpenShop: (target?: 'orbit' | 'tickets') => void;
+  onOpenShop: (target?: 'tickets') => void;
   onOpenChallenges?: () => void;
   onOpenReflexGrid?: () => void;
 }
@@ -28,7 +28,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.ARC_CHANGEANT: return <Box className="w-8 h-8" />;
     case ModeID.SURVIE_60S: return <Layers className="w-8 h-8" />;
     case ModeID.ZONE_MOBILE: return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
-    case ModeID.ZONE_TRAITRESSE: return <Sparkles className="w-8 h-8" />;
+    case ModeID.BRIX_RUSH: return <Sparkles className="w-8 h-8" />;
     case ModeID.MEMOIRE_EXPERT: return <Grid3x3 className="w-8 h-8" />;
     case ModeID.PONG_CIRCULAIRE: return <Factory className="w-8 h-8" />;
     default: return <Target className="w-8 h-8" />;
@@ -204,7 +204,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               </div>
 
               <p className="text-text-secondary mb-2 leading-relaxed">
-                {config.desc}
+                {modeId === ModeID.BRIX_RUSH ? t.descZoneTraitresse : config.desc}
               </p>
 
               {modeId === ModeID.MEMOIRE_EXPERT && (
@@ -288,7 +288,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                   </div>
                 ) : (
                   <Button
-                    onClick={() => onOpenShop(modeId === ModeID.ZONE_TRAITRESSE ? 'orbit' : undefined)}
+                    onClick={() => onOpenShop()}
                     className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />

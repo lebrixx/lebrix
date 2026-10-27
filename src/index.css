@@ -18,6 +18,17 @@
   }
 
   :root {
+    --brix-grass: #31583f;
+    --brix-grass-2: #2d513a;
+    --brix-road: #252932;
+    --brix-mark: #858893;
+    --brix-void: hsl(var(--game-darker));
+    --brix-obstacle: hsl(var(--danger));
+    --brix-highlight: hsl(var(--text-primary));
+    --brix-line: hsl(var(--primary));
+    --brix-shadow: rgb(0 0 0 / 0.45);
+    --brix-shadow-soft: rgb(0 0 0 / 0.22);
+    --brix-highlight-soft: rgb(255 255 255 / 0.35);
     /* Game Background & Base Colors - Fond violet fixe */
     --game-dark: 270 30% 8%;
     --game-darker: 270 40% 4%;
@@ -730,3 +741,13 @@
 
 
 
+
+.brix-game { position: fixed; inset: 0; z-index: 35; padding-top: var(--app-top-clearance); background: var(--brix-void); overflow: hidden; display: flex; flex-direction: column; }
+.brix-playfield { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.brix-stage { position: absolute; inset: 0 0 100px; overflow: hidden; }
+.brix-stage canvas { display: block; }
+.brix-controls { position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.brix-pad { width: 56px; height: 56px; border-radius: 8px; touch-action: none; background: hsl(var(--button-bg)); color: hsl(var(--text-primary)); border: 2px solid hsl(var(--wheel-border)); }
+.brix-pad svg { width: 26px; height: 26px; }
+.brix-forward { width: 72px; background: hsl(var(--primary)); color: hsl(var(--game-darker)); border-color: hsl(var(--primary)); }
+.brix-start { position: absolute; inset: 0; overflow: auto; }
