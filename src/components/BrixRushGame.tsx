@@ -74,7 +74,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const menu = useCallback(() => { setRoom(null); setRows([]); }, []);
 
   return createPortal(
-    <div className="brix-original game-screen">
+    <div className={`brix-original game-screen${room && status !== 'full' ? ' brix-race' : ''}`}>
       {!room ? <main className="arcade-bg brix-home">
         <Button variant="ghost" className="brix-exit" onClick={onBack} aria-label="Retour à Lucky Stop"><Home /></Button>
         <div className="brix-home-inner">
