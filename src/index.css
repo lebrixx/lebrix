@@ -871,7 +871,7 @@
 .brix-original .grass-menu-btn { height: auto; }
 .brix-original .game-hud .brix-hud-title:hover { background: transparent; color: var(--primary); }
 @media (orientation: portrait) {
-  .brix-original.game-screen { --safe-top: 0px; --safe-right: 0px; --safe-bottom: 0px; --safe-left: 0px; inset: auto; top: 0; left: 100vw; width: 100dvh; height: 100vw; transform-origin: top left; transform: rotate(90deg); }
+  .brix-original.game-screen.brix-race { --safe-top: 0px; --safe-right: 0px; --safe-bottom: 0px; --safe-left: 0px; inset: auto; top: 0; left: 100vw; width: 100dvh; height: 100vw; transform-origin: top left; transform: rotate(90deg); }
 }
 @media (max-height: 450px) and (orientation: landscape), (max-width: 450px) and (orientation: portrait) {
   .brix-original .game-board .runner-row { height: 24px; }
