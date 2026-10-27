@@ -2,11 +2,48 @@
   "source": "brix-rush-transfert.zip",
   "scope": "Replace Orbit Dodge inside Lucky Stop",
   "capabilities": [
-    {"capability":"game code and artwork","source":"src/game and src/assets","outcome":"migrate","status":"pending","next_action":"Integrate solo canvas engine and original sprite assets"},
-    {"capability":"schema, records and auth identities","source":"No database, accounts or stored records in source","outcome":"not applicable","status":"verified","next_action":null},
-    {"capability":"real-time rooms and presence","source":"net.ts and room route","outcome":"omit per existing user rejection of real-time multiplayer","status":"accepted exclusion","next_action":null},
-    {"capability":"leaderboards and authorization","source":"Lucky Stop secure score functions","outcome":"replace mode with isolated brix_rush scores in all rankings","status":"pending","next_action":"Update secure allowlists and verify write/read"},
-    {"capability":"files, external providers, callbacks, schedules and secrets","source":"Bundled sprites; no source provider secrets or endpoints","outcome":"Use existing Lucky Stop services","status":"pending","next_action":"Upload original sprites via asset flow"},
-    {"capability":"cutover and verification","source":"Existing Orbit Dodge integration","outcome":"Replace in menu, shop, challenges and totals; unlock by default","status":"pending","next_action":"Tests and browser gameplay verification"}
-  ]
+    {
+      "capability": "game code and artwork",
+      "source": "src/game and src/assets",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "schema, records and auth identities",
+      "source": "No database, accounts or stored records in source",
+      "outcome": "not applicable",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "real-time rooms and presence",
+      "source": "net.ts and room route",
+      "outcome": "omit per existing user rejection of real-time multiplayer",
+      "status": "accepted exclusion",
+      "next_action": null
+    },
+    {
+      "capability": "leaderboards and authorization",
+      "source": "Lucky Stop secure score functions",
+      "outcome": "replace mode with isolated brix_rush scores in all rankings",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "files, external providers, callbacks, schedules and secrets",
+      "source": "Bundled sprites; no source provider secrets or endpoints",
+      "outcome": "Sprites bundled for native offline runtime after asset URLs returned HTML in localhost; existing providers unchanged",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "cutover and verification",
+      "source": "Existing Orbit Dodge integration",
+      "outcome": "Replace in menu, shop, challenges and totals; unlock by default",
+      "status": "verified",
+      "next_action": null
+    }
+  ],
+  "verification": "5 tests passed; real solo game, replay and 11-point secure submission read back in per-mode/monthly/general UI; verification row removed. Existing deployment unchanged."
 }
