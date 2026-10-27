@@ -1,4 +1,5 @@
 # Tasks
+- [x] Enlarge the Brix Rush pre-game home button and list Brix Rush second, right after Cube Dodge, in the mode list and every leaderboard tab; verified 52×52 button at the safe-area top, and both lists read back Cube Dodge then Brix Rush, 26 tests passed.
 - [x] Lock Brix Rush to the main-game username, block all launches without it, and use the Lucky Stop-style title; verified full 16-character name in solo/private rooms and all four entry buttons blocked without a name, 25 tests passed.
 - [x] Reproduce the re-uploaded Brix Rush landscape experience, original score and automatic return to start, round movement buttons, Menu in the grass and Solo/Multiplayer pre-game screen; phone landscape/portrait verified, original contains no audio.
 - [x] Restore the supplied Brix Rush live multiplayer; two real browser clients joined the same private and public rooms, remote movement read back, death and 1200ms return to start verified.

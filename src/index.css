@@ -779,7 +779,8 @@
 .brix-original .brix-danger { color: var(--game-obstacle); }
 .brix-original .brix-home { position: absolute; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: calc(var(--app-top-clearance, 64px) + 56px) 16px 40px; }
 .brix-original .brix-home-inner { width: 100%; max-width: 448px; }
-.brix-original .brix-exit { position: fixed; left: 24px; top: var(--app-top-clearance, 64px); width: 40px; height: 40px; color: var(--primary); z-index: 1; }
+.brix-original .brix-exit { position: fixed; left: 20px; top: var(--app-top-clearance, 64px); width: 52px; height: 52px; color: var(--primary); z-index: 1; }
+.brix-original .brix-exit svg { width: 30px; height: 30px; }
 .brix-original .brix-username { overflow-wrap: anywhere; font-size: 1.125rem; font-weight: 600; }
 .brix-original .brix-friends { border-top: 1px solid var(--border); }
 .brix-original .brix-private { color: var(--accent); height: auto; padding: 0; }
