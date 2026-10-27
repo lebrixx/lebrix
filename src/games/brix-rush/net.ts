@@ -44,6 +44,14 @@ export function findPublicRoom(): Promise<string | null> {
     ch.on("broadcast", { event: "room" }, ({ payload }) => {
       if (typeof payload?.room === "string" && Number.isInteger(payload.count) && payload.count > 0 && payload.count < MAX_PLAYERS) discovered.set(payload.room, payload.count);
     }).on("presence", { event: "sync" }, () => {
+      const state = ch.presenceState<{ room?: string }>();
+      const counts = new Map<string, number>();
+      for (const metas of Object.values(state)) {
+        const room = metas[0]?.room;
+        if (room) counts.set(room, (counts.get(room) ?? 0) + 1);
+      }
+      counts.forEach((count, room) => discovered.set(room, count));
+      if (discovered.size) { finish(); return; }
       if (settle) clearTimeout(settle);
       settle = setTimeout(finish, 1000);
     }).subscribe(async state => {
@@ -52,7 +60,7 @@ export function findPublicRoom(): Promise<string | null> {
         await ch.send({ type: "broadcast", event: "discover", payload: {} });
       }
     });
-    const timeout = setTimeout(finish, 6000);
+    const timeout = setTimeout(finish, 15000);
   });
 }
 
