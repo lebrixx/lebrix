@@ -777,9 +777,10 @@
 .brix-original .brix-primary { color: var(--primary); }
 .brix-original .brix-muted { color: var(--muted-foreground); }
 .brix-original .brix-danger { color: var(--game-obstacle); }
-.brix-original .brix-home { position: absolute; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
+.brix-original .brix-home { position: absolute; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: calc(var(--app-top-clearance, 64px) + 56px) 16px 40px; }
 .brix-original .brix-home-inner { width: 100%; max-width: 448px; }
-.brix-original .brix-exit { position: fixed; left: 24px; top: 24px; width: 40px; height: 40px; color: var(--primary); }
+.brix-original .brix-exit { position: fixed; left: 24px; top: var(--app-top-clearance, 64px); width: 40px; height: 40px; color: var(--primary); z-index: 1; }
+.brix-original .brix-username { overflow-wrap: anywhere; font-size: 1.125rem; font-weight: 600; }
 .brix-original .brix-friends { border-top: 1px solid var(--border); }
 .brix-original .brix-private { color: var(--accent); height: auto; padding: 0; }
 .brix-original .brix-full { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
@@ -812,11 +813,13 @@
     --safe-bottom: 0px;
     --safe-left: 0px;
     --hud-gap: 24px;
+    --brix-left-clearance: 64px;
+    --brix-pad-bottom: 48px;
     position: fixed; inset: 0; background: var(--game-sky); overflow: hidden;
   }
   .brix-original .game-stage { position: absolute; inset: 0; overflow: hidden; }
   .brix-original .game-stage canvas { display: block; }
-  .brix-original .game-hud { position: absolute; top: calc(var(--safe-top) + var(--hud-gap)); left: calc(var(--safe-left) + var(--hud-gap)); display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; max-width: 210px; font-size: 0.7rem; pointer-events: auto; }
+  .brix-original .game-hud { position: absolute; top: calc(var(--safe-top) + var(--hud-gap)); left: calc(var(--safe-left) + var(--brix-left-clearance)); display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; max-width: 210px; font-size: 0.7rem; pointer-events: auto; }
   .brix-original .game-hud > a { flex-basis: 100%; font-size: 0.9rem; margin-bottom: 2px; }
   .brix-original .game-hud .chip { padding: 0.2rem 0.5rem; }
   .brix-original .animal-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid transparent; display: grid; place-items: center; }
@@ -841,7 +844,8 @@
   .brix-original .runner-score { min-width: 24px; text-align: right; font-weight: 700; color: var(--foreground); }
   .brix-original .runner-best { color: var(--primary); }
   .brix-original .game-pad { position: absolute; bottom: calc(var(--safe-bottom) + var(--hud-gap)); display: flex; gap: 0.75rem; }
-  .brix-original .game-pad-left { left: calc(var(--safe-left) + var(--hud-gap)); }
+  .brix-original .game-pad-left { left: calc(var(--safe-left) + var(--brix-left-clearance)); bottom: calc(var(--safe-bottom) + var(--brix-pad-bottom)); }
+  .brix-original .game-pad-left .pad-btn { width: 6rem; height: 6rem; }
   .brix-original .game-pad-right { right: calc(var(--safe-right) + var(--hud-gap)); bottom: calc(var(--safe-bottom) + var(--hud-gap) + 1.1rem); }
   .brix-original .pad-btn { width: 5.5rem; height: 5.5rem; border-radius: 999px; font-family: var(--font-display); font-size: 1.7rem; color: var(--foreground); background: color-mix(in oklch, var(--secondary) 65%, transparent); border: 2px solid var(--border); touch-action: none; user-select: none; -webkit-user-select: none; }
   .brix-original .pad-btn:active { background: color-mix(in oklch, var(--accent) 45%, transparent); }
@@ -879,6 +883,7 @@
   .brix-original .game-pad { gap: 10px; }
   .brix-original .game-pad-right { bottom: calc(var(--safe-bottom) + var(--hud-gap) + 10px); }
   .brix-original .pad-btn { width: 68px; height: 68px; font-size: 1.5rem; }
+  .brix-original .game-pad-left .pad-btn { width: 78px; height: 78px; font-size: 1.7rem; }
   .brix-original .pad-btn-jump { width: 94px; height: 94px; font-size: 2.1rem; }
   .brix-original .game-pad-right .pad-btn:not(.pad-btn-jump) { width: 80px; height: 80px; font-size: 1.7rem; }
 }

@@ -85,8 +85,8 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
           <h1 className="flex justify-center"><img src={brixRushLogo} alt="BRIX RUSH" className="h-36 w-full max-w-72 object-contain" /></h1>
           <p className="mt-4 text-center brix-muted">Même ligne de départ. {MAX_PLAYERS} coureurs max. Pas de fin.</p>
           <div className="panel mt-8 space-y-4 p-6">
-            <label htmlFor="brix-name" className="block text-sm uppercase brix-muted">Pseudo</label>
-            <input id="brix-name" className="arcade-input" value={name ?? ''} readOnly placeholder="Pseudo requis" />
+            <p className="text-sm uppercase brix-muted">Pseudo</p>
+            <p className="brix-username">{name ?? 'Pseudo requis'}</p>
             <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
             <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? "Recherche d’une salle…" : 'Multijoueur'}</Button>
             <div className="brix-friends pt-4">
