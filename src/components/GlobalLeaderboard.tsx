@@ -9,6 +9,7 @@ import { applyDecoration } from '@/utils/seasonPass';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { useToast } from '@/hooks/use-toast';
 import { MonthlyTimer } from '@/components/MonthlyTimer';
+import { RANKED_MODES } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
 interface GlobalLeaderboardProps {
@@ -129,7 +130,7 @@ const LeaderboardList: React.FC<LeaderboardListProps> = ({
                   </h3>
                   <div className="flex items-center gap-1 text-[10px] text-text-muted">
                     <Gamepad2 className="w-3 h-3" />
-                    {entry.modes_played}/7 modes
+                    {entry.modes_played}/{RANKED_MODES.length} modes
                   </div>
                 </div>
               </div>
@@ -324,7 +325,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
                   <span className="text-text-primary font-bold text-sm">{currentUsername}</span>
                   <div className="flex items-center gap-1 text-xs text-text-muted">
                     <Gamepad2 className="w-3 h-3" />
-                    {activeData[userRank - 1]?.modes_played || 0}/7 {t.modesPlayedShort}
+                    {activeData[userRank - 1]?.modes_played || 0}/{RANKED_MODES.length} {t.modesPlayedShort}
                   </div>
                 </div>
               </div>
