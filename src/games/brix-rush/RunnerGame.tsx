@@ -339,7 +339,7 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
       </div>
       <div className="game-pad game-pad-right items-end">
         <Button variant="ghost" className="pad-btn" aria-label="Reculer" {...btn("left")}>◀</Button>
-        <Button variant="ghost" className="pad-btn pad-btn-jump" aria-label="Avancer" {...btn("right")}>▶</Button>
+        <Button variant="ghost" className="pad-btn" aria-label="Avancer" {...btn("right")}>▶</Button>
       </div>
     </div>
   );
