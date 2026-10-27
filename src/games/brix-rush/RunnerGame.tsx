@@ -10,6 +10,7 @@ import { ANIMALS, type AnimalId } from "./animals";
 import { createTerrainPainter } from "./terrain";
 import fenceUrl from "@/assets/brix-rush/terrain/fence.png";
 import brixRushLogo from '@/assets/brix-rush-logo.png';
+import { brixImage } from './images';
 
 type Props = {
   onMenu: () => void;
@@ -61,19 +62,20 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
     if (!ctx) return;
     const drawVehicle = createVehiclePainter();
     const drawTerrain = createTerrainPainter();
-    const fenceImg = new Image();
-    fenceImg.src = fenceUrl;
-    const titleImg = new Image();
-    titleImg.src = brixRushLogo;
+    const fenceImg = brixImage(fenceUrl);
+    const titleImg = brixImage(brixRushLogo);
     const c = {
       grass: cssVar("--game-grass"), grass2: cssVar("--game-grass-2"), road: cssVar("--game-road"),
-      mark: cssVar("--game-mark"), void: cssVar("--background"), car: cssVar("--game-obstacle"), text: cssVar("--foreground"), line: cssVar("--primary"),
+      mark: cssVar("--game-mark"), void: cssVar("--background"), car: cssVar("--game-obstacle"), text: cssVar("--foreground"), line: cssVar("--primary"), shadow: cssVar("--brix-shadow-soft"),
     };
     let W = 800;
     let scale = 1;
+    let previousWidth = 0, previousHeight = 0, previousDpr = 0;
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const cw = wrap.clientWidth, ch = wrap.clientHeight;
+      if (!cw || !ch || (cw === previousWidth && ch === previousHeight && dpr === previousDpr)) return;
+      previousWidth = cw; previousHeight = ch; previousDpr = dpr;
       scale = ch / VIEW_H;
       W = cw / scale;
       canvas.width = cw * dpr; canvas.height = ch * dpr;
@@ -113,7 +115,7 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
     };
 
     const animalImgs = Object.fromEntries(ANIMALS.map((a) => {
-      const im = new Image(); im.src = a.url; return [a.id, im];
+      return [a.id, brixImage(a.url)];
     })) as Record<AnimalId, HTMLImageElement>;
     const drawChick = (sx: number, sy: number, hue: number, alpha: number, name: string, dead: boolean, pose: ReturnType<typeof stepPose>, animal?: AnimalId) => {
       const { lift } = pose;
@@ -235,7 +237,7 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
         for (let col = Math.max(0, c0); col < cEnd; col++) {
           for (const row of fencesAt(seed, col)) {
             const cx = col * CELL - camX + CELL / 2, cy = row * CELL + CELL / 2;
-            ctx.fillStyle = cssVar("--brix-shadow-soft");
+            ctx.fillStyle = c.shadow;
             ctx.beginPath(); ctx.ellipse(cx + 3, cy + 3, fh / 2, (CELL - 4) / 2, 0, 0, Math.PI * 2); ctx.fill();
             ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.PI / 2);
             ctx.drawImage(fenceImg, -(CELL - 4) / 2, -fh / 2, CELL - 4, fh);

@@ -1,22 +1,29 @@
 import roadUrl from "@/assets/brix-rush/terrain/road.png";
 import grassUrl from "@/assets/brix-rush/terrain/grass.jpg";
 import { CELL, VIEW_H } from "./world";
+import { brixImage, imageReady } from "./images";
 
-/** Model-derived roads and generated turf, loaded once per mounted game. */
-export function createTerrainPainter() {
-  const road = new Image();
-  road.src = roadUrl;
-  const grass = new Image();
-  grass.src = grassUrl;
-  let turf: CanvasPattern | null = null;
-  grass.onload = () => {
+let turf: CanvasPattern | null = null;
+let preparation: Promise<void> | undefined;
+
+export function prepareTerrainSprites() {
+  preparation ??= Promise.all([imageReady(roadUrl), imageReady(grassUrl)]).then(() => {
+    const grass = brixImage(grassUrl);
+    if (!grass.naturalWidth) return;
     const tile = document.createElement("canvas");
     tile.width = tile.height = 160;
     const g = tile.getContext("2d");
     if (!g) return;
     g.drawImage(grass, 0, 0, 160, 160);
     turf = g.createPattern(tile, "repeat");
-  };
+  });
+  return preparation;
+}
+
+/** Reuse the original turf texture and decoded road across races. */
+export function createTerrainPainter() {
+  const road = brixImage(roadUrl);
+  void prepareTerrainSprites();
 
   return (ctx: CanvasRenderingContext2D, x: number, col: number, safe: boolean,
     leftSafe: boolean, rightSafe: boolean) => {

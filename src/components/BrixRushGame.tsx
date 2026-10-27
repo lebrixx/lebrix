@@ -12,6 +12,9 @@ import type { BoostType } from '@/types/boosts';
 import { getUsername } from '@/utils/localIdentity';
 import { resolveBrixUsername } from '@/games/brix-rush/username';
 import brixRushLogo from '@/assets/brix-rush-logo.png';
+import { prepareBrixImages } from '@/games/brix-rush/images';
+import { prepareVehicleSprites } from '@/games/brix-rush/vehicles';
+import { prepareTerrainSprites } from '@/games/brix-rush/terrain';
 
 interface Props {
   onBack?: () => void;
@@ -37,6 +40,9 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const [code, setCode] = useState('');
   const [room, setRoom] = useState<Room | null>(null);
   const [busy, setBusy] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const mounted = useRef(false);
+  const artwork = useRef<Promise<unknown> | null>(null);
   const [rows, setRows] = useState<ScoreRow[]>([]);
   // Multiplayer paused: solo never opens a realtime channel, and the lobby is not subscribed.
   const { players, status, remote, send, animalsRef } = useRoom(room?.code ?? '', room ? me : null, room?.public ?? false, MULTIPLAYER_ENABLED ? (room?.solo ?? false) : true);
@@ -47,21 +53,29 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
 
   const setBoosts = useRef(onSetBoosts);
   useEffect(() => {
+    mounted.current = true;
+    artwork.current = Promise.all([prepareBrixImages(), prepareVehicleSprites(), prepareTerrainSprites()]);
     setBoosts.current?.([]);
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
     document.head.appendChild(link);
-    return () => { link.remove(); };
+    return () => { mounted.current = false; link.remove(); };
   }, []);
 
-  const go = useCallback((next: Room) => {
+  const go = useCallback(async (next: Room) => {
+    if (preparing) return;
     const currentName = resolveBrixUsername(getUsername());
     if (!ready || !me || !currentName || me.name !== currentName) return;
+    setPreparing(true);
+    await artwork.current;
+    if (!mounted.current) return;
+    setPreparing(false);
+    if (resolveBrixUsername(getUsername()) !== me.name) return;
     setRows([]);
     startGameSession();
     setRoom(next);
-  }, [me, ready]);
+  }, [me, ready, preparing]);
 
   useEffect(() => {
     if (!busy || !ok || !ready) return;
@@ -91,7 +105,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
           <div className="panel mt-8 space-y-4 p-6">
             <p className="text-sm uppercase brix-muted">Pseudo</p>
             <p className="brix-username">{name ?? 'Pseudo requis'}</p>
-            <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
+            <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || preparing || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
             {MULTIPLAYER_ENABLED ? <>
             <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? "Recherche d’une salle…" : 'Multijoueur'}</Button>
             <div className="brix-friends pt-4">
