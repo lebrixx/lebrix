@@ -1,4 +1,6 @@
 # Project rules
+- Keep Brix Rush's solo world and sprite painters in `src/games/brix-rush`; adapt shared HUD, boosts and game-over flows outside the engine so original gameplay stays isolated.
+- Use the distinct `brix_rush` score identity and the shared ranked/free mode lists; keep historical Orbit Dodge data untouched and excluded so different games never share records.
 
 - Render the main-menu wordmark as a transparent image with constrained dimensions to preserve the supplied lettering style without changing navigation layout.
 - Use a full-viewport app-content scroller with initially offset app-screens and shared dialog clearance tokens, so fixed controls start lower while scrolling content can reach the phone's top without native insets.
