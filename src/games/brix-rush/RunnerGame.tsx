@@ -93,6 +93,7 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const rendered: Record<string, { x: number; y: number; targetX: number; targetY: number; stepT: number; dx: number; dy: number }> = {};
     let sendT = 0, scoreT = 0, raf = 0;
+    let lastScores: Parameters<Props["onScores"]>[0] = [];
 
     // Visual-only step: wind-up, push-off, directional stride, then springy landing.
     // Neither the grid position nor the collision/broadcast timing uses this pose.
@@ -313,10 +314,18 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
       }
       if (now - scoreT > 250) {
         scoreT = now;
-        onScores([
+        const scores = [
           { id: me.id, name: me.name, hue: me.hue, x: px, best: p.best, dead: p.dead, me: true },
           ...Object.values(remote.current).map((r) => ({ id: r.id, name: r.name, hue: r.hue, x: r.x, best: r.best, dead: r.dead, me: false })),
-        ]);
+        ];
+        const changed = scores.length !== lastScores.length || scores.some((row, index) => {
+          const previous = lastScores[index];
+          return !previous || row.id !== previous.id || row.name !== previous.name || row.hue !== previous.hue || row.x !== previous.x || row.best !== previous.best || row.dead !== previous.dead || row.me !== previous.me;
+        });
+        if (changed) {
+          lastScores = scores;
+          onScores(scores);
+        }
       }
       raf = requestAnimationFrame(loop);
     };

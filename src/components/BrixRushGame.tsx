@@ -41,6 +41,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const [room, setRoom] = useState<Room | null>(null);
   const [busy, setBusy] = useState(false);
   const [preparing, setPreparing] = useState(false);
+  const entering = useRef(false);
   const mounted = useRef(false);
   const artwork = useRef<Promise<unknown> | null>(null);
   const [rows, setRows] = useState<ScoreRow[]>([]);
@@ -60,22 +61,24 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
     document.head.appendChild(link);
-    return () => { mounted.current = false; link.remove(); };
+    return () => { mounted.current = false; entering.current = false; link.remove(); };
   }, []);
 
   const go = useCallback(async (next: Room) => {
-    if (preparing) return;
+    if (entering.current) return;
     const currentName = resolveBrixUsername(getUsername());
     if (!ready || !me || !currentName || me.name !== currentName) return;
+    entering.current = true;
     setPreparing(true);
     await artwork.current;
     if (!mounted.current) return;
+    entering.current = false;
     setPreparing(false);
     if (resolveBrixUsername(getUsername()) !== me.name) return;
     setRows([]);
     startGameSession();
     setRoom(next);
-  }, [me, ready, preparing]);
+  }, [me, ready]);
 
   useEffect(() => {
     if (!busy || !ok || !ready) return;
