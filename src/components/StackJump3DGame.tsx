@@ -36,7 +36,6 @@ interface StackJump3DGameProps {
 const PLATE_H = 0.35;
 const BASE_SIZE = 2.2;
 const TWIN_EVERY = 6;
-const RED_DURATION = 2.5;
 const BEST_KEY = 'bestScore_survie_60s';
 
 // Dimensions réelles du modèle de plaque (GLB)
@@ -73,14 +72,13 @@ function makeModelPlate(template: THREE.Group, size: number, color: THREE.Color 
   return { group, mats };
 }
 
-type PlateKind = 'normal' | 'gold' | 'red' | 'twin';
+type PlateKind = 'normal' | 'gold' | 'twin';
 
 function pickNextKind(score: number, twinCounter: number): PlateKind {
   if (score >= 4 && twinCounter >= TWIN_EVERY - 1) return 'twin';
   if (score < 4) return 'normal';
   const r = Math.random();
-  if (r < 0.04) return 'gold';
-  if (r < 0.22) return 'red';
+  if (r < 0.08) return 'gold';
   return 'normal';
 }
 
