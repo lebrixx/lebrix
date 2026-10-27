@@ -5,12 +5,15 @@ export const ModeID = {
   ARC_CHANGEANT: "arc_changeant", 
   SURVIE_60S: "survie_60s",
   ZONE_MOBILE: "zone_mobile",
-  ZONE_TRAITRESSE: "zone_traitresse",
+  BRIX_RUSH: "brix_rush",
   MEMOIRE_EXPERT: "memoire_expert",
   PONG_CIRCULAIRE: "pong_circulaire",
 } as const;
 
 export type ModeType = typeof ModeID[keyof typeof ModeID];
+
+export const RANKED_MODES = [ModeID.CLASSIC, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE, ModeID.BRIX_RUSH, ModeID.MEMOIRE_EXPERT] as const;
+export const FREE_MODES = RANKED_MODES;
 
 export const cfgBase = {
   zoneArc: Math.PI / 5,      // ~36°, valeur par défaut
@@ -72,9 +75,9 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survivalTime: 0,
     variableArc: false
   },
-  [ModeID.ZONE_TRAITRESSE]: {
-    name: "Orbit Dodge",
-    desc: "Glisse horizontalement pour orbiter autour de la tour. Vise l'ouverture verte de chaque anneau et évite les segments rouges !",
+  [ModeID.BRIX_RUSH]: {
+    name: "Brix Rush",
+    desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,

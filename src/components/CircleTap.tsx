@@ -336,7 +336,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           />
 
           {/* Zone verte (arc de succès) - Seulement pour les modes non-traîtresse */}
-          {gameState.currentMode !== 'zone_traitresse' && (
+          {gameState.currentMode !== 'brix_rush' && (
             <path
               d={`M ${cfg.radius + 40 + Math.cos((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius} ${cfg.radius + 40 + Math.sin((zoneStartDeg - 90) * Math.PI / 180) * cfg.radius}
                   A ${cfg.radius} ${cfg.radius} 0 ${zoneArcDeg > 180 ? 1 : 0} 1 
@@ -368,7 +368,7 @@ export const CircleTap: React.FC<CircleTapProps> = ({
           )}
 
           {/* Zones multiples pour le mode zone traîtresse */}
-          {gameState.currentMode === 'zone_traitresse' && gameState.multipleZones && (
+          {gameState.currentMode === 'brix_rush' && gameState.multipleZones && (
             <>
               {gameState.multipleZones.map((zone, index) => {
                 // Convertir en degrés pour le SVG
@@ -552,14 +552,14 @@ export const CircleTap: React.FC<CircleTapProps> = ({
 
       {/* Instructions */}
       <div className="text-center mt-8 text-text-muted animate-fade-in">
-        {gameState.currentMode === 'zone_traitresse' && gameState.gameStatus === 'idle' && (
+        {gameState.currentMode === 'brix_rush' && gameState.gameStatus === 'idle' && (
           <p className="text-sm font-bold text-red-400 mb-2 animate-pulse">
             {t.trapWarning}
           </p>
         )}
         <p className="text-sm">
           {gameState.gameStatus === 'running' 
-            ? gameState.currentMode === 'zone_traitresse'
+            ? gameState.currentMode === 'brix_rush'
               ? t.avoidTrap
               : t.tapInGreenZone
             : gameState.gameStatus === 'idle'

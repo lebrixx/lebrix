@@ -1,3 +1,4 @@
+import { RANKED_MODES } from '@/constants/modes';
 // Secure API for score submission via Edge Function
 import { getLocalIdentity, setUsername, generateDefaultUsername } from './localIdentity';
 import { generateDeviceFingerprint } from './deviceFingerprint';
@@ -64,7 +65,7 @@ export interface SubmitScoreParams {
   mode: string;
 }
 
-const VALID_MODES = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'zone_traitresse', 'memoire_expert'];
+const VALID_MODES: readonly string[] = RANKED_MODES;
 
 function generateSubmissionId(): string {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;

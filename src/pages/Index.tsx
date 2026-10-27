@@ -18,7 +18,7 @@ import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
-import { OrbitDodge3DGame } from '@/components/OrbitDodge3DGame';
+import { BrixRushGame } from '@/components/BrixRushGame';
 import { RotatingCube3DGame } from '@/components/RotatingCube3DGame';
 import { getTickets, consumeTicket } from '@/utils/ticketSystem';
 
@@ -26,7 +26,7 @@ import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
-import { cfgModes, ModeType, ModeID } from '@/constants/modes';
+import { cfgModes, ModeType, ModeID, FREE_MODES } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { updateDailyChallengeProgress } from '@/utils/dailyChallenges';
@@ -53,7 +53,7 @@ const Index = () => {
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
   const [showRateDialog, setShowRateDialog] = useState(false);
-  const [shopTarget, setShopTarget] = useState<'orbit' | 'tickets' | null>(null);
+  const [shopTarget, setShopTarget] = useState<'tickets' | null>(null);
   const [pendingRateDialog, setPendingRateDialog] = useState(false);
   
   // État du thème actuel avec persistance
@@ -65,12 +65,12 @@ const Index = () => {
   // État du mode actuel avec persistance
   const [currentMode, setCurrentMode] = useState<ModeType>(() => {
     const saved = localStorage.getItem('ls_mode');
-    return (saved as ModeType) || 'classic'; // Mode par défaut classic
+    return saved === 'zone_traitresse' ? ModeID.BRIX_RUSH : (saved as ModeType) || 'classic'; // Mode par défaut classic
   });
 
   // Modes débloqués avec persistance
   const [unlockedModes, setUnlockedModes] = useState<string[]>(() => {
-    const freeModes = ['classic', 'arc_changeant', 'survie_60s', 'zone_mobile', 'memoire_expert']; // Modes gratuits
+    const freeModes = [...FREE_MODES]; // Modes gratuits
     const saved = localStorage.getItem('unlockedModes');
     let base: string[] = freeModes;
 
@@ -434,9 +434,9 @@ const Index = () => {
               />
             );
           }
-          if (currentMode === 'zone_traitresse') {
+          if (currentMode === 'brix_rush') {
             return (
-              <OrbitDodge3DGame
+              <BrixRushGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
                 isSoundMuted={isMuted}
@@ -531,7 +531,7 @@ const Index = () => {
             arc_changeant: savedData[`bestScore_arc_changeant`] || 0,
             survie_60s: savedData[`bestScore_survie_60s`] || 0,
             zone_mobile: savedData[`bestScore_zone_mobile`] || 0,
-            zone_traitresse: savedData[`bestScore_zone_traitresse`] || 0,
+            brix_rush: savedData[`bestScore_brix_rush`] || 0,
             memoire_expert: savedData[`bestScore_memoire_expert`] || 0,
             pong_circulaire: savedData[`bestScore_pong_circulaire`] || 0,
           };

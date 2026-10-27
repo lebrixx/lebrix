@@ -28,17 +28,10 @@ interface ShopProps {
   onPurchaseMode: (modeId: string, price: number) => boolean;
   onSpendCoins: (amount: number) => boolean;
   onAddCoins?: (amount: number) => void;
-  initialTarget?: 'orbit' | 'tickets' | null;
+  initialTarget?: 'tickets' | null;
 }
 
 const GAME_MODES_SHOP = [
-  {
-    id: ModeID.ZONE_TRAITRESSE,
-    name: cfgModes[ModeID.ZONE_TRAITRESSE].name,
-    description: cfgModes[ModeID.ZONE_TRAITRESSE].desc,
-    price: 500,
-    icon: AlertTriangle,
-  },
   {
     id: 'expert_tickets',
     name: 'Pack de Tickets Rotating Cube',
@@ -66,7 +59,7 @@ export const Shop: React.FC<ShopProps> = ({
   useEffect(() => {
     if (!initialTarget) return;
     setActiveTab('modes');
-    const targetId = initialTarget === 'orbit' ? 'shop-mode-zone_traitresse' : 'shop-mode-expert_tickets';
+    const targetId = 'shop-mode-expert_tickets';
     // Wait for Tabs content to mount
     const timer = setTimeout(() => {
       const el = document.getElementById(targetId);
