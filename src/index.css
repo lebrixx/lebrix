@@ -850,8 +850,7 @@
   .brix-original .game-pad-right { right: calc(var(--safe-right) + var(--hud-gap)); bottom: calc(var(--safe-bottom) + var(--hud-gap) + 1.1rem); }
   .brix-original .pad-btn { width: 5.5rem; height: 5.5rem; border-radius: 999px; font-family: var(--font-display); font-size: 1.7rem; color: var(--foreground); background: color-mix(in oklch, var(--secondary) 65%, transparent); border: 2px solid var(--border); touch-action: none; user-select: none; -webkit-user-select: none; }
   .brix-original .pad-btn:active { background: color-mix(in oklch, var(--accent) 45%, transparent); }
-  .brix-original .pad-btn-jump { width: 7.25rem; height: 7.25rem; font-size: 2.3rem; color: var(--primary-foreground); background: color-mix(in oklch, var(--primary) 80%, transparent); border-color: var(--primary); }
-  .brix-original .game-pad-right .pad-btn:not(.pad-btn-jump) { width: 6.4rem; height: 6.4rem; font-size: 1.9rem; }
+  .brix-original .game-pad-right .pad-btn { width: 6rem; height: 6rem; }
 .brix-original .grass-menu-btn {
   position: absolute;
   left: 0;
@@ -885,8 +884,7 @@
   .brix-original .game-pad-right { bottom: calc(var(--safe-bottom) + var(--hud-gap) + 10px); }
   .brix-original .pad-btn { width: 68px; height: 68px; font-size: 1.5rem; }
   .brix-original .game-pad-left .pad-btn { width: 78px; height: 78px; font-size: 1.7rem; }
-  .brix-original .pad-btn-jump { width: 94px; height: 94px; font-size: 2.1rem; }
-  .brix-original .game-pad-right .pad-btn:not(.pad-btn-jump) { width: 80px; height: 80px; font-size: 1.7rem; }
+  .brix-original .game-pad-right .pad-btn { width: 78px; height: 78px; font-size: 1.7rem; }
 }
 @media (hover: hover) and (pointer: fine) { .brix-original .game-pad { display: none; } }
 @media (max-height: 600px) and (orientation: landscape), (max-width: 600px) and (orientation: portrait) {
