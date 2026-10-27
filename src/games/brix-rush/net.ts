@@ -27,6 +27,7 @@ export function findPublicRoom(): Promise<string | null> {
       if (settle) clearTimeout(settle);
       clearTimeout(timeout);
       const counts = new Map<string, number>();
+      console.debug('Brix discovery state', ch.presenceState());
       for (const metas of Object.values(ch.presenceState<{ room?: string }>())) {
         const room = metas[0]?.room;
         if (room) counts.set(room, (counts.get(room) ?? 0) + 1);
