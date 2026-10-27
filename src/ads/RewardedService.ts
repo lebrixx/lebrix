@@ -1,8 +1,9 @@
 import { AdMob, RewardAdOptions, RewardAdPluginEvents } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { restoreNativeUi } from '@/utils/nativeUi';
+import { AD_IDS, IS_AD_TEST_MODE } from './adConfig';
 
-const REWARDED_AD_UNIT_ID = 'ca-app-pub-6790106624716732/4113445950';
+const REWARDED_AD_UNIT_ID = AD_IDS.rewarded;
 const COOLDOWN_MS = 60000; // 60 secondes entre chaque rewarded
 
 // Event pour notifier les composants des changements de cooldown
@@ -42,8 +43,8 @@ private currentKind: RewardKind | null = null;
     }
 
     try {
-      await AdMob.initialize({ initializeForTesting: false });
-      console.log('[AdMob] initialized in production mode');
+      await AdMob.initialize({ initializeForTesting: IS_AD_TEST_MODE });
+      console.log(`[AdMob] initialized in ${IS_AD_TEST_MODE ? 'TEST' : 'production'} mode`);
       console.log('[Rewarded] AdMob initialized successfully');
       this.state = 'loading';
       this.preload();

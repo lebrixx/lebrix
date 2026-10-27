@@ -1,8 +1,9 @@
 import { AdMob, InterstitialAdPluginEvents, AdOptions } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { restoreNativeUi } from '@/utils/nativeUi';
+import { AD_IDS, IS_AD_TEST_MODE } from './adConfig';
 
-const INTERSTITIAL_AD_UNIT_ID = 'ca-app-pub-6790106624716732/9034600143';
+const INTERSTITIAL_AD_UNIT_ID = AD_IDS.interstitial;
 const INITIAL_DELAY_MS = 300000; // 5 minutes minimum après lancement
 const INTERSTITIAL_COOLDOWN_MS = 360000; // 6 minutes entre chaque interstitielle
 const REWARDED_INTERSTITIAL_GAP_MS = 90000; // 90 secondes après une rewarded
@@ -22,8 +23,8 @@ class InterstitialService {
     if (this.isInitialized) return;
 
     try {
-      await AdMob.initialize({ initializeForTesting: false });
-      console.log('[AdMob] initialized in production mode');
+      await AdMob.initialize({ initializeForTesting: IS_AD_TEST_MODE });
+      console.log(`[AdMob] initialized in ${IS_AD_TEST_MODE ? 'TEST' : 'production'} mode`);
 
       this.isInitialized = true;
       console.log('[Interstitial] AdMob initialized successfully');
