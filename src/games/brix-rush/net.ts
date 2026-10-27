@@ -20,9 +20,12 @@ export function findPublicRoom(): Promise<string | null> {
   return new Promise((resolve) => {
     const ch = supabase.channel(LOBBY, { config: { presence: { key: `scout-${Math.random()}` } } });
     let done = false;
+    let settle: ReturnType<typeof setTimeout> | undefined;
     const finish = () => {
       if (done) return;
       done = true;
+      if (settle) clearTimeout(settle);
+      clearTimeout(timeout);
       const counts = new Map<string, number>();
       for (const metas of Object.values(ch.presenceState<{ room?: string }>())) {
         const room = metas[0]?.room;
@@ -36,8 +39,11 @@ export function findPublicRoom(): Promise<string | null> {
       supabase.removeChannel(ch);
       resolve(best);
     };
-    ch.on("presence", { event: "sync" }, () => setTimeout(finish, 400)).subscribe();
-    setTimeout(finish, 2500);
+    ch.on("presence", { event: "sync" }, () => {
+      if (settle) clearTimeout(settle);
+      settle = setTimeout(finish, 1000);
+    }).subscribe();
+    const timeout = setTimeout(finish, 6000);
   });
 }
 

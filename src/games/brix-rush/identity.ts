@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { hueFor } from "./world";
 import type { Me } from "./net";
 
@@ -19,11 +19,11 @@ export function useIdentity() {
     if (name) setMe({ id, name, hue: hueFor(id) });
     setReady(true);
   }, []);
-  const setName = (name: string) => {
+  const setName = useCallback((name: string) => {
     saveName(name);
     const id = sessionStorage.getItem("brix-id") ?? crypto.randomUUID();
     sessionStorage.setItem("brix-id", id);
     setMe({ id, name: name.trim().slice(0, 14), hue: hueFor(id) });
-  };
+  }, []);
   return { me, ready, setName };
 }
