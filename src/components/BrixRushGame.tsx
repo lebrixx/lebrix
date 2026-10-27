@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { RunnerGame } from '@/games/brix-rush/RunnerGame';
 import { Leaderboard, type ScoreRow } from '@/games/brix-rush/Leaderboard';
 import { useIdentity } from '@/games/brix-rush/identity';
-import { findPublicRoom, randomCode, useRoom } from '@/games/brix-rush/net';
+import { usePublicLobby, randomCode, useRoom } from '@/games/brix-rush/net';
 import { COURSE_SEED, MAX_PLAYERS } from '@/games/brix-rush/world';
 import { startGameSession } from '@/utils/scoresApi';
 import type { BoostType } from '@/types/boosts';
@@ -33,6 +33,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<ScoreRow[]>([]);
   const { players, status, remote, send, animalsRef } = useRoom(room?.code ?? '', room ? me : null, room?.public ?? false, room?.solo ?? false);
+  const findPublicRoom = usePublicLobby(me, room?.public && !room.solo ? room.code : null);
   const gameOver = useRef(onGameOver);
   gameOver.current = onGameOver;
   const ok = name.trim().length >= 2;
@@ -63,7 +64,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
       setBusy(false);
     });
     return () => { active = false; };
-  }, [busy, go]);
+  }, [busy, go, findPublicRoom]);
 
   const death = useCallback((score: number, duration: number) => {
     gameOver.current?.(score, duration);
