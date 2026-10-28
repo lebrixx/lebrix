@@ -42,19 +42,19 @@ interface OnlineLeaderboardProps {
 }
 
 const modeNames = {
-  classic: 'Cube Dodge',
   brix_rush: 'Brix Rush',
+  classic: 'Cube Dodge',
+  brix_arena: 'Brix Arena',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
-  zone_mobile: 'Falling Tunnel',
-  brix_arena: 'Brix Arena'
+  zone_mobile: 'Falling Tunnel'
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {
   const { language } = useLanguage();
   const t = translations[language];
   
-  const [selectedMode, setSelectedMode] = useState<string>('classic');
+  const [selectedMode, setSelectedMode] = useState<string>('brix_rush');
   const [selectedTab, setSelectedTab] = useState<string>('global');
   const [scores, setScores] = useState<Score[]>([]);
   const [weeklyScores, setWeeklyScores] = useState<Score[]>([]);
