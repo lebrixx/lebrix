@@ -108,7 +108,18 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
     <header className="arena-hud"><Button size="icon" variant="secondary" title="Tous les jeux" aria-label="Tous les jeux" onClick={onBack}><ArrowLeft /></Button><div><h1>BRIX <span>ARENA</span></h1><p>{Math.floor(hud.elapsed)}s · {hud.kills} éliminations</p></div><Button size="icon" variant="secondary" aria-label="Pause" title="Pause" onClick={pause} disabled={hud.phase!=="playing"&&hud.phase!=="paused"}><Pause /></Button></header>
     <div className="arena-stats"><div><Trophy size={15}/><span>{hud.score}<small>Record {best}</small></span></div><div className="arena-health"><Heart size={15}/>{hud.hp}/{hud.maxHp}</div></div>
     {hud.phase==="playing"&&<><div className="arena-stick-zone" role="application" aria-label="Déplacer le joueur" onPointerDown={stickDown} onPointerMove={stickMove} onPointerUp={stickUp} onPointerCancel={stickUp}/><div ref={stickPad} className="arena-stick-base"><div className="arena-stick-knob" style={{transform:`translate(calc(-50% + ${stick.kx}px),calc(-50% + ${stick.ky}px))`}}/></div><Button className="arena-dash" aria-label="Esquiver" disabled={hud.dash>0} onPointerDown={e=>{e.preventDefault();world.current?.dash();publish();}} onClick={e=>{if(e.detail===0){world.current?.dash();publish();}}}><Zap/>{hud.dash>0?`${hud.dash.toFixed(1)}s`:"Esquive"}</Button></>}
-    {hud.phase!=="playing"&&<div className="arena-overlay"><div className="arena-dialog">
+    {hud.phase==="ready"&&<div className="arena-overlay"><div className="arena-dialog arena-intro">
+      <p className="arena-kicker">SURVIE · SOLO</p>
+      <h2 className="arena-logo">BRIX <span>ARENA</span></h2>
+      <ul className="arena-rules">
+        <li><Swords/><b>Affronte</b><small>les robots</small></li>
+        <li><Zap/><b>Esquive</b><small>les tirs</small></li>
+        <li><ShieldPlus/><b>Améliore</b><small>tous les 10 pts</small></li>
+      </ul>
+      <div className="arena-best"><Trophy size={16}/>Record <b>{best}</b></div>
+      <Button className="arena-start arena-start-hero" onClick={start}><Play/>Entrer dans l’arène</Button>
+    </div></div>}
+    {hud.phase!=="playing"&&hud.phase!=="ready"&&<div className="arena-overlay"><div className="arena-dialog">
       <p className="text-accent text-xs">{hud.phase==="upgrade"?`${hud.score} POINTS` :"SURVIE · SOLO"}</p>
       <h2>{hud.phase==="ready"?"BRIX ARENA":hud.phase==="over"?"FIN DE PARTIE":hud.phase==="upgrade"?"TON AMÉLIORATION":"EN PAUSE"}</h2>
       {hud.phase==="over"&&<p className="arena-result">{hud.score} points · {Math.floor(hud.elapsed)}s de survie</p>}
