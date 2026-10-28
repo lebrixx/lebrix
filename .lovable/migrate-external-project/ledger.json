@@ -1,13 +1,13 @@
 {
   "source": "brix-arena-transfert.zip",
   "capabilities": [
-    {"capability":"code and original interface","source":"src/arena and styles","outcome":"migrate","status":"pending","next_action":"Import unchanged physics, sprite painters, controls and overlays with isolated source theme."},
-    {"capability":"schema","source":"none in archive; existing Lucky Stop scores","outcome":"migrate","status":"pending","next_action":"Extend existing score constraint with brix_arena; retain legacy rows."},
-    {"capability":"records","source":"browser best only","outcome":"preserve","status":"pending","next_action":"Keep brix-arena-survival-best; never reuse Rotating Cube scores."},
+    {"capability":"code and original interface","source":"src/arena and styles","outcome":"migrate","status":"verified","next_action":"Original physics and sprite functions unchanged; source theme and controls preserved. Desktop and portrait-landscape phone gameplay, pause, death, replay and exit verified. Native-device rendering not measured."},
+    {"capability":"schema","source":"none in archive; existing Lucky Stop scores","outcome":"migrate","status":"verified","next_action":"brix_arena added to existing constraint and secure submit-score deployed; real score 5 read back."},
+    {"capability":"records","source":"browser best only","outcome":"preserve","status":"verified","next_action":"Original brix-arena-survival-best retained; local best and global/monthly/weekly records verified without legacy score reuse."},
     {"capability":"auth identities and authorization","source":"no accounts in supplied game","outcome":"not applicable","status":"verified","next_action":"Use existing secure score identity outside original engine."},
-    {"capability":"uploaded file bytes","source":"four sprite sheets and optional arena card image","outcome":"migrate","status":"pending","next_action":"Bundle runtime sprites for native offline use; omit unused model sources."},
+    {"capability":"uploaded file bytes","source":"four sprite sheets and optional arena card image","outcome":"migrate","status":"verified","next_action":"All runtime sprites bundled as source imports and rendered; optional hub image unused because existing mode list has no photo cards. Unused source models deliberately omitted as source instructions specify."},
     {"capability":"external providers, endpoints, callbacks, webhooks, schedules and secrets","source":"none in supplied game","outcome":"not applicable","status":"verified","next_action":"No external game server or credentials required."},
-    {"capability":"tickets and cutover","source":"existing Rotating Cube gate","outcome":"migrate","status":"pending","next_action":"Move existing gate and offer copy to Falling Tunnel; make Arena free."},
-    {"capability":"verification","source":"source tests and live app","outcome":"verify","status":"pending","next_action":"Run physics and mode rules tests; exercise game, replay, exit, ticket gate and score readback."}
+    {"capability":"tickets and cutover","source":"existing Rotating Cube gate","outcome":"migrate","status":"verified","next_action":"Arena starts with zero tickets; two tickets remain unchanged in Arena and become one on Falling Tunnel entry. Zero-ticket Falling Tunnel blocked. Owned inventory key and offers preserved. User must publish for production frontend cutover."},
+    {"capability":"verification","source":"source tests and live app","outcome":"verify","status":"verified","next_action":"47 tests passed; source scoring/upgrades tested, desktop and phone flow verified, real score read back through three ranking UIs and removed; latest harness build OK."}
   ]
 }
