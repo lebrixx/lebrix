@@ -34,8 +34,8 @@ interface ShopProps {
 const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
-    name: 'Pack de Tickets Rotating Cube',
-    description: '__memoryExpertDesc__',
+    name: 'Pack de Tickets Falling Tunnel',
+    description: '__fallingTunnelTicketDesc__',
     price: 100,
     icon: Star,
     isTicketPack: true,
@@ -296,7 +296,7 @@ export const Shop: React.FC<ShopProps> = ({
                       </div>
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-text-primary">
-                          {(mode as any).isTicketPack ? t.ticketPackRotatingCube : mode.name}
+                          {(mode as any).isTicketPack ? t.ticketPackFallingTunnel : mode.name}
                         </h3>
                         {isUnlocked && (
                           <Badge variant="secondary" className="mt-1">
@@ -309,7 +309,7 @@ export const Shop: React.FC<ShopProps> = ({
 
                     {/* Description */}
                     <p className="text-text-secondary mb-6 leading-relaxed text-sm">
-                      {mode.description === '__memoryExpertDesc__' ? t.memoryExpertDesc : mode.description}
+                      {mode.description === '__fallingTunnelTicketDesc__' ? t.fallingTunnelTicketDesc : mode.description}
                     </p>
 
                     {/* Tickets disponibles pour le pack de tickets */}

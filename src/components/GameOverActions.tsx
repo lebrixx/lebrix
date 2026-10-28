@@ -28,7 +28,7 @@ const MODE_NAMES: Record<string, string> = {
   survie_60s: 'Stack Jump',
   zone_mobile: 'Falling Tunnel',
   brix_rush: 'Brix Rush',
-  memoire_expert: 'Rotating Cube',
+  brix_arena: 'Brix Arena',
 };
 
 const COPY = {

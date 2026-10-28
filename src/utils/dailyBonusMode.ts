@@ -38,6 +38,8 @@ function loadData(): DailyBonusData {
       if (data.expiresAt > 0 && Date.now() >= data.expiresAt) {
         return { bonusMode: null, activatedAt: 0, expiresAt: 0, hasSpunToday: false, dayKey: getTodayKey() };
       }
+      if (data.bonusMode && !Object.values(ModeID).includes(data.bonusMode)) data.bonusMode=null;
+      if (data.bonusMode === ModeID.MEMOIRE_EXPERT) data.bonusMode=null;
       return data;
     }
   } catch (e) {
@@ -84,7 +86,7 @@ export function getEligibleModes(unlockedModes: string[]): ModeType[] {
     ModeID.SURVIE_60S,
     ModeID.ZONE_MOBILE,
     ModeID.BRIX_RUSH,
-    ModeID.MEMOIRE_EXPERT,
+    ModeID.BRIX_ARENA,
   ];
   return allModes.filter(m => unlockedModes.includes(m));
 }

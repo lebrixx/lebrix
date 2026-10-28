@@ -890,3 +890,95 @@
 @media (max-height: 600px) and (orientation: landscape), (max-width: 600px) and (orientation: portrait) {
   .brix-original .brix-home { align-items: flex-start; }
 }
+
+/* Brix Arena: isolated original source theme and layout. */
+.brix-arena-original {
+  --radius: 0.75rem;
+  --background: oklch(0.16 0.03 265);
+  --foreground: oklch(0.96 0.01 250);
+  --card: oklch(0.2 0.035 265);
+  --card-foreground: oklch(0.96 0.01 250);
+  --popover: oklch(0.2 0.035 265);
+  --popover-foreground: oklch(0.96 0.01 250);
+  --primary: oklch(0.86 0.19 128);
+  --primary-foreground: oklch(0.18 0.04 265);
+  --secondary: oklch(0.28 0.04 265);
+  --secondary-foreground: oklch(0.96 0.01 250);
+  --muted: oklch(0.26 0.03 265);
+  --muted-foreground: oklch(0.7 0.03 260);
+  --accent: oklch(0.8 0.14 200);
+  --accent-foreground: oklch(0.18 0.04 265);
+  --destructive: oklch(0.68 0.22 22);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.34 0.04 265);
+  --input: oklch(0.34 0.04 265);
+  --ring: oklch(0.86 0.19 128);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.2 0.035 265);
+  --sidebar-foreground: oklch(0.96 0.01 250);
+  --sidebar-primary: oklch(0.86 0.19 128);
+  --sidebar-primary-foreground: oklch(0.18 0.04 265);
+  --sidebar-accent: oklch(0.28 0.04 265);
+  --sidebar-accent-foreground: oklch(0.96 0.01 250);
+  --sidebar-border: oklch(0.34 0.04 265);
+  --sidebar-ring: oklch(0.86 0.19 128);
+  /* === BRIX RUSH — DEBUT : tout copier jusqu'a la fin du fichier pour transferer le jeu === */
+  --game-sky: oklch(0.13 0.035 268);
+  --game-grid: oklch(0.24 0.05 268);
+  --game-ground: oklch(0.19 0.04 268);
+  --game-obstacle: oklch(0.7 0.23 15);
+  --game-grass: oklch(0.36 0.09 150);
+  --game-grass-2: oklch(0.33 0.085 150);
+  --game-road: oklch(0.2 0.02 265);
+  --game-mark: oklch(0.55 0.02 265);
+  --font-display: "Russo One", sans-serif;
+  --font-body: "Chakra Petch", sans-serif;
+}
+
+
+.brix-arena-original { font-family: var(--font-body); color: var(--foreground); z-index:100; --arena-knob-shadow:0 4px 14px rgba(0,0,0,.45); --arena-dialog-shadow:0 24px 60px rgba(0,0,0,.5); }
+/* BRIX ARENA — styles à coller à la FIN de src/styles.css (après @theme) */
+.brix-arena-original { --font-display: "Russo One", sans-serif; --hub-shade: oklch(0.1 0.008 200 / 0.9); --hub-surface: oklch(0.145 0.006 200); }
+.brix-arena-original.game-screen { --safe-top: env(safe-area-inset-top, 0px); --safe-right: env(safe-area-inset-right, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-left: env(safe-area-inset-left, 0px); --hud-gap: 24px; position: fixed; inset: 0; background: var(--hub-surface); overflow: hidden; }
+.brix-arena-original { --arena-floor: oklch(0.36 0.03 95); --arena-tile: oklch(0.28 0.028 90); --arena-wall: oklch(0.6 0.07 95); --arena-side: oklch(0.24 0.02 90); --arena-shadow: oklch(0.12 0.01 90 / 0.4); }
+.brix-arena-original .arena-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.brix-arena-original.arena-screen { --hud-gap: 36px; }
+.brix-arena-original .arena-hud { position: absolute; left: calc(var(--safe-left) + var(--hud-gap)); top: calc(var(--safe-top) + var(--hud-gap)); display: flex; gap: 12px; align-items: center; padding: 8px; border-radius: 8px; background: var(--hub-shade); }
+.brix-arena-original .arena-hud h1 { font-family: var(--font-display); font-size: 16px; }
+.brix-arena-original .arena-hud h1 span { color: var(--accent); }
+.brix-arena-original .arena-hud p { font-size: 10px; color: var(--muted-foreground); margin-top: 3px; }
+.brix-arena-original .arena-stats { position: absolute; right: calc(var(--safe-right) + var(--hud-gap)); top: calc(var(--safe-top) + var(--hud-gap)); padding: 12px 16px; border-radius: 8px; background: var(--hub-shade); min-width: 135px; }
+.brix-arena-original .arena-stats > div { display: flex; align-items: center; gap: 10px; color: var(--primary); font-size: 20px; font-weight: 600; }
+.brix-arena-original .arena-stats small { display: block; font-size: 10px; color: var(--muted-foreground); }
+.brix-arena-original .arena-stats .brix-arena-original .arena-health { color: var(--destructive); font-size: 12px; margin-top: 6px; }
+.brix-arena-original .arena-stick-zone { position: absolute; inset: 0 38% 0 0; touch-action: none; z-index: 5; }
+.brix-arena-original .arena-stick-base { position: absolute; bottom: calc(var(--safe-bottom) + var(--hud-gap)); left: calc(var(--safe-left) + var(--hud-gap)); width: 116px; height: 116px; border-radius: 50%; border: 2px solid var(--accent); background: color-mix(in srgb, var(--hub-shade) 55%, transparent); pointer-events: none; z-index: 6; }
+.brix-arena-original .arena-stick-knob { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; border-radius: 50%; background: var(--accent); box-shadow: var(--arena-knob-shadow); }
+.brix-arena-original .arena-dash { position: absolute; right: calc(var(--safe-right) + var(--hud-gap)); bottom: calc(var(--safe-bottom) + var(--hud-gap)); width: 98px; height: 98px; border-radius: 50%; display: flex; flex-direction: column; gap: 8px; background: var(--accent); color: var(--accent-foreground); }
+.brix-arena-original .arena-dash:disabled { opacity: 0.65; background: var(--secondary); color: var(--foreground); }
+.brix-arena-original .arena-overlay { position: absolute; inset: 0; background: color-mix(in srgb, var(--hub-shade) 82%, transparent); backdrop-filter: blur(6px); display: grid; place-items: center; padding: calc(var(--safe-top) + var(--hud-gap)) calc(var(--safe-right) + var(--hud-gap)) calc(var(--safe-bottom) + var(--hud-gap)) calc(var(--safe-left) + var(--hud-gap)); overflow: auto; }
+.brix-arena-original .arena-dialog { width: min(700px, 100%); max-height: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 28px; background: color-mix(in srgb, var(--card) 94%, transparent); border: 1px solid var(--border); border-radius: 24px; padding: 34px 30px; box-shadow: var(--arena-dialog-shadow); }
+.brix-arena-original .arena-dialog h2 { font-family: var(--font-display); font-size: 32px; text-shadow: 0 0 26px color-mix(in srgb, var(--accent) 45%, transparent); }
+.brix-arena-original .arena-start { min-height: 50px; padding-inline: 28px; }
+.brix-arena-original .arena-result { color: var(--accent); }
+.brix-arena-original .arena-upgrades { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 36px; margin-top: 12px; }
+.brix-arena-original .arena-upgrades > button { min-width: 0; height: 128px; display: flex; flex-direction: column; gap: 14px; white-space: normal; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 18px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 12%, var(--secondary)), var(--secondary)); padding: 16px 10px; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.brix-arena-original .arena-upgrades > button:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 12px 28px color-mix(in srgb, var(--accent) 28%, transparent); }
+.brix-arena-original .arena-upgrades > button svg { width: 26px; height: 26px; color: var(--accent); }
+.brix-arena-original .arena-upgrades small { font-size: 10px; color: var(--muted-foreground); }
+@media (max-height: 500px) and (orientation: landscape), (max-width: 500px) and (orientation: portrait) { .brix-arena-original .arena-stick-base { width: 90px; height: 90px; } .brix-arena-original .arena-stick-knob { width: 42px; height: 42px; } .brix-arena-original .arena-dash { width: 82px; height: 82px; } .brix-arena-original .arena-hud { gap: 8px; } .brix-arena-original .arena-stats { min-width: 115px; padding: 8px 12px; } .brix-arena-original .arena-dialog { gap: 24px; } .brix-arena-original .arena-dialog h2 { font-size: 25px; } .brix-arena-original .arena-upgrades { gap: 32px; } .brix-arena-original .arena-upgrades > button { height: 116px; } }
+
+.brix-arena-original button { color:var(--primary-foreground); background:var(--primary); }
+.brix-arena-original button:hover { background:color-mix(in oklch,var(--primary) 90%, transparent); }
+.brix-arena-original button.bg-secondary { background:var(--secondary); color:var(--secondary-foreground); }
+.brix-arena-original button.bg-secondary:hover { background:color-mix(in oklch,var(--secondary) 80%,transparent); }
+.brix-arena-original .text-accent { color:var(--accent); }
+.brix-arena-original .arena-dash { background:var(--accent); color:var(--accent-foreground); }
+.brix-arena-original .arena-dash:disabled { background:var(--secondary); color:var(--foreground); }
+@media (orientation:portrait) and (max-width:900px) {
+ .brix-arena-original.game-screen { --safe-top:env(safe-area-inset-right,0px); --safe-right:env(safe-area-inset-bottom,0px); --safe-bottom:env(safe-area-inset-left,0px); --safe-left:env(safe-area-inset-top,0px); inset:auto; top:0; left:100vw; width:100dvh; height:100vw; transform-origin:top left; transform:rotate(90deg); }
+}

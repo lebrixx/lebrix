@@ -42,11 +42,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'brix_rush_score_10', title: 'Rush Confirmé', description: 'Fais un score de 10 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 10, reward: { coins: 40 } },
   { id: 'brix_rush_score_15', title: 'Maître des routes', description: 'Fais un score de 15 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 15, reward: { coins: 56 } },
   
-  // Rotating Cube
-  { id: 'memoire_score_3', title: 'Premier survivant', description: 'Survis à 3 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 3, reward: { coins: 20 } },
-  { id: 'memoire_score_5', title: 'Esquiveur', description: 'Survis à 5 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 5, reward: { coins: 36 } },
-  { id: 'memoire_score_8', title: 'Tactique', description: 'Survis à 8 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 8, reward: { coins: 50 } },
-  { id: 'memoire_score_10', title: 'Maître du cube', description: 'Survis à 10 vagues en Rotating Cube', type: 'score_in_mode', mode: ModeID.MEMOIRE_EXPERT, target: 10, reward: { coins: 60 } },
+  // Brix Arena
+  { id: 'brix_arena_score_3', title: 'Premier survivant', description: 'Fais un score de 3 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 3, reward: { coins: 20 } },
+  { id: 'brix_arena_score_5', title: 'Esquiveur', description: 'Fais un score de 5 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 5, reward: { coins: 36 } },
+  { id: 'brix_arena_score_8', title: 'Tactique', description: 'Fais un score de 8 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 8, reward: { coins: 50 } },
+  { id: 'brix_arena_score_10', title: 'Maître de l’arène', description: 'Fais un score de 10 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 10, reward: { coins: 60 } },
 ];
 
 export interface DailyChallengeProgress {

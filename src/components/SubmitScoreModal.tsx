@@ -75,7 +75,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
       survie_60s: 'Stack Jump',
       zone_mobile: 'Falling Tunnel',
       brix_rush: 'Brix Rush',
-      memoire_expert: 'Rotating Cube',
+      brix_arena: 'Brix Arena',
       pong_circulaire: 'Pong Circulaire'
     };
     return names[mode as keyof typeof names] || mode;

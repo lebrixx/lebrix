@@ -47,7 +47,7 @@ const modeNames = {
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
   zone_mobile: 'Falling Tunnel',
-  memoire_expert: 'Rotating Cube'
+  brix_arena: 'Brix Arena'
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {
