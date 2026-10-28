@@ -1,0 +1,2 @@
+ALTER TABLE public.scores DROP CONSTRAINT IF EXISTS scores_mode_check;
+ALTER TABLE public.scores ADD CONSTRAINT scores_mode_check CHECK (mode = ANY (ARRAY['classic','arc_changeant','survie_60s','zone_mobile','zone_traitresse','memoire_expert','pong_circulaire','brix_rush','brix_arena']::text[]));

@@ -8,7 +8,7 @@ export const PONG_UNLOCK_MODES: ModeType[] = [
   ModeID.SURVIE_60S,
   ModeID.ZONE_MOBILE,
   ModeID.BRIX_RUSH,
-  ModeID.MEMOIRE_EXPERT,
+  ModeID.BRIX_ARENA,
 ];
 
 export interface PongUnlockProgressItem {
