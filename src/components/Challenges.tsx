@@ -324,7 +324,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const dailyProgress = getDailyChallengeProgress();
 
   const totalLevelsCompleted = Object.values(progress).reduce((sum, p) => sum + p.currentLevel, 0);
-  const allModes = Object.keys(ModeID).map(key => ModeID[key as keyof typeof ModeID]);
+  const allModes = Object.keys(ModeID).map(key => ModeID[key as keyof typeof ModeID]).filter(mode => mode in MODE_INFO && mode !== ModeID.PONG_CIRCULAIRE || mode === ModeID.PONG_CIRCULAIRE && mode in MODE_INFO);
   const hasDailyRewards = hasPendingDailyChallengeRewards();
   const hasGlobalRewards = Object.values(progress).some(p => p.pendingRewards.length > 0) || gamesProgress.pendingRewards.length > 0;
   
@@ -600,7 +600,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
           {/* Défi de déblocage : Pong Circulaire */}
           {(() => {
-            const pongProgress = getPongUnlockProgress();
+            const pongProgress = getPongUnlockProgress().filter(({ mode }) => mode in MODE_INFO);
             const pongUnlocked = isPongUnlocked();
             const done = pongProgress.filter(p => p.completed).length;
             const total = pongProgress.length;
