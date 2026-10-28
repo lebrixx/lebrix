@@ -1,49 +1,13 @@
 {
-  "source": "brix-rush-transfert-2.zip",
-  "scope": "Restore the original standalone Brix Rush experience inside its existing mode",
+  "source": "brix-arena-transfert.zip",
   "capabilities": [
-    {
-      "capability": "game code and artwork",
-      "source": "src/game and src/assets",
-      "outcome": "migrate",
-      "status": "verified",
-      "next_action": null
-    },
-    {
-      "capability": "schema, records and auth identities",
-      "source": "No database, accounts or stored records in source",
-      "outcome": "not applicable",
-      "status": "verified",
-      "next_action": null
-    },
-    {
-      "capability": "real-time rooms and presence",
-      "source": "net.ts and room route",
-      "outcome": "restore source presence and broadcast rooms on the existing Supabase connection; user explicitly authorized live multiplayer",
-      "status": "verified",
-      "next_action": null
-    },
-    {
-      "capability": "leaderboards and authorization",
-      "source": "Lucky Stop secure score functions",
-      "outcome": "replace mode with isolated brix_rush scores in all rankings",
-      "status": "verified",
-      "next_action": null
-    },
-    {
-      "capability": "files, external providers, callbacks, schedules and secrets",
-      "source": "Bundled sprites; no source provider secrets or endpoints",
-      "outcome": "Sprites bundled for native offline runtime after asset URLs returned HTML in localhost; existing providers unchanged",
-      "status": "verified",
-      "next_action": null
-    },
-    {
-      "capability": "cutover and verification",
-      "source": "Existing Orbit Dodge integration",
-      "outcome": "Replace in menu, shop, challenges and totals; unlock by default",
-      "status": "verified",
-      "next_action": null
-    }
-  ],
-  "verification": "Original canvas, round controls, grass Menu, score/current-record board, menu and 1200ms respawn restored. 23 tests pass; browser checks at 735x393 and 393x735 verify landscape, solo, two-player private/public rooms, remote score movement, collision and automatic return retaining record, and exit to Lucky Stop. Latest build OK. Source contains no audio code or files, database records, authentication, schedules, webhooks or secrets. Physical native-device verification remains unavailable in this sandbox."
+    {"capability":"code and original interface","source":"src/arena and styles","outcome":"migrate","status":"pending","next_action":"Import unchanged physics, sprite painters, controls and overlays with isolated source theme."},
+    {"capability":"schema","source":"none in archive; existing Lucky Stop scores","outcome":"migrate","status":"pending","next_action":"Extend existing score constraint with brix_arena; retain legacy rows."},
+    {"capability":"records","source":"browser best only","outcome":"preserve","status":"pending","next_action":"Keep brix-arena-survival-best; never reuse Rotating Cube scores."},
+    {"capability":"auth identities and authorization","source":"no accounts in supplied game","outcome":"not applicable","status":"verified","next_action":"Use existing secure score identity outside original engine."},
+    {"capability":"uploaded file bytes","source":"four sprite sheets and optional arena card image","outcome":"migrate","status":"pending","next_action":"Bundle runtime sprites for native offline use; omit unused model sources."},
+    {"capability":"external providers, endpoints, callbacks, webhooks, schedules and secrets","source":"none in supplied game","outcome":"not applicable","status":"verified","next_action":"No external game server or credentials required."},
+    {"capability":"tickets and cutover","source":"existing Rotating Cube gate","outcome":"migrate","status":"pending","next_action":"Move existing gate and offer copy to Falling Tunnel; make Arena free."},
+    {"capability":"verification","source":"source tests and live app","outcome":"verify","status":"pending","next_action":"Run physics and mode rules tests; exercise game, replay, exit, ticket gate and score readback."}
+  ]
 }
