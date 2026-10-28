@@ -14,7 +14,7 @@ export const ModeID = {
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé : Brix Rush est classé juste après Cube Dodge.
-export const RANKED_MODES = [ModeID.CLASSIC, ModeID.BRIX_RUSH, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE, ModeID.BRIX_ARENA] as const;
+export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.CLASSIC, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE] as const;
 export const FREE_MODES = RANKED_MODES;
 export const TICKET_MODE = ModeID.ZONE_MOBILE;
 export const requiresTicket = (mode: string): boolean => mode === TICKET_MODE;
@@ -51,8 +51,16 @@ interface ModeConfig {
   trapZone?: boolean;
 }
 
-// Les clés sont déclarées dans l'ordre d'affichage des modes (Brix Rush en deuxième position).
+// Les clés sont déclarées dans l'ordre d'affichage des modes (Brix Rush, Cube Dodge, Brix Arena en tête).
 export const cfgModes: Record<ModeType, ModeConfig> = {
+  [ModeID.BRIX_RUSH]: {
+    name: "Brix Rush",
+    desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
   [ModeID.CLASSIC]: {
     name: "Cube Dodge",
     desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
@@ -62,9 +70,9 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survivalTime: 0,
     variableArc: false
   },
-  [ModeID.BRIX_RUSH]: {
-    name: "Brix Rush",
-    desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
+  [ModeID.BRIX_ARENA]: {
+    name: "Brix Arena",
+    desc: "Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -98,14 +106,6 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     name: "Rotating Cube",
     desc: "Swipe pour bouger sur la grille 4×4. Évite les zones jaunes qui virent au rouge. Capte les pastilles vertes pour gagner un bouclier (max 2).",
     zoneArc: Math.PI / 5,
-    keepMovingZone: false,
-    survival: false,
-    survivalTime: 0,
-    variableArc: false
-  },
-  [ModeID.BRIX_ARENA]: {
-    name: "Brix Arena",
-    desc: "Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
