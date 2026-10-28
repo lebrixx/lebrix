@@ -1000,3 +1000,9 @@
 .brix-arena-original .arena-best b { font-size: 16px; }
 .brix-arena-original .arena-start-hero { width: 100%; min-height: 56px; font-size: 16px; border-radius: 16px; box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 40%, transparent); animation: arena-pulse 2s ease-in-out infinite; }
 @keyframes arena-pulse { 50% { transform: scale(1.03); } }
+@media (max-height: 500px) and (orientation: landscape), (max-width: 500px) and (orientation: portrait) {
+  .brix-arena-original .arena-intro { gap: 12px; padding: 18px 20px; }
+  .brix-arena-original .arena-logo { font-size: 34px; }
+  .brix-arena-original .arena-rules li { padding: 10px 6px; }
+  .brix-arena-original .arena-start-hero { min-height: 48px; }
+}
