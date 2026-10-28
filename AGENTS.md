@@ -1,4 +1,6 @@
 # Project rules
+- Keep Brix Arena's supplied physics, painters and controls in `src/games/brix-arena` with its source theme isolated; only bridge navigation and secure score sessions so the original standalone experience is preserved.
+- Give Brix Arena a separate `brix_arena` score identity and exclude historical Rotating Cube records from active rankings; keep the existing ticket inventory key when moving its gate so owned tickets survive.
 - Keep Brix Rush's original world, sprite painters, realtime rooms and standalone interface in `src/games/brix-rush`; isolate its styles and adapt only navigation and secure score reporting outside the engine so other modes remain unchanged.
 - Apply Brix Rush's source landscape transform only to the active race surface; leave pre-game menus unrotated so they remain portrait within the native app's portrait lock without changing other modes.
 - Keep a single Brix Rush lobby subscription for the screen lifetime and a separate room subscription per active race; cleanup both on exit to avoid discovery races and duplicate realtime channels.
