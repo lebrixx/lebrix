@@ -19,14 +19,14 @@ import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
 import { BrixRushGame } from '@/components/BrixRushGame';
-import { RotatingCube3DGame } from '@/components/RotatingCube3DGame';
+import { BrixArenaGame } from '@/components/BrixArenaGame';
 import { getTickets, consumeTicket } from '@/utils/ticketSystem';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/constants/themes';
-import { cfgModes, ModeType, ModeID, FREE_MODES } from '@/constants/modes';
+import { cfgModes, ModeType, ModeID, FREE_MODES, requiresTicket, resolveSavedMode, isStandaloneMode } from '@/constants/modes';
 import { getLocalIdentity } from '@/utils/localIdentity';
 import { canClaimReward, resetDayIfNeeded } from '@/utils/dailyRewards';
 import { updateDailyChallengeProgress } from '@/utils/dailyChallenges';
@@ -65,7 +65,7 @@ const Index = () => {
   // État du mode actuel avec persistance
   const [currentMode, setCurrentMode] = useState<ModeType>(() => {
     const saved = localStorage.getItem('ls_mode');
-    return saved === 'zone_traitresse' ? ModeID.BRIX_RUSH : (saved as ModeType) || 'classic'; // Mode par défaut classic
+    return resolveSavedMode(saved);
   });
 
   // Modes débloqués avec persistance
@@ -207,7 +207,7 @@ const Index = () => {
             // Erreurs silencieuses - pas de notifications
           });
       });
-    } else if (currentMode !== 'brix_rush') {
+    } else if (!isStandaloneMode(currentMode)) {
       setShowUsernameModal(true);
     }
 
@@ -217,7 +217,7 @@ const Index = () => {
     // Rate dialog logic:
     // 1st trigger: score >30 in non-classic mode (if never triggered before)
     // 2nd trigger: score >=55 in non-classic mode (only if user dismissed first time)
-    if (currentMode !== 'classic' && currentMode !== 'brix_rush') {
+    if (currentMode !== 'classic' && !isStandaloneMode(currentMode)) {
       const rateData = JSON.parse(localStorage.getItem('ls_rate_app') || '{}');
       if (!rateData.rated) {
         const alreadyTriggered30 = localStorage.getItem('ls_rate_triggered_30');
@@ -234,7 +234,7 @@ const Index = () => {
     }
 
     // Afficher une interstitielle si toutes les conditions sont remplies
-    if (currentMode !== 'brix_rush') import('@/ads/InterstitialService').then(({ Interstitials }) => {
+    if (!isStandaloneMode(currentMode)) import('@/ads/InterstitialService').then(({ Interstitials }) => {
       Interstitials.showInterstitialIfReady().catch(error => {
         console.log('Interstitial not shown:', error);
       });
@@ -271,9 +271,9 @@ const Index = () => {
       return;
     }
 
-    // Mode Rotating Cube : consommer un ticket
-    if (mode === 'memoire_expert') {
-      if (getTickets() <= 0) {
+    // Preserve the existing entry ticket gate, now on Falling Tunnel.
+    if (requiresTicket(mode)) {
+      if (!consumeTicket()) {
         toast({
           title: t.noTicket,
           description: t.noTicketDesc,
@@ -281,7 +281,6 @@ const Index = () => {
         });
         return;
       }
-      consumeTicket();
     }
     
     
@@ -294,7 +293,7 @@ const Index = () => {
     }
     
     // Définir les boosts sélectionnés et lancer le jeu
-    setSelectedBoostsForGame(selectedBoosts || []);
+    setSelectedBoostsForGame(isStandaloneMode(mode) ? [] : selectedBoosts || []);
     setCurrentScreen('game');
   };
 
@@ -450,19 +449,11 @@ const Index = () => {
               />
             );
           }
-          if (currentMode === 'memoire_expert') {
+          if (currentMode === 'brix_arena') {
             return (
-              <RotatingCube3DGame
+              <BrixArenaGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
-                isSoundMuted={isMuted}
-                onToggleSound={toggleMute}
-                playSuccess={playSuccess}
-                playFailure={playFailure}
-                selectedBoosts={selectedBoostsForGame}
-                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
-                coins={gameState.coins}
-                onEarnCoin={addCoins}
               />
             );
           }
@@ -532,7 +523,7 @@ const Index = () => {
             survie_60s: savedData[`bestScore_survie_60s`] || 0,
             zone_mobile: savedData[`bestScore_zone_mobile`] || 0,
             brix_rush: savedData[`bestScore_brix_rush`] || 0,
-            memoire_expert: savedData[`bestScore_memoire_expert`] || 0,
+            brix_arena: savedData[`bestScore_brix_arena`] || 0,
             pong_circulaire: savedData[`bestScore_pong_circulaire`] || 0,
           };
           

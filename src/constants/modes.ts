@@ -6,6 +6,7 @@ export const ModeID = {
   SURVIE_60S: "survie_60s",
   ZONE_MOBILE: "zone_mobile",
   BRIX_RUSH: "brix_rush",
+  BRIX_ARENA: "brix_arena",
   MEMOIRE_EXPERT: "memoire_expert",
   PONG_CIRCULAIRE: "pong_circulaire",
 } as const;
@@ -13,8 +14,16 @@ export const ModeID = {
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé : Brix Rush est classé juste après Cube Dodge.
-export const RANKED_MODES = [ModeID.CLASSIC, ModeID.BRIX_RUSH, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE, ModeID.MEMOIRE_EXPERT] as const;
+export const RANKED_MODES = [ModeID.CLASSIC, ModeID.BRIX_RUSH, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE, ModeID.BRIX_ARENA] as const;
 export const FREE_MODES = RANKED_MODES;
+export const TICKET_MODE = ModeID.ZONE_MOBILE;
+export const requiresTicket = (mode: string): boolean => mode === TICKET_MODE;
+export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA;
+export function resolveSavedMode(saved: string | null): ModeType {
+  if (saved === 'memoire_expert') return ModeID.BRIX_ARENA;
+  if (saved === 'zone_traitresse') return ModeID.BRIX_RUSH;
+  return RANKED_MODES.find(mode => mode === saved) ?? ModeID.CLASSIC;
+}
 
 export const cfgBase = {
   zoneArc: Math.PI / 5,      // ~36°, valeur par défaut
@@ -89,6 +98,14 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     name: "Rotating Cube",
     desc: "Swipe pour bouger sur la grille 4×4. Évite les zones jaunes qui virent au rouge. Capte les pastilles vertes pour gagner un bouclier (max 2).",
     zoneArc: Math.PI / 5,
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.BRIX_ARENA]: {
+    name: "Brix Arena",
+    desc: "Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,

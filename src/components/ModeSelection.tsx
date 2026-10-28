@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket, Factory } from 'lucide-react';
-import { cfgModes, ModeType, ModeID } from '@/constants/modes';
+import { cfgModes, ModeType, ModeID, RANKED_MODES, requiresTicket } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
@@ -29,7 +29,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.SURVIE_60S: return <Layers className="w-8 h-8" />;
     case ModeID.ZONE_MOBILE: return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.BRIX_RUSH: return <Sparkles className="w-8 h-8" />;
-    case ModeID.MEMOIRE_EXPERT: return <Grid3x3 className="w-8 h-8" />;
+    case ModeID.BRIX_ARENA: return <Grid3x3 className="w-8 h-8" />;
     case ModeID.PONG_CIRCULAIRE: return <Factory className="w-8 h-8" />;
     default: return <Target className="w-8 h-8" />;
   }
@@ -143,7 +143,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
-        {Object.entries(cfgModes).filter(([modeId]) => modeId !== ModeID.PONG_CIRCULAIRE).map(([modeId, config], idx) => {
+        {RANKED_MODES.map((modeId, idx) => {
+          const config = cfgModes[modeId];
           const isReflexGrid = false;
           const isComingSoon = false;
           const isCurrentMode = !isReflexGrid && modeId === currentMode;
@@ -204,10 +205,10 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
               </div>
 
               <p className="text-text-secondary mb-2 leading-relaxed">
-                {modeId === ModeID.BRIX_RUSH ? t.descZoneTraitresse : config.desc}
+                {modeId === ModeID.BRIX_RUSH ? t.descZoneTraitresse : modeId === ModeID.BRIX_ARENA ? t.descBrixArena : config.desc}
               </p>
 
-              {modeId === ModeID.MEMOIRE_EXPERT && (
+              {requiresTicket(modeId) && (
                 <div className="mb-4 flex items-center justify-between p-2.5 rounded-lg bg-secondary/10 border border-secondary/30">
                   <span className="text-xs text-text-muted flex items-center gap-1.5">
                     <Ticket className="w-3.5 h-3.5 text-secondary" />
@@ -295,7 +296,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     Débloquer
                   </Button>
                 )
-              ) : modeId === ModeID.MEMOIRE_EXPERT && tickets === 0 ? (
+              ) : requiresTicket(modeId) && tickets === 0 ? (
                 <div className="space-y-2">
                   <Button
                     disabled
