@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
+const ArenaLobby3D = lazy(() => import("./ArenaLobby3D"));
 import { ArrowLeft, Heart, Bomb, Play, RotateCcw, ShieldPlus, Swords, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroUrl from "@/assets/brix-arena/hero-run.png";
@@ -124,18 +125,25 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
     {hud.phase==="playing"&&<><div className="arena-stick-zone" role="application" aria-label="Déplacer le joueur" onPointerDown={stickDown} onPointerMove={stickMove} onPointerUp={stickUp} onPointerCancel={stickUp}/><div ref={stickPad} className="arena-stick-base"><div className="arena-stick-knob" style={{transform:`translate(calc(-50% + ${stick.kx}px),calc(-50% + ${stick.ky}px))`}}/></div><Button className="arena-dash" aria-label="Esquiver" disabled={hud.dash>0} onPointerDown={e=>{e.preventDefault();world.current?.dash();publish();}} onClick={e=>{if(e.detail===0){world.current?.dash();publish();}}}><Zap/>{hud.dash>0?`${hud.dash.toFixed(1)}s`:"Esquive"}</Button></>}
     {hud.phase==="playing"&&!hud.menuOpen&&<Button className="arena-bomb" aria-label={`Bombe, ${hud.bombs} restantes`} disabled={hud.bombs<=0} onPointerDown={e=>{e.preventDefault();world.current?.bomb();publish();}} onClick={e=>{if(e.detail===0){world.current?.bomb();publish();}}}><Bomb/><span>Bombe ×{hud.bombs}</span></Button>}
     {hud.menuOpen&&<div className="arena-overlay arena-menu-overlay"><div className="arena-dialog" role="dialog" aria-label="Menu de la partie"><h2>MENU</h2>{hud.phase!=="ready"&&hud.phase!=="over"&&<Button className="arena-start" onClick={pause}><Play/>Reprendre la partie</Button>}<Button variant="secondary" onClick={onBack}><ArrowLeft/>Retour au menu</Button></div></div>}
-    {hud.phase==="ready"&&!hud.menuOpen&&<div className="arena-overlay"><div className="arena-dialog arena-intro">
-      <p className="arena-kicker">SURVIE · SOLO</p>
-      <h2 className="arena-logo">BRIX <span>ARENA</span></h2>
-      <ul className="arena-rules">
-        <li><Swords/><b>Affronte</b><small>les robots</small></li>
-        <li><Zap/><b>Esquive</b><small>les tirs</small></li>
-        <li><ShieldPlus/><b>Améliore</b><small>tous les 10 pts</small></li>
-      </ul>
-      <p className="arena-kit-note"><img src={healthKitUrl} alt="Kit de soin"/><span>Kit de soin : <b>+1 vie</b> quand tu le ramasses</span></p>
-      <div className="arena-best"><Trophy size={16}/>Record <b>{best}</b></div>
-      <Button className="arena-start arena-start-hero" onClick={start}><Play/>Entrer dans l’arène</Button>
-    </div></div>}
+    {hud.phase==="ready"&&!hud.menuOpen&&<div className="arena-lobby">
+      <Suspense fallback={null}><ArenaLobby3D/></Suspense>
+      <div className="arena-lobby-vignette"/>
+      <div className="arena-lobby-left">
+        <p className="arena-kicker">SURVIE · SOLO</p>
+        <h2 className="arena-logo">BRIX <span>ARENA</span></h2>
+        <div className="arena-lobby-best"><Trophy size={16}/>Record <b>{best}</b></div>
+        <ul className="arena-lobby-foes">
+          <li><i data-c="melee"/>Robots rapides</li>
+          <li><i data-c="tank"/>Monstres blindés</li>
+          <li><i data-c="drone"/>Drones tireurs</li>
+        </ul>
+      </div>
+      <div className="arena-lobby-right">
+        <div className="arena-lobby-kit"><img src={healthKitUrl} alt="Kit de soin"/><div><b>KIT DE SOIN</b><span>Ramasse-le : <em>+1 vie</em></span></div></div>
+        <Button className="arena-lobby-play" onClick={start}><Play/>JOUER</Button>
+        <small className="arena-lobby-hint">Améliore-toi tous les 10 points</small>
+      </div>
+    </div>}
     {hud.phase!=="playing"&&hud.phase!=="ready"&&!hud.menuOpen&&<div className="arena-overlay"><div className="arena-dialog">
       <p className="text-accent text-xs">{hud.phase==="upgrade"?`${hud.score} POINTS` :"SURVIE · SOLO"}</p>
       <h2>{hud.phase==="ready"?"BRIX ARENA":hud.phase==="over"?"FIN DE PARTIE":hud.phase==="upgrade"?"TON AMÉLIORATION":"EN PAUSE"}</h2>
