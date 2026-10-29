@@ -1,20 +1,98 @@
 {
   "source": "assaut-projet.zip",
   "assaut": [
-    {"capability":"code, original interface and uploaded file bytes","source":"Assaut archive","outcome":"migrate","status":"pending","next_action":"Preserve menu, combat and Three.js rendering with bundled source assets."},
-    {"capability":"schema and score authorization","source":"existing scores service","outcome":"migrate","status":"pending","next_action":"Separate assaut identity; exclude historical Falling Tunnel scores."},
-    {"capability":"records and auth identities","source":"local assaut-best only; no accounts or database","outcome":"preserve","status":"pending","next_action":"Keep original local best and bridge existing score identity."},
-    {"capability":"providers, endpoints, callbacks, webhooks, schedules and secrets","source":"none; image CDN backed by included raw assets","outcome":"not applicable","status":"verified","next_action":"Bundle original artwork for offline native runtime."},
-    {"capability":"tickets, cutover and verification","source":"Falling Tunnel entry","outcome":"migrate","status":"pending","next_action":"Free Assaut entry, retain owned ticket inventory without consuming it; verify launch, death, replay and rankings."}
+    {
+      "capability": "code, original interface and uploaded file bytes",
+      "source": "Assaut archive",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Source simulation and pre-game preserved; only route removal, navigation/score callbacks, scoped palette, and CDN-to-bundled asset imports adapted. No source database, auth, webhooks, schedules or audio."
+    },
+    {
+      "capability": "schema and score authorization",
+      "source": "existing scores service",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Constraint updated and submit-score deployed with separate assaut identity; original access rules unchanged."
+    },
+    {
+      "capability": "records and auth identities",
+      "source": "local assaut-best only; no accounts or database",
+      "outcome": "preserve",
+      "status": "verified",
+      "next_action": "assaut-best retained; no source user or database records to import; existing shared score identity used."
+    },
+    {
+      "capability": "providers, endpoints, callbacks, webhooks, schedules and secrets",
+      "source": "none; image CDN backed by included raw assets",
+      "outcome": "not applicable",
+      "status": "verified",
+      "next_action": "Bundle original artwork for offline native runtime."
+    },
+    {
+      "capability": "tickets, cutover and verification",
+      "source": "Falling Tunnel entry",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "87 source/regression tests passed; mobile and desktop free entry and unchanged owned tickets verified; Three.js nonblank, movement, bomb, pause/resume, natural death, replay and exit verified; real score 8 saved and read back in Assaut, monthly and general UIs then removed. Publish frontend for cutover; native device rendering remains unmeasured."
+    }
   ],
   "capabilities": [
-    {"capability":"code and original interface","source":"src/arena and styles","outcome":"migrate","status":"verified","next_action":"Original physics and sprite functions unchanged; source theme and controls preserved. Desktop and portrait-landscape phone gameplay, pause, death, replay and exit verified. Native-device rendering not measured."},
-    {"capability":"schema","source":"none in archive; existing Lucky Stop scores","outcome":"migrate","status":"verified","next_action":"brix_arena added to existing constraint and secure submit-score deployed; real score 5 read back."},
-    {"capability":"records","source":"browser best only","outcome":"preserve","status":"verified","next_action":"Original brix-arena-survival-best retained; local best and global/monthly/weekly records verified without legacy score reuse."},
-    {"capability":"auth identities and authorization","source":"no accounts in supplied game","outcome":"not applicable","status":"verified","next_action":"Use existing secure score identity outside original engine."},
-    {"capability":"uploaded file bytes","source":"four sprite sheets and optional arena card image","outcome":"migrate","status":"verified","next_action":"All runtime sprites bundled as source imports and rendered; optional hub image unused because existing mode list has no photo cards. Unused source models deliberately omitted as source instructions specify."},
-    {"capability":"external providers, endpoints, callbacks, webhooks, schedules and secrets","source":"none in supplied game","outcome":"not applicable","status":"verified","next_action":"No external game server or credentials required."},
-    {"capability":"tickets and cutover","source":"existing Rotating Cube gate","outcome":"migrate","status":"verified","next_action":"Arena starts with zero tickets; two tickets remain unchanged in Arena and become one on Falling Tunnel entry. Zero-ticket Falling Tunnel blocked. Owned inventory key and offers preserved. User must publish for production frontend cutover."},
-    {"capability":"verification","source":"source tests and live app","outcome":"verify","status":"verified","next_action":"47 tests passed; source scoring/upgrades tested, desktop and phone flow verified, real score read back through three ranking UIs and removed; latest harness build OK."}
+    {
+      "capability": "code and original interface",
+      "source": "src/arena and styles",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Original physics and sprite functions unchanged; source theme and controls preserved. Desktop and portrait-landscape phone gameplay, pause, death, replay and exit verified. Native-device rendering not measured."
+    },
+    {
+      "capability": "schema",
+      "source": "none in archive; existing Lucky Stop scores",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "brix_arena added to existing constraint and secure submit-score deployed; real score 5 read back."
+    },
+    {
+      "capability": "records",
+      "source": "browser best only",
+      "outcome": "preserve",
+      "status": "verified",
+      "next_action": "Original brix-arena-survival-best retained; local best and global/monthly/weekly records verified without legacy score reuse."
+    },
+    {
+      "capability": "auth identities and authorization",
+      "source": "no accounts in supplied game",
+      "outcome": "not applicable",
+      "status": "verified",
+      "next_action": "Use existing secure score identity outside original engine."
+    },
+    {
+      "capability": "uploaded file bytes",
+      "source": "four sprite sheets and optional arena card image",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "All runtime sprites bundled as source imports and rendered; optional hub image unused because existing mode list has no photo cards. Unused source models deliberately omitted as source instructions specify."
+    },
+    {
+      "capability": "external providers, endpoints, callbacks, webhooks, schedules and secrets",
+      "source": "none in supplied game",
+      "outcome": "not applicable",
+      "status": "verified",
+      "next_action": "No external game server or credentials required."
+    },
+    {
+      "capability": "tickets and cutover",
+      "source": "existing Rotating Cube gate",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Arena starts with zero tickets; two tickets remain unchanged in Arena and become one on Falling Tunnel entry. Zero-ticket Falling Tunnel blocked. Owned inventory key and offers preserved. User must publish for production frontend cutover."
+    },
+    {
+      "capability": "verification",
+      "source": "source tests and live app",
+      "outcome": "verify",
+      "status": "verified",
+      "next_action": "47 tests passed; source scoring/upgrades tested, desktop and phone flow verified, real score read back through three ranking UIs and removed; latest harness build OK."
+    }
   ]
 }
