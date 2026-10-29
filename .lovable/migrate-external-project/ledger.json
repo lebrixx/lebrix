@@ -1,5 +1,12 @@
 {
-  "source": "brix-arena-transfert.zip",
+  "source": "assaut-projet.zip",
+  "assaut": [
+    {"capability":"code, original interface and uploaded file bytes","source":"Assaut archive","outcome":"migrate","status":"pending","next_action":"Preserve menu, combat and Three.js rendering with bundled source assets."},
+    {"capability":"schema and score authorization","source":"existing scores service","outcome":"migrate","status":"pending","next_action":"Separate assaut identity; exclude historical Falling Tunnel scores."},
+    {"capability":"records and auth identities","source":"local assaut-best only; no accounts or database","outcome":"preserve","status":"pending","next_action":"Keep original local best and bridge existing score identity."},
+    {"capability":"providers, endpoints, callbacks, webhooks, schedules and secrets","source":"none; image CDN backed by included raw assets","outcome":"not applicable","status":"verified","next_action":"Bundle original artwork for offline native runtime."},
+    {"capability":"tickets, cutover and verification","source":"Falling Tunnel entry","outcome":"migrate","status":"pending","next_action":"Free Assaut entry, retain owned ticket inventory without consuming it; verify launch, death, replay and rankings."}
+  ],
   "capabilities": [
     {"capability":"code and original interface","source":"src/arena and styles","outcome":"migrate","status":"verified","next_action":"Original physics and sprite functions unchanged; source theme and controls preserved. Desktop and portrait-landscape phone gameplay, pause, death, replay and exit verified. Native-device rendering not measured."},
     {"capability":"schema","source":"none in archive; existing Lucky Stop scores","outcome":"migrate","status":"verified","next_action":"brix_arena added to existing constraint and secure submit-score deployed; real score 5 read back."},
