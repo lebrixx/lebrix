@@ -2,6 +2,18 @@ import Matter from "matter-js";
 import { expect, it } from "vitest";
 import { ArenaWorld, difficultyAt, hpMinutesSmall, hpMinutesTank, spawnInterval } from "./world";
 const advance = (g:ArenaWorld, frames:number) => { for(let i=0;i<frames;i++) { g.invincible=100; g.step(1/60,{x:0,y:0}); } };
+it("starts each new run with exactly two bombs and never replenishes them",()=>{
+  const g=new ArenaWorld();expect(g.bombs).toBe(2);g.start();expect(g.bomb()).toBe(true);expect(g.bombs).toBe(1);expect(g.bomb()).toBe(true);expect(g.bombs).toBe(0);expect(g.bomb()).toBe(false);g.phase="upgrade";g.upgrade("power");expect(g.bombs).toBe(0);g.dispose();const replay=new ArenaWorld();expect(replay.bombs).toBe(2);replay.dispose();
+});
+it("bombs destroy enemies and hostile shots without awarding survival points",()=>{
+  const g=new ArenaWorld();g.start();g.spawn=999;g.fire=999;g.shoot({x:50,y:50},1,0,true);g.shoot({x:80,y:80},1,0,false);expect(g.bomb()).toBe(true);expect(g.shots).toHaveLength(1);expect(g.shots[0]?.hostile).toBe(false);g.step(1/60,{x:0,y:0});expect(g.enemies).toHaveLength(0);expect(g.kills).toBe(5);expect(g.score).toBe(0);g.dispose();
+});
+it("menu freezes play and resumes the same run without spending bombs",()=>{
+  const g=new ArenaWorld();g.start();g.openMenu();expect(g.phase).toBe("paused");const time=g.elapsed;g.step(1,{x:1,y:0});expect(g.elapsed).toBe(time);expect(g.bomb()).toBe(false);expect(g.bombs).toBe(2);g.resumeMenu();expect(g.phase).toBe("playing");g.dispose();
+});
+it("pre-game menu returns to ready and preserves upgrade selection",()=>{
+  const g=new ArenaWorld();g.openMenu();expect(g.phase).toBe("ready");g.resumeMenu();expect(g.phase).toBe("ready");g.phase="upgrade";g.openMenu();g.step(1,{x:0,y:0});g.resumeMenu();expect(g.phase).toBe("upgrade");g.dispose();
+});
 it("dash cannot be spammed and recharges",()=>{ const g=new ArenaWorld(); g.start(); expect(g.dash()).toBe(true); expect(g.dash()).toBe(false); g.dashCooldown=0; expect(g.dash()).toBe(true); g.dispose(); });
 it("upgrades apply only during the choice screen",()=>{ const g=new ArenaWorld(); g.upgrade("power"); expect(g.damage).toBe(1); g.phase="upgrade"; g.upgrade("power"); expect(g.damage).toBe(2); expect(g.phase).toBe("playing"); g.dispose(); });
 it("cover blocks the moving hero",()=>{ const g=new ArenaWorld(); g.start(); for(let i=0;i<1000;i++) { g.hp=999; g.phase="playing"; g.step(1/60,{x:1,y:0}); } expect(g.hero.position.x).toBeLessThan(990); g.dispose(); });
