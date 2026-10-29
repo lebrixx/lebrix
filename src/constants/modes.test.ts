@@ -4,11 +4,17 @@ import { FREE_MODES, RANKED_MODES, requiresTicket, resolveSavedMode } from './mo
 describe('Brix Arena replacement', () => {
   it('is unlocked from the start', () => { expect(FREE_MODES).toContain('brix_arena'); });
   it('replaces Rotating Cube in all six ranked identities', () => {
-    expect([...RANKED_MODES]).toEqual(['brix_rush', 'classic', 'brix_arena', 'arc_changeant', 'survie_60s', 'zone_mobile']);
+    expect([...RANKED_MODES]).toEqual(['brix_rush', 'classic', 'brix_arena', 'arc_changeant', 'survie_60s', 'assaut']);
   });
-  it('requires tickets only for Falling Tunnel', () => {
-    expect(requiresTicket('zone_mobile')).toBe(true);
+  it('makes Assaut free without a ticket', () => {
+    expect(FREE_MODES).toContain('assaut');
+    expect(requiresTicket('assaut')).toBe(false);
+    expect(requiresTicket('zone_mobile')).toBe(false);
     for (const mode of ['classic','brix_rush','arc_changeant','survie_60s','brix_arena','memoire_expert']) expect(requiresTicket(mode)).toBe(false);
+  });
+  it('redirects old Falling Tunnel selections without mixing historical scores', () => {
+    expect(resolveSavedMode('zone_mobile')).toBe('assaut');
+    expect(RANKED_MODES).not.toContain('zone_mobile');
   });
   it('redirects saved Rotating Cube selections without reusing its records', () => {
     expect(resolveSavedMode('memoire_expert')).toBe('brix_arena');
