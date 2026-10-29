@@ -41,7 +41,7 @@ function Pedestal({ x, z, r, color }: { x: number; z: number; r: number; color: 
 }
 
 function Rig() {
-  useFrame(({ camera, clock }) => { const t = clock.elapsedTime * 0.25; camera.position.x = Math.sin(t) * 0.5; camera.position.y = 2.6 + Math.sin(t * 1.3) * 0.08; camera.lookAt(0, 0.9, 0); });
+  useFrame(({ camera, clock }) => { const t = clock.elapsedTime * 0.25; camera.position.x = Math.sin(t) * 0.3; camera.position.y = 2.6 + Math.sin(t * 1.3) * 0.08; camera.lookAt(0, 0.9, 0); });
   return null;
 }
 
@@ -55,11 +55,11 @@ export default function ArenaLobby3D() {
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[30, 64]} /><meshStandardMaterial color="#1d1c18" metalness={0.4} roughness={0.55} /></mesh>
     <Pedestal x={0} z={0.4} r={0.95} color="#e8c547" />
     <Pedestal x={-1.9} z={-0.4} r={0.62} color="#ff6b4a" />
-    <Pedestal x={1.9} z={-0.4} r={0.62} color="#4ad3ff" />
+    <Pedestal x={1.3} z={-1.5} r={0.55} color="#4ad3ff" />
     <Pedestal x={-1.25} z={-1.5} r={0.5} color="#ff6b4a" />
     <Actor url={heroUrl} position={[0, 0.25, 0.4]} size={2.3} fps={9} spin={0.35} />
     <Actor url={tankUrl} position={[-1.9, 0.25, -0.4]} size={1.9} fps={7} spin={0.3} phase={1.1} />
-    <Actor url={shooterUrl} position={[1.9, 0.55, -0.4]} size={1.5} fps={12} spin={0.3} phase={2.3} hover={0.08} />
+    <Actor url={shooterUrl} position={[1.3, 0.6, -1.5]} size={1.5} fps={12} spin={0.3} phase={2.3} hover={0.08} />
     <Actor url={meleeUrl} position={[-1.25, 0.25, -1.5]} size={1.3} fps={10} spin={0.4} phase={0.6} />
     <ContactShadows position={[0, 0.01, 0]} opacity={0.55} scale={12} blur={2.4} far={3} />
     <Rig />
