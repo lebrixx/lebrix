@@ -20,7 +20,7 @@ function Actor({ url, position, size, fps, spin, phase = 0, hover = 0 }: { url: 
     const frame = Math.floor(s * fps) % CELLS;
     // Hold front-facing longer, then sweep around like a showroom turntable.
     const sweep = (s * spin) % 1.6;
-    const row = sweep < 0.6 ? 2 : ROW_ORDER[Math.floor(((sweep - 0.6) / 1) * CELLS) % CELLS];
+    const row = spin === 0 || sweep < 0.6 ? 2 : ROW_ORDER[Math.floor(((sweep - 0.6) / 1) * CELLS) % CELLS];
     tex.offset.set(frame / CELLS, 1 - (row + 1) / CELLS);
     if (mesh.current) mesh.current.position.y = position[1] + size * 0.42 + (hover ? Math.sin(s * 2.4) * hover : 0);
   });
@@ -54,13 +54,13 @@ export default function ArenaLobby3D() {
     <Environment resolution={64}><Lightformer intensity={2} position={[0, 5, 0]} scale={[10, 10, 1]} /><Lightformer intensity={1} color="#ffd98a" position={[-5, 1, -1]} rotation-y={Math.PI / 2} scale={[20, 1, 1]} /></Environment>
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[30, 64]} /><meshStandardMaterial color="#1d1c18" metalness={0.4} roughness={0.55} /></mesh>
     <Pedestal x={0} z={0.4} r={0.95} color="#e8c547" />
-    <Pedestal x={-1.9} z={-0.4} r={0.62} color="#ff6b4a" />
+    <Pedestal x={-1.9} z={-0.4} r={0.5} color="#ff6b4a" />
     <Pedestal x={1.3} z={-1.5} r={0.55} color="#4ad3ff" />
-    <Pedestal x={-1.25} z={-1.5} r={0.5} color="#ff6b4a" />
-    <Actor url={heroUrl} position={[0, 0.25, 0.4]} size={2.3} fps={9} spin={0.35} />
-    <Actor url={tankUrl} position={[-1.9, 0.25, -0.4]} size={1.9} fps={7} spin={0.3} phase={1.1} />
+    <Pedestal x={-1.25} z={-1.5} r={0.62} color="#ff6b4a" />
+    <Actor url={heroUrl} position={[0, 0.25, 0.4]} size={2.3} fps={9} spin={0} />
+    <Actor url={tankUrl} position={[-1.25, 0.25, -1.5]} size={1.9} fps={7} spin={0} phase={1.1} />
     <Actor url={shooterUrl} position={[1.3, 0.6, -1.5]} size={1.5} fps={12} spin={0.3} phase={2.3} hover={0.08} />
-    <Actor url={meleeUrl} position={[-1.25, 0.25, -1.5]} size={1.3} fps={10} spin={0.4} phase={0.6} />
+    <Actor url={meleeUrl} position={[-1.9, 0.25, -0.4]} size={1.3} fps={10} spin={0} phase={0.6} />
     <ContactShadows position={[0, 0.01, 0]} opacity={0.55} scale={12} blur={2.4} far={3} />
     <Rig />
   </Canvas>;
