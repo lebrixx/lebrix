@@ -1079,22 +1079,27 @@
 @media (max-width:360px) { .party-logo { font-size:16px; gap:5px; } .games-header-right > span { display:none; } .choice-content h2 { font-size:28px; } .choice-bottom { gap:8px; } .games-home .choice-play { padding-inline:10px; font-size:11px; } }
 
 /* Brix Arena — écran d'avant-partie */
-.brix-arena-original .arena-intro { gap: 20px; padding: 30px 24px; width: min(420px, 100%); background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 22%, var(--card)), var(--card) 70%); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
-.brix-arena-original .arena-kicker { font-size: 11px; letter-spacing: .3em; color: var(--accent); }
-.brix-arena-original .arena-logo { font-size: 44px; line-height: 1; letter-spacing: .04em; }
+.brix-arena-original .arena-intro { gap: 24px; padding: 40px 34px; width: min(540px, 100%); background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 22%, var(--card)), var(--card) 70%); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.brix-arena-original .arena-kicker { font-size: 12px; letter-spacing: .3em; color: var(--accent); }
+.brix-arena-original .arena-logo { font-size: 54px; line-height: 1; letter-spacing: .04em; }
 .brix-arena-original .arena-logo span { color: var(--accent); }
-.brix-arena-original .arena-rules { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; width: 100%; }
-.brix-arena-original .arena-rules li { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px; border-radius: 16px; background: color-mix(in srgb, var(--secondary) 80%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border)); }
-.brix-arena-original .arena-rules svg { width: 24px; height: 24px; color: var(--accent); margin-bottom: 4px; }
-.brix-arena-original .arena-rules b { font-size: 13px; }
-.brix-arena-original .arena-rules small { font-size: 10px; color: var(--muted-foreground); }
-.brix-arena-original .arena-best { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: var(--hub-shade); color: var(--primary); font-size: 13px; }
-.brix-arena-original .arena-best b { font-size: 16px; }
-.brix-arena-original .arena-start-hero { width: 100%; min-height: 56px; font-size: 16px; border-radius: 16px; box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 40%, transparent); animation: arena-pulse 2s ease-in-out infinite; }
+.brix-arena-original .arena-rules { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; width: 100%; }
+.brix-arena-original .arena-rules li { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 18px 8px; border-radius: 16px; background: color-mix(in srgb, var(--secondary) 80%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border)); }
+.brix-arena-original .arena-rules svg { width: 28px; height: 28px; color: var(--accent); margin-bottom: 4px; }
+.brix-arena-original .arena-rules b { font-size: 15px; }
+.brix-arena-original .arena-rules small { font-size: 11px; color: var(--muted-foreground); }
+.brix-arena-original .arena-kit-note { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 16px; border-radius: 16px; background: color-mix(in srgb, var(--destructive) 12%, var(--secondary)); border: 1px solid color-mix(in srgb, var(--destructive) 35%, var(--border)); font-size: 14px; text-align: left; }
+.brix-arena-original .arena-kit-note img { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+.brix-arena-original .arena-kit-note b { color: var(--destructive); }
+.brix-arena-original .arena-best { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; background: var(--hub-shade); color: var(--primary); font-size: 14px; }
+.brix-arena-original .arena-best b { font-size: 17px; }
+.brix-arena-original .arena-start-hero { width: 100%; min-height: 60px; font-size: 17px; border-radius: 16px; box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 40%, transparent); animation: arena-pulse 2s ease-in-out infinite; }
 @keyframes arena-pulse { 50% { transform: scale(1.03); } }
 @media (max-height: 500px) and (orientation: landscape), (max-width: 500px) and (orientation: portrait) {
-  .brix-arena-original .arena-intro { gap: 12px; padding: 18px 20px; }
-  .brix-arena-original .arena-logo { font-size: 34px; }
-  .brix-arena-original .arena-rules li { padding: 10px 6px; }
+  .brix-arena-original .arena-intro { gap: 14px; padding: 22px 20px; }
+  .brix-arena-original .arena-logo { font-size: 38px; }
+  .brix-arena-original .arena-rules li { padding: 12px 6px; }
+  .brix-arena-original .arena-kit-note { padding: 8px 12px; font-size: 12px; }
+  .brix-arena-original .arena-kit-note img { width: 34px; height: 34px; }
   .brix-arena-original .arena-start-hero { min-height: 48px; }
 }
