@@ -64,10 +64,9 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survivalTime: 0,
     variableArc: false
   },
-  [ModeID.CLASSIC]: {
-    name: "Cube Dodge",
-    desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
-    zoneArc: Math.PI / 5,
+  [ModeID.ASSAUT]: {
+    name: "Assaut",
+    desc: "Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -76,6 +75,15 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.BRIX_ARENA]: {
     name: "Brix Arena",
     desc: "Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.",
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.CLASSIC]: {
+    name: "Cube Dodge",
+    desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
+    zoneArc: Math.PI / 5,
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -92,14 +100,6 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.SURVIE_60S]: {
     name: "Stack Jump",
     desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, vise les plaques dorées.",
-    keepMovingZone: false,
-    survival: false,
-    survivalTime: 0,
-    variableArc: false
-  },
-  [ModeID.ASSAUT]: {
-    name: "Assaut",
-    desc: "Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
