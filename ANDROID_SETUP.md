@@ -27,7 +27,14 @@
   - Les tailles requises : 48dp, 72dp, 96dp, 144dp, 192dp
   - Android Studio peut les générer automatiquement
 
-### 4. Informations Play Store Console (à préparer)
+### 4. Verrouillage portrait (rotation d'écran désactivée)
+
+- iOS : `ios/App/App/Info.plist` n'autorise que `UIInterfaceOrientationPortrait` (iPhone et iPad).
+- Android : le plugin `@capacitor/screen-orientation` verrouille le portrait au lancement (voir `src/main.tsx`), enregistré automatiquement par `npx cap sync android`.
+- Renfort conseillé dans le manifeste généré (`android/app/src/main/AndroidManifest.xml`) : ajouter `android:screenOrientation="portrait"` sur l'activité `MainActivity`.
+- Les modes au format paysage (Brix Rush, Assaut, Brix Arena) restent rendus via transformations CSS : on tourne simplement le téléphone.
+
+### 5. Informations Play Store Console (à préparer)
 
 **Informations de base** :
 - Nom de l'application : Lucky Stop
@@ -47,12 +54,12 @@
 - Adresse e-mail développeur
 - Adresse physique (requise pour les apps avec achats)
 
-### 5. Classification du contenu
+### 6. Classification du contenu
 - Questionnaire de classification requis
 - Lucky Stop : Probablement "PEGI 3" ou "Everyone"
 - Déclarer les publicités (AdMob)
 
-### 6. Store Listing - Traductions
+### 7. Store Listing - Traductions
 Préparez les descriptions dans plusieurs langues :
 - Français ✅ (langue principale)
 - Anglais
