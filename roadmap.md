@@ -1,4 +1,5 @@
 # Tasks
+- [ ] Slightly enlarge/inset Rush forward/back controls; enlarge Assaut pre-game home, exclude bomb kills from score, intensify progressive boss volleys; fix Arena bomb multi-touch and reduce monster spawning around score 20; verify targeted tests and live controls.
 - [x] Redesign mode selection using supplied brief and unchanged Rush/Arena artwork plus four generated images; six-card order, image loading, phone 393px/desktop layout, ticket-shop entry and original Rush entry verified; 8 access/ticket tests passed, build OK.
 - [x] Replace Brix Arena header with pause menu and two non-replenishable bombs per run; 21 tests passed, desktop/mobile menu, pause/resume, two bombs and exit verified; build OK.
 - [x] Restore Ball Balance ticket entry and permanent Stack Jump coin unlock with existing shop presentation; purchase at 500 coins, ticket pack, unchanged inventory on pre-game entry, one ticket per run/replay and empty replay refusal verified; 8 tests passed, build OK.
