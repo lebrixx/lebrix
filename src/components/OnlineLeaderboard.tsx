@@ -43,11 +43,11 @@ interface OnlineLeaderboardProps {
 
 const modeNames = {
   brix_rush: 'Brix Rush',
-  classic: 'Cube Dodge',
+  assaut: 'Assaut',
   brix_arena: 'Brix Arena',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
-  assaut: 'Assaut'
+  classic: 'Cube Dodge'
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {

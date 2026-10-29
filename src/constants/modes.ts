@@ -14,8 +14,8 @@ export const ModeID = {
 
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
-// Ordre d'affichage partagé : Brix Rush est classé juste après Cube Dodge.
-export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.CLASSIC, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ASSAUT] as const;
+// Ordre d'affichage partagé entre les modes et les classements.
+export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.CLASSIC] as const;
 export const FREE_MODES = RANKED_MODES;
 export const TICKET_MODE = null;
 export const requiresTicket = (_mode: string): boolean => false;
@@ -53,7 +53,7 @@ interface ModeConfig {
   trapZone?: boolean;
 }
 
-// Les clés sont déclarées dans l'ordre d'affichage des modes (Brix Rush, Cube Dodge, Brix Arena en tête).
+// L'ordre d'affichage est défini par RANKED_MODES, indépendamment des clés.
 export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.BRIX_RUSH]: {
     name: "Brix Rush",
