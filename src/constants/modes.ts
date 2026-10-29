@@ -64,10 +64,9 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survivalTime: 0,
     variableArc: false
   },
-  [ModeID.CLASSIC]: {
-    name: "Cube Dodge",
-    desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
-    zoneArc: Math.PI / 5,
+  [ModeID.ASSAUT]: {
+    name: "Assaut",
+    desc: "Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
