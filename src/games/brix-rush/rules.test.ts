@@ -10,10 +10,10 @@ describe('Brix Rush replacement', () => {
     expect(RANKED_MODES).toHaveLength(6);
     expect(ModeID.BRIX_RUSH).toBe('brix_rush');
   });
-  it('is listed first, then Cube Dodge and Brix Arena, in menus and rankings', () => {
-    expect(RANKED_MODES.slice(0, 3)).toEqual([ModeID.BRIX_RUSH, ModeID.CLASSIC, ModeID.BRIX_ARENA]);
+  it('is listed first, then Assaut and Brix Arena, in menus and rankings', () => {
+    expect(RANKED_MODES.slice(0, 3)).toEqual([ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA]);
     const modeListOrder = Object.keys(cfgModes).filter((mode) => mode !== ModeID.PONG_CIRCULAIRE);
-    expect(modeListOrder.slice(0, 3)).toEqual([ModeID.BRIX_RUSH, ModeID.CLASSIC, ModeID.BRIX_ARENA]);
+    expect(modeListOrder.slice(0, 3)).toEqual([ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA]);
   });
   it('scores distance reached rather than repeated backwards movements', () => {
     expect(toMeters(8 * CELL)).toBe(8);
