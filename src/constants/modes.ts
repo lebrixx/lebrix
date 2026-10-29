@@ -105,14 +105,6 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survivalTime: 0,
     variableArc: false
   },
-  [ModeID.ASSAUT]: {
-    name: "Assaut",
-    desc: "Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.",
-    keepMovingZone: false,
-    survival: false,
-    survivalTime: 0,
-    variableArc: false
-  },
   [ModeID.ZONE_MOBILE]: {
     name: "Falling Tunnel",
     desc: "Glisse ton doigt pour aligner la bille avec le trou vert. Évite les plaques qui foncent sur toi !",
