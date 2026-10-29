@@ -11,11 +11,12 @@ import { createGameVisuals } from "./lib/game-visuals";
 import { Button } from "./Button";
 import { ArrowLeft, Bomb, Home, Play } from "lucide-react";
 import { avoidBodies, droneSpawnX, droneVelocity, separateDrones } from './lib/drone-motion';
+import { applyBombDamage, defeatReward } from './lib/combat';
 
 const W = 480;
 let H = 720;
 type Kind = "drone" | "zig" | "tank" | "shooter" | "boss";
-type Enemy = { x: number; y: number; vx: number; vy: number; r: number; hp: number; max: number; kind: Kind; t: number; cd: number; seed: number; base: number; rank?: number };
+type Enemy = { x: number; y: number; vx: number; vy: number; r: number; hp: number; max: number; kind: Kind; t: number; cd: number; seed: number; base: number; rank?: number; bombKill?: boolean };
 type Bullet = { x: number; y: number; vx: number; vy: number; r: number; dmg: number; hits?: Set<object> | undefined };
 type Drop = { x: number; y: number; type: BonusType; t: number };
 const TONE_CLASS: Record<Tone, string> = { p: "text-primary border-primary", s: "text-secondary border-secondary", a: "text-accent border-accent", d: "text-destructive border-destructive", fg: "text-foreground border-foreground" };
@@ -150,7 +151,7 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
       pl.bombs--; setBombsLeft(pl.bombs); flash = 0.5; shake = 0.4; foe = [];
       for (const rock of asteroids.rocks) burst(rock.x, rock.y, C.smoke, 14);
       asteroids.clear();
-      for (const e of enemies) { e.hp -= e.kind === "boss" ? 25 : 999; burst(e.x, e.y, kindColor[e.kind], 8); }
+      for (const e of enemies) { applyBombDamage(e); burst(e.x, e.y, kindColor[e.kind], 8); }
     };
     const hurt = () => {
       if (pl.inv > 0) return;
@@ -324,9 +325,10 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
       comboT -= dt; if (comboT <= 0) combo = 0;
       enemies = enemies.filter((e) => {
         if (e.hp <= 0) {
-          combo++; comboT = 2;
+          if (!e.bombKill) { combo++; comboT = 2; }
           // 2 points tous les 3 avions abattus, 3 points par boss.
-          if (e.kind === "boss") score += 3; else if (++kills % 3 === 0) score += 2;
+          const reward = defeatReward(e, kills);
+          kills = reward.kills; score += reward.points;
           burst(e.x, e.y, kindColor[e.kind], e.kind === "boss" ? 80 : 14);
           shake = Math.max(shake, e.kind === "boss" ? 0.6 : 0.08);
           const r = Math.random();
@@ -485,7 +487,7 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
     };
     if (import.meta.env.DEV) {
       const debug = {
-        state: () => ({ time, nextBoss, firstBossDeath, bossCount, pilot: { ...pl } }),
+        state: () => ({ time, score, kills, nextBoss, firstBossDeath, bossCount, pilot: { ...pl } }),
         protectPilot: () => { pl.inv = 10000; },
         damageBoss: () => { const boss = enemies.find(e => e.kind === 'boss'); if (boss) boss.hp = 0; },
         sim: (seconds: number) => {
@@ -541,8 +543,8 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
           <>
           <canvas ref={menuBackground} aria-hidden className="absolute inset-0 h-full w-full" />
           {!launching && (
-            <Button variant="ghost" onClick={onBack} type="button" aria-label="Menu principal" className="arena-btn arena-btn-sm absolute left-4 top-[calc(env(safe-area-inset-top)+1rem)] z-20 flex h-10 w-10 items-center justify-center rounded-full">
-              <Home className="h-5 w-5" />
+            <Button variant="ghost" onClick={onBack} type="button" aria-label="Menu principal" className="arena-btn arena-btn-sm arena-home absolute left-4 top-[calc(env(safe-area-inset-top)+1rem)] z-20 flex items-center justify-center rounded-full">
+              <Home />
             </Button>
           )}
           <div className={`arena-menu absolute inset-0 transition-[background] duration-700 ${launching ? "arena-launch" : ""} flex flex-col items-center justify-between overflow-hidden px-6 pb-[calc(env(safe-area-inset-bottom)+1.75rem)] pt-[calc(env(safe-area-inset-top)+2.5rem)] text-center`}>
