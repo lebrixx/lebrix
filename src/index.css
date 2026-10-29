@@ -996,6 +996,86 @@
  .brix-arena-original.game-screen { --safe-top:env(safe-area-inset-right,0px); --safe-right:env(safe-area-inset-bottom,0px); --safe-bottom:env(safe-area-inset-left,0px); --safe-left:env(safe-area-inset-top,0px); inset:auto; top:0; left:100vw; width:100dvh; height:100vw; transform-origin:top left; transform:rotate(90deg); }
 }
 
+/* Illustrated mode hub: all palette changes stay local to selection. */
+.games-home {
+  --hub-surface: oklch(0.145 0.006 200);
+  --hub-shade: oklch(0.1 0.008 200 / 0.9);
+  --hub-text: oklch(0.98 0 0);
+  --hub-line: oklch(0.32 0.02 200);
+  --hub-primary: oklch(0.86 0.19 128);
+  --hub-accent: oklch(0.8 0.14 200);
+  --hub-button-text: oklch(0.18 0.04 265);
+  --hub-muted: oklch(0.7 0.03 260);
+  --font-display: 'Russo One', sans-serif;
+  --font-body: 'Chakra Petch', sans-serif;
+  min-height: var(--app-usable-height);
+  background: var(--hub-surface);
+  color: var(--hub-text);
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  padding: max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));
+}
+/* Fill the initial app clearance without moving any controls into it. */
+.games-home::before { content:''; position:absolute; top:calc(-1 * var(--app-top-clearance)); left:0; right:0; height:var(--app-top-clearance); background:var(--hub-surface); }
+.games-header,.games-heading,.games-list,.games-footer,.games-utilities,.games-warning { max-width:1000px; margin-inline:auto; }
+.games-header { display:flex; align-items:center; justify-content:space-between; padding-block:8px 28px; border-bottom:1px solid var(--hub-line); gap:16px; }
+.party-logo { display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-size:18px; white-space:nowrap; }
+.party-logo svg,.party-logo span { color:var(--hub-primary); }
+.party-logo svg { width:24px; height:24px; }
+.games-header-right { display:flex; align-items:center; gap:16px; font-size:11px; color:var(--hub-muted); }
+.games-home .hub-back { color:var(--hub-text); background:transparent; border:1px solid var(--hub-line); border-radius:8px; }
+.games-home .hub-back:hover { background:var(--hub-line); }
+.games-heading { position:relative; padding-block:32px 24px; }
+.games-eyebrow { font-size:11px; font-weight:600; color:var(--hub-accent); }
+.games-heading h1 { font-family:var(--font-display); font-size:32px; margin-top:6px; line-height:1.25; }
+.games-heading > span { position:absolute; right:0; bottom:28px; font-size:12px; color:var(--hub-muted); }
+.games-utilities { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+.games-home .hub-bonus { border-color:var(--hub-line); color:var(--hub-primary); background:var(--hub-surface); font-size:12px; height:36px; border-radius:8px; }
+.games-home .hub-bonus:hover { border-color:var(--hub-primary); }
+.games-utilities > span { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--hub-muted); }
+.games-utilities > span svg { width:13px; height:13px; }
+.games-warning { display:flex; gap:12px; border-bottom:1px solid var(--hub-line); padding-bottom:16px; margin-bottom:20px; font-size:13px; color:var(--hub-accent); }
+.games-warning svg { flex-shrink:0; }
+.games-list { display:grid; gap:20px; }
+.game-choice { position:relative; isolation:isolate; height:330px; overflow:hidden; border-radius:8px; border:1px solid var(--hub-line); }
+.game-choice > img { width:100%; height:100%; object-fit:cover; }
+.choice-shade { position:absolute; inset:0; background:linear-gradient(0deg,var(--hub-shade) 0%,transparent 85%),linear-gradient(90deg,var(--hub-shade),transparent 80%); }
+.choice-content { position:absolute; inset:0; padding:28px 32px; color:var(--hub-text); display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; }
+.choice-top { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; margin-bottom:auto; }
+.choice-number { font-size:11px; font-weight:600; }
+.choice-record { display:flex; align-items:center; gap:5px; font-size:11px; }
+.choice-record svg { width:13px; height:13px; }
+.choice-record b { color:var(--hub-primary); }
+.choice-content h2 { font-family:var(--font-display); font-size:42px; line-height:1.15; text-transform:uppercase; }
+.choice-content p { margin-block:8px 22px; font-size:15px; }
+.choice-bottom { display:flex; width:100%; gap:12px; align-items:center; justify-content:space-between; }
+.choice-info { display:flex; align-items:center; gap:7px; font-size:12px; min-width:0; }
+.choice-info > svg { width:15px; height:15px; flex-shrink:0; }
+.choice-info small { display:flex; align-items:center; gap:4px; font-size:10px; margin-top:3px; }
+.choice-info small svg { width:10px; height:10px; }
+.games-home .choice-play { height:44px; padding-inline:22px; font-weight:600; background:var(--hub-primary); color:var(--hub-button-text); flex-shrink:0; border-radius:6px; }
+.games-home .choice-alt .choice-play { background:var(--hub-accent); }
+.games-home .choice-play:hover { filter:brightness(1.08); }
+.games-home .choice-play:focus-visible,.games-home .hub-back:focus-visible,.games-home .hub-bonus:focus-visible { outline:2px solid var(--hub-accent); outline-offset:3px; box-shadow:none; }
+.games-footer { display:flex; justify-content:space-between; gap:12px; padding-top:28px; color:var(--hub-muted); font-size:10px; }
+@media (max-width:600px) {
+ .games-header { padding-bottom:20px; }
+ .games-header-right { gap:8px; }
+ .games-header-right > span { font-size:9px; }
+ .games-heading { padding-block:24px 20px; }
+ .games-heading h1 { font-size:25px; }
+ .games-heading > span { display:none; }
+ .games-list { gap:16px; }
+ .game-choice { height:270px; }
+ .choice-content { padding:20px; }
+ .choice-content h2 { font-size:31px; }
+ .choice-content p { font-size:13px; margin-bottom:16px; }
+ .choice-info { font-size:10px; gap:5px; }
+ .games-home .choice-play { padding-inline:14px; height:40px; font-size:12px; }
+ .choice-record { font-size:10px; }
+}
+@media (max-width:360px) { .party-logo { font-size:16px; gap:5px; } .games-header-right > span { display:none; } .choice-content h2 { font-size:28px; } .choice-bottom { gap:8px; } .games-home .choice-play { padding-inline:10px; font-size:11px; } }
+
 /* Brix Arena — écran d'avant-partie */
 .brix-arena-original .arena-intro { gap: 20px; padding: 30px 24px; width: min(420px, 100%); background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 22%, var(--card)), var(--card) 70%); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
 .brix-arena-original .arena-kicker { font-size: 11px; letter-spacing: .3em; color: var(--accent); }
