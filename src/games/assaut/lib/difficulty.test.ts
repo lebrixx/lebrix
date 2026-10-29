@@ -53,9 +53,9 @@ describe("difficulté progressive", () => {
   });
   it("renforce le boss 2 : plus de vie et des tirs plus rapides", () => {
     expect(bossStats(2).hp).toBe(175);
-    expect(bossStats(2).speed).toBe(133);
-    expect(bossStats(2).cooldown).toBeCloseTo(1.66);
-    expect(bossStats(2).count).toBe(5);
+    expect(bossStats(2).speed).toBe(163);
+    expect(bossStats(2).cooldown).toBeCloseTo(1.0239);
+    expect(bossStats(2).count).toBe(7);
     expect(bossStats(2).hp).toBeGreaterThan(bossStats(1).hp);
     expect(bossStats(3).hp).toBeGreaterThan(bossStats(2).hp);
   });
@@ -69,13 +69,19 @@ describe("difficulté progressive", () => {
     }
     expect(patterns.size).toBe(5);
   });
-  it("laisse des pauses et limite la densité du premier boss", () => {
+  it("renforce tous les motifs dès le premier boss et rapproche les salves", () => {
     for (const age of [1, 4.5, 8, 11.5, 15]) {
       const volley = bossVolley(1, age, true, Math.PI / 2);
-      expect(volley.cooldown).toBeGreaterThan(1.6);
-      expect(volley.velocities.length).toBeLessThanOrEqual(4);
-      expect(Math.hypot(volley.velocities[0]?.vx ?? 0, volley.velocities[0]?.vy ?? 0)).toBeCloseTo(115);
+      expect(volley.cooldown).toBeCloseTo(0.9775);
+      expect(volley.velocities.length).toBeGreaterThanOrEqual(5);
+      expect(Math.hypot(volley.velocities[0]?.vx ?? 0, volley.velocities[0]?.vy ?? 0)).toBeCloseTo(145);
+      for(let rank=1;rank<30;rank++) {
+        const current=bossVolley(rank,age,false,Math.PI/2), next=bossVolley(rank+1,age,false,Math.PI/2);
+        expect(next.cooldown).toBeLessThan(current.cooldown);
+        expect(next.velocities.length).toBeGreaterThanOrEqual(current.velocities.length);
+      }
     }
+    for(const velocity of bossVolley(1,8,false,Math.PI/2).velocities) expect(Math.abs(Math.atan2(velocity.vy,velocity.vx)-Math.PI/2)).toBeGreaterThanOrEqual(0.39);
   });
   it("les apparitions s'accélèrent avec le temps", () => {
     expect(difficulty(0).interval).toBeGreaterThan(difficulty(180).interval);
