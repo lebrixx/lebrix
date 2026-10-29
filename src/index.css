@@ -1132,3 +1132,4 @@
 .brix-arena-original .arena-lobby-hint { font-size:11px; color:var(--muted-foreground); text-align:center; }
 @keyframes arena-play-pulse { 50% { filter:brightness(1.12); } }
 @keyframes arena-kit-bob { 50% { transform:translateY(-4px) rotate(-4deg); } }
+.brix-arena-original:has(.arena-lobby) .arena-stats { display:none; }
