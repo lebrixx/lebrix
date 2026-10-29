@@ -15,7 +15,7 @@ export const ModeID = {
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé entre les modes et les classements.
-export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.CLASSIC] as const;
+export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.CLASSIC, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S] as const;
 export const FREE_MODES = RANKED_MODES.filter(mode => mode !== ModeID.SURVIE_60S);
 export const MODE_UNLOCK_PRICES: Partial<Record<ModeType, number>> = { [ModeID.SURVIE_60S]: 500 };
 export const TICKET_MODE = ModeID.ARC_CHANGEANT;

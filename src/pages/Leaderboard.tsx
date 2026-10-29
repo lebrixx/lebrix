@@ -22,9 +22,9 @@ const modeNames = {
   brix_rush: 'Brix Rush',
   assaut: 'Assaut',
   brix_arena: 'Brix Arena',
+  classic: 'Cube Dodge',
   arc_changeant: 'Ball Balance',
-  survie_60s: 'Stack Jump',
-  classic: 'Cube Dodge'
+  survie_60s: 'Stack Jump'
 };
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
