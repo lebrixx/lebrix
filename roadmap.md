@@ -1,5 +1,5 @@
 # Tasks
-- [ ] Redesign mode selection using supplied brief and artwork, generate four matching images, preserve access/navigation and verify phone/desktop.
+- [x] Redesign mode selection using supplied brief and unchanged Rush/Arena artwork plus four generated images; six-card order, image loading, phone 393px/desktop layout, ticket-shop entry and original Rush entry verified; 8 access/ticket tests passed, build OK.
 - [x] Replace Brix Arena header with pause menu and two non-replenishable bombs per run; 21 tests passed, desktop/mobile menu, pause/resume, two bombs and exit verified; build OK.
 - [x] Restore Ball Balance ticket entry and permanent Stack Jump coin unlock with existing shop presentation; purchase at 500 coins, ticket pack, unchanged inventory on pre-game entry, one ticket per run/replay and empty replay refusal verified; 8 tests passed, build OK.
 - [x] Replace Falling Tunnel entirely with supplied Assaut, preserving original pre-game screen, gameplay and artwork; make free and update all active rankings with a separate identity.
