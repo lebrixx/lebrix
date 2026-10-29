@@ -7,6 +7,7 @@ import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
 import { getTickets } from '@/utils/ticketSystem';
 import { hubCopy, modeArtwork } from './modeSelectionContent';
+import luckyStopLogo from '@/assets/lucky-stop-logo.png';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
@@ -74,10 +75,8 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   return (
     <section className="games-home">
       <header className="games-header">
-        <div className="party-logo"><Gamepad2 aria-hidden="true" /> BRIX <span>PARTY</span></div>
-        <div className="games-header-right"><span>{copy.arcade}</span>
-          <Button variant="ghost" size="icon" className="hub-back" onClick={onBack} aria-label={copy.back} title={copy.back}><ArrowLeft /></Button>
-        </div>
+        <Button variant="outline" className="hub-back" onClick={onBack}><ArrowLeft />{copy.back}</Button>
+        <img className="hub-logo" src={luckyStopLogo} alt="Lucky Stop" />
       </header>
       <div className="games-heading">
         <p className="games-eyebrow">{copy.eyebrow}</p>
