@@ -5,6 +5,7 @@ import heroUrl from "@/assets/brix-arena/hero-run.png";
 import meleeUrl from "@/assets/brix-arena/melee-run.png";
 import tankUrl from "@/assets/brix-arena/tank-run.png";
 import shooterUrl from "@/assets/brix-arena/shooter-run.png";
+import healthKitUrl from "./assets/health-kit.png";
 import { MELEE_CELL, SHOOTER_CELL, meleeFrame, shooterFrame } from "./enemy-art";
 import { ArenaWorld, WIDTH, HEIGHT, type Upgrade } from "./world";
 
@@ -30,6 +31,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
     const meleeArt=new Image();meleeArt.src=meleeUrl;
     const tankArt=new Image();tankArt.src=tankUrl;
     const shooterArt=new Image();shooterArt.src=shooterUrl;
+    const kitArt=new Image();kitArt.src=healthKitUrl;
     const css=getComputedStyle(s), col=(n:string)=>css.getPropertyValue(n).trim();
     const color={floor:col("--arena-floor"),tile:col("--arena-tile"),wall:col("--arena-wall"),side:col("--arena-side"),ink:col("--game-road"),red:col("--destructive"),gold:col("--primary"),cyan:col("--accent"),text:col("--foreground"),shadow:col("--arena-shadow")};
     let scale=1, ox=0,oy=0,dpr=1;
@@ -65,7 +67,18 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
       ctx.fillStyle=color.tile;ctx.font="400 70px 'Russo One'";ctx.textAlign="center";ctx.fillText("BRIX ARENA",WIDTH/2,HEIGHT/2+24);
       // Sandbag walls: stacked rounded bags along each barrier.
       for(const wall of w.walls.slice(4)){const b=wall.bounds,x=b.min.x,y=b.min.y,ww=b.max.x-x,hh=b.max.y-y;ctx.fillStyle=color.shadow;ctx.fillRect(x+6,y+6,ww,hh);ctx.fillStyle=color.side;ctx.fillRect(x,y,ww,hh);ctx.fillStyle=color.wall;const horiz=ww>=hh,len=horiz?ww:hh;for(let s=3;s<len-8;s+=20){ctx.beginPath();if(horiz)ctx.roundRect(x+s,y-9,17,hh+9,7);else ctx.roundRect(x-9,y+s,ww+9,17,7);ctx.fill();}}
-      for(const p of w.pickups){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillStyle=p.kind==="health"?color.red:color.cyan;ctx.fillRect(-6,-6,12,12);ctx.restore();if(p.kind==="health"){ctx.fillStyle=color.text;ctx.fillRect(p.x-4,p.y-1,8,2);ctx.fillRect(p.x-1,p.y-4,2,8);}}
+      for(const p of w.pickups){
+        if(p.kind==="health"&&kitArt.complete&&kitArt.naturalWidth>0){
+          const pulse=1+Math.sin(w.elapsed*4)*0.08, size=40*pulse;
+          ctx.fillStyle=color.shadow;ctx.beginPath();ctx.ellipse(p.x+4,p.y+16,16,7,0,0,Math.PI*2);ctx.fill();
+          ctx.drawImage(kitArt,p.x-size/2,p.y-size/2-6,size,size);
+        }else if(p.kind==="health"){
+          ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillStyle=color.red;ctx.fillRect(-9,-9,18,18);ctx.restore();
+          ctx.fillStyle=color.text;ctx.fillRect(p.x-6,p.y-1.5,12,3);ctx.fillRect(p.x-1.5,p.y-6,3,12);
+        }else{
+          ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.PI/4);ctx.fillStyle=color.cyan;ctx.fillRect(-6,-6,12,12);ctx.restore();
+        }
+      }
       const shadow=(x:number,y:number,r:number)=>{ctx.fillStyle=color.shadow;ctx.beginPath();ctx.ellipse(x+4,y+9,r,r*0.5,0,0,Math.PI*2);ctx.fill();};
       for(const e of [...w.enemies].sort((a,b)=>a.body.position.y-b.body.position.y)){
         const {x,y}=e.body.position,r=e.kind===1?22:16;shadow(x,y,r);
