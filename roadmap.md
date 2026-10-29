@@ -1,4 +1,5 @@
 # Tasks
+- [ ] Replace Brix Arena header with pause menu and add two non-replenishable bombs per run; test menu and bomb flow.
 - [x] Restore Ball Balance ticket entry and permanent Stack Jump coin unlock with existing shop presentation; purchase at 500 coins, ticket pack, unchanged inventory on pre-game entry, one ticket per run/replay and empty replay refusal verified; 8 tests passed, build OK.
 - [x] Replace Falling Tunnel entirely with supplied Assaut, preserving original pre-game screen, gameplay and artwork; make free and update all active rankings with a separate identity.
 - [x] Verify Assaut: 87 tests passed; mobile/desktop free entry, unchanged tickets, original Three.js rendering, movement/bomb/pause/death/replay/exit checked; real score 8 read in Assaut/monthly/general then removed; harness build OK. Native-device rendering not measured.
