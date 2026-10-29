@@ -209,10 +209,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </div>
           <h1 className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-label="Lucky Stop">
             <img src={luckyStopLogo} alt="Lucky Stop" width={1306} height={735} draggable={false}
-              className="block w-[58%] max-w-[260px] h-auto object-contain lsm-logo" />
+              className="block w-[62%] max-w-[300px] scale-125 h-auto object-contain lsm-logo" />
           </h1>
           <div className="flex flex-col gap-4 shrink-0 z-10">
-            <SideBtn tone="accent" icon={<Clock className="w-7 h-7" />} label={hasFreeSpin ? (t.freeSpin || 'Tour') : wheelTimer} badge={hasFreeSpin ? '1' : undefined} onClick={() => setShowLuckyWheel(true)} pulse={hasFreeSpin} />
+            <SideBtn tone="accent" icon={<Clock className="w-7 h-7" />} label={hasFreeSpin ? 'Tour' : wheelTimer} badge={hasFreeSpin ? '1' : undefined} onClick={() => setShowLuckyWheel(true)} pulse={hasFreeSpin} />
             <SideBtn tone="gold" icon={<Tag className="w-7 h-7" />} label="Offres" onClick={() => setShowPremiumOffer(true)} />
           </div>
         </div>
