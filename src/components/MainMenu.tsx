@@ -185,19 +185,19 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
   return (
     <>
-      <MainMenuBackground />
+      <div className="lsm-bg" />
       <div className={`main-menu-container lsm-root ${theme} relative z-10`}>
         {/* Top bar */}
         <div className="flex items-center justify-between shrink-0">
           <div className="lsm-panel flex items-center gap-2 rounded-full pl-1.5 pr-1.5 py-1.5">
-            <span className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground"><Coins className="w-5 h-5" /></span>
-            <span className="text-lg font-black text-foreground min-w-[3ch]">{coins}</span>
+            <span className="lsm-coin w-9 h-9 rounded-full flex items-center justify-center font-black text-lg">€</span>
+            <span className="text-xl font-black min-w-[3ch]">{coins}</span>
             <button type="button" aria-label={t.shop} onClick={onOpenShop} className={`${tap} w-9 h-9 rounded-full lsm-primary flex items-center justify-center`}>
               <Plus className="w-5 h-5" />
             </button>
           </div>
           <button type="button" aria-label="Settings" onClick={() => setShowSettings(true)} className={`${tap} lsm-panel w-12 h-12 rounded-2xl flex items-center justify-center`}>
-            <SettingsIcon className="w-6 h-6 text-foreground" />
+            <SettingsIcon className="w-6 h-6" />
           </button>
         </div>
 
@@ -208,8 +208,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <SideBtn icon={<FileText className="w-7 h-7" />} label={t.news} onClick={() => setShowComingSoon(true)} />
           </div>
           <h1 className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-label="Lucky Stop">
+            <span className="lsm-ring" />
+            <Crown className="lsm-crown w-14 h-14 fill-current" style={{ top: 'calc(50% - min(34vw, 145px) - 22px)' }} />
             <img src={luckyStopLogo} alt="Lucky Stop" width={1306} height={735} draggable={false}
-              className="block w-[62%] max-w-[300px] scale-125 h-auto object-contain lsm-logo" />
+              className="relative block w-[60%] max-w-[260px] h-auto object-contain lsm-logo" />
           </h1>
           <div className="flex flex-col gap-4 shrink-0 z-10">
             <SideBtn tone="accent" icon={<Clock className="w-7 h-7" />} label={hasFreeSpin ? 'Tour' : wheelTimer} badge={hasFreeSpin ? '1' : undefined} onClick={() => setShowLuckyWheel(true)} pulse={hasFreeSpin} />
@@ -220,40 +222,40 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         {/* Main actions */}
         <div className="flex flex-col gap-3 w-full max-w-md mx-auto shrink-0">
           <button type="button" onClick={onOpenGlobalLeaderboard} className={`${tap} lsm-accent-card self-start flex items-center gap-3 rounded-2xl px-4 py-2.5 text-left`}>
-            <Trophy className="w-9 h-9 text-secondary" />
+            <Trophy className="w-10 h-10 lsm-goldc fill-current" />
             <div className="leading-tight">
-              <div className="text-[10px] tracking-widest text-muted-foreground uppercase">Classement</div>
-              <div className="text-base font-black text-accent">GLOBAL</div>
-              <div className="flex items-center gap-1 text-sm font-bold text-foreground"><Crown className="w-3.5 h-3.5 text-secondary" />{globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}</div>
+              <div className="text-[10px] tracking-widest lsm-muted uppercase">Classement</div>
+              <div className="text-lg font-black lsm-cyan tracking-wide">GLOBAL</div>
+              <div className="flex items-center gap-1 text-sm font-bold"><Crown className="w-3.5 h-3.5 lsm-goldc fill-current" />{globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}</div>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground ml-3" />
+            <ChevronRight className="w-6 h-6 lsm-muted ml-6" />
           </button>
 
           <button type="button" onClick={onStartGame} className={`${tap} lsm-play w-full rounded-[1.75rem] py-5 flex items-center justify-center gap-4`}>
-            <Play className="w-9 h-9 fill-current" />
-            <span className="w-px h-9 bg-primary-foreground/40" />
-            <span className="text-3xl font-black tracking-[0.12em] uppercase">{t.playNow?.split(' ')[0] || 'Jouer'}</span>
+            <Play className="w-10 h-10 fill-current lsm-play-icon" />
+            <span className="w-px h-10 bg-current opacity-40" />
+            <span className="text-4xl font-black tracking-[0.12em] uppercase">{t.playNow?.split(' ')[0] || 'Jouer'}</span>
           </button>
 
           <button type="button" onClick={() => setShowSeasonPass(true)} className={`${tap} lsm-panel lsm-pass w-full rounded-2xl px-4 py-3 flex items-center gap-4 relative`}>
-            <span className="w-12 h-12 rounded-xl bg-secondary/20 border border-secondary flex items-center justify-center"><Crown className="w-7 h-7 text-secondary fill-secondary/40" /></span>
+            <span className="lsm-pass-icon w-12 h-12 rounded-xl flex items-center justify-center"><Crown className="w-7 h-7 fill-current" /></span>
             <div className="flex-1 text-left">
-              <div className="text-sm font-black tracking-widest uppercase text-foreground">Pass de saison</div>
-              <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${Math.max(passProgress, 4)}%` }} /></div>
+              <div className="text-base font-black tracking-widest uppercase">Pass de saison</div>
+              <div className="mt-2 h-2.5 rounded-full lsm-bar overflow-hidden"><div className="h-full rounded-full lsm-bar-fill" style={{ width: `${Math.max(passProgress, 4)}%` }} /></div>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            {hasPassReward && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-destructive" />}
+            <ChevronRight className="w-6 h-6 lsm-muted relative z-10" />
+            {hasPassReward && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full lsm-badge" />}
           </button>
 
           <button type="button" onClick={() => {
               if (!brixUnlocked) { try { sessionStorage.setItem('challenges_focus_brix', '1'); } catch {} onOpenChallenges(); return; }
               onOpenBrixFactory?.();
-            }} className={`${tap} lsm-panel w-full rounded-2xl px-4 py-3 flex items-center gap-4`}>
-            <span className="w-12 h-12 rounded-xl bg-muted/60 border border-border flex items-center justify-center">
-              {brixUnlocked ? <Boxes className="w-6 h-6 text-primary" /> : <Lock className="w-6 h-6 text-foreground" />}
+            }} className={`${tap} lsm-panel lsm-factory w-full rounded-2xl px-4 py-3 flex items-center gap-4`}>
+            <span className="lsm-lock-icon relative z-10 w-12 h-12 rounded-xl flex items-center justify-center">
+              {brixUnlocked ? <Boxes className="w-6 h-6" /> : <Lock className="w-6 h-6 fill-current" />}
             </span>
-            <span className="flex-1 text-left text-sm font-black tracking-widest uppercase text-foreground">Brix Factory</span>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            <span className="flex-1 text-left text-base font-black tracking-widest uppercase relative z-10">Brix Factory</span>
+            <ChevronRight className="w-6 h-6 lsm-muted relative z-10" />
           </button>
         </div>
 
@@ -424,16 +426,16 @@ const SideBtn: React.FC<{ icon: React.ReactNode; label: string; onClick: () => v
   <button type="button" onClick={onClick} className="lsm-tap flex flex-col items-center gap-1.5">
     <span className={`lsm-panel lsm-side lsm-side-${tone} relative w-[60px] h-[60px] rounded-2xl flex items-center justify-center ${pulse ? 'animate-pulse-glow' : ''}`}>
       {icon}
-      {badge && <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1 rounded-full bg-destructive text-destructive-foreground text-xs font-black flex items-center justify-center">{badge}</span>}
+      {badge && <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1 rounded-full lsm-badge text-xs font-black flex items-center justify-center">{badge}</span>}
     </span>
-    <span className="text-[11px] font-bold tracking-wider uppercase text-foreground/85 max-w-[72px] truncate">{label}</span>
+    <span className="text-[11px] font-bold tracking-wider uppercase max-w-[72px] truncate">{label}</span>
   </button>
 );
 
 const NavBtn: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void; badge?: string; active?: boolean }> = ({ icon, label, onClick, badge, active }) => (
-  <button type="button" onClick={onClick} className={`lsm-tap relative flex flex-col items-center gap-1 py-1 ${active ? 'text-primary' : 'text-muted-foreground'}`}>
-    <span className="relative">{icon}{badge && <span className="absolute -top-2 -right-3 w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-black flex items-center justify-center">{badge}</span>}</span>
+  <button type="button" onClick={onClick} className={`lsm-tap relative flex flex-col items-center gap-1 py-1 ${active ? 'lsm-nav-active' : 'lsm-nav-idle'}`}>
+    <span className="relative">{icon}{badge && <span className="absolute -top-2 -right-3 w-[18px] h-[18px] rounded-full lsm-badge text-[10px] font-black flex items-center justify-center">{badge}</span>}</span>
     <span className="text-[10px] font-bold tracking-wider uppercase truncate max-w-full">{label}</span>
-    {active && <span className="absolute -bottom-1 w-10 h-1 rounded-full bg-primary" />}
+    {active && <span className="absolute -bottom-1 w-10 h-1 rounded-full lsm-nav-ind" />}
   </button>
 );
