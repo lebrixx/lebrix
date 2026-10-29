@@ -1,4 +1,7 @@
 # Tasks
+- [ ] Replace Falling Tunnel entirely with supplied Assaut, preserving original pre-game screen, gameplay and artwork; make free and update all active rankings with a separate identity.
+- [ ] Verify Assaut source tests, menu/play/death/replay/exit, secure score write and leaderboard read-back.
+- [ ] Resolve previously reported missing scores; investigate and verify remaining cause.
 - [x] Replace Rotating Cube with supplied standalone Brix Arena and original isolated palette, physics, sprites, landscape, controls and overlays; free entry verified with zero tickets, Falling Tunnel uses existing tickets and offers. 47 tests passed; movement, dash, pause, defeat, replay and exit verified on desktop/phone; real score 5 read back in mode, monthly and general rankings then removed. Build OK. Native-device rendering remains unmeasured.
 - [x] Reduce Brix Rush startup/replay work with shared decoded artwork, cached painter colors and unchanged-score suppression; style reads reduced from 6639 to 10 in browser profiling, 26 tests passed, solo launch/death/1200ms respawn/record/replay/exit verified and build OK; native-device smoothness remains unmeasured.
 - [x] Enlarge the Brix Rush pre-game home button and list Brix Rush second, right after Cube Dodge, in the mode list and every leaderboard tab; verified 52×52 button at the safe-area top, and both lists read back Cube Dodge then Brix Rush, 26 tests passed.
