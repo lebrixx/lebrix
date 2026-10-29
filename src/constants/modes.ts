@@ -80,6 +80,15 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     survivalTime: 0,
     variableArc: false
   },
+  [ModeID.CLASSIC]: {
+    name: "Cube Dodge",
+    desc: "Esquive les blocs, change de couleur d'un tap et traverse les portails pour entrer en PHASE ×3 !",
+    zoneArc: Math.PI / 5,
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
   [ModeID.ARC_CHANGEANT]: {
     name: "Ball Balance",
     desc: "Guide la bille sur une piste 3D sinueuse en glissant ton doigt. Tiens le plus longtemps possible — 1 point toutes les secondes !",
