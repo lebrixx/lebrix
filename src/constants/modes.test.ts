@@ -4,7 +4,7 @@ import { FREE_MODES, RANKED_MODES, requiresTicket, resolveSavedMode, MODE_UNLOCK
 describe('Brix Arena replacement', () => {
   it('is unlocked from the start', () => { expect(FREE_MODES).toContain('brix_arena'); });
   it('replaces Rotating Cube in all six ranked identities', () => {
-    expect([...RANKED_MODES]).toEqual(['brix_rush', 'assaut', 'brix_arena', 'arc_changeant', 'survie_60s', 'classic']);
+    expect([...RANKED_MODES]).toEqual(['brix_rush', 'assaut', 'brix_arena', 'classic', 'arc_changeant', 'survie_60s']);
   });
   it('makes Assaut free without a ticket', () => {
     expect(FREE_MODES).toContain('assaut');
