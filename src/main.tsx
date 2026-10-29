@@ -16,7 +16,7 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 const lockPortrait = () => {
   try {
     if (Capacitor.isNativePlatform()) {
-      ScreenOrientation.lock({ orientation: ScreenOrientation.Orientation.PORTRAIT }).catch(() => {});
+      ScreenOrientation.lock({ orientation: 'portrait' }).catch(() => {});
     } else {
       const orientation: any = (screen as any).orientation;
       if (orientation && typeof orientation.lock === 'function') {
