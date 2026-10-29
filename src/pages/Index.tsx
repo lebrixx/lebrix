@@ -20,7 +20,7 @@ import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { AssautGame } from '@/components/AssautGame';
 import { BrixRushGame } from '@/components/BrixRushGame';
 import { BrixArenaGame } from '@/components/BrixArenaGame';
-import { getTickets, consumeTicket } from '@/utils/ticketSystem';
+import { getTickets } from '@/utils/ticketSystem';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
