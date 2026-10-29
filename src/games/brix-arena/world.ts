@@ -38,6 +38,33 @@ export class ArenaWorld {
   dashCooldown = 0; dashTime = 0; invincible = 0;
   facing = { x: 1, y: 0 }; aim = { x: 1, y: 0 };
   fire = 0; spawn = 0; elapsed = 0;
+  bombs = 2;
+  bombFlash = 0;
+  menuOpen = false;
+  private menuPhase: Phase = "ready";
+  openMenu() {
+    if (this.menuOpen) return;
+    this.menuPhase = this.phase;
+    this.menuOpen = true;
+    if (this.phase === "playing") this.phase = "paused";
+  }
+  resumeMenu() {
+    if (!this.menuOpen) return;
+    this.phase = this.menuPhase;
+    this.menuOpen = false;
+  }
+  bomb() {
+    if (this.phase !== "playing" || this.menuOpen || this.bombs <= 0) return false;
+    this.bombs--;
+    this.bombFlash = 0.5;
+    for (const enemy of this.enemies) enemy.hp = 0;
+    this.shots = this.shots.filter(shot => {
+      if (!shot.hostile) return true;
+      Composite.remove(this.engine.world, shot.body);
+      return false;
+    });
+    return true;
+  }
   constructor() {
     const rects = [[500,-20,1040,40],[500,640,1040,40],[-20,310,40,620],[1020,310,40,620],[260,200,150,34],[740,420,150,34],[250,440,34,90],[750,180,34,90]];
     this.walls = rects.map(([x,y,w,h]) => Bodies.rectangle(x ?? 0,y ?? 0,w ?? 0,h ?? 0,{ isStatic: true, label: "wall" }));
@@ -74,7 +101,8 @@ export class ArenaWorld {
   }
   hurt() { if (this.invincible > 0 || this.dashTime > 0) return; this.hp--; this.invincible = 1; if (this.hp <= 0) this.phase = "over"; }
   step(dt: number, input: { x: number; y: number }) {
-    if (this.phase !== "playing") return;
+    if (this.phase !== "playing" || this.menuOpen) return;
+    this.bombFlash = Math.max(0, this.bombFlash - dt);
     this.elapsed += dt; this.invincible = Math.max(0,this.invincible-dt); this.dashCooldown = Math.max(0,this.dashCooldown-dt); this.dashTime = Math.max(0,this.dashTime-dt);
     const len = Math.hypot(input.x,input.y);
     if (len > 0.05) this.facing = { x: input.x / Math.max(1,len), y: input.y / Math.max(1,len) };

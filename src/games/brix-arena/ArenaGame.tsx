@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Heart, Pause, Play, RotateCcw, ShieldPlus, Swords, Trophy, Zap } from "lucide-react";
+import { ArrowLeft, Heart, Bomb, Play, RotateCcw, ShieldPlus, Swords, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroUrl from "@/assets/brix-arena/hero-run.png";
 import meleeUrl from "@/assets/brix-arena/melee-run.png";
@@ -14,11 +14,11 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
   const canvas = useRef<HTMLCanvasElement>(null), stage = useRef<HTMLElement>(null);
   const world = useRef<ArenaWorld | null>(null);
   const input = useRef({x:0,y:0}), keys = useRef(new Set<string>());
-  const [hud,setHud]=useState({phase:"ready",hp:5,maxHp:5,score:0,elapsed:0,kills:0,dash:0});
+  const [hud,setHud]=useState({phase:"ready",hp:5,maxHp:5,score:0,elapsed:0,kills:0,dash:0,bombs:2,menuOpen:false});
   const [best,setBest]=useState(0), bestRef=useRef(0);
-  const publish=()=>{ const g=world.current; if(!g)return; if(g.phase==="over"&&!finished.current){finished.current=true;callbacks.current.onFinish?.(g.score,g.elapsed);} setHud({phase:g.phase,hp:g.hp,maxHp:g.maxHp,score:g.score,elapsed:g.elapsed,kills:g.kills,dash:g.dashCooldown}); if(g.score>bestRef.current){ bestRef.current=g.score; setBest(g.score); try{localStorage.setItem("brix-arena-survival-best",String(g.score));}catch{/* optional storage */} } };
+  const publish=()=>{ const g=world.current; if(!g)return; if(g.phase==="over"&&!finished.current){finished.current=true;callbacks.current.onFinish?.(g.score,g.elapsed);} setHud({phase:g.phase,hp:g.hp,maxHp:g.maxHp,score:g.score,elapsed:g.elapsed,kills:g.kills,dash:g.dashCooldown,bombs:g.bombs,menuOpen:g.menuOpen}); if(g.score>bestRef.current){ bestRef.current=g.score; setBest(g.score); try{localStorage.setItem("brix-arena-survival-best",String(g.score));}catch{/* optional storage */} } };
   const start=()=>{finished.current=false;callbacks.current.onStart?.();world.current?.dispose(); const g=new ArenaWorld();world.current=g;g.start();keys.current.clear();input.current={x:0,y:0};publish();};
-  const pause=()=>{ const g=world.current;if(!g)return;if(g.phase==="playing")g.phase="paused";else if(g.phase==="paused")g.phase="playing"; keys.current.clear();input.current={x:0,y:0};publish(); };
+  const pause=()=>{ const g=world.current;if(!g)return;if(g.menuOpen)g.resumeMenu();else g.openMenu();keys.current.clear();input.current={x:0,y:0};stickPointer.current=null;publish(); };
   const choose=(u:Upgrade)=>{keys.current.clear();input.current={x:0,y:0};stickPointer.current=null;world.current?.upgrade(u);publish();};
   const actions=useRef({pause,publish});actions.current={pause,publish};
   useEffect(()=>{
@@ -93,6 +93,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
       ctx.globalAlpha=w.invincible>0&&Math.floor(now/90)%2?0.45:1;
       if(art.complete&&art.naturalWidth){const moving=Math.hypot(move.x,move.y)>0;const dir=moving?move:w.facing;const pose=meleeFrame(w.elapsed,0,dir.x,dir.y);ctx.drawImage(art,pose.sx,pose.sy,MELEE_CELL,MELEE_CELL,h.x-34,h.y-56,68,68);}else{ctx.fillStyle=color.gold;ctx.fillRect(h.x-15,h.y-20,30,35);}
       ctx.globalAlpha=1;ctx.save();ctx.translate(h.x,h.y-4);ctx.rotate(Math.atan2(w.aim.y,w.aim.x));ctx.fillStyle=color.side;ctx.fillRect(7,-6,26,12);ctx.fillStyle=color.cyan;ctx.fillRect(23,-4,13,8);ctx.restore();
+      if(w.bombFlash>0){ctx.globalAlpha=w.bombFlash;ctx.fillStyle=color.gold;ctx.fillRect(0,0,WIDTH,HEIGHT);ctx.globalAlpha=1;}
       raf=requestAnimationFrame(frame);
     };raf=requestAnimationFrame(frame);
     return()=>{cancelAnimationFrame(raf);ro.disconnect();window.removeEventListener("keydown",down);window.removeEventListener("keyup",up);window.removeEventListener("blur",blur);world.current?.dispose();};
@@ -105,10 +106,12 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
   const stickUp=(e:React.PointerEvent)=>{if(stickPointer.current!==e.pointerId)return;stickPointer.current=null;input.current={x:0,y:0};setStick(s=>({...s,active:false}));};
   return <main ref={stage} className="brix-arena-original game-screen arena-screen touch-none select-none">
     <canvas ref={canvas} className="arena-canvas" aria-label="Arène de survie" />
-    <header className="arena-hud"><Button size="icon" variant="secondary" title="Tous les jeux" aria-label="Tous les jeux" onClick={onBack}><ArrowLeft /></Button><div><h1>BRIX <span>ARENA</span></h1><p>{Math.floor(hud.elapsed)}s · {hud.kills} éliminations</p></div><Button size="icon" variant="secondary" aria-label="Pause" title="Pause" onClick={pause} disabled={hud.phase!=="playing"&&hud.phase!=="paused"}><Pause /></Button></header>
+    <header className="arena-hud"><Button variant="secondary" onClick={pause} aria-label="Menu"><ArrowLeft/>Menu</Button></header>
     <div className="arena-stats"><div><Trophy size={15}/><span>{hud.score}<small>Record {best}</small></span></div><div className="arena-health"><Heart size={15}/>{hud.hp}/{hud.maxHp}</div></div>
     {hud.phase==="playing"&&<><div className="arena-stick-zone" role="application" aria-label="Déplacer le joueur" onPointerDown={stickDown} onPointerMove={stickMove} onPointerUp={stickUp} onPointerCancel={stickUp}/><div ref={stickPad} className="arena-stick-base"><div className="arena-stick-knob" style={{transform:`translate(calc(-50% + ${stick.kx}px),calc(-50% + ${stick.ky}px))`}}/></div><Button className="arena-dash" aria-label="Esquiver" disabled={hud.dash>0} onPointerDown={e=>{e.preventDefault();world.current?.dash();publish();}} onClick={e=>{if(e.detail===0){world.current?.dash();publish();}}}><Zap/>{hud.dash>0?`${hud.dash.toFixed(1)}s`:"Esquive"}</Button></>}
-    {hud.phase==="ready"&&<div className="arena-overlay"><div className="arena-dialog arena-intro">
+    {hud.phase==="playing"&&!hud.menuOpen&&<Button className="arena-bomb" aria-label={`Bombe, ${hud.bombs} restantes`} disabled={hud.bombs<=0} onClick={()=>{world.current?.bomb();publish();}}><Bomb/><span>Bombe ×{hud.bombs}</span></Button>}
+    {hud.menuOpen&&<div className="arena-overlay arena-menu-overlay"><div className="arena-dialog" role="dialog" aria-label="Menu de la partie"><h2>MENU</h2>{hud.phase!=="ready"&&hud.phase!=="over"&&<Button className="arena-start" onClick={pause}><Play/>Reprendre la partie</Button>}<Button variant="secondary" onClick={onBack}><ArrowLeft/>Retour au menu</Button></div></div>}
+    {hud.phase==="ready"&&!hud.menuOpen&&<div className="arena-overlay"><div className="arena-dialog arena-intro">
       <p className="arena-kicker">SURVIE · SOLO</p>
       <h2 className="arena-logo">BRIX <span>ARENA</span></h2>
       <ul className="arena-rules">
@@ -119,7 +122,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
       <div className="arena-best"><Trophy size={16}/>Record <b>{best}</b></div>
       <Button className="arena-start arena-start-hero" onClick={start}><Play/>Entrer dans l’arène</Button>
     </div></div>}
-    {hud.phase!=="playing"&&hud.phase!=="ready"&&<div className="arena-overlay"><div className="arena-dialog">
+    {hud.phase!=="playing"&&hud.phase!=="ready"&&!hud.menuOpen&&<div className="arena-overlay"><div className="arena-dialog">
       <p className="text-accent text-xs">{hud.phase==="upgrade"?`${hud.score} POINTS` :"SURVIE · SOLO"}</p>
       <h2>{hud.phase==="ready"?"BRIX ARENA":hud.phase==="over"?"FIN DE PARTIE":hud.phase==="upgrade"?"TON AMÉLIORATION":"EN PAUSE"}</h2>
       {hud.phase==="over"&&<p className="arena-result">{hud.score} points · {Math.floor(hud.elapsed)}s de survie</p>}

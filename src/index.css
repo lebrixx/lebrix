@@ -981,7 +981,11 @@
 .brix-arena-original .arena-dash:disabled { background:var(--secondary); color:var(--foreground); }
 .brix-arena-original .arena-upgrades > button { background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 12%,var(--secondary)),var(--secondary)); color:var(--secondary-foreground); }
 /* Keep the original controls clickable above the invisible joystick capture area. */
-.brix-arena-original .arena-hud { z-index:7; }
+.brix-arena-original .arena-hud { z-index:7; padding:0; background:transparent; }
+.brix-arena-original .arena-bomb { position:absolute; right:calc(var(--safe-right) + var(--hud-gap) + 7px); bottom:calc(var(--safe-bottom) + var(--hud-gap) + 110px); width:84px; height:84px; border-radius:50%; display:flex; flex-direction:column; gap:5px; font-size:11px; background:var(--primary); color:var(--primary-foreground); }
+.brix-arena-original .arena-bomb:disabled { background:var(--secondary); color:var(--muted-foreground); }
+.brix-arena-original .arena-menu-overlay { z-index:8; }
+@media (max-height:500px) and (orientation:landscape), (max-width:500px) and (orientation:portrait) { .brix-arena-original .arena-bomb { width:70px; height:70px; right:calc(var(--safe-right) + var(--hud-gap) + 6px); bottom:calc(var(--safe-bottom) + var(--hud-gap) + 94px); } }
 @media (orientation:portrait) and (max-width:900px) {
  .brix-arena-original.game-screen { --safe-top:env(safe-area-inset-right,0px); --safe-right:env(safe-area-inset-bottom,0px); --safe-bottom:env(safe-area-inset-left,0px); --safe-left:env(safe-area-inset-top,0px); inset:auto; top:0; left:100vw; width:100dvh; height:100vw; transform-origin:top left; transform:rotate(90deg); }
 }
