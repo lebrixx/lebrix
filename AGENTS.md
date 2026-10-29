@@ -1,4 +1,5 @@
 # Project rules
+- Keep mode-selection presentation and its scoped arcade tokens separate from game engines; bundle hub artwork as imports for native offline display and retain shared mode order and existing access callbacks.
 - Keep Assaut's supplied simulation, Three.js painters, menus and controls isolated in `src/games/assaut`; bundle original artwork for native offline rendering and bridge only navigation and secure score sessions.
 - Use the distinct `assaut` ranked identity and redirect saved Falling Tunnel selections without reusing its historical scores; preserve owned inventory and native purchase restoration when mode access rules change.
 - Keep Brix Arena's supplied physics, painters and controls in `src/games/brix-arena` with its source theme isolated; only bridge navigation and secure score sessions so the original standalone experience is preserved.

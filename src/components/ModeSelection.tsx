@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket, Factory } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Clock, Crosshair, AlertTriangle, Lock, Star, Trophy, Gamepad2, Ticket, Rocket, Target, Layers, Circle } from 'lucide-react';
 import { cfgModes, ModeType, ModeID, RANKED_MODES, requiresTicket, MODE_UNLOCK_PRICES } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
-import { getPongUnlockCount, PONG_UNLOCK_TARGET } from '@/utils/pongUnlock';
 import { getTickets } from '@/utils/ticketSystem';
+import { hubCopy, modeArtwork } from './modeSelectionContent';
 
 interface ModeSelectionProps {
   currentMode: ModeType;
@@ -22,19 +20,6 @@ interface ModeSelectionProps {
   onOpenReflexGrid?: () => void;
 }
 
-const getModeIcon = (modeId: ModeType) => {
-  switch (modeId) {
-    case ModeID.CLASSIC: return <Target className="w-8 h-8" />;
-    case ModeID.ARC_CHANGEANT: return <Box className="w-8 h-8" />;
-    case ModeID.SURVIE_60S: return <Layers className="w-8 h-8" />;
-    case ModeID.ASSAUT: return <Zap className="w-8 h-8" />;
-    case ModeID.BRIX_RUSH: return <Sparkles className="w-8 h-8" />;
-    case ModeID.BRIX_ARENA: return <Grid3x3 className="w-8 h-8" />;
-    case ModeID.PONG_CIRCULAIRE: return <Factory className="w-8 h-8" />;
-    default: return <Target className="w-8 h-8" />;
-  }
-};
-
 export const ModeSelection: React.FC<ModeSelectionProps> = ({
   currentMode,
   gameStatus,
@@ -43,8 +28,6 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
   onSelectMode,
   onBack,
   onOpenShop,
-  onOpenChallenges,
-  onOpenReflexGrid,
 }) => {
   const isGameRunning = gameStatus === 'running';
   const { language } = useLanguage();
@@ -76,281 +59,76 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
 
   const handleBonusActivated = (mode: ModeType) => setBonusMode(mode);
 
+  const copy = hubCopy[language];
+  const icons = [Gamepad2, Rocket, Crosshair, Target, Circle, Layers];
+
+  useEffect(() => {
+    if (document.querySelector('link[data-mode-hub-fonts]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
+    link.dataset.modeHubFonts = 'true';
+    document.head.appendChild(link);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-game flex flex-col items-center p-4 pt-10">
-      {/* Header */}
-      <div className="w-full max-w-4xl mb-8 animate-fade-in">
-        <Button
-          onClick={onBack}
-          variant="outline"
-          className="mb-6 border-wheel-border hover:bg-button-hover hover-scale"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour au Menu
-        </Button>
-
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-text-primary mb-2">
-            {t.modeSelectionTitle}
-          </h1>
-
-          <Button
-            onClick={() => setShowSlotMachine(true)}
-            variant="outline"
-            className={`mt-3 transition-all duration-300 border ${
-              canSpin
-                ? 'border-primary/50 text-primary hover:bg-primary/10 hover:scale-[1.03] animate-[pulse-glow_3s_ease-in-out_infinite]'
-                : bonusMode
-                  ? 'border-secondary/40 text-secondary hover:bg-secondary/10'
-                  : 'border-wheel-border text-text-muted'
-            }`}
-          >
-            <Star className="w-4 h-4 mr-2" />
-            {canSpin
-              ? t.bonusX2Available
-              : bonusMode
-                ? `${cfgModes[bonusMode].name} — x2 actif`
-                : t.bonusX2}
-          </Button>
-          {!canSpin && bonusMode && countdown && (
-            <p className="text-text-muted text-xs mt-2 flex items-center justify-center gap-1.5">
-              <Clock className="w-3 h-3" />
-              Prochain tirage dans {countdown}
-            </p>
-          )}
+    <section className="games-home">
+      <header className="games-header">
+        <div className="party-logo"><Gamepad2 aria-hidden="true" /> BRIX <span>PARTY</span></div>
+        <div className="games-header-right"><span>{copy.arcade}</span>
+          <Button variant="ghost" size="icon" className="hub-back" onClick={onBack} aria-label={copy.back} title={copy.back}><ArrowLeft /></Button>
         </div>
+      </header>
+      <div className="games-heading">
+        <p className="games-eyebrow">{copy.eyebrow}</p>
+        <h1>{copy.title}</h1>
+        <span>{String(RANKED_MODES.length).padStart(2, '0')} {copy.games}</span>
       </div>
-
-      <SlotMachine
-        isOpen={showSlotMachine}
-        onClose={() => setShowSlotMachine(false)}
-        unlockedModes={unlockedModes}
-        onBonusActivated={handleBonusActivated}
-      />
-
-      {isGameRunning && (
-        <div className="w-full max-w-4xl mb-6 animate-fade-in">
-          <Card className="bg-danger/10 border-danger p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-6 h-6 text-danger flex-shrink-0" />
-              <div>
-                <p className="text-danger font-medium">{t.modeGameInProgressLabel}</p>
-                <p className="text-text-muted text-sm">{t.modeGameInProgressDescLabel}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
+      <div className="games-utilities">
+        <Button variant="outline" className="hub-bonus" onClick={() => setShowSlotMachine(true)}>
+          <Star />{canSpin ? t.bonusX2Available : bonusMode ? `${cfgModes[bonusMode].name} — ${t.bonusX2}` : t.bonusX2}
+        </Button>
+        {!canSpin && bonusMode && countdown && <span><Clock />{copy.nextSpin} {countdown}</span>}
+      </div>
+      <SlotMachine isOpen={showSlotMachine} onClose={() => setShowSlotMachine(false)} unlockedModes={unlockedModes} onBonusActivated={handleBonusActivated} />
+      {isGameRunning && <div className="games-warning" role="status"><AlertTriangle /><div><p>{t.modeGameInProgressLabel}</p><p>{t.modeGameInProgressDescLabel}</p></div></div>}
+      <div className="games-list">
         {RANKED_MODES.map((modeId, idx) => {
-          const config = cfgModes[modeId];
-          const isReflexGrid = false;
-          const isComingSoon = false;
-          const isCurrentMode = !isReflexGrid && modeId === currentMode;
-          const isLocked = !isReflexGrid && !unlockedModes.includes(modeId);
-          const canSelect = !isGameRunning && (!isLocked || isReflexGrid);
-          const hasBonus = !isReflexGrid && isBonusActive(modeId as ModeType);
-          const isPongChallenge = false;
-          const pongUnlock = null as null | { done: number; total: number };
-
+          const isLocked = !unlockedModes.includes(modeId);
+          const ticketMode = requiresTicket(modeId);
+          const needsTickets = ticketMode && tickets === 0;
+          const Icon = icons[idx];
+          const hasBonus = isBonusActive(modeId) && !isLocked;
+          const label = isLocked ? t.unlockWithCoins.replace('{n}', String(MODE_UNLOCK_PRICES[modeId] ?? 0)) : needsTickets ? copy.getTickets : copy.play;
           return (
-            <Card
-              key={modeId}
-              className={`
-                relative p-6 transition-all duration-300 animate-fade-in
-                ${isCurrentMode
-                  ? 'bg-primary/10 border-primary shadow-lg shadow-primary/20'
-                  : isLocked
-                    ? 'bg-wheel-segment/30 border-wheel-border opacity-75'
-                    : 'bg-wheel-segment/50 border-wheel-border hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10'
-                }
-              `}
-              style={{ animationDelay: `${idx * 60}ms`, animationFillMode: 'backwards' }}
-            >
-              {hasBonus && !isLocked && (
-                <div className="absolute top-3 right-3 z-10">
-                  <Badge className="bg-secondary/90 text-white border-secondary animate-pulse">
-                    <Star className="w-3 h-3 mr-1" />
-                    x2 COINS
-                  </Badge>
+            <article key={modeId} className={`game-choice ${idx % 2 ? 'choice-alt' : ''}`}>
+              <img src={modeArtwork[modeId]} alt="" width={1536} height={768} loading={idx === 0 ? 'eager' : 'lazy'} />
+              <div className="choice-shade" />
+              <div className="choice-content">
+                <div className="choice-top"><span className="choice-number">{String(idx + 1).padStart(2, '0')} / {copy.categories[idx]}</span>
+                  <span className="choice-record"><Trophy />{copy.record} {bestScores[modeId] || 0}{hasBonus && <b> · x2</b>}</span>
                 </div>
-              )}
-              {isLocked && (
-                <div className="absolute top-3 right-3 z-10">
-                  <Badge className={isComingSoon ? 'bg-primary/90 text-white border-primary' : isPongChallenge ? 'bg-secondary/90 text-white border-secondary' : 'bg-danger/90 text-white border-danger'}>
-                    <Lock className="w-3 h-3 mr-1" />
-                    {isComingSoon ? t.soonLabel : isPongChallenge ? t.challengeRequired : t.locked}
-                  </Badge>
-                </div>
-              )}
-
-              <div className="flex items-center gap-4 mb-4">
-                <div className={`
-                  p-3 rounded-full transition-transform duration-300
-                  ${isCurrentMode ? 'bg-primary text-white scale-110' : 'bg-wheel-segment text-text-secondary'}
-                `}>
-                  {getModeIcon(modeId as ModeType)}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-text-primary">
-                    {config.name}
-                  </h3>
-                  {isCurrentMode && (
-                    <Badge variant="secondary" className="mt-1">
-                      {t.equipped}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-text-secondary mb-2 leading-relaxed">
-                {modeId === ModeID.BRIX_RUSH ? t.descZoneTraitresse : modeId === ModeID.BRIX_ARENA ? t.descBrixArena : config.desc}
-              </p>
-
-              {requiresTicket(modeId) && (
-                <div className="mb-4 flex items-center justify-between p-2.5 rounded-lg bg-secondary/10 border border-secondary/30">
-                  <span className="text-xs text-text-muted flex items-center gap-1.5">
-                    <Ticket className="w-3.5 h-3.5 text-secondary" />
-                    Tickets disponibles
-                  </span>
-                  <span className={`text-sm font-bold ${tickets === 0 ? 'text-danger' : 'text-secondary'}`}>
-                    {tickets}
-                  </span>
-                </div>
-              )}
-
-
-              <div className="space-y-2 mb-4">
-                {config.survival && (
-                  <div className="flex items-center gap-2 text-sm text-text-muted">
-                    <Clock className="w-4 h-4" />
-                    <span>{t.durationLabel}: {config.survivalTime}s</span>
-                  </div>
-                )}
-                {config.variableArc && (
-                  <div className="flex items-center gap-2 text-sm text-text-muted">
-                    <RotateCcw className="w-4 h-4" />
-                    <span>Arc variable</span>
-                  </div>
-                )}
-                {config.keepMovingZone && (
-                  <div className="flex items-center gap-2 text-sm text-text-muted">
-                    <Target className="w-4 h-4" />
-                    <span>Zone mobile</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="mb-4 p-3 bg-wheel-segment/20 rounded-lg border border-wheel-border">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-text-muted">Meilleur Score:</span>
-                  <Badge variant="outline" className="border-primary text-primary">
-                    {bestScores[modeId] || 0}
-                  </Badge>
-                </div>
-              </div>
-
-              {isLocked ? (
-                isComingSoon ? (
-                  <div className="space-y-2">
-                    <div className="p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
-                      <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm">
-                        <Lock className="w-4 h-4" />
-                        {t.comingSoonMode}
-                      </div>
-                      <p className="text-xs text-text-muted mt-1">{t.comingSoonModeDesc}</p>
-                    </div>
-                    <Button disabled className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed">
-                      <Lock className="w-4 h-4 mr-2" />
-                      {t.lockedShort}
-                    </Button>
-                  </div>
-                ) : isPongChallenge ? (
-                  <div className="space-y-2">
-                    <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30 text-xs text-text-secondary">
-                      <div className="flex items-center gap-2 mb-1 text-secondary font-semibold">
-                        <Trophy className="w-3.5 h-3.5" />
-                        {t.unlockChallenge}
-                      </div>
-                      <p>{t.pongUnlockDesc.replace('{target}', String(PONG_UNLOCK_TARGET))}</p>
-                      {pongUnlock && (
-                        <p className="mt-1 font-bold text-secondary">Progression : {pongUnlock.done}/{pongUnlock.total}</p>
-                      )}
-
-                    </div>
-                    <Button
-                      onClick={onOpenChallenges}
-                      className="w-full bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-white shadow-lg shadow-secondary/20 hover-scale"
-                    >
-                      <Trophy className="w-4 h-4 mr-2" />
-                      {t.viewChallenge}
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={() => onOpenShop()}
-                    className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    {t.unlockWithCoins.replace('{n}', String(MODE_UNLOCK_PRICES[modeId] ?? 0))}
-                  </Button>
-                )
-              ) : requiresTicket(modeId) && tickets === 0 ? (
-                <div className="space-y-2">
-                  <Button
-                    disabled
-                    className="w-full bg-wheel-segment/50 text-text-muted cursor-not-allowed"
-                  >
-                    <Ticket className="w-4 h-4 mr-2" />
-                    Aucun ticket disponible
-                  </Button>
-                  <Button
-                    onClick={() => onOpenShop('tickets')}
-                    className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
-                  >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Débloquer
+                <h2>{cfgModes[modeId].name}</h2>
+                <p>{copy.taglines[idx]}</p>
+                <div className="choice-bottom">
+                  <span className="choice-info"><Icon /><span>{ticketMode ? `1 ${copy.tickets}` : modeId === ModeID.BRIX_ARENA ? copy.action : copy.solo}
+                    {modeId === ModeID.BRIX_RUSH && <small><Lock />{copy.soon}</small>}
+                    {ticketMode && <small>{tickets} {copy.available}</small>}
+                  </span></span>
+                  <Button className="choice-play" disabled={isGameRunning} onClick={() => {
+                    if (isLocked) onOpenShop();
+                    else if (needsTickets) onOpenShop('tickets');
+                    else onSelectMode(modeId);
+                  }} aria-label={`${label} · ${cfgModes[modeId].name}`}>
+                    {isLocked ? <Lock /> : needsTickets ? <Ticket /> : null}{label}{!isLocked && !needsTickets && <ArrowUpRight />}
                   </Button>
                 </div>
-              ) : (
-                <Button
-                  onClick={() => {
-                    if (isReflexGrid) {
-                      onOpenReflexGrid?.();
-                    } else {
-                      onSelectMode(modeId as ModeType);
-                    }
-                  }}
-                  disabled={!canSelect}
-                  className={`
-                    w-full transition-all duration-300
-                    ${isCurrentMode
-                      ? 'bg-primary hover:bg-primary/90'
-                      : 'bg-gradient-primary hover:scale-[1.03]'
-                    }
-                  `}
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  {isReflexGrid ? t.playNowMode : (isCurrentMode ? t.playNowMode : t.selectMode)}
-                </Button>
-              )}
-
-              {isCurrentMode && (
-                <div className="absolute top-4 right-4">
-                  <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
-                </div>
-              )}
-            </Card>
+              </div>
+            </article>
           );
         })}
       </div>
-
-      <div className="mt-8 text-center">
-        <p className="text-text-muted text-sm">
-          {t.separateScoresInfo}
-        </p>
-      </div>
-    </div>
+      <footer className="games-footer"><span>BRIX PARTY</span><span>{copy.footer}</span></footer>
+    </section>
   );
 };
