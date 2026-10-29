@@ -1103,3 +1103,32 @@
   .brix-arena-original .arena-kit-note img { width: 34px; height: 34px; }
   .brix-arena-original .arena-start-hero { min-height: 48px; }
 }
+
+/* Brix Arena premium pre-game lobby (3D showroom) */
+.brix-arena-original .arena-lobby { position:absolute; inset:0; z-index:6; overflow:hidden; background:radial-gradient(ellipse at 50% 60%, oklch(0.32 0.04 90), oklch(0.13 0.015 90) 75%); }
+.brix-arena-original .arena-lobby-canvas { position:absolute !important; inset:0; }
+.brix-arena-original .arena-lobby-vignette { position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, oklch(0.1 0.01 90 / .85), transparent 30%, transparent 70%, oklch(0.1 0.01 90 / .85)); }
+.brix-arena-original .arena-lobby-left, .brix-arena-original .arena-lobby-right { position:absolute; top:calc(var(--safe-top) + var(--hud-gap) + 46px); bottom:calc(var(--safe-bottom) + var(--hud-gap)); display:flex; flex-direction:column; justify-content:center; gap:12px; width:min(30%, 260px); }
+.brix-arena-original .arena-lobby-left { left:calc(var(--safe-left) + var(--hud-gap) + 6px); align-items:flex-start; text-align:left; }
+.brix-arena-original .arena-lobby-right { right:calc(var(--safe-right) + var(--hud-gap) + 6px); align-items:stretch; }
+.brix-arena-original .arena-lobby .arena-kicker { font-size:11px; letter-spacing:.3em; color:var(--accent); margin:0; }
+.brix-arena-original .arena-lobby .arena-logo { font-family:var(--font-display); font-size:clamp(28px, 5vw, 46px); line-height:.95; margin:0; text-shadow:0 4px 0 oklch(0.1 0.01 90 / .6), 0 0 30px color-mix(in srgb, var(--accent) 40%, transparent); }
+.brix-arena-original .arena-lobby .arena-logo span { display:block; color:var(--accent); }
+.brix-arena-original .arena-lobby-best { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; border:1px solid color-mix(in srgb, var(--accent) 50%, transparent); background:oklch(0.15 0.01 90 / .7); font-size:13px; }
+.brix-arena-original .arena-lobby-best b { color:var(--accent); }
+.brix-arena-original .arena-lobby-foes { list-style:none; padding:0; margin:0; display:grid; gap:6px; font-size:12px; color:var(--muted-foreground); }
+.brix-arena-original .arena-lobby-foes li { display:flex; align-items:center; gap:8px; }
+.brix-arena-original .arena-lobby-foes i { width:10px; height:10px; border-radius:50%; background:#ff6b4a; box-shadow:0 0 8px currentColor; }
+.brix-arena-original .arena-lobby-foes i[data-c="drone"] { background:#4ad3ff; }
+.brix-arena-original .arena-lobby-foes i[data-c="tank"] { background:#ff9a4a; }
+.brix-arena-original .arena-lobby-kit { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; background:linear-gradient(135deg, oklch(0.22 0.02 90 / .9), oklch(0.15 0.01 90 / .9)); border:1px solid oklch(0.65 0.18 25 / .55); box-shadow:0 10px 30px oklch(0 0 0 / .4), inset 0 1px 0 oklch(1 0 0 / .08); }
+.brix-arena-original .arena-lobby-kit img { width:52px; height:52px; object-fit:contain; filter:drop-shadow(0 4px 8px oklch(0.6 0.2 25 / .5)); animation:arena-kit-bob 2.2s ease-in-out infinite; }
+.brix-arena-original .arena-lobby-kit div { display:flex; flex-direction:column; font-size:12px; text-align:left; }
+.brix-arena-original .arena-lobby-kit b { font-size:11px; letter-spacing:.15em; color:oklch(0.78 0.15 25); }
+.brix-arena-original .arena-lobby-kit em { font-style:normal; font-weight:700; color:var(--accent); }
+.brix-arena-original .arena-lobby-play { height:62px; border-radius:18px; font-family:var(--font-display); font-size:22px; letter-spacing:.12em; gap:10px; background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 100%, white 10%), color-mix(in srgb, var(--accent) 75%, black)); color:var(--accent-foreground); box-shadow:0 6px 0 color-mix(in srgb, var(--accent) 45%, black), 0 14px 30px color-mix(in srgb, var(--accent) 40%, transparent); animation:arena-play-pulse 1.8s ease-in-out infinite; }
+.brix-arena-original .arena-lobby-play svg { width:24px; height:24px; fill:currentColor; }
+.brix-arena-original .arena-lobby-play:active { transform:translateY(4px); box-shadow:0 2px 0 color-mix(in srgb, var(--accent) 45%, black); }
+.brix-arena-original .arena-lobby-hint { font-size:11px; color:var(--muted-foreground); text-align:center; }
+@keyframes arena-play-pulse { 50% { filter:brightness(1.12); } }
+@keyframes arena-kit-bob { 50% { transform:translateY(-4px) rotate(-4deg); } }
