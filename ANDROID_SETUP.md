@@ -54,12 +54,12 @@
 - Adresse e-mail développeur
 - Adresse physique (requise pour les apps avec achats)
 
-### 5. Classification du contenu
+### 6. Classification du contenu
 - Questionnaire de classification requis
 - Lucky Stop : Probablement "PEGI 3" ou "Everyone"
 - Déclarer les publicités (AdMob)
 
-### 6. Store Listing - Traductions
+### 7. Store Listing - Traductions
 Préparez les descriptions dans plusieurs langues :
 - Français ✅ (langue principale)
 - Anglais
