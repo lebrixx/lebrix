@@ -21,7 +21,7 @@ export function ShopPaidOffers({ onPremium, onEssential, onRainbow }: ShopPaidOf
   type Offer = { title: string; description: string; price: string; icon: typeof Crown; rewards: string[]; onOpen: () => void; tone: string; iconTone: string; titleEffect?: string };
   const offers: Offer[] = [
     { title: copy.premium, description: copy.premiumItems, price: '3,99 €', icon: Crown, rewards: [], onOpen: onPremium, tone: 'border-secondary/40 bg-secondary/5', iconTone: 'bg-secondary/15 text-secondary', titleEffect: 'animate-[username-gold-pulse_3s_ease-in-out_infinite]' },
-    { title: copy.essential, description: copy.essentialItems, price: '1,99 €', icon: Package, rewards: [copy.essentialBoosts, copy.tickets], onOpen: onEssential, tone: 'border-primary/40 bg-primary/5', iconTone: 'bg-primary/15 text-primary' },
+    { title: copy.essential, description: copy.essentialItems, price: '1,99 €', icon: Package, rewards: [copy.essentialBoosts], onOpen: onEssential, tone: 'border-primary/40 bg-primary/5', iconTone: 'bg-primary/15 text-primary' },
     { title: copy.rainbow, description: copy.rainbowItems, price: '1,99 €', icon: Sparkles, rewards: [copy.permanent], onOpen: onRainbow, tone: 'border-wheel-border bg-button-bg', iconTone: 'bg-button-hover text-text-primary', titleEffect: 'animate-[username-rainbow_3s_linear_infinite]' },
   ];
 
