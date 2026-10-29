@@ -847,10 +847,10 @@
   .brix-original .game-pad { position: absolute; bottom: calc(var(--safe-bottom) + var(--hud-gap)); display: flex; gap: 0.75rem; }
   .brix-original .game-pad-left { left: calc(var(--safe-left) + var(--brix-left-clearance)); bottom: calc(var(--safe-bottom) + var(--brix-pad-bottom)); }
   .brix-original .game-pad-left .pad-btn { width: 6rem; height: 6rem; }
-  .brix-original .game-pad-right { right: calc(var(--safe-right) + var(--hud-gap)); bottom: calc(var(--safe-bottom) + var(--hud-gap) + 1.1rem); }
+  .brix-original .game-pad-right { right: calc(var(--safe-right) + var(--hud-gap) + 10px); bottom: calc(var(--safe-bottom) + var(--hud-gap) + 1.1rem + 8px); }
   .brix-original .pad-btn { width: 5.5rem; height: 5.5rem; border-radius: 999px; font-family: var(--font-display); font-size: 1.7rem; color: var(--foreground); background: color-mix(in oklch, var(--secondary) 65%, transparent); border: 2px solid var(--border); touch-action: none; user-select: none; -webkit-user-select: none; }
   .brix-original .pad-btn:active { background: color-mix(in oklch, var(--accent) 45%, transparent); }
-  .brix-original .game-pad-right .pad-btn { width: 6rem; height: 6rem; }
+  .brix-original .game-pad-right .pad-btn { width: 6.375rem; height: 6.375rem; }
 .brix-original .grass-menu-btn {
   position: absolute;
   left: 0;
@@ -881,10 +881,10 @@
   .brix-original .game-board .runner-row { height: 24px; }
   .brix-original .game-board-heading { padding: 8px 10px; }
   .brix-original .game-pad { gap: 10px; }
-  .brix-original .game-pad-right { bottom: calc(var(--safe-bottom) + var(--hud-gap) + 10px); }
+  .brix-original .game-pad-right { bottom: calc(var(--safe-bottom) + var(--hud-gap) + 18px); }
   .brix-original .pad-btn { width: 68px; height: 68px; font-size: 1.5rem; }
   .brix-original .game-pad-left .pad-btn { width: 78px; height: 78px; font-size: 1.7rem; }
-  .brix-original .game-pad-right .pad-btn { width: 78px; height: 78px; font-size: 1.7rem; }
+  .brix-original .game-pad-right .pad-btn { width: 84px; height: 84px; font-size: 1.7rem; }
 }
 @media (hover: hover) and (pointer: fine) { .brix-original .game-pad { display: none; } }
 @media (max-height: 600px) and (orientation: landscape), (max-width: 600px) and (orientation: portrait) {

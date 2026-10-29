@@ -25,6 +25,12 @@ export const difficultyAt = (seconds: number) => seconds <= FIRM_SECONDS
 export const hpMinutesTank = (minutes: number) => minutes <= 3 ? minutes : 3 + Math.floor((minutes - 3) / 2);
 export const hpMinutesSmall = (minutes: number) => minutes <= 4 ? Math.floor(minutes / 2) : 2 + Math.floor((minutes - 4) / 3);
 export const spawnInterval = (seconds: number) => Math.max(0.16, 0.9 - difficultyAt(seconds) * 0.13);
+export function enemyKindAt(seconds: number, roll: number) {
+  const difficulty = difficultyAt(seconds);
+  const shooterChance = Math.min(0.45, 0.12 + difficulty * 0.045);
+  const tankChance = (Math.min(0.72, 0.32 + difficulty * 0.05) - shooterChance) * (seconds >= 20 * SCORE_SECONDS ? 0.75 : 1);
+  return roll < shooterChance ? 2 : roll < shooterChance + tankChance ? 1 : 0;
+}
 export class ArenaWorld {
   engine = Engine.create({ gravity: { x: 0, y: 0 } });
   hero = Bodies.circle(WIDTH / 2, HEIGHT / 2, 15, { frictionAir: 0, inertia: Infinity, label: "hero" });
@@ -89,7 +95,7 @@ export class ArenaWorld {
     const difficulty = difficultyAt(this.elapsed), roll = Math.random();
     // Health also steps up a bit every full minute survived, then slows down.
     const minutes = Math.floor(this.elapsed / 60);
-    const kind = roll < Math.min(0.45,0.12+difficulty*0.045) ? 2 : roll < Math.min(0.72,0.32+difficulty*0.05) ? 1 : 0;
+    const kind = enemyKindAt(this.elapsed, roll);
     const body = Bodies.circle(x,y,kind === 1 ? 20 : 14,{ frictionAir: 0, inertia: Infinity, label: "enemy" });
     this.enemies.push({body,hp: kind === 1 ? 4 + Math.floor(difficulty/2) + hpMinutesTank(minutes) : 1 + Math.floor(difficulty/3) + hpMinutesSmall(minutes),kind,shot: 1});
     Composite.add(this.engine.world,body);

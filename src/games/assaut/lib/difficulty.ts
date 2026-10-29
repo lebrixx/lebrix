@@ -14,22 +14,28 @@ export function retainEnemiesWithBoss<T>(enemies: T[], boss: T): T[] { return [.
 export function bossDue(t: number, next: number, bossAlive: boolean) { return !bossAlive && t >= next; }
 export function nextBossTime(deathTime: number, defeatedBoss = 0) { return deathTime + BOSS_EVERY + (defeatedBoss === 1 ? 15 : 0); }
 export function bossStats(rank: number) {
-  // Each boss is a bit tougher than the previous one: more HP, faster bullets, shorter pauses.
+  // Denser, faster salvos at every rank; pauses keep shrinking smoothly on long runs.
   // Boss 2 gets an extra bump (more HP, faster shots) that stays below boss 3's values.
   const bump = rank === 2 ? 1 : 0;
-  return { hp: 95 + (rank - 1) * 55 + bump * 25, movement: Math.min(140, 55 + rank * 9), speed: Math.min(210, 115 + (rank - 1) * 10 + bump * 8), count: Math.min(7, 3 + Math.floor((rank - 1) / 2) + bump * 2), cooldown: Math.max(0.95, 1.85 - (rank - 1) * 0.1 - bump * 0.09) };
+  return { hp: 95 + (rank - 1) * 55 + bump * 25, movement: Math.min(140, 55 + rank * 9), speed: Math.min(260, 145 + (rank - 1) * 12 + bump * 6), count: Math.min(14, 5 + rank - 1 + (rank >= 2 ? 1 : 0)), cooldown: 0.5 + 0.65 * Math.exp(-(rank - 1) * 0.16) - bump * 0.03 };
 }
 export function bossVolley(rank: number, age: number, angry: boolean, aim: number) {
-  // Five readable motifs. Wide angular gaps and pauses preserve escape routes.
+  // Five denser motifs; split fans retain a center corridor rather than a tracking wall.
   const stats = bossStats(rank), pattern = Math.floor(age / 3.5) % 5;
   const count = stats.count;
   let angles: number[];
   if (pattern === 0) angles = Array.from({ length: count }, (_, i) => aim - 0.5 + i / (count - 1));
   else if (pattern === 1) angles = Array.from({ length: count + 1 }, (_, i) => Math.PI * 0.15 + i * Math.PI * 0.7 / count);
-  else if (pattern === 2) angles = [Math.PI / 2 - 0.6, Math.PI / 2 + 0.6]; // Open center corridor.
-  else if (pattern === 3) angles = [0.55, 1.25, 1.95, 2.65].map(a => a + Math.sin(age) * 0.12);
-  else angles = [aim - 0.35, aim + 0.35]; // Split aimed pair, not a tracking wall.
-  return { pattern, cooldown: stats.cooldown * (angry ? 0.92 : 1), velocities: angles.map(a => ({ vx: Math.cos(a) * stats.speed, vy: Math.sin(a) * stats.speed })) };
+  else if (pattern === 2) angles = Array.from({ length: count }, (_, i) => {
+    const half = Math.ceil(count / 2);
+    return i < half ? Math.PI / 2 - 0.85 + i / Math.max(1, half - 1) * 0.45 : Math.PI / 2 + 0.4 + (i - half) / Math.max(1, count - half - 1) * 0.45;
+  });
+  else if (pattern === 3) angles = Array.from({ length: count }, (_, i) => 0.55 + i * 2.1 / (count - 1) + Math.sin(age) * 0.12);
+  else angles = Array.from({ length: count }, (_, i) => {
+    const half = Math.ceil(count / 2);
+    return i < half ? aim - 0.7 + i / Math.max(1, half - 1) * 0.4 : aim + 0.3 + (i - half) / Math.max(1, count - half - 1) * 0.4;
+  });
+  return { pattern, cooldown: stats.cooldown * (angry ? 0.85 : 1), velocities: angles.map(a => ({ vx: Math.cos(a) * stats.speed, vy: Math.sin(a) * stats.speed })) };
 }
 
 /** Paramètres de difficulté continus en fonction du temps de survie (secondes). */

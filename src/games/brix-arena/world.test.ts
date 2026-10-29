@@ -1,7 +1,16 @@
 import Matter from "matter-js";
 import { expect, it } from "vitest";
-import { ArenaWorld, difficultyAt, hpMinutesSmall, hpMinutesTank, spawnInterval } from "./world";
+import { ArenaWorld, difficultyAt, enemyKindAt, hpMinutesSmall, hpMinutesTank, spawnInterval } from "./world";
 const advance = (g:ArenaWorld, frames:number) => { for(let i=0;i<frames;i++) { g.invincible=100; g.step(1/60,{x:0,y:0}); } };
+it("reduces large-monster spawns by a quarter from score 20 without reducing shooters",()=>{
+  const chance=(seconds:number)=>Array.from({length:10000},(_,i)=>enemyKindAt(seconds,(i+0.5)/10000)).filter(k=>k===1).length/10000;
+  const oldChance=Math.min(0.72,0.32+difficultyAt(60)*0.05)-Math.min(0.45,0.12+difficultyAt(60)*0.045);
+  expect(chance(60)).toBeCloseTo(oldChance*0.75,3);
+  expect(enemyKindAt(59.99,0.44)).toBe(1);
+  expect(enemyKindAt(60,0.44)).toBe(0);
+  expect(enemyKindAt(60,0.2)).toBe(2);
+  const g=new ArenaWorld();g.start();g.elapsed=59.99;g.invincible=100;g.step(0.01,{x:0,y:0});expect(g.score).toBe(20);g.dispose();
+});
 it("starts each new run with exactly two bombs and never replenishes them",()=>{
   const g=new ArenaWorld();expect(g.bombs).toBe(2);g.start();expect(g.bomb()).toBe(true);expect(g.bombs).toBe(1);expect(g.bomb()).toBe(true);expect(g.bombs).toBe(0);expect(g.bomb()).toBe(false);g.phase="upgrade";g.upgrade("power");expect(g.bombs).toBe(0);g.dispose();const replay=new ArenaWorld();expect(replay.bombs).toBe(2);replay.dispose();
 });
