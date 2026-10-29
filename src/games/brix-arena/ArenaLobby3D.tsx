@@ -46,7 +46,7 @@ function Rig() {
 }
 
 export default function ArenaLobby3D() {
-  return <Canvas className="arena-lobby-canvas" dpr={[1, 1.75]} camera={{ position: [0, 2.1, 6.2], fov: 38 }} gl={{ antialias: true, alpha: true }}
+  return <Canvas resize={{ offsetSize: true }} className="arena-lobby-canvas" dpr={[1, 1.75]} camera={{ position: [0, 2.1, 6.2], fov: 38 }} gl={{ antialias: true, alpha: true }}
     onCreated={({ gl }) => { gl.domElement.parentElement?.setAttribute("data-scene-ready", "true"); }}>
     <ambientLight intensity={0.5} />
     <directionalLight position={[3, 6, 4]} intensity={1.4} />
