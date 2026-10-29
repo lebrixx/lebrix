@@ -41,25 +41,25 @@ function Pedestal({ x, z, r, color }: { x: number; z: number; r: number; color: 
 }
 
 function Rig() {
-  useFrame(({ camera, clock }) => { const t = clock.elapsedTime * 0.25; camera.position.x = Math.sin(t) * 0.5; camera.position.y = 2.1 + Math.sin(t * 1.3) * 0.08; camera.lookAt(0, 0.9, 0); });
+  useFrame(({ camera, clock }) => { const t = clock.elapsedTime * 0.25; camera.position.x = Math.sin(t) * 0.5; camera.position.y = 2.6 + Math.sin(t * 1.3) * 0.08; camera.lookAt(0, 0.9, 0); });
   return null;
 }
 
 export default function ArenaLobby3D() {
-  return <Canvas resize={{ offsetSize: true }} className="arena-lobby-canvas" dpr={[1, 1.75]} camera={{ position: [0, 2.1, 6.2], fov: 38 }} gl={{ antialias: true, alpha: true }}
+  return <Canvas resize={{ offsetSize: true }} className="arena-lobby-canvas" dpr={[1, 1.75]} camera={{ position: [0, 2.6, 8.6], fov: 34 }} gl={{ antialias: true, alpha: true }}
     onCreated={({ gl }) => { gl.domElement.parentElement?.setAttribute("data-scene-ready", "true"); }}>
     <ambientLight intensity={0.5} />
     <directionalLight position={[3, 6, 4]} intensity={1.4} />
     <pointLight position={[0, 2.5, 1.5]} intensity={6} color="#e8d27a" distance={7} />
     <Environment resolution={64}><Lightformer intensity={2} position={[0, 5, 0]} scale={[10, 10, 1]} /><Lightformer intensity={1} color="#ffd98a" position={[-5, 1, -1]} rotation-y={Math.PI / 2} scale={[20, 1, 1]} /></Environment>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[9, 64]} /><meshStandardMaterial color="#1d1c18" metalness={0.4} roughness={0.55} /></mesh>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[30, 64]} /><meshStandardMaterial color="#1d1c18" metalness={0.4} roughness={0.55} /></mesh>
     <Pedestal x={0} z={0.4} r={0.95} color="#e8c547" />
-    <Pedestal x={-2.25} z={-0.4} r={0.62} color="#ff6b4a" />
-    <Pedestal x={2.25} z={-0.4} r={0.62} color="#4ad3ff" />
+    <Pedestal x={-1.9} z={-0.4} r={0.62} color="#ff6b4a" />
+    <Pedestal x={1.9} z={-0.4} r={0.62} color="#4ad3ff" />
     <Pedestal x={-1.25} z={-1.5} r={0.5} color="#ff6b4a" />
     <Actor url={heroUrl} position={[0, 0.25, 0.4]} size={2.3} fps={9} spin={0.35} />
-    <Actor url={tankUrl} position={[-2.25, 0.25, -0.4]} size={1.9} fps={7} spin={0.3} phase={1.1} />
-    <Actor url={shooterUrl} position={[2.25, 0.55, -0.4]} size={1.5} fps={12} spin={0.3} phase={2.3} hover={0.08} />
+    <Actor url={tankUrl} position={[-1.9, 0.25, -0.4]} size={1.9} fps={7} spin={0.3} phase={1.1} />
+    <Actor url={shooterUrl} position={[1.9, 0.55, -0.4]} size={1.5} fps={12} spin={0.3} phase={2.3} hover={0.08} />
     <Actor url={meleeUrl} position={[-1.25, 0.25, -1.5]} size={1.3} fps={10} spin={0.4} phase={0.6} />
     <ContactShadows position={[0, 0.01, 0]} opacity={0.55} scale={12} blur={2.4} far={3} />
     <Rig />
