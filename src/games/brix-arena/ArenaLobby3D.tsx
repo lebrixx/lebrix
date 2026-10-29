@@ -52,7 +52,6 @@ export default function ArenaLobby3D() {
     <directionalLight position={[3, 6, 4]} intensity={1.4} />
     <pointLight position={[0, 2.5, 1.5]} intensity={6} color="#e8d27a" distance={7} />
     <Environment resolution={64}><Lightformer intensity={2} position={[0, 5, 0]} scale={[10, 10, 1]} /><Lightformer intensity={1} color="#ffd98a" position={[-5, 1, -1]} rotation-y={Math.PI / 2} scale={[20, 1, 1]} /></Environment>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><circleGeometry args={[30, 64]} /><meshStandardMaterial color="#1d1c18" metalness={0.4} roughness={0.55} /></mesh>
     <Pedestal x={0} z={0.4} r={0.95} color="#e8c547" />
     <Pedestal x={-1.9} z={-0.4} r={0.5} color="#ff6b4a" />
     <Pedestal x={1.3} z={-1.5} r={0.55} color="#4ad3ff" />
