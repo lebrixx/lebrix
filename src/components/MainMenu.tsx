@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, FileText, Tag, Box, Boxes } from 'lucide-react';
 import { isBrixFactoryUnlocked } from '@/utils/pongUnlock';
 import { useToast } from '@/hooks/use-toast';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
@@ -19,7 +19,7 @@ import { Inventory } from '@/components/Inventory';
 import { DailyTip } from '@/components/DailyTip';
 import { MainMenuBackground } from '@/components/MainMenuBackground';
 import luckyStopLogo from '@/assets/lucky-stop-logo.png';
-import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
+import { hasDailyQuestReward, addDiamonds, getSeasonPassData, PASS_TIERS } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { Capacitor } from '@capacitor/core';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -180,283 +180,90 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     loadMonthlyRank();
   }, []);
 
+  const passProgress = Math.min(100, Math.round((getSeasonPassData().currentTier / PASS_TIERS.length) * 100));
+  const tap = 'lsm-tap';
+
   return (
     <>
       <MainMenuBackground />
-      <div className={`main-menu-container ${theme} relative z-10`}>
-
-
-
-      {/* Lucky Wheel Button */}
-      <Button
-        onClick={() => setShowLuckyWheel(true)}
-        variant="ghost"
-        size="sm"
-        className={`absolute top-2 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
-      >
-        <RotateCcw className={`w-4 h-4 ${hasFreeSpin ? 'text-primary animate-spin' : 'text-text-muted'}`} style={hasFreeSpin ? { animationDuration: '3s' } : {}} />
-        <div className="flex flex-col items-start">
-          <span className={`text-xs font-medium ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
-            {hasFreeSpin ? (t.freeSpin || 'Tour Gratuit !') : t.luckyWheelTitle}
-          </span>
-          {!hasFreeSpin && (
-            <span className="text-[10px] text-text-muted font-mono">
-              {wheelTimer}
-            </span>
-          )}
-        </div>
-        {hasFreeSpin && (
-          <div className="absolute top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full flex items-center justify-center shadow-glow-primary">
-            <span className="text-[8px] text-game-dark font-bold">1</span>
+      <div className={`main-menu-container lsm-root ${theme} relative z-10`}>
+        {/* Top bar */}
+        <div className="flex items-center justify-between shrink-0">
+          <div className="lsm-panel flex items-center gap-2 rounded-full pl-1.5 pr-1.5 py-1.5">
+            <span className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground"><Coins className="w-5 h-5" /></span>
+            <span className="text-lg font-black text-foreground min-w-[3ch]">{coins}</span>
+            <button type="button" aria-label={t.shop} onClick={onOpenShop} className={`${tap} w-9 h-9 rounded-full lsm-primary flex items-center justify-center`}>
+              <Plus className="w-5 h-5" />
+            </button>
           </div>
-        )}
-      </Button>
-
-      {/* Top Right: Offres + Settings */}
-      <div className="absolute top-2 right-4 flex items-center gap-2">
-        <Button
-          onClick={() => setShowPremiumOffer(true)}
-          variant="ghost"
-          size="sm"
-          className="relative hover:bg-secondary/15 transition-all duration-300 gap-1.5 border border-secondary/40 bg-gradient-to-r from-secondary/10 to-primary/10 hover:scale-105"
-        >
-          <Sparkles className="w-4 h-4 text-secondary animate-spin" style={{ animationDuration: '4s' }} />
-          <span className="text-xs font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-            Offres
-          </span>
-          <div className="absolute top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full flex items-center justify-center shadow-[0_0_8px_hsl(var(--secondary)/0.8)]">
-            <span className="text-[7px] text-game-dark font-black">€</span>
-          </div>
-        </Button>
-        <Button
-          onClick={() => setShowSettings(true)}
-          variant="ghost"
-          size="icon"
-          className="h-11 w-11 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
-        >
-          <SettingsIcon className="!w-7 !h-7 text-text-muted" />
-        </Button>
-      </div>
-
-
-      {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-20 mb-8">
-        <h1 className="flex justify-center" aria-label="Lucky Stop">
-          <img
-            src={luckyStopLogo}
-            alt="Lucky Stop"
-            width={1306}
-            height={735}
-            className="block h-[90px] md:h-[126px] w-auto max-w-full mx-auto object-contain"
-            draggable={false}
-          />
-        </h1>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center min-h-0">
-        {/* Boutons cadeau, langue et nouveautés */}
-        <div className="flex justify-center gap-2 mb-3">
-          <Button
-            onClick={onOpenDailyRewards}
-            variant="ghost"
-            size="sm"
-            className={`
-              relative hover:bg-primary/20 transition-all duration-300 gap-1.5
-              ${hasAvailableReward ? 'animate-pulse-glow' : ''}
-            `}
-          >
-            <Gift className={`w-4 h-4 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
-            <span className="text-xs text-text-muted">{t.gifts}</span>
-            {hasAvailableReward && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
-            )}
-          </Button>
-
-          <Button
-            onClick={() => setShowSeasonPass(true)}
-            variant="ghost"
-            size="sm"
-            className={`relative transition-all duration-300 gap-2 h-11 px-4 rounded-full border border-secondary/50 bg-gradient-to-b from-secondary/25 to-secondary/5 hover:from-secondary/35 hover:to-secondary/10 hover:border-secondary/75 ${hasPassReward ? 'animate-pulse-glow' : ''} ${isAndroid ? '' : 'shadow-[0_0_16px_hsl(var(--secondary)/0.35)]'}`}
-          >
-            <Crown className={`!w-6 !h-6 text-secondary fill-secondary/25 ${isAndroid ? '' : 'drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]'}`} />
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-lg font-black text-secondary">Pass</span>
-              <span className="text-[11px] font-semibold tracking-wide text-secondary/70">Saison</span>
-            </div>
-            {hasPassReward && (
-              <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_hsl(var(--secondary)/0.8)]" />
-            )}
-          </Button>
-
-          <Button
-            onClick={() => setShowComingSoon(true)}
-            variant="ghost"
-            size="sm"
-            className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
-          >
-            <Sparkles className="w-4 h-4 text-text-muted" />
-            <span className="text-xs text-text-muted">{t.news}</span>
-          </Button>
-
-        </div>
-
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
-          <button
-            type="button"
-            onClick={onOpenGlobalLeaderboard}
-            className="relative group text-left animate-[subtle-float_3s_ease-in-out_infinite] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-xl"
-          >
-            <div className="absolute -inset-[1px] rounded-xl overflow-hidden pointer-events-none">
-              <div className="absolute w-12 h-12 rounded-full bg-primary blur-xl animate-orbit" />
-            </div>
-            <Card
-              className="relative bg-gradient-to-br from-primary/15 via-button-bg to-button-bg border-primary/50 p-3 text-center transition-all duration-300 group-hover:scale-105 group-hover:border-primary group-active:scale-[0.98] shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_4px_18px_-6px_hsl(var(--primary)/0.45)]"
-            >
-              <div className="absolute top-1.5 right-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 border border-primary/40 text-primary">
-                <ChevronRight className="w-3 h-3" />
-              </div>
-              <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
-              <div className="text-xl font-bold text-primary">
-                {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
-              </div>
-              <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-              <div className="absolute bottom-0.5 left-0 right-0 text-[8px] text-primary/80">clic pour apercevoir</div>
-            </Card>
+          <button type="button" aria-label="Settings" onClick={() => setShowSettings(true)} className={`${tap} lsm-panel w-12 h-12 rounded-2xl flex items-center justify-center`}>
+            <SettingsIcon className="w-6 h-6 text-foreground" />
           </button>
-          
-          <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
-            <Coins className="w-6 h-6 text-secondary mx-auto mb-1" />
-            <div className="text-xl font-bold text-secondary">{coins}</div>
-            <div className="text-xs text-text-muted">{t.coins}</div>
-          </Card>
         </div>
 
-        {/* Main Menu Buttons */}
-        <div className="flex flex-col gap-2 w-full max-w-sm animate-fade-in">
-          <Button 
-            onClick={onStartGame}
-            size="lg"
-            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-4 text-base font-bold group"
-          >
-            <Play className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-            {t.playNow}
-          </Button>
+        {/* Logo + side buttons */}
+        <div className="relative flex items-center justify-between gap-2 min-h-0 flex-1 max-h-[300px]">
+          <div className="flex flex-col gap-4 shrink-0 z-10">
+            <SideBtn icon={<Gift className="w-7 h-7" />} label={t.gifts} badge={hasAvailableReward ? '!' : undefined} onClick={onOpenDailyRewards} />
+            <SideBtn icon={<FileText className="w-7 h-7" />} label={t.news} onClick={() => setShowComingSoon(true)} />
+          </div>
+          <h1 className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-label="Lucky Stop">
+            <img src={luckyStopLogo} alt="Lucky Stop" width={1306} height={735} draggable={false}
+              className="block w-[62%] max-w-[300px] scale-125 h-auto object-contain lsm-logo" />
+          </h1>
+          <div className="flex flex-col gap-4 shrink-0 z-10">
+            <SideBtn tone="accent" icon={<Clock className="w-7 h-7" />} label={hasFreeSpin ? 'Tour' : wheelTimer} badge={hasFreeSpin ? '1' : undefined} onClick={() => setShowLuckyWheel(true)} pulse={hasFreeSpin} />
+            <SideBtn tone="gold" icon={<Tag className="w-7 h-7" />} label="Offres" onClick={() => setShowPremiumOffer(true)} />
+          </div>
+        </div>
 
+        {/* Main actions */}
+        <div className="flex flex-col gap-3 w-full max-w-md mx-auto shrink-0">
+          <button type="button" onClick={onOpenGlobalLeaderboard} className={`${tap} lsm-accent-card self-start flex items-center gap-3 rounded-2xl px-4 py-2.5 text-left`}>
+            <Trophy className="w-9 h-9 text-secondary" />
+            <div className="leading-tight">
+              <div className="text-[10px] tracking-widest text-muted-foreground uppercase">Classement</div>
+              <div className="text-base font-black text-accent">GLOBAL</div>
+              <div className="flex items-center gap-1 text-sm font-bold text-foreground"><Crown className="w-3.5 h-3.5 text-secondary" />{globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}</div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground ml-3" />
+          </button>
 
-          <Button
-            onClick={() => {
-              if (!brixUnlocked) {
-                try { sessionStorage.setItem('challenges_focus_brix', '1'); } catch {}
-                onOpenChallenges();
-                return;
-              }
+          <button type="button" onClick={onStartGame} className={`${tap} lsm-play w-full rounded-[1.75rem] py-5 flex items-center justify-center gap-4`}>
+            <Play className="w-9 h-9 fill-current" />
+            <span className="w-px h-9 bg-primary-foreground/40" />
+            <span className="text-3xl font-black tracking-[0.12em] uppercase">{t.playNow?.split(' ')[0] || 'Jouer'}</span>
+          </button>
+
+          <button type="button" onClick={() => setShowSeasonPass(true)} className={`${tap} lsm-panel lsm-pass w-full rounded-2xl px-4 py-3 flex items-center gap-4 relative`}>
+            <span className="w-12 h-12 rounded-xl bg-secondary/20 border border-secondary flex items-center justify-center"><Crown className="w-7 h-7 text-secondary fill-secondary/40" /></span>
+            <div className="flex-1 text-left">
+              <div className="text-sm font-black tracking-widest uppercase text-foreground">Pass de saison</div>
+              <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${Math.max(passProgress, 4)}%` }} /></div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            {hasPassReward && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-destructive" />}
+          </button>
+
+          <button type="button" onClick={() => {
+              if (!brixUnlocked) { try { sessionStorage.setItem('challenges_focus_brix', '1'); } catch {} onOpenChallenges(); return; }
               onOpenBrixFactory?.();
-            }}
-            variant="outline"
-            size="lg"
-            className={`relative border-secondary/50 bg-gradient-to-r from-secondary/10 via-primary/5 to-secondary/10 hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group overflow-hidden ${!brixUnlocked ? 'opacity-80' : ''}`}
-          >
-            {brixUnlocked ? (
-              <Sparkles className="w-4 h-4 mr-2 text-secondary group-hover:animate-pulse" />
-            ) : (
-              <Lock className="w-4 h-4 mr-2 text-secondary" />
-            )}
-            <span className="font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              Brix Factory
+            }} className={`${tap} lsm-panel w-full rounded-2xl px-4 py-3 flex items-center gap-4`}>
+            <span className="w-12 h-12 rounded-xl bg-muted/60 border border-border flex items-center justify-center">
+              {brixUnlocked ? <Boxes className="w-6 h-6 text-primary" /> : <Lock className="w-6 h-6 text-foreground" />}
             </span>
-            {!brixUnlocked && (
-              <Lock className="w-4 h-4 ml-2 text-secondary" />
-            )}
-          </Button>
-
-          <div className="flex gap-2">
-            <Button
-              onClick={onOpenShop}
-              variant="outline"
-              size="lg"
-              className="flex-1 border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-            >
-              <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-              {t.shop}
-            </Button>
-            <Button
-              onClick={() => setShowInventory(true)}
-              variant="outline"
-              size="lg"
-              className="flex-1 border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-            >
-              <Backpack className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-              Inventaire
-            </Button>
-          </div>
-
-          <Button 
-            onClick={onOpenChallenges}
-            variant="outline"
-            size="lg"
-            className={`relative border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group ${hasPendingChallenges ? 'animate-pulse-glow border-secondary' : ''}`}
-          >
-            <Star className={`w-4 h-4 mr-2 group-hover:animate-spin ${hasPendingChallenges ? 'text-secondary' : ''}`} />
-            {t.dailyChallenges}
-            {hasPendingChallenges && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse flex items-center justify-center">
-                <span className="text-[8px] text-game-dark font-bold">!</span>
-              </div>
-            )}
-          </Button>
-
-          <Button
-            onClick={onOpenLeaderboard}
-            variant="outline"
-            size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-          >
-            <Crown className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-            {t.onlineLeaderboard}
-          </Button>
+            <span className="flex-1 text-left text-sm font-black tracking-widest uppercase text-foreground">Brix Factory</span>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
         </div>
-      </div>
 
-      {/* Bottom Section */}
-      <div className="flex flex-col items-center space-y-2 mt-auto pt-3 shrink-0">
-        {/* Current Theme & Mode - Caché sur iPad */}
-        {!isTablet && (
-          <div className="flex justify-center gap-4 animate-fade-in">
-            <div className="text-center">
-              <div className="text-xs text-text-muted mb-0.5">{t.theme}</div>
-              <Badge 
-                variant="outline" 
-                className="border-primary text-primary text-xs px-2 py-0.5 animate-pulse-glow"
-              >
-                {theme.replace('theme-', '').toUpperCase() || 'NEON'}
-              </Badge>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-text-muted mb-0.5">{t.mode}</div>
-              <Badge 
-                variant="outline" 
-                className="border-secondary text-secondary text-xs px-2 py-0.5"
-              >
-                {currentMode.replace('_', ' ').toUpperCase()}
-              </Badge>
-            </div>
-          </div>
-        )}
-
-        {/* Version Info */}
-        <div className="text-text-muted text-xs animate-fade-in">
-          Lucky Stop v1.0
-        </div>
-      </div>
-
-      {/* Floating Mini Wheel */}
-      <div className="absolute top-20 right-8 w-16 h-16 rounded-full bg-gradient-wheel border-2 border-wheel-border animate-spin-wheel opacity-20 hidden lg:block" 
-           style={{ animationDuration: '8s' }}>
-        <div className="absolute inset-2 rounded-full bg-primary opacity-30"></div>
-      </div>
+        {/* Bottom nav */}
+        <nav className="lsm-panel lsm-nav grid grid-cols-4 rounded-3xl py-2 w-full max-w-md mx-auto shrink-0">
+          <NavBtn icon={<ShoppingBag className="w-6 h-6" />} label={t.shop} onClick={onOpenShop} active />
+          <NavBtn icon={<Box className="w-6 h-6" />} label="Inventaire" onClick={() => setShowInventory(true)} />
+          <NavBtn icon={<Star className="w-6 h-6" />} label="Défis" onClick={onOpenChallenges} badge={hasPendingChallenges ? '!' : undefined} />
+          <NavBtn icon={<Trophy className="w-6 h-6" />} label="Classement" onClick={onOpenLeaderboard} />
+        </nav>
 
       {/* Social Media Dialog */}
       <AlertDialog open={showComingSoon} onOpenChange={setShowComingSoon}>
@@ -612,3 +419,21 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     </>
   );
 };
+
+const SideBtn: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void; badge?: string; tone?: 'default' | 'accent' | 'gold'; pulse?: boolean }> = ({ icon, label, onClick, badge, tone = 'default', pulse }) => (
+  <button type="button" onClick={onClick} className="lsm-tap flex flex-col items-center gap-1.5">
+    <span className={`lsm-panel lsm-side lsm-side-${tone} relative w-[60px] h-[60px] rounded-2xl flex items-center justify-center ${pulse ? 'animate-pulse-glow' : ''}`}>
+      {icon}
+      {badge && <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1 rounded-full bg-destructive text-destructive-foreground text-xs font-black flex items-center justify-center">{badge}</span>}
+    </span>
+    <span className="text-[11px] font-bold tracking-wider uppercase text-foreground/85 max-w-[72px] truncate">{label}</span>
+  </button>
+);
+
+const NavBtn: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void; badge?: string; active?: boolean }> = ({ icon, label, onClick, badge, active }) => (
+  <button type="button" onClick={onClick} className={`lsm-tap relative flex flex-col items-center gap-1 py-1 ${active ? 'text-primary' : 'text-muted-foreground'}`}>
+    <span className="relative">{icon}{badge && <span className="absolute -top-2 -right-3 w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-black flex items-center justify-center">{badge}</span>}</span>
+    <span className="text-[10px] font-bold tracking-wider uppercase truncate max-w-full">{label}</span>
+    {active && <span className="absolute -bottom-1 w-10 h-1 rounded-full bg-primary" />}
+  </button>
+);
