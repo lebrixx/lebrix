@@ -7,6 +7,7 @@ import meleeUrl from "@/assets/brix-arena/melee-run.png";
 import tankUrl from "@/assets/brix-arena/tank-run.png";
 import shooterUrl from "@/assets/brix-arena/shooter-run.png";
 import healthKitUrl from "./assets/health-kit.png";
+import lobbyBgUrl from "@/assets/brix-arena/lobby-bg.jpg";
 import { MELEE_CELL, SHOOTER_CELL, meleeFrame, shooterFrame } from "./enemy-art";
 import { ArenaWorld, WIDTH, HEIGHT, type Upgrade } from "./world";
 
@@ -126,6 +127,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
     {hud.phase==="playing"&&!hud.menuOpen&&<Button className="arena-bomb" aria-label={`Bombe, ${hud.bombs} restantes`} disabled={hud.bombs<=0} onPointerDown={e=>{e.preventDefault();world.current?.bomb();publish();}} onClick={e=>{if(e.detail===0){world.current?.bomb();publish();}}}><Bomb/><span>Bombe ×{hud.bombs}</span></Button>}
     {hud.menuOpen&&<div className="arena-overlay arena-menu-overlay"><div className="arena-dialog" role="dialog" aria-label="Menu de la partie"><h2>MENU</h2>{hud.phase!=="ready"&&hud.phase!=="over"&&<Button className="arena-start" onClick={pause}><Play/>Reprendre la partie</Button>}<Button variant="secondary" onClick={onBack}><ArrowLeft/>Retour au menu</Button></div></div>}
     {hud.phase==="ready"&&!hud.menuOpen&&<div className="arena-lobby">
+      <div className="arena-lobby-bg" aria-hidden style={{ backgroundImage: `url(${lobbyBgUrl})` }} />
       <Suspense fallback={null}><ArenaLobby3D/></Suspense>
       <div className="arena-lobby-vignette"/>
       <div className="arena-lobby-left">

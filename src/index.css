@@ -1106,8 +1106,9 @@
 
 /* Brix Arena premium pre-game lobby (3D showroom) */
 .brix-arena-original .arena-lobby { position:absolute; inset:0; z-index:6; overflow:hidden; background:radial-gradient(ellipse at 50% 60%, oklch(0.32 0.04 90), oklch(0.13 0.015 90) 75%); }
+.brix-arena-original .arena-lobby-bg { position:absolute; inset:0; background-size:cover; background-position:center 45%; }
 .brix-arena-original .arena-lobby-canvas { position:absolute !important; inset:0; }
-.brix-arena-original .arena-lobby-vignette { position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, oklch(0.1 0.01 90 / .85), transparent 30%, transparent 70%, oklch(0.1 0.01 90 / .85)); }
+.brix-arena-original .arena-lobby-vignette { position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, oklch(0.1 0.01 90 / .8), transparent 30%, transparent 70%, oklch(0.1 0.01 90 / .8)), linear-gradient(180deg, oklch(0.1 0.01 90 / .35), transparent 22%, transparent 70%, oklch(0.1 0.01 90 / .55)); }
 .brix-arena-original .arena-lobby-left, .brix-arena-original .arena-lobby-right { position:absolute; top:calc(var(--safe-top) + var(--hud-gap) + 46px); bottom:calc(var(--safe-bottom) + var(--hud-gap)); display:flex; flex-direction:column; justify-content:center; gap:12px; width:min(26%, 230px); }
 .brix-arena-original .arena-lobby-left { left:calc(var(--safe-left) + var(--hud-gap) + 6px); align-items:flex-start; text-align:left; }
 .brix-arena-original .arena-lobby-right { right:calc(var(--safe-right) + var(--hud-gap) + 6px); align-items:stretch; }
