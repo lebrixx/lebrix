@@ -16,9 +16,10 @@ export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé entre les modes et les classements.
 export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.CLASSIC] as const;
-export const FREE_MODES = RANKED_MODES;
-export const TICKET_MODE = null;
-export const requiresTicket = (_mode: string): boolean => false;
+export const FREE_MODES = RANKED_MODES.filter(mode => mode !== ModeID.SURVIE_60S);
+export const MODE_UNLOCK_PRICES: Partial<Record<ModeType, number>> = { [ModeID.SURVIE_60S]: 500 };
+export const TICKET_MODE = ModeID.ARC_CHANGEANT;
+export const requiresTicket = (mode: string): boolean => mode === TICKET_MODE;
 export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA || mode === ModeID.ASSAUT;
 export function resolveSavedMode(saved: string | null): ModeType {
   if (saved === 'zone_mobile') return ModeID.ASSAUT;

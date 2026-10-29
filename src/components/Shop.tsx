@@ -9,7 +9,7 @@ import { ArrowLeft, Check, Coins, Star, Lock, AlertTriangle, Video, Ticket, Pack
 import { ShopPaidOffers } from '@/components/ShopPaidOffers';
 import { PremiumOffer } from '@/components/PremiumOffer';
 import { RainbowOffer } from '@/components/RainbowOffer';
-import { cfgModes, ModeID } from '@/constants/modes';
+import { cfgModes, ModeID, MODE_UNLOCK_PRICES } from '@/constants/modes';
 import { BOOSTS } from '@/types/boosts';
 import { useBoosts } from '@/hooks/useBoosts';
 import { useToast } from '@/hooks/use-toast';
@@ -34,11 +34,19 @@ interface ShopProps {
 const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
-    name: 'Pack de Tickets Falling Tunnel',
+    name: 'Pack de Tickets Ball Balance',
     description: '__fallingTunnelTicketDesc__',
     price: 100,
     icon: Star,
     isTicketPack: true,
+  },
+  {
+    id: ModeID.SURVIE_60S,
+    name: cfgModes[ModeID.SURVIE_60S].name,
+    description: cfgModes[ModeID.SURVIE_60S].desc,
+    price: MODE_UNLOCK_PRICES[ModeID.SURVIE_60S] ?? 500,
+    icon: Package,
+    isTicketPack: false,
   }
 ];
 
@@ -54,11 +62,11 @@ export const Shop: React.FC<ShopProps> = ({
   const { language } = useLanguage();
   const t = translations[language];
   
-  const [activeTab, setActiveTab] = useState('boosts');
+  const [activeTab, setActiveTab] = useState('modes');
 
   useEffect(() => {
     if (!initialTarget) return;
-    setActiveTab('boosts');
+    setActiveTab('modes');
     const targetId = 'shop-mode-expert_tickets';
     // Wait for Tabs content to mount
     const timer = setTimeout(() => {
@@ -212,8 +220,8 @@ export const Shop: React.FC<ShopProps> = ({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20">
               <Ticket className="w-6 h-6 text-secondary" />
               <div className="flex-1">
-                <p className="text-text-primary font-semibold text-sm">{language === 'fr' ? 'Tickets conservés' : language === 'es' ? 'Tickets conservados' : 'Tickets retained'}</p>
-                <p className="text-text-muted text-xs">{language === 'fr' ? 'Aucun mode ne nécessite de ticket.' : language === 'es' ? 'Ningún modo requiere tickets.' : 'No mode requires tickets.'}</p>
+                <p className="text-text-primary font-semibold text-sm">{t.ticketPackFallingTunnel}</p>
+                <p className="text-text-muted text-xs">Ball Balance</p>
               </div>
               <Badge variant="secondary" className="text-xs font-bold">×15</Badge>
             </div>
@@ -259,13 +267,14 @@ export const Shop: React.FC<ShopProps> = ({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
-        <TabsList className="grid w-full grid-cols-2 mb-8">
+        <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsTrigger value="modes">Modes</TabsTrigger>
           <TabsTrigger value="boosts">{t.boosts}</TabsTrigger>
           <TabsTrigger value="offers">{language === 'en' ? 'Offers' : language === 'es' ? 'Ofertas' : 'Offres'}</TabsTrigger>
         </TabsList>
 
         {/* Game Modes Tab */}
-        <TabsContent value="modes" hidden>
+        <TabsContent value="modes">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {GAME_MODES_SHOP.map((mode) => {
               const isTicketPack = (mode as any).isTicketPack;

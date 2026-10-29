@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, RotateCcw, Target, AlertTriangle, Lock, ShoppingBag, Brain, Zap, Star, Trophy, Gamepad2, Sparkles, Box, Layers, Grid3x3, Ticket, Factory } from 'lucide-react';
-import { cfgModes, ModeType, ModeID, RANKED_MODES, requiresTicket } from '@/constants/modes';
+import { cfgModes, ModeType, ModeID, RANKED_MODES, requiresTicket, MODE_UNLOCK_PRICES } from '@/constants/modes';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { SlotMachine } from '@/components/SlotMachine';
 import { isBonusActive, canSpinSlotToday, getActiveBonusMode } from '@/utils/dailyBonusMode';
@@ -293,7 +293,7 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({
                     className="w-full bg-danger hover:bg-danger/90 transition-all hover-scale"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />
-                    Débloquer
+                    {t.unlockWithCoins.replace('{n}', String(MODE_UNLOCK_PRICES[modeId] ?? 0))}
                   </Button>
                 )
               ) : requiresTicket(modeId) && tickets === 0 ? (

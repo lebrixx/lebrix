@@ -1,6 +1,6 @@
 # Project rules
 - Keep Assaut's supplied simulation, Three.js painters, menus and controls isolated in `src/games/assaut`; bundle original artwork for native offline rendering and bridge only navigation and secure score sessions.
-- Use the distinct `assaut` ranked identity and redirect saved Falling Tunnel selections without reusing its historical scores; no active mode consumes tickets, but preserve owned inventory and native purchase restoration.
+- Use the distinct `assaut` ranked identity and redirect saved Falling Tunnel selections without reusing its historical scores; preserve owned inventory and native purchase restoration when mode access rules change.
 - Keep Brix Arena's supplied physics, painters and controls in `src/games/brix-arena` with its source theme isolated; only bridge navigation and secure score sessions so the original standalone experience is preserved.
 - Give Brix Arena a separate `brix_arena` score identity and exclude historical Rotating Cube records from active rankings; keep the existing ticket inventory key so owned tickets survive future gate changes.
 - Keep Brix Rush's original world, sprite painters, realtime rooms and standalone interface in `src/games/brix-rush`; isolate its styles and adapt only navigation and secure score reporting outside the engine so other modes remain unchanged.
