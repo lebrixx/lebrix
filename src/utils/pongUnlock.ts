@@ -6,7 +6,7 @@ export const PONG_UNLOCK_MODES: ModeType[] = [
   ModeID.CLASSIC,
   ModeID.ARC_CHANGEANT,
   ModeID.SURVIE_60S,
-  ModeID.ZONE_MOBILE,
+  ModeID.ASSAUT,
   ModeID.BRIX_RUSH,
   ModeID.BRIX_ARENA,
 ];

@@ -31,10 +31,10 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'survie_score_15', title: 'Maître Stack', description: 'Fais un score de 15 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
   // Zone mobile
-  { id: 'mobile_score_8', title: 'Tunnel Débutant', description: 'Fais un score de 8 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 8, reward: { coins: 20 } },
-  { id: 'mobile_score_12', title: 'Chasseur de Trous', description: 'Fais un score de 12 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 12, reward: { coins: 30 } },
-  { id: 'mobile_score_15', title: 'Tunnel Confirmé', description: 'Fais un score de 15 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 15, reward: { coins: 40 } },
-  { id: 'mobile_score_20', title: 'Expert Tunnel', description: 'Fais un score de 20 en Falling Tunnel', type: 'score_in_mode', mode: ModeID.ZONE_MOBILE, target: 20, reward: { coins: 50 } },
+  { id: 'assaut_score_8', title: 'Pilote Débutant', description: 'Fais un score de 8 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 8, reward: { coins: 20 } },
+  { id: 'assaut_score_12', title: 'Chasseur spatial', description: 'Fais un score de 12 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 12, reward: { coins: 30 } },
+  { id: 'assaut_score_15', title: 'Pilote Confirmé', description: 'Fais un score de 15 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 15, reward: { coins: 40 } },
+  { id: 'assaut_score_20', title: 'Expert Assaut', description: 'Fais un score de 20 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 20, reward: { coins: 50 } },
   
   // Brix Rush
   { id: 'brix_rush_score_5', title: 'Rush Novice', description: 'Fais un score de 5 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 5, reward: { coins: 20 } },
