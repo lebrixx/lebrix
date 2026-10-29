@@ -132,6 +132,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
         <li><Zap/><b>Esquive</b><small>les tirs</small></li>
         <li><ShieldPlus/><b>Améliore</b><small>tous les 10 pts</small></li>
       </ul>
+      <p className="arena-kit-note"><img src={healthKitUrl} alt="Kit de soin"/><span>Kit de soin : <b>+1 vie</b> quand tu le ramasses</span></p>
       <div className="arena-best"><Trophy size={16}/>Record <b>{best}</b></div>
       <Button className="arena-start arena-start-hero" onClick={start}><Play/>Entrer dans l’arène</Button>
     </div></div>}
