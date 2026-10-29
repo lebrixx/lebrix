@@ -17,7 +17,7 @@ import { BrixFactory } from '@/components/BrixFactory';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
-import { FallingTunnel3DGame } from '@/components/FallingTunnel3DGame';
+import { AssautGame } from '@/components/AssautGame';
 import { BrixRushGame } from '@/components/BrixRushGame';
 import { BrixArenaGame } from '@/components/BrixArenaGame';
 import { getTickets, consumeTicket } from '@/utils/ticketSystem';
@@ -417,19 +417,11 @@ const Index = () => {
               />
             );
           }
-          if (currentMode === 'zone_mobile') {
+          if (currentMode === 'assaut') {
             return (
-              <FallingTunnel3DGame
+              <AssautGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
-                isSoundMuted={isMuted}
-                onToggleSound={toggleMute}
-                playSuccess={playSuccess}
-                playFailure={playFailure}
-                selectedBoosts={selectedBoostsForGame}
-                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
-                coins={gameState.coins}
-                onEarnCoin={addCoins}
               />
             );
           }
@@ -521,7 +513,7 @@ const Index = () => {
             classic: savedData[`bestScore_classic`] || 0,
             arc_changeant: savedData[`bestScore_arc_changeant`] || 0,
             survie_60s: savedData[`bestScore_survie_60s`] || 0,
-            zone_mobile: savedData[`bestScore_zone_mobile`] || 0,
+            assaut: savedData[`bestScore_assaut`] || 0,
             brix_rush: savedData[`bestScore_brix_rush`] || 0,
             brix_arena: savedData[`bestScore_brix_arena`] || 0,
             pong_circulaire: savedData[`bestScore_pong_circulaire`] || 0,

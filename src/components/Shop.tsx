@@ -54,11 +54,11 @@ export const Shop: React.FC<ShopProps> = ({
   const { language } = useLanguage();
   const t = translations[language];
   
-  const [activeTab, setActiveTab] = useState('modes');
+  const [activeTab, setActiveTab] = useState('boosts');
 
   useEffect(() => {
     if (!initialTarget) return;
-    setActiveTab('modes');
+    setActiveTab('boosts');
     const targetId = 'shop-mode-expert_tickets';
     // Wait for Tabs content to mount
     const timer = setTimeout(() => {
@@ -212,8 +212,8 @@ export const Shop: React.FC<ShopProps> = ({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20">
               <Ticket className="w-6 h-6 text-secondary" />
               <div className="flex-1">
-                <p className="text-text-primary font-semibold text-sm">{t.shopTicketsExpert}</p>
-                <p className="text-text-muted text-xs">{t.shopTicketsExpertDesc}</p>
+                <p className="text-text-primary font-semibold text-sm">{language === 'fr' ? 'Tickets conservés' : language === 'es' ? 'Tickets conservados' : 'Tickets retained'}</p>
+                <p className="text-text-muted text-xs">{language === 'fr' ? 'Aucun mode ne nécessite de ticket.' : language === 'es' ? 'Ningún modo requiere tickets.' : 'No mode requires tickets.'}</p>
               </div>
               <Badge variant="secondary" className="text-xs font-bold">×15</Badge>
             </div>
@@ -259,14 +259,13 @@ export const Shop: React.FC<ShopProps> = ({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="modes">{t.modes}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="boosts">{t.boosts}</TabsTrigger>
           <TabsTrigger value="offers">{language === 'en' ? 'Offers' : language === 'es' ? 'Ofertas' : 'Offres'}</TabsTrigger>
         </TabsList>
 
         {/* Game Modes Tab */}
-        <TabsContent value="modes">
+        <TabsContent value="modes" hidden>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {GAME_MODES_SHOP.map((mode) => {
               const isTicketPack = (mode as any).isTicketPack;

@@ -5,6 +5,7 @@ export const ModeID = {
   ARC_CHANGEANT: "arc_changeant", 
   SURVIE_60S: "survie_60s",
   ZONE_MOBILE: "zone_mobile",
+  ASSAUT: "assaut",
   BRIX_RUSH: "brix_rush",
   BRIX_ARENA: "brix_arena",
   MEMOIRE_EXPERT: "memoire_expert",
@@ -14,12 +15,13 @@ export const ModeID = {
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé : Brix Rush est classé juste après Cube Dodge.
-export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.CLASSIC, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ZONE_MOBILE] as const;
+export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.CLASSIC, ModeID.BRIX_ARENA, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S, ModeID.ASSAUT] as const;
 export const FREE_MODES = RANKED_MODES;
-export const TICKET_MODE = ModeID.ZONE_MOBILE;
-export const requiresTicket = (mode: string): boolean => mode === TICKET_MODE;
-export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA;
+export const TICKET_MODE = null;
+export const requiresTicket = (_mode: string): boolean => false;
+export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA || mode === ModeID.ASSAUT;
 export function resolveSavedMode(saved: string | null): ModeType {
+  if (saved === 'zone_mobile') return ModeID.ASSAUT;
   if (saved === 'memoire_expert') return ModeID.BRIX_ARENA;
   if (saved === 'zone_traitresse') return ModeID.BRIX_RUSH;
   return RANKED_MODES.find(mode => mode === saved) ?? ModeID.CLASSIC;
@@ -89,6 +91,14 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.SURVIE_60S]: {
     name: "Stack Jump",
     desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, vise les plaques dorées.",
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.ASSAUT]: {
+    name: "Assaut",
+    desc: "Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,

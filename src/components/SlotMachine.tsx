@@ -19,7 +19,7 @@ const getModeIcon = (modeId: ModeType, size = 'w-8 h-8') => {
     case ModeID.CLASSIC: return <Target className={size} />;
     case ModeID.ARC_CHANGEANT: return <RotateCcw className={size} />;
     case ModeID.SURVIE_60S: return <Clock className={size} />;
-    case ModeID.ZONE_MOBILE: return <RotateCcw className={size} style={{ transform: 'rotate(90deg)' }} />;
+    case ModeID.ASSAUT: return <RotateCcw className={size} style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.BRIX_RUSH: return <AlertTriangle className={size} />;
     case ModeID.BRIX_ARENA: return <Brain className={size} />;
     default: return <Target className={size} />;
@@ -30,7 +30,7 @@ const MODE_ICON_COLORS: Record<string, string> = {
   [ModeID.CLASSIC]: 'text-success',
   [ModeID.ARC_CHANGEANT]: 'text-primary',
   [ModeID.SURVIE_60S]: 'text-danger',
-  [ModeID.ZONE_MOBILE]: 'text-secondary',
+  [ModeID.ASSAUT]: 'text-secondary',
   [ModeID.BRIX_RUSH]: 'text-secondary-glow',
   [ModeID.BRIX_ARENA]: 'text-primary-glow',
 };

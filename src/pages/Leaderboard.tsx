@@ -19,16 +19,16 @@ interface LeaderboardProps {
 }
 
 const modeNames = {
-  classic: 'Cube Dodge',
   brix_rush: 'Brix Rush',
+  classic: 'Cube Dodge',
+  brix_arena: 'Brix Arena',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
-  zone_mobile: 'Falling Tunnel',
-  brix_arena: 'Brix Arena'
+  assaut: 'Assaut'
 };
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
-  const [selectedMode, setSelectedMode] = useState<string>('classic');
+  const [selectedMode, setSelectedMode] = useState<string>('brix_rush');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);

@@ -27,7 +27,7 @@ const getModeIcon = (modeId: ModeType) => {
     case ModeID.CLASSIC: return <Target className="w-8 h-8" />;
     case ModeID.ARC_CHANGEANT: return <Box className="w-8 h-8" />;
     case ModeID.SURVIE_60S: return <Layers className="w-8 h-8" />;
-    case ModeID.ZONE_MOBILE: return <RotateCcw className="w-8 h-8" style={{ transform: 'rotate(90deg)' }} />;
+    case ModeID.ASSAUT: return <Zap className="w-8 h-8" />;
     case ModeID.BRIX_RUSH: return <Sparkles className="w-8 h-8" />;
     case ModeID.BRIX_ARENA: return <Grid3x3 className="w-8 h-8" />;
     case ModeID.PONG_CIRCULAIRE: return <Factory className="w-8 h-8" />;

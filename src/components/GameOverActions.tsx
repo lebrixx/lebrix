@@ -26,7 +26,7 @@ const MODE_NAMES: Record<string, string> = {
   classic: 'Cube Dodge',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
-  zone_mobile: 'Falling Tunnel',
+  assaut: 'Assaut',
   brix_rush: 'Brix Rush',
   brix_arena: 'Brix Arena',
 };
