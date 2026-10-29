@@ -21,6 +21,8 @@
 .assaut-original .arena-canvas { display: block; }
 .assaut-original .arena-btn { font-family: "Work Sans", sans-serif; font-weight: 700; padding: 0.8rem 2rem; border-radius: 0.5rem; background: var(--primary); color: var(--primary-foreground); transition: transform .15s; height: auto; }
 .assaut-original .arena-btn:active { transform: scale(0.96); }
+.assaut-original .arena-btn:hover { background: var(--primary); color: var(--primary-foreground); }
+.assaut-original .arena-btn-sm:hover { background: var(--background); color: var(--foreground); }
 .assaut-original .arena-btn-sm { padding: 0.3rem 0.8rem; font-size: 0.7rem; background: var(--background); color: var(--foreground); border: 1px solid var(--border); }
 .assaut-original .arena-menu { background: transparent; }
 @media (prefers-reduced-motion: reduce) { .assaut-original .arena-btn { transition: none; } }
