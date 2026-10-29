@@ -523,6 +523,7 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
               <ArrowLeft /> MENU
             </Button>
             <Button variant="ghost" type="button" aria-label={`Bombe, ${bombsLeft} restante${bombsLeft > 1 ? "s" : ""}`} disabled={bombsLeft <= 0}
+              onPointerDown={(e) => { e.preventDefault(); bombReq.current = true; }}
               onClick={() => (bombReq.current = true)}
               className="arena-bomb absolute bottom-[calc(env(safe-area-inset-bottom)+1.4rem)] left-6">
               <span className="arena-bomb-disc">
