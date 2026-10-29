@@ -12,6 +12,8 @@ import { BoostType } from '@/types/boosts';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { startGameSession, resetSubmissionAfterRevive } from '@/utils/scoresApi';
 import { useInGameCoins } from '@/hooks/useInGameCoins';
+import { consumeTicket } from '@/utils/ticketSystem';
+import { useToast } from '@/hooks/use-toast';
 
 /**
  * Ball Balance 3D — implementation fidèle au cahier des charges fourni.
@@ -429,6 +431,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const { toast } = useToast();
   const [phase, setPhase] = useState<'menu' | 'playing' | 'gameover'>('menu');
   const [boostsFromGameOver, setBoostsFromGameOver] = useState(false);
   const [score, setScore] = useState(0);
@@ -451,6 +454,11 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
   const coinsDisplay = useInGameCoins(coins, phase === 'playing', onEarnCoin);
 
   const handleStart = useCallback(() => {
+    if (phase === 'playing') return;
+    if (!consumeTicket()) {
+      toast({ title: t.noTicket, description: t.noTicketDesc, variant: 'destructive' });
+      return;
+    }
     const allowedBoosts = menuBoosts.filter((boost) => boost === 'bigger_zone' || boost === 'revive');
     pointer.current.x = 0;
     pointer.current.y = 0;
@@ -464,7 +472,7 @@ export const BallBalance3DGame: React.FC<BallBalance3DGameProps> = ({
     setScore(0);
     startedAt.current = Date.now();
     setPhase('playing');
-  }, [pointer, menuBoosts, onSetBoosts]);
+  }, [pointer, menuBoosts, onSetBoosts, phase, toast, t.noTicket, t.noTicketDesc]);
 
   const handleScore = useCallback((s: number) => {
     setScore(s);

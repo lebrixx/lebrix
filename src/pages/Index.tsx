@@ -271,9 +271,9 @@ const Index = () => {
       return;
     }
 
-    // Preserve the existing entry ticket gate, now on Falling Tunnel.
+    // Check access here; the game consumes a ticket only when a run starts.
     if (requiresTicket(mode)) {
-      if (!consumeTicket()) {
+      if (getTickets() <= 0) {
         toast({
           title: t.noTicket,
           description: t.noTicketDesc,
@@ -298,10 +298,13 @@ const Index = () => {
   };
 
   const handlePurchaseMode = (modeId: string, price: number): boolean => {
+    if (unlockedModes.includes(modeId)) return false;
     if (spendCoins(price)) {
-      const newUnlockedModes = [...unlockedModes, modeId];
-      setUnlockedModes(newUnlockedModes);
-      localStorage.setItem('unlockedModes', JSON.stringify(newUnlockedModes));
+      setUnlockedModes(prev => {
+        const next = [...new Set([...prev, modeId])];
+        localStorage.setItem('unlockedModes', JSON.stringify(next));
+        return next;
+      });
       
       toast({
         title: t.modeUnlockedShort,
