@@ -13,6 +13,8 @@ import { DailyRewards } from '@/components/DailyRewards';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { DailyChallengeBoundary } from '@/components/DailyChallengeBoundary';
 import { PongCirculaire } from '@/components/PongCirculaire';
+import { BottomNav, BottomNavTab } from '@/components/BottomNav';
+import { Inventory } from '@/components/Inventory';
 import { BrixFactory } from '@/components/BrixFactory';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
@@ -44,6 +46,7 @@ const Index = () => {
   const { language } = useLanguage();
   const t = translations[language];
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
+  const [showInventory, setShowInventory] = useState(false);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
   const [replayOnboarding, setReplayOnboarding] = useState(false);
@@ -577,7 +580,21 @@ const Index = () => {
       {replayOnboarding && (
         <Onboarding replay onComplete={() => setReplayOnboarding(false)} />
       )}
-      {renderScreen()}
+      <div className={(['shop','challenges','leaderboard'] as string[]).includes(currentScreen) ? 'with-bottom-nav' : undefined}>{renderScreen()}</div>
+      {(['menu','shop','challenges','leaderboard'] as string[]).includes(currentScreen) && !showOnboarding && !replayOnboarding && (
+        <>
+          <Inventory isOpen={showInventory} onClose={() => setShowInventory(false)} />
+          <BottomNav
+            active={showInventory ? 'inventory' : (currentScreen as BottomNavTab)}
+            onSelect={(tab) => {
+              if (tab === 'inventory') { setShowInventory(true); return; }
+              setShowInventory(false);
+              if (tab === 'shop') setShopTarget(null);
+              setCurrentScreen(tab);
+            }}
+          />
+        </>
+      )}
       
       
       {/* Modals */}

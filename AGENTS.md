@@ -19,3 +19,4 @@
 - Use the shared GameHUD for every active 3D mode so scores remain independently centered and sound/coin placement stays consistent.
 - Keep the shop's paid-offer summaries separate from purchasing logic and open existing offer dialogs to preserve native purchase and restoration flows.- Keep all AdMob unit/app IDs in src/ads/adConfig.ts with an explicit test/production switch, so ad mode can be flipped in one place (Info.plist app ID must match).
 - Keep every resolved URL in bun.lock on https://registry.npmjs.org/; sandbox mirror hosts are unreachable from the publish builder and break installs with DNS errors.
+- Render the main bottom navigation once at page level through a body portal (app screens are transformed, which breaks fixed positioning) and show it on home, shop, challenges and leaderboard so section switching never remounts the bar.

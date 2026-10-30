@@ -1301,3 +1301,13 @@
 .lsm-row-pass { animation: lsm-pulse-soft 2.8s ease-in-out infinite -1s; }
 .lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-box { animation: lsm-pulse-shake 3s ease-in-out infinite -1.5s, lsm-glow 4s ease-in-out infinite; }
 .lsm-play:active, .lsm-row-pass:active { animation-play-state: paused; }
+
+/* Persistent bottom nav shared by menu, shop, challenges, leaderboard */
+:root { --bottom-nav-h: calc(72px + env(safe-area-inset-bottom, 0px)); }
+.lsm-nav.lsm-nav-fixed { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 480px; margin: 0; z-index: 60;
+  grid-template-columns: repeat(5, 1fr); height: var(--bottom-nav-h); }
+.lsm-nav-fixed .lsm-nav-item svg { width: 24px; height: 24px; }
+.lsm-nav-fixed .lsm-nav-item > span:last-child { font-size: 9px; }
+.lsm-nav-spacer { margin-top: auto; flex-shrink: 0; height: var(--bottom-nav-h); }
+.with-bottom-nav { padding-bottom: var(--bottom-nav-h); }
+.with-bottom-nav .min-h-screen, .with-bottom-nav .h-screen { padding-bottom: var(--bottom-nav-h); }

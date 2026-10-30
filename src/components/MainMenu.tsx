@@ -298,22 +298,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             <ChevronRight className="lsm-chev" />
           </button>
 
-          {/* Bottom nav */}
-          <nav className="lsm-nav">
-            <button type="button" className="lsm-nav-item is-active" onClick={onOpenShop}>
-              <ShoppingBag className="w-8 h-8" strokeWidth={1.8} /><span>BOUTIQUE</span>
-            </button>
-            <button type="button" className="lsm-nav-item" onClick={() => setShowInventory(true)}>
-              <Box className="w-8 h-8" strokeWidth={1.8} /><span>INVENTAIRE</span>
-            </button>
-            <button type="button" className="lsm-nav-item" onClick={onOpenChallenges}>
-              <span className="relative"><Star className="w-8 h-8" strokeWidth={1.8} />{hasPendingChallenges && <span className="lsm-badge lsm-badge-nav">!</span>}</span>
-              <span>DÉFIS</span>
-            </button>
-            <button type="button" className="lsm-nav-item" onClick={onOpenLeaderboard}>
-              <Trophy className="w-8 h-8" strokeWidth={1.8} /><span>CLASSEMENT</span>
-            </button>
-          </nav>
+          <div className="lsm-nav-spacer" aria-hidden />
         </div>
 
 
