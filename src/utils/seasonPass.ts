@@ -25,8 +25,11 @@ export interface DailyQuestState {
   quest1Completed: boolean;
   // Quest 2: Use a boost in any mode
   quest2Completed: boolean;
-  // Reward claimed (both quests needed)
-  claimed: boolean;
+  // Reward per quest: 1 💎 each
+  quest1Claimed: boolean;
+  quest2Claimed: boolean;
+  /** @deprecated ancien format (les 2 quêtes ensemble) */
+  claimed?: boolean;
 }
 
 export interface SeasonPassData {
