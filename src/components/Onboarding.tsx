@@ -262,17 +262,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
     onComplete();
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex flex-col overflow-hidden">
       <MainMenuBackground />
 
       {/* Overlay content */}
-      <div className="relative z-10 flex flex-col h-full w-full px-6 pb-6">
+      <div className="relative z-10 flex flex-col h-full w-full px-6 pb-6 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         {/* Back button — petit, en haut à gauche */}
         {step > 0 && (
           <button
             onClick={goBack}
-            className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full border border-wheel-border bg-button-bg/80 backdrop-blur-sm flex items-center justify-center text-text-primary active:scale-95 transition-all duration-300 hover:bg-button-hover"
+            className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 z-20 w-9 h-9 rounded-full border border-wheel-border bg-button-bg/80 backdrop-blur-sm flex items-center justify-center text-text-primary active:scale-95 transition-all duration-300 hover:bg-button-hover"
             aria-label={ob.back}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -280,7 +280,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
         )}
 
         {/* Progress dots */}
-        <div className="flex items-center justify-center gap-2 mt-10 mb-6">
+        <div className="flex items-center justify-center gap-2 mt-4 mb-6">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
             <div
               key={i}
@@ -561,6 +561,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
