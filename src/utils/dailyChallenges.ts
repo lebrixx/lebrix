@@ -12,23 +12,23 @@ export interface DailyChallenge {
 
 // UNIQUEMENT des défis de score dans un mode spécifique
 export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
-  // Cube Dodge 3D
-  { id: 'classic_score_10', title: 'Cube Débutant', description: 'Fais un score de 10 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 16 } },
-  { id: 'classic_score_15', title: 'Cube Apprenti', description: 'Fais un score de 20 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 20 } },
-  { id: 'classic_score_20', title: 'Cube Confirmé', description: 'Fais un score de 35 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 35, reward: { coins: 30 } },
-  { id: 'classic_score_25', title: 'Cube Pro', description: 'Fais un score de 60 en Cube Dodge 3D', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 60, reward: { coins: 40 } },
+  // Cube Dodge
+  { id: 'classic_score_10', title: 'Cube Débutant', description: 'Fais un score de 10 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 16 } },
+  { id: 'classic_score_15', title: 'Cube Apprenti', description: 'Fais un score de 20 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 20 } },
+  { id: 'classic_score_20', title: 'Cube Confirmé', description: 'Fais un score de 35 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 35, reward: { coins: 30 } },
+  { id: 'classic_score_25', title: 'Cube Pro', description: 'Fais un score de 60 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 60, reward: { coins: 40 } },
   
-  // Ball Balance 3D
-  { id: 'arc_score_8', title: 'Ball Débutant', description: 'Tiens 10 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 10, reward: { coins: 16 } },
-  { id: 'arc_score_12', title: 'Ball Intermédiaire', description: 'Tiens 20 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 20 } },
-  { id: 'arc_score_15', title: 'Ball Confirmé', description: 'Tiens 30 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 30, reward: { coins: 30 } },
-  { id: 'arc_score_20', title: 'Ball Expert', description: 'Tiens 45 secondes en Ball Balance 3D', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 45, reward: { coins: 46 } },
+  // Ball Balance
+  { id: 'arc_score_8', title: 'Ball Débutant', description: 'Tiens 10 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 10, reward: { coins: 16 } },
+  { id: 'arc_score_12', title: 'Ball Intermédiaire', description: 'Tiens 20 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 20 } },
+  { id: 'arc_score_15', title: 'Ball Confirmé', description: 'Tiens 30 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 30, reward: { coins: 30 } },
+  { id: 'arc_score_20', title: 'Ball Expert', description: 'Tiens 45 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 45, reward: { coins: 46 } },
   
-  // Stack Jump 3D
-  { id: 'survie_score_5', title: 'Stack Débutant', description: 'Fais un score de 5 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
-  { id: 'survie_score_8', title: 'Stack Empileur', description: 'Fais un score de 8 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
-  { id: 'survie_score_12', title: 'Stack Confirmé', description: 'Fais un score de 12 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
-  { id: 'survie_score_15', title: 'Maître Stack', description: 'Fais un score de 15 en Stack Jump 3D', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
+  // Stack Jump
+  { id: 'survie_score_5', title: 'Stack Débutant', description: 'Fais un score de 5 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
+  { id: 'survie_score_8', title: 'Stack Empileur', description: 'Fais un score de 8 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
+  { id: 'survie_score_12', title: 'Stack Confirmé', description: 'Fais un score de 12 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
+  { id: 'survie_score_15', title: 'Maître Stack', description: 'Fais un score de 15 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
   // Zone mobile
   { id: 'assaut_score_8', title: 'Pilote Débutant', description: 'Fais un score de 8 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 8, reward: { coins: 20 } },
