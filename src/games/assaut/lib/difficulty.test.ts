@@ -59,6 +59,20 @@ describe("difficulté progressive", () => {
     expect(bossStats(2).hp).toBeGreaterThan(bossStats(1).hp);
     expect(bossStats(3).hp).toBeGreaterThan(bossStats(2).hp);
   });
+  it("adoucit uniquement le premier boss : moins de balles en même temps et salves plus espacées", () => {
+    expect(bossStats(1).count).toBe(4);
+    expect(bossStats(1).cooldown).toBeCloseTo(1.35);
+    for (const age of [1, 4.5, 8, 11.5, 15]) {
+      expect(bossVolley(1, age, false, Math.PI / 2).velocities.length).toBeLessThanOrEqual(5);
+    }
+    // les boss suivants gardent exactement leurs valeurs d'origine
+    expect(bossStats(2).count).toBe(7);
+    expect(bossStats(2).cooldown).toBeCloseTo(1.0239);
+    expect(bossStats(3).count).toBe(8);
+    expect(bossStats(3).cooldown).toBeCloseTo(0.972);
+    expect(bossStats(4).count).toBe(9);
+    expect(bossStats(4).cooldown).toBeCloseTo(0.902);
+  });
   it("varie les attaques sur cinq motifs distincts", () => {
     const patterns = new Set();
     for (const age of [1, 4.5, 8, 11.5, 15]) {
