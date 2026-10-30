@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Home, ShoppingBag, Box, Star, Trophy } from 'lucide-react';
-import { hasPendingChallengeRewards } from '@/utils/challengeRewards';
+import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 
 export type BottomNavTab = 'menu' | 'shop' | 'inventory' | 'challenges' | 'leaderboard';
 
