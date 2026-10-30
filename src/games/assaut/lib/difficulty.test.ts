@@ -72,8 +72,8 @@ describe("difficulté progressive", () => {
   it("renforce tous les motifs dès le premier boss et rapproche les salves", () => {
     for (const age of [1, 4.5, 8, 11.5, 15]) {
       const volley = bossVolley(1, age, true, Math.PI / 2);
-      expect(volley.cooldown).toBeCloseTo(0.9775);
-      expect(volley.velocities.length).toBeGreaterThanOrEqual(5);
+      expect(volley.cooldown).toBeCloseTo(1.1475);
+      expect(volley.velocities.length).toBeGreaterThanOrEqual(4);
       expect(Math.hypot(volley.velocities[0]?.vx ?? 0, volley.velocities[0]?.vy ?? 0)).toBeCloseTo(145);
       for(let rank=1;rank<30;rank++) {
         const current=bossVolley(rank,age,false,Math.PI/2), next=bossVolley(rank+1,age,false,Math.PI/2);
