@@ -52,10 +52,13 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
   }, [isOpen, getCooldown]);
 
   const dailyQuests = getDailyQuests();
-  const bothCompleted = dailyQuests.quest1Completed && dailyQuests.quest2Completed;
+  const claimableCount =
+    (dailyQuests.quest1Completed && !dailyQuests.quest1Claimed ? 1 : 0) +
+    (dailyQuests.quest2Completed && !dailyQuests.quest2Claimed ? 1 : 0);
 
   const handleClaimDaily = () => {
-    if (claimDailyQuestReward()) {
+    const gained = claimDailyQuestReward();
+    if (gained > 0) {
       setPassData(getSeasonPassData());
       toast({ title: t.diamondObtained, description: t.diamondQuestReward });
     }
