@@ -47,9 +47,9 @@ interface ChallengesProps {
 }
 
 const MODE_INFO = {
-  [ModeID.CLASSIC]: { name: 'Cube Dodge 3D', icon: Target, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-fuchsia-600/5' },
-  [ModeID.ARC_CHANGEANT]: { name: 'Ball Balance 3D', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
-  [ModeID.SURVIE_60S]: { name: 'Stack Jump 3D', icon: Timer, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-cyan-600/5' },
+  [ModeID.CLASSIC]: { name: 'Cube Dodge', icon: Target, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-fuchsia-600/5' },
+  [ModeID.ARC_CHANGEANT]: { name: 'Ball Balance', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
+  [ModeID.SURVIE_60S]: { name: 'Stack Jump', icon: Timer, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-cyan-600/5' },
   [ModeID.ASSAUT]: { name: 'Assaut', icon: MapPin, color: 'text-green-400', gradient: 'from-green-500/20 to-green-600/5' },
   [ModeID.BRIX_RUSH]: { name: 'Brix Rush', icon: Target, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-amber-500/5' },
   [ModeID.BRIX_ARENA]: { name: 'Brix Arena', icon: Brain, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-cyan-600/5' },
@@ -369,7 +369,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <Trophy className={`w-4 h-4 ${hasGlobalRewards ? 'text-secondary' : ''}`} />
             <span className={hasGlobalRewards ? 'text-secondary font-bold' : ''}>Globaux</span>
             {hasGlobalRewards && (
-              <Gift className="w-3.5 h-3.5 ml-1 text-secondary animate-bounce" />
+              <span aria-label="Récompenses globales disponibles" className="ml-1 h-2.5 w-2.5 shrink-0 rounded-full bg-destructive animate-pulse" />
             )}
           </TabsTrigger>
         </TabsList>
