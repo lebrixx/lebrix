@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Home, ShoppingBag, Box, Star, Trophy } from 'lucide-react';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
 
@@ -26,13 +27,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onSelect }) => {
     { id: 'leaderboard', label: 'CLASSEMENT', icon: <Trophy strokeWidth={1.8} /> },
   ];
 
-  return (
+  return createPortal(
     <nav className="lsm-nav lsm-nav-fixed">
       {items.map((it) => (
         <button key={it.id} type="button" className={`lsm-nav-item${active === it.id ? ' is-active' : ''}`} onClick={() => onSelect(it.id)}>
           {it.icon}<span>{it.label}</span>
         </button>
       ))}
-    </nav>
+    </nav>,
+    document.body
   );
 };
