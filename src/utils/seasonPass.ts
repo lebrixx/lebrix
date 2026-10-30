@@ -290,24 +290,33 @@ export function updateQuestBoostUsed(): void {
   savePassData(data);
 }
 
-/** Retourne true si les 2 quêtes sont complètes mais pas encore récupérées */
+/** Retourne true si au moins une quête complète est à récupérer (1 💎 par quête) */
 export function hasDailyQuestReward(): boolean {
   const data = getSeasonPassData();
   const today = getTodayStr();
   if (!data.dailyQuests || data.dailyQuests.date !== today) return false;
-  return data.dailyQuests.quest1Completed && data.dailyQuests.quest2Completed && !data.dailyQuests.claimed;
+  const q = data.dailyQuests;
+  return (q.quest1Completed && !q.quest1Claimed) || (q.quest2Completed && !q.quest2Claimed);
 }
 
-/** Réclame le diamant si les 2 quêtes sont complètes. Retourne true si succès. */
-export function claimDailyQuestReward(): boolean {
+/** Réclame 1 💎 par quête complétée. Retourne le nombre de diamants obtenus. */
+export function claimDailyQuestReward(): number {
   const data = getSeasonPassData();
   const today = getTodayStr();
-  if (!data.dailyQuests || data.dailyQuests.date !== today) return false;
-  if (!data.dailyQuests.quest1Completed || !data.dailyQuests.quest2Completed) return false;
-  if (data.dailyQuests.claimed) return false;
-  data.dailyQuests.claimed = true;
-  data.diamonds += 1;
-  data.totalDiamondsEarned += 1;
+  if (!data.dailyQuests || data.dailyQuests.date !== today) return 0;
+  const q = data.dailyQuests;
+  let gained = 0;
+  if (q.quest1Completed && !q.quest1Claimed) {
+    q.quest1Claimed = true;
+    gained += 1;
+  }
+  if (q.quest2Completed && !q.quest2Claimed) {
+    q.quest2Claimed = true;
+    gained += 1;
+  }
+  if (gained === 0) return 0;
+  data.diamonds += gained;
+  data.totalDiamondsEarned += gained;
   savePassData(data);
-  return true;
+  return gained;
 }
