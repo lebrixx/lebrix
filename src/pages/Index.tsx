@@ -582,7 +582,7 @@ const Index = () => {
       {replayOnboarding && (
         <Onboarding replay onComplete={() => setReplayOnboarding(false)} />
       )}
-      <div className={(['shop','challenges','leaderboard','inventory'] as string[]).includes(currentScreen) ? 'with-bottom-nav' : undefined}>{renderScreen()}</div>
+      <div className={[(['shop','challenges','leaderboard','inventory'] as string[]).includes(currentScreen) ? 'with-bottom-nav' : '', (['shop','challenges','leaderboard','inventory','modes','global_leaderboard'] as string[]).includes(currentScreen) ? 'section-screen' : ''].join(' ').trim() || undefined}>{renderScreen()}</div>
       {(['menu','shop','challenges','leaderboard','inventory'] as string[]).includes(currentScreen) && !showOnboarding && !replayOnboarding && (
         <>
           <BottomNav
