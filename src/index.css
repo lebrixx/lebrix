@@ -45,6 +45,11 @@
     --success-glow: 120 100% 60%;
     --danger: 0 100% 60%;
     --danger-glow: 0 100% 70%;
+    --username-pulse-base: 180 90% 76%;
+    --username-pulse-peak: 180 100% 88%;
+    --username-gold-base: 43 100% 72%;
+    --username-gold-peak: 48 100% 85%;
+    --username-edge: 255 62% 6%;
 
     /* Wheel Colors */
     --wheel-base: 255 45% 14%;
@@ -686,13 +691,18 @@
 }
 
 @keyframes username-pulse {
-  0%, 100% { opacity: 1; text-shadow: 0 0 4px currentColor; }
-  50% { opacity: 0.5; text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+  0%, 100% { opacity: 1; color: hsl(var(--username-pulse-base)); text-shadow: 0 1px 1px hsl(var(--username-edge) / 0.9), 0 0 2px hsl(var(--username-pulse-base) / 0.15); }
+  50% { opacity: 1; color: hsl(var(--username-pulse-peak)); text-shadow: 0 1px 1px hsl(var(--username-edge) / 0.9), 0 0 5px hsl(var(--username-pulse-base) / 0.4); }
 }
 
 @keyframes username-gold-pulse {
-  0%, 100% { opacity: 1; color: hsl(45, 100%, 55%); text-shadow: 0 0 4px currentColor; }
-  50% { opacity: 0.5; color: hsl(35, 100%, 45%); text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+  0%, 100% { opacity: 1; color: hsl(var(--username-gold-base)); text-shadow: 0 1px 1px hsl(var(--username-edge) / 0.9), 0 0 2px hsl(var(--username-gold-base) / 0.15); }
+  50% { opacity: 1; color: hsl(var(--username-gold-peak)); text-shadow: 0 1px 1px hsl(var(--username-edge) / 0.9), 0 0 5px hsl(var(--username-gold-base) / 0.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[username-pulse_"] { animation: none; color: hsl(var(--username-pulse-base)) !important; }
+  [class*="animate-[username-gold-pulse_"] { animation: none; color: hsl(var(--username-gold-base)) !important; }
 }
 
 @keyframes username-rainbow {
