@@ -40,13 +40,12 @@ import { initNotifications } from '@/utils/notifications';
 import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
-type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard' | 'reflex_grid';
+type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard' | 'reflex_grid' | 'inventory';
 
 const Index = () => {
   const { language } = useLanguage();
   const t = translations[language];
   const [currentScreen, setCurrentScreen] = useState<GameScreen>('menu');
-  const [showInventory, setShowInventory] = useState(false);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
   const [replayOnboarding, setReplayOnboarding] = useState(false);
@@ -544,6 +543,9 @@ const Index = () => {
 
 
           
+        case 'inventory':
+          return <Inventory asPage isOpen onClose={() => setCurrentScreen('menu')} />;
+
         case 'leaderboard':
           return (
             <OnlineLeaderboard
@@ -580,15 +582,12 @@ const Index = () => {
       {replayOnboarding && (
         <Onboarding replay onComplete={() => setReplayOnboarding(false)} />
       )}
-      <div className={(['shop','challenges','leaderboard'] as string[]).includes(currentScreen) ? 'with-bottom-nav' : undefined}>{renderScreen()}</div>
-      {(['menu','shop','challenges','leaderboard'] as string[]).includes(currentScreen) && !showOnboarding && !replayOnboarding && (
+      <div className={(['shop','challenges','leaderboard','inventory'] as string[]).includes(currentScreen) ? 'with-bottom-nav' : undefined}>{renderScreen()}</div>
+      {(['menu','shop','challenges','leaderboard','inventory'] as string[]).includes(currentScreen) && !showOnboarding && !replayOnboarding && (
         <>
-          <Inventory isOpen={showInventory} onClose={() => setShowInventory(false)} />
           <BottomNav
-            active={showInventory ? 'inventory' : (currentScreen as BottomNavTab)}
+            active={currentScreen as BottomNavTab}
             onSelect={(tab) => {
-              if (tab === 'inventory') { setShowInventory(true); return; }
-              setShowInventory(false);
               if (tab === 'shop') setShopTarget(null);
               setCurrentScreen(tab);
             }}

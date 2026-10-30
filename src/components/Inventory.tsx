@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 interface InventoryProps {
   isOpen: boolean;
   onClose: () => void;
+  asPage?: boolean;
 }
 
 const BOOST_ICONS: Record<BoostType, React.ReactNode> = {
@@ -44,7 +45,15 @@ const getStoredBoosts = (): Record<string, number> => {
   }
 };
 
-export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
+const InvOuter: React.FC<{ asPage?: boolean; isOpen: boolean; onClose: () => void; children: React.ReactNode }> = ({ asPage, isOpen, onClose, children }) =>
+  asPage ? <>{children}</> : <Dialog open={isOpen} onOpenChange={onClose}>{children}</Dialog>;
+
+const InvInner: React.FC<{ asPage?: boolean; children: React.ReactNode }> = ({ asPage, children }) =>
+  asPage
+    ? <div className="inventory-page min-h-screen bg-game-darker max-w-md mx-auto">{children}</div>
+    : <DialogContent className="bg-game-darker border-wheel-border max-w-sm max-h-[90vh] overflow-hidden p-0 gap-0 rounded-2xl">{children}</DialogContent>;
+
+export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage }) => {
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
   const [boosts, setBoosts] = useState<Record<string, number>>(getStoredBoosts());
   const [tickets, setTickets] = useState(getTickets());
@@ -198,8 +207,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
   const totalBoosts = Object.values(boosts).reduce((a, b) => a + b, 0);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-game-darker border-wheel-border max-w-sm max-h-[90vh] overflow-hidden p-0 gap-0 rounded-2xl">
+    <InvOuter asPage={asPage} isOpen={isOpen} onClose={onClose}>
+      <InvInner asPage={asPage}>
 
         {/* HEADER */}
         <div className="relative overflow-hidden">
@@ -598,7 +607,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
             </div>
           )}
         </div>
-      </DialogContent>
+      </InvInner>
 
       <RainbowOffer
         isOpen={rainbowOfferOpen}
@@ -612,6 +621,6 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose }) => {
           syncDecorationToServer(after);
         }}
       />
-    </Dialog>
+    </InvOuter>
   );
 };
