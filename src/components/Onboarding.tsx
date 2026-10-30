@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -267,7 +268,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
       <MainMenuBackground />
 
       {/* Overlay content */}
-      <div className="relative z-10 flex flex-col h-full w-full px-6 pb-6 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+      <div className="relative z-10 flex flex-col h-full w-full px-6 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         {/* Back button — petit, en haut à gauche */}
         {step > 0 && (
           <button
