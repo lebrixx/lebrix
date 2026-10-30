@@ -266,17 +266,17 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
 
         {/* Onglets Classement */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-4">
-          <TabsList className="grid w-full grid-cols-2 bg-button-bg border border-wheel-border">
-            <TabsTrigger 
-              value="global" 
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+          <TabsList className="ls-tabbar grid w-full grid-cols-2">
+            <TabsTrigger
+              value="global"
+              className="ls-tab"
             >
               <Globe className="w-4 h-4" />
               {t.global}
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="weekly"
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+              className="ls-tab"
             >
               <Calendar className="w-4 h-4" />
               {t.weekly}
