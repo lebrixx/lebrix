@@ -1139,7 +1139,7 @@
 .lsm-root {
   --lsm-bg: #0a0618; --lsm-violet: #8b5cf6; --lsm-pink: #d946ef; --lsm-cyan: #22d3ee;
   --lsm-gold: #f5b02e; --lsm-text: #cfc6ff; --lsm-white: #f4f0ff;
-  position: fixed; inset: 0; z-index: 10; overflow: hidden; background: var(--lsm-bg);
+  position: fixed; inset: 0; top: calc(-1 * var(--app-top-clearance, 0px)); z-index: 10; overflow: hidden; background: var(--lsm-bg);
   font-family: "Chakra Petch", "Russo One", sans-serif; color: var(--lsm-text);
 }
 .lsm-bg { position: absolute; inset: 0; pointer-events: none;
@@ -1151,7 +1151,7 @@
     linear-gradient(180deg, #120a2c 0%, #0b0720 55%, #070512 100%);
 }
 .lsm-screen { position: relative; height: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column;
-  padding: calc(env(safe-area-inset-top, 0px) + 10px) 17px calc(env(safe-area-inset-bottom, 0px) + 0px); gap: 0; }
+  padding: max(calc(env(safe-area-inset-top, 0px) + 10px), var(--app-top-clearance, 0px)) 17px calc(env(safe-area-inset-bottom, 0px) + 0px); gap: 0; }
 .lsm-root button { -webkit-tap-highlight-color: transparent; transition: transform .15s ease, filter .15s ease; }
 .lsm-root button:active { transform: scale(.97); }
 
