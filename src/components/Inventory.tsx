@@ -50,7 +50,7 @@ const InvOuter: React.FC<{ asPage?: boolean; isOpen: boolean; onClose: () => voi
 
 const InvInner: React.FC<{ asPage?: boolean; children: React.ReactNode }> = ({ asPage, children }) =>
   asPage
-    ? <div className="inventory-page min-h-screen bg-game-darker max-w-md mx-auto">{children}</div>
+    ? <div className="inventory-page relative min-h-screen bg-game-darker max-w-md mx-auto before:content-[''] before:absolute before:inset-x-0 before:bottom-full before:h-[100vh] before:bg-game-darker before:pointer-events-none">{children}</div>
     : <DialogContent className="bg-game-darker border-wheel-border max-w-sm max-h-[90vh] overflow-hidden p-0 gap-0 rounded-2xl">{children}</DialogContent>;
 
 export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage }) => {
