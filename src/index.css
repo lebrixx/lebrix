@@ -30,38 +30,38 @@
     --brix-shadow-soft: rgb(0 0 0 / 0.22);
     --brix-highlight-soft: rgb(255 255 255 / 0.35);
     /* Game Background & Base Colors - Fond violet fixe */
-    --game-dark: 270 30% 8%;
-    --game-darker: 270 40% 4%;
+    --game-dark: 252 60% 11%;
+    --game-darker: 255 62% 6%;
     --text-primary: 0 0% 100%;
-    --text-secondary: 0 0% 70%;
-    --text-muted: 0 0% 50%;
+    --text-secondary: 250 100% 89%;
+    --text-muted: 252 30% 65%;
 
     /* Neon Theme (Default) */
     --primary: 180 100% 50%;
     --primary-glow: 180 100% 60%;
-    --secondary: 300 100% 60%;
-    --secondary-glow: 300 100% 70%;
+    --secondary: 292 84% 61%;
+    --secondary-glow: 292 90% 72%;
     --success: 120 100% 50%;
     --success-glow: 120 100% 60%;
     --danger: 0 100% 60%;
     --danger-glow: 0 100% 70%;
 
     /* Wheel Colors */
-    --wheel-base: 220 20% 15%;
-    --wheel-segment: 220 15% 20%;
-    --wheel-border: 0 0% 30%;
+    --wheel-base: 255 45% 14%;
+    --wheel-segment: 258 40% 20%;
+    --wheel-border: 262 50% 34%;
     --green-zone: var(--success);
     --green-zone-glow: var(--success-glow);
 
     /* UI Elements */
-    --button-bg: 220 20% 15%;
-    --button-border: 0 0% 30%;
-    --button-hover: 220 20% 20%;
+    --button-bg: 255 45% 15%;
+    --button-border: 262 50% 34%;
+    --button-hover: 258 45% 21%;
     --button-active: var(--primary);
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    --gradient-game: linear-gradient(135deg, hsl(var(--game-darker)), hsl(var(--game-dark)));
+    --gradient-game: radial-gradient(60% 35% at 50% 28%, rgba(124,58,237,.3), transparent 70%), linear-gradient(125deg, transparent 0 38%, rgba(91,33,182,.18) 38% 52%, transparent 52%), linear-gradient(235deg, transparent 0 30%, rgba(76,29,149,.2) 30% 44%, transparent 44%), linear-gradient(180deg, #120a2c 0%, #0b0720 55%, #070512 100%);
     --gradient-wheel: radial-gradient(circle, hsl(var(--wheel-segment)), hsl(var(--wheel-base)));
     --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-glow)));
     --gradient-danger: linear-gradient(135deg, hsl(var(--danger)), hsl(var(--danger-glow)));
@@ -71,7 +71,7 @@
     --glow-orbit: hsl(var(--primary) / 0.6);
     --glow-success: 0 0 20px hsl(var(--success) / 0.8);
     --glow-danger: 0 0 20px hsl(var(--danger) / 0.6);
-    --shadow-card: 0 8px 32px hsl(var(--game-darker) / 0.8);
+    --shadow-card: 0 8px 28px rgba(5,3,15,.7), 0 0 14px rgba(139,92,246,.18);
     --shadow-wheel: 0 0 40px hsl(var(--primary) / 0.3);
 
     /* Animations */
@@ -1311,3 +1311,29 @@
 .lsm-nav-spacer { margin-top: auto; flex-shrink: 0; height: var(--bottom-nav-h); }
 .with-bottom-nav { padding-bottom: var(--bottom-nav-h); }
 .with-bottom-nav .min-h-screen, .with-bottom-nav .h-screen { padding-bottom: var(--bottom-nav-h); }
+
+/* ===== Unified Lucky Stop home theme for all pages & popups ===== */
+body { font-family: "Chakra Petch", "Russo One", sans-serif; }
+.app-screens h1, .app-screens h2, .app-screens h3,
+[role="dialog"] h1, [role="dialog"] h2, [role="dialog"] h3 {
+  font-family: "Russo One", sans-serif; letter-spacing: .03em;
+}
+[role="dialog"].app-dialog-content, [role="alertdialog"] {
+  background: radial-gradient(80% 40% at 50% 0%, rgba(124,58,237,.28), transparent 70%), linear-gradient(180deg, #160d34 0%, #0d0824 60%, #08051a 100%) !important;
+  border: 1px solid rgba(139,92,246,.45) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 0 0 1px rgba(34,211,238,.06), 0 0 24px rgba(139,92,246,.3), 0 18px 40px rgba(0,0,0,.6) !important;
+  font-family: "Chakra Petch", "Russo One", sans-serif;
+}
+.app-screens button, [role="dialog"] button {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .15s ease, filter .15s ease, box-shadow .2s ease;
+}
+.app-screens button:active:not(:disabled), [role="dialog"] button:active:not(:disabled) {
+  transform: scale(.96); filter: brightness(1.18);
+}
+.app-screens .with-bottom-nav button.bg-primary, [role="dialog"] button.bg-primary,
+.app-screens button[class*="bg-gradient"], [role="dialog"] button[class*="bg-gradient"] {
+  box-shadow: 0 0 14px rgba(34,211,238,.28);
+  font-family: "Russo One", sans-serif; letter-spacing: .03em;
+}
