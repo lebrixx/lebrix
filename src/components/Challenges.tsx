@@ -370,7 +370,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <Trophy className={`w-4 h-4 ${hasGlobalRewards ? 'text-secondary' : ''}`} />
             <span className={hasGlobalRewards ? 'text-secondary font-bold' : ''}>Globaux</span>
             {hasGlobalRewards && (
-              <span aria-label="Récompenses globales disponibles" className="ml-1 h-2.5 w-2.5 shrink-0 rounded-full bg-destructive animate-pulse" />
+              <span aria-label="Récompenses globales disponibles" className="ls-reward-dot" />
             )}
           </TabsTrigger>
         </TabsList>

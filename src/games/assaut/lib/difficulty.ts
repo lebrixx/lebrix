@@ -15,9 +15,9 @@ export function bossDue(t: number, next: number, bossAlive: boolean) { return !b
 export function nextBossTime(deathTime: number, defeatedBoss = 0) { return deathTime + BOSS_EVERY + (defeatedBoss === 1 ? 15 : 0); }
 export function bossStats(rank: number) {
   // Denser, faster salvos at every rank; pauses keep shrinking smoothly on long runs.
-  // Boss 2 gets an extra bump (more HP, faster shots) that stays below boss 3's values.
+  // Boss 2 gets an extra bump (more HP, faster shots); boss 3 garde exactement les mêmes valeurs que le boss 2.
   // Boss 1 reste plus doux : une balle de moins par salve et un léger répit entre les salves.
-  const bump = rank === 2 ? 1 : 0;
+  const bump = rank === 2 || rank === 3 ? 1 : 0;
   const first = rank === 1 ? 1 : 0;
   return { hp: 95 + (rank - 1) * 55 + bump * 25, movement: Math.min(140, 55 + rank * 9), speed: Math.min(260, 145 + (rank - 1) * 12 + bump * 6), count: Math.min(14, 5 + rank - 1 + (rank >= 2 ? 1 : 0)) - first, cooldown: 0.5 + 0.65 * Math.exp(-(rank - 1) * 0.16) - bump * 0.03 + first * 0.2 };
 }
