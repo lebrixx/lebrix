@@ -255,6 +255,12 @@ function ensureTodayQuests(data: SeasonPassData): SeasonPassData {
       quest2Claimed: false,
     };
     savePassData(data);
+  } else if (data.dailyQuests.quest1Claimed === undefined) {
+    // Migration : ancien format « les 2 quêtes ensemble » → récompense par quête
+    const legacyClaimed = data.dailyQuests.claimed === true;
+    data.dailyQuests.quest1Claimed = legacyClaimed;
+    data.dailyQuests.quest2Claimed = legacyClaimed;
+    savePassData(data);
   }
   return data;
 }
