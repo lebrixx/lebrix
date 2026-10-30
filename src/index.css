@@ -1308,6 +1308,6 @@
   grid-template-columns: repeat(5, 1fr); height: var(--bottom-nav-h); }
 .lsm-nav-fixed .lsm-nav-item svg { width: 24px; height: 24px; }
 .lsm-nav-fixed .lsm-nav-item > span:last-child { font-size: 9px; }
-.lsm-nav-spacer { margin-top: auto; flex-shrink: 0; height: calc(var(--bottom-nav-h) - 12px); }
+.lsm-nav-spacer { margin-top: auto; flex-shrink: 0; height: var(--bottom-nav-h); }
 .with-bottom-nav { padding-bottom: var(--bottom-nav-h); }
 .with-bottom-nav .min-h-screen, .with-bottom-nav .h-screen { padding-bottom: var(--bottom-nav-h); }
