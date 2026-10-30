@@ -1301,8 +1301,16 @@
 @keyframes lsm-pulse-soft { 0%,100% { transform: scale(1); } 50% { transform: scale(1.025); } }
 .lsm-play { animation: lsm-play-glow 3s ease-in-out infinite, lsm-pulse-shake 2.6s ease-in-out infinite; }
 .lsm-row-pass { animation: lsm-pulse-soft 2.8s ease-in-out infinite -1s; }
-.lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-box { animation: lsm-pulse-shake 2.6s ease-in-out infinite -1.3s; }
-.lsm-side:first-child .lsm-tile:nth-child(1) .lsm-tile-box { animation: lsm-pulse-shake 2.6s ease-in-out infinite -.6s; }
+@keyframes lsm-pulse-shake-strong {
+  0%,100% { transform: scale(1) rotate(0); }
+  38% { transform: scale(1.07) rotate(0); }
+  56% { transform: scale(1) rotate(0); }
+  60% { transform: rotate(-3.5deg); } 65% { transform: rotate(3.5deg); }
+  70% { transform: rotate(-2.5deg); } 75% { transform: rotate(2.5deg); }
+  80% { transform: rotate(-1.2deg); } 85% { transform: rotate(0); }
+}
+.lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-box { animation: lsm-pulse-shake-strong 2.4s ease-in-out infinite -1.3s; }
+.lsm-side:first-child .lsm-tile:nth-child(1) .lsm-tile-box { animation: lsm-pulse-shake-strong 2.4s ease-in-out infinite -.6s; }
 .lsm-side:first-child .lsm-tile:nth-child(1) .lsm-tile-img,
 .lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-img { animation: lsm-play-glow 3s ease-in-out infinite; }
 .lsm-play:active, .lsm-row-pass:active { animation-play-state: paused; }
