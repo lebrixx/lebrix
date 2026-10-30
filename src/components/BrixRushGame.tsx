@@ -15,6 +15,7 @@ import brixRushLogo from '@/assets/brix-rush-logo.png';
 import { prepareBrixImages } from '@/games/brix-rush/images';
 import { prepareVehicleSprites } from '@/games/brix-rush/vehicles';
 import { prepareTerrainSprites } from '@/games/brix-rush/terrain';
+import { recordBrixRushResult } from '@/utils/brixRushProgress';
 
 interface Props {
   onBack?: () => void;
@@ -92,6 +93,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
   }, [busy, ok, ready, go, findPublicRoom]);
 
   const death = useCallback((score: number, duration: number) => {
+    recordBrixRushResult(score);
     gameOver.current?.(score, duration);
     startGameSession();
   }, []);

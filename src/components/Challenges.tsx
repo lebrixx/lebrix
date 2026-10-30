@@ -18,6 +18,7 @@ import {
 } from '@/utils/dailyChallenges';
 import { notifyChallengeUpdate } from '@/utils/challengeUtils';
 import { hasPlayedToday, getTodayResult, getDailyTarget } from '@/utils/dailyChallenge';
+import { getBrixRushChallengeBest } from '@/utils/brixRushProgress';
 
 interface ChallengeProgress {
   mode: string;
@@ -157,9 +158,9 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const getBestScoreForMode = (mode: string): number => {
     try {
       const saved = localStorage.getItem('luckyStopGame');
-      if (!saved) return 0;
-      const data = JSON.parse(saved);
+      const data = saved ? JSON.parse(saved) : {};
       const value = data[`bestScore_${mode}`];
+      if (mode === ModeID.BRIX_RUSH) return getBrixRushChallengeBest(value);
       return typeof value === 'number' && Number.isFinite(value) ? value : 0;
     } catch (e) {
       console.warn('[Challenges] Unable to read best score:', e);

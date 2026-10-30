@@ -264,7 +264,7 @@ export const useGameLogic = (currentMode: ModeType = ModeID.CLASSIC) => {
         currentCustomization: gameState.currentCustomization,
         maxSpeedReached: gameState.maxSpeedReached,
         directionChanges: gameState.directionChanges,
-        totalGamesPlayed: gameState.totalGamesPlayed,
+        totalGamesPlayed: Math.max(gameState.totalGamesPlayed, savedData['totalGamesPlayed'] || 0),
         timestamp: Date.now(),
       };
       
