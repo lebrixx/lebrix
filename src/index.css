@@ -1252,3 +1252,38 @@
 .lsm-cubes-art { position: absolute; right: 44px; top: 0; bottom: 0; height: 100%; width: auto; pointer-events: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%); mask-image: linear-gradient(90deg, transparent, #000 30%); border-radius: 0 18px 18px 0; }
 .lsm-row-brix .lsm-chev { position: relative; z-index: 1; }
 .lsm-nav { margin-bottom: -12px; }
+
+/* Main menu — light ambient animations */
+@keyframes lsm-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes lsm-logo-float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.012); } }
+@keyframes lsm-badge-bounce { 0%,70%,100% { transform: scale(1) rotate(0); } 78% { transform: scale(1.22) rotate(-8deg); } 86% { transform: scale(.95) rotate(6deg); } 93% { transform: scale(1.08) rotate(0); } }
+@keyframes lsm-shine { 0%,65% { transform: translateX(-140%) skewX(-20deg); } 100% { transform: translateX(260%) skewX(-20deg); } }
+@keyframes lsm-glow { 0%,100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); } 50% { box-shadow: 0 0 14px 1px rgba(139,92,246,.35); } }
+@keyframes lsm-play-glow { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.08) drop-shadow(0 0 14px rgba(59,130,246,.55)); } }
+@keyframes lsm-cubes-drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+.lsm-logo-art { animation: lsm-logo-float 5s ease-in-out infinite; }
+.lsm-tile-box { animation: lsm-float 4s ease-in-out infinite, lsm-glow 4s ease-in-out infinite; }
+.lsm-side:last-child .lsm-tile:nth-child(1) .lsm-tile-box { animation-delay: -1s; }
+.lsm-side .lsm-tile:nth-child(2) .lsm-tile-box { animation-delay: -2s; }
+.lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-box { animation-delay: -3s; }
+.lsm-badge { animation: lsm-badge-bounce 2.4s ease-in-out infinite; transform-origin: center; }
+.lsm-play { animation: lsm-play-glow 3s ease-in-out infinite; }
+.lsm-play, .lsm-rank, .lsm-row-pass { position: relative; overflow: hidden; }
+.lsm-play::after, .lsm-rank::after, .lsm-row-pass::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 35%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent); animation: lsm-shine 4.5s ease-in-out infinite; }
+.lsm-rank::after { animation-delay: 1.5s; animation-duration: 6s; }
+.lsm-row-pass::after { animation-delay: 3s; animation-duration: 6s; }
+.lsm-crown-art { animation: lsm-float 3.5s ease-in-out infinite; }
+.lsm-rank-trophy-art { animation: lsm-float 3.8s ease-in-out infinite -1s; }
+.lsm-cubes-art { animation: lsm-cubes-drift 5s ease-in-out infinite; }
+.lsm-coin-art { animation: lsm-float 3s ease-in-out infinite; }
+
+.lsm-tile, .lsm-play, .lsm-rank, .lsm-row, .lsm-nav-item, .lsm-icon-btn, .lsm-coin-plus { transition: transform .12s ease, filter .12s ease; -webkit-tap-highlight-color: transparent; }
+.lsm-tile:active, .lsm-rank:active, .lsm-row:active, .lsm-icon-btn:active, .lsm-coin-plus:active { transform: scale(.94); filter: brightness(1.2); }
+.lsm-play:active { transform: scale(.97); filter: brightness(1.15); }
+.lsm-nav-item:active { transform: translateY(1px) scale(.92); color: #ddd6fe; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lsm-root *, .lsm-root *::after { animation: none !important; }
+}
