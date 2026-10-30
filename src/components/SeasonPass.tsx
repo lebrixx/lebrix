@@ -268,8 +268,14 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                       </p>
                       <p className="text-[10px] text-text-muted mt-0.5">N'importe quel mode</p>
                     </div>
-                    {dailyQuests.quest1Completed && (
-                      <span className="text-[10px] font-bold text-secondary shrink-0">✓</span>
+                    {dailyQuests.quest1Completed ? (
+                      <span className={`text-[10px] font-black shrink-0 px-1.5 py-0.5 rounded-full border ${
+                        dailyQuests.quest1Claimed
+                          ? 'text-text-muted border-wheel-border/40'
+                          : 'text-secondary border-secondary/50 bg-secondary/10'
+                      }`}>1 💎</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-text-muted shrink-0">1 💎</span>
                     )}
                   </div>
 
@@ -293,27 +299,33 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                       </p>
                       <p className="text-[10px] text-text-muted mt-0.5">N'importe quel boost ou mode</p>
                     </div>
-                    {dailyQuests.quest2Completed && (
-                      <span className="text-[10px] font-bold text-secondary shrink-0">✓</span>
+                    {dailyQuests.quest2Completed ? (
+                      <span className={`text-[10px] font-black shrink-0 px-1.5 py-0.5 rounded-full border ${
+                        dailyQuests.quest2Claimed
+                          ? 'text-text-muted border-wheel-border/40'
+                          : 'text-secondary border-secondary/50 bg-secondary/10'
+                      }`}>1 💎</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-text-muted shrink-0">1 💎</span>
                     )}
                   </div>
 
                   {/* Claim button or status */}
-                  {bothCompleted && !dailyQuests.claimed && (
+                  {claimableCount > 0 && (
                     <Button
                       onClick={handleClaimDaily}
                       size="sm"
                       className="w-full h-9 bg-gradient-to-r from-secondary to-primary text-game-darker font-black text-xs rounded-xl shadow-[0_0_16px_hsl(var(--secondary)/0.4)]"
                     >
-                      <Gift className="w-3.5 h-3.5" /> Récupérer 1 💎
+                      <Gift className="w-3.5 h-3.5" /> Récupérer {claimableCount} 💎
                     </Button>
                   )}
-                  {dailyQuests.claimed && (
+                  {dailyQuests.quest1Claimed && dailyQuests.quest2Claimed && (
                     <div className="flex items-center justify-center gap-1.5 text-xs text-secondary font-semibold py-1">
                       <Check className="w-3.5 h-3.5" /> Récompense récupérée aujourd'hui !
                     </div>
                   )}
-                  {!bothCompleted && !dailyQuests.claimed && (
+                  {claimableCount === 0 && !(dailyQuests.quest1Claimed && dailyQuests.quest2Claimed) && (
                     <p className="text-center text-[10px] text-text-muted">
                       {[dailyQuests.quest1Completed, dailyQuests.quest2Completed].filter(Boolean).length}/2 {t.questsCompletedLabel}
                     </p>
