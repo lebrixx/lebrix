@@ -264,7 +264,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex flex-col overflow-hidden pointer-events-auto">
       <MainMenuBackground />
 
       {/* Overlay content */}
