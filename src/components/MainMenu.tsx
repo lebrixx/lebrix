@@ -13,7 +13,7 @@ import menuIconGear from '@/assets/menu/icon-gear.png';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, FileText, Tag, Box } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Languages, Sparkles, Instagram, RotateCcw, Backpack, Crosshair, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, Box } from 'lucide-react';
 import { isBrixFactoryUnlocked } from '@/utils/pongUnlock';
 import { useToast } from '@/hooks/use-toast';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
