@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, FileText, Tag, Box } from 'lucide-react';
 import { isBrixFactoryUnlocked } from '@/utils/pongUnlock';
 import { useToast } from '@/hooks/use-toast';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
@@ -19,7 +19,7 @@ import { Inventory } from '@/components/Inventory';
 import { DailyTip } from '@/components/DailyTip';
 import { MainMenuBackground } from '@/components/MainMenuBackground';
 import luckyStopLogo from '@/assets/lucky-stop-logo.png';
-import { hasDailyQuestReward, addDiamonds } from '@/utils/seasonPass';
+import { hasDailyQuestReward, addDiamonds, getSeasonPassData, PASS_TIERS } from '@/utils/seasonPass';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { Capacitor } from '@capacitor/core';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -87,6 +87,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const [wheelTimer, setWheelTimer] = useState(formatTimeRemaining(getTimeUntilNextFreeSpin()));
   const [globalRank, setGlobalRank] = useState<{ rank: number; total: number; score: number } | null>(null);
   const isTablet = useIsTablet();
+  const passProgress = Math.max(4, Math.min(100, Math.round((getSeasonPassData().currentTier / PASS_TIERS.length) * 100)));
   const isAndroid = useMemo(() => Capacitor.getPlatform() === 'android', []);
   const { toast: uiToast } = useToast();
   const [brixUnlocked, setBrixUnlocked] = useState<boolean>(() => isBrixFactoryUnlocked());
@@ -182,171 +183,103 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
   return (
     <>
-      <MainMenuBackground />
-      <div className={`main-menu-container ${theme} relative z-10`}>
-
-
-
-      {/* Lucky Wheel Button */}
-      <Button
-        onClick={() => setShowLuckyWheel(true)}
-        variant="ghost"
-        size="sm"
-        className={`absolute top-2 left-4 hover:bg-primary/10 transition-all duration-300 gap-1.5 ${hasFreeSpin ? 'animate-pulse-glow opacity-100 border border-primary/50 bg-primary/10' : 'opacity-70 hover:opacity-100'}`}
-      >
-        <RotateCcw className={`w-4 h-4 ${hasFreeSpin ? 'text-primary animate-spin' : 'text-text-muted'}`} style={hasFreeSpin ? { animationDuration: '3s' } : {}} />
-        <div className="flex flex-col items-start">
-          <span className={`text-xs font-medium ${hasFreeSpin ? 'text-primary' : 'text-text-muted'}`}>
-            {hasFreeSpin ? (t.freeSpin || 'Tour Gratuit !') : t.luckyWheelTitle}
-          </span>
-          {!hasFreeSpin && (
-            <span className="text-[10px] text-text-muted font-mono">
-              {wheelTimer}
-            </span>
-          )}
-        </div>
-        {hasFreeSpin && (
-          <div className="absolute top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full flex items-center justify-center shadow-glow-primary">
-            <span className="text-[8px] text-game-dark font-bold">1</span>
-          </div>
-        )}
-      </Button>
-
-      {/* Top Right: Offres + Settings */}
-      <div className="absolute top-2 right-4 flex items-center gap-2">
-        <Button
-          onClick={() => setShowPremiumOffer(true)}
-          variant="ghost"
-          size="sm"
-          className="relative hover:bg-secondary/15 transition-all duration-300 gap-1.5 border border-secondary/40 bg-gradient-to-r from-secondary/10 to-primary/10 hover:scale-105"
-        >
-          <Sparkles className="w-4 h-4 text-secondary animate-spin" style={{ animationDuration: '4s' }} />
-          <span className="text-xs font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-            Offres
-          </span>
-          <div className="absolute top-1.5 -right-1.5 w-4 h-4 bg-secondary rounded-full flex items-center justify-center shadow-[0_0_8px_hsl(var(--secondary)/0.8)]">
-            <span className="text-[7px] text-game-dark font-black">€</span>
-          </div>
-        </Button>
-        <Button
-          onClick={() => setShowSettings(true)}
-          variant="ghost"
-          size="icon"
-          className="h-11 w-11 hover:bg-primary/10 transition-all duration-300 opacity-80 hover:opacity-100"
-        >
-          <SettingsIcon className="!w-7 !h-7 text-text-muted" />
-        </Button>
-      </div>
-
-
-      {/* Logo/Title */}
-      <div className="text-center animate-fade-in pt-20 mb-8">
-        <h1 className="flex justify-center" aria-label="Lucky Stop">
-          <img
-            src={luckyStopLogo}
-            alt="Lucky Stop"
-            width={1306}
-            height={735}
-            className="block h-[90px] md:h-[126px] w-auto max-w-full mx-auto object-contain"
-            draggable={false}
-          />
-        </h1>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center min-h-0">
-        {/* Boutons cadeau, langue et nouveautés */}
-        <div className="flex justify-center gap-2 mb-3">
-          <Button
-            onClick={onOpenDailyRewards}
-            variant="ghost"
-            size="sm"
-            className={`
-              relative hover:bg-primary/20 transition-all duration-300 gap-1.5
-              ${hasAvailableReward ? 'animate-pulse-glow' : ''}
-            `}
-          >
-            <Gift className={`w-4 h-4 ${hasAvailableReward ? 'text-primary' : 'text-text-muted'}`} />
-            <span className="text-xs text-text-muted">{t.gifts}</span>
-            {hasAvailableReward && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
-            )}
-          </Button>
-
-          <Button
-            onClick={() => setShowSeasonPass(true)}
-            variant="ghost"
-            size="sm"
-            className={`relative transition-all duration-300 gap-2 h-11 px-4 rounded-full border border-secondary/50 bg-gradient-to-b from-secondary/25 to-secondary/5 hover:from-secondary/35 hover:to-secondary/10 hover:border-secondary/75 ${hasPassReward ? 'animate-pulse-glow' : ''} ${isAndroid ? '' : 'shadow-[0_0_16px_hsl(var(--secondary)/0.35)]'}`}
-          >
-            <Crown className={`!w-6 !h-6 text-secondary fill-secondary/25 ${isAndroid ? '' : 'drop-shadow-[0_0_6px_hsl(var(--secondary)/0.7)]'}`} />
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-lg font-black text-secondary">Pass</span>
-              <span className="text-[11px] font-semibold tracking-wide text-secondary/70">Saison</span>
+      <div className="lsm-root">
+        <div className="lsm-bg" aria-hidden />
+        <div className="lsm-screen">
+          {/* Top bar */}
+          <div className="lsm-top">
+            <div className="lsm-coins">
+              <span className="lsm-coin-icon">€</span>
+              <span className="lsm-coin-value">{coins}</span>
+              <button type="button" className="lsm-coin-plus" onClick={onOpenShop} aria-label={t.shop}>
+                <Plus className="w-6 h-6" strokeWidth={2.5} />
+              </button>
             </div>
-            {hasPassReward && (
-              <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_hsl(var(--secondary)/0.8)]" />
-            )}
-          </Button>
+            <button type="button" className="lsm-icon-btn lsm-settings" onClick={() => setShowSettings(true)} aria-label="Paramètres">
+              <SettingsIcon className="w-7 h-7" />
+            </button>
+          </div>
 
-          <Button
-            onClick={() => setShowComingSoon(true)}
-            variant="ghost"
-            size="sm"
-            className="relative hover:bg-primary/20 transition-all duration-300 gap-1.5"
-          >
-            <Sparkles className="w-4 h-4 text-text-muted" />
-            <span className="text-xs text-text-muted">{t.news}</span>
-          </Button>
+          {/* Hero: side buttons + logo */}
+          <div className="lsm-hero">
+            <div className="lsm-side">
+              <button type="button" className="lsm-tile" onClick={onOpenDailyRewards}>
+                <span className="lsm-tile-box lsm-violet">
+                  <Gift className="w-9 h-9" strokeWidth={1.8} />
+                  {hasAvailableReward && <span className="lsm-badge">!</span>}
+                </span>
+                <span className="lsm-tile-label">CADEAUX</span>
+              </button>
+              <button type="button" className="lsm-tile" onClick={() => setShowComingSoon(true)}>
+                <span className="lsm-tile-box lsm-dark">
+                  <FileText className="w-8 h-8" strokeWidth={1.8} />
+                </span>
+                <span className="lsm-tile-label">ACTU</span>
+              </button>
+            </div>
 
-        </div>
+            <div className="lsm-logo-wrap">
+              <div className="lsm-ring" aria-hidden />
+              <div className="lsm-hex" aria-hidden />
+              <Crown className="lsm-crown" aria-hidden />
+              <h1 aria-label="Lucky Stop" className="lsm-logo-h1">
+                <img src={luckyStopLogo} alt="Lucky Stop" width={1306} height={735} className="lsm-logo" draggable={false} />
+              </h1>
+            </div>
 
+            <div className="lsm-side">
+              <button type="button" className="lsm-tile" onClick={() => setShowLuckyWheel(true)}>
+                <span className="lsm-tile-box lsm-cyan">
+                  <Clock className="w-9 h-9" strokeWidth={1.8} />
+                  {hasFreeSpin && <span className="lsm-badge">1</span>}
+                </span>
+                <span className="lsm-tile-label">{hasFreeSpin ? 'TOUR' : wheelTimer}</span>
+              </button>
+              <button type="button" className="lsm-tile" onClick={() => setShowPremiumOffer(true)}>
+                <span className="lsm-tile-box lsm-gold">
+                  <Tag className="w-8 h-8" strokeWidth={1.8} />
+                </span>
+                <span className="lsm-tile-label">OFFRES</span>
+              </button>
+            </div>
+          </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-4 w-full max-w-md animate-scale-in">
+          {/* Global ranking */}
+          <button type="button" className="lsm-rank" onClick={onOpenGlobalLeaderboard}>
+            <Trophy className="lsm-rank-trophy" />
+            <span className="lsm-rank-text">
+              <span className="lsm-rank-k">CLASSEMENT</span>
+              <span className="lsm-rank-t">GLOBAL</span>
+              <span className="lsm-rank-n">
+                <span className="lsm-rank-crown"><Crown className="w-3.5 h-3.5" /></span>
+                {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
+              </span>
+            </span>
+            <ChevronRight className="lsm-chev" />
+          </button>
+
+          {/* Play */}
+          <button type="button" className="lsm-play" onClick={onStartGame}>
+            <span className="lsm-play-icon"><Play className="w-9 h-9" fill="currentColor" /></span>
+            <span className="lsm-play-sep" />
+            <span className="lsm-play-label">JOUER</span>
+          </button>
+
+          {/* Season pass */}
+          <button type="button" className="lsm-row lsm-row-pass" onClick={() => setShowSeasonPass(true)}>
+            <span className="lsm-row-icon lsm-gold-icon"><Crown className="w-8 h-8" fill="currentColor" /></span>
+            <span className="lsm-row-body">
+              <span className="lsm-row-title">PASS DE SAISON</span>
+              <span className="lsm-progress"><span style={{ width: `${passProgress}%` }} /></span>
+            </span>
+            {hasPassReward && <span className="lsm-badge lsm-badge-row">!</span>}
+            <ChevronRight className="lsm-chev" />
+          </button>
+
+          {/* Brix Factory */}
           <button
             type="button"
-            onClick={onOpenGlobalLeaderboard}
-            className="relative group text-left animate-[subtle-float_3s_ease-in-out_infinite] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-xl"
-          >
-            <div className="absolute -inset-[1px] rounded-xl overflow-hidden pointer-events-none">
-              <div className="absolute w-12 h-12 rounded-full bg-primary blur-xl animate-orbit" />
-            </div>
-            <Card
-              className="relative bg-gradient-to-br from-primary/15 via-button-bg to-button-bg border-primary/50 p-3 text-center transition-all duration-300 group-hover:scale-105 group-hover:border-primary group-active:scale-[0.98] shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_4px_18px_-6px_hsl(var(--primary)/0.45)]"
-            >
-              <div className="absolute top-1.5 right-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 border border-primary/40 text-primary">
-                <ChevronRight className="w-3 h-3" />
-              </div>
-              <Calendar className="w-6 h-6 text-primary mx-auto mb-1 drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
-              <div className="text-xl font-bold text-primary">
-                {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
-              </div>
-              <div className="text-[10px] text-text-muted">Classement Mensuel</div>
-              <div className="absolute bottom-0.5 left-0 right-0 text-[8px] text-primary/80">clic pour apercevoir</div>
-            </Card>
-          </button>
-          
-          <Card className="bg-button-bg border-wheel-border p-3 text-center hover:scale-105 transition-transform duration-300">
-            <Coins className="w-6 h-6 text-secondary mx-auto mb-1" />
-            <div className="text-xl font-bold text-secondary">{coins}</div>
-            <div className="text-xs text-text-muted">{t.coins}</div>
-          </Card>
-        </div>
-
-        {/* Main Menu Buttons */}
-        <div className="flex flex-col gap-2 w-full max-w-sm animate-fade-in">
-          <Button 
-            onClick={onStartGame}
-            size="lg"
-            className="bg-gradient-primary hover:scale-105 shadow-glow-primary transition-all duration-300 py-4 text-base font-bold group"
-          >
-            <Play className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-            {t.playNow}
-          </Button>
-
-
-          <Button
+            className="lsm-row lsm-row-brix"
             onClick={() => {
               if (!brixUnlocked) {
                 try { sessionStorage.setItem('challenges_focus_brix', '1'); } catch {}
@@ -355,108 +288,31 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               }
               onOpenBrixFactory?.();
             }}
-            variant="outline"
-            size="lg"
-            className={`relative border-secondary/50 bg-gradient-to-r from-secondary/10 via-primary/5 to-secondary/10 hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group overflow-hidden ${!brixUnlocked ? 'opacity-80' : ''}`}
           >
-            {brixUnlocked ? (
-              <Sparkles className="w-4 h-4 mr-2 text-secondary group-hover:animate-pulse" />
-            ) : (
-              <Lock className="w-4 h-4 mr-2 text-secondary" />
-            )}
-            <span className="font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              Brix Factory
-            </span>
-            {!brixUnlocked && (
-              <Lock className="w-4 h-4 ml-2 text-secondary" />
-            )}
-          </Button>
+            <span className="lsm-row-icon lsm-dark-icon">{brixUnlocked ? <Sparkles className="w-7 h-7" /> : <Lock className="w-7 h-7" fill="currentColor" />}</span>
+            <span className="lsm-row-body"><span className="lsm-row-title">BRIX FACTORY</span></span>
+            <span className="lsm-cubes" aria-hidden><i /><i /><i /><i /></span>
+            <ChevronRight className="lsm-chev" />
+          </button>
 
-          <div className="flex gap-2">
-            <Button
-              onClick={onOpenShop}
-              variant="outline"
-              size="lg"
-              className="flex-1 border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-            >
-              <ShoppingBag className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-              {t.shop}
-            </Button>
-            <Button
-              onClick={() => setShowInventory(true)}
-              variant="outline"
-              size="lg"
-              className="flex-1 border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-            >
-              <Backpack className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-              Inventaire
-            </Button>
-          </div>
-
-          <Button 
-            onClick={onOpenChallenges}
-            variant="outline"
-            size="lg"
-            className={`relative border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group ${hasPendingChallenges ? 'animate-pulse-glow border-secondary' : ''}`}
-          >
-            <Star className={`w-4 h-4 mr-2 group-hover:animate-spin ${hasPendingChallenges ? 'text-secondary' : ''}`} />
-            {t.dailyChallenges}
-            {hasPendingChallenges && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse flex items-center justify-center">
-                <span className="text-[8px] text-game-dark font-bold">!</span>
-              </div>
-            )}
-          </Button>
-
-          <Button
-            onClick={onOpenLeaderboard}
-            variant="outline"
-            size="lg"
-            className="border-wheel-border hover:bg-button-hover hover:scale-105 transition-all duration-300 py-2.5 text-sm group"
-          >
-            <Crown className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-            {t.onlineLeaderboard}
-          </Button>
+          {/* Bottom nav */}
+          <nav className="lsm-nav">
+            <button type="button" className="lsm-nav-item is-active" onClick={onOpenShop}>
+              <ShoppingBag className="w-8 h-8" strokeWidth={1.8} /><span>BOUTIQUE</span>
+            </button>
+            <button type="button" className="lsm-nav-item" onClick={() => setShowInventory(true)}>
+              <Box className="w-8 h-8" strokeWidth={1.8} /><span>INVENTAIRE</span>
+            </button>
+            <button type="button" className="lsm-nav-item" onClick={onOpenChallenges}>
+              <span className="relative"><Star className="w-8 h-8" strokeWidth={1.8} />{hasPendingChallenges && <span className="lsm-badge lsm-badge-nav">!</span>}</span>
+              <span>DÉFIS</span>
+            </button>
+            <button type="button" className="lsm-nav-item" onClick={onOpenLeaderboard}>
+              <Trophy className="w-8 h-8" strokeWidth={1.8} /><span>CLASSEMENT</span>
+            </button>
+          </nav>
         </div>
-      </div>
 
-      {/* Bottom Section */}
-      <div className="flex flex-col items-center space-y-2 mt-auto pt-3 shrink-0">
-        {/* Current Theme & Mode - Caché sur iPad */}
-        {!isTablet && (
-          <div className="flex justify-center gap-4 animate-fade-in">
-            <div className="text-center">
-              <div className="text-xs text-text-muted mb-0.5">{t.theme}</div>
-              <Badge 
-                variant="outline" 
-                className="border-primary text-primary text-xs px-2 py-0.5 animate-pulse-glow"
-              >
-                {theme.replace('theme-', '').toUpperCase() || 'NEON'}
-              </Badge>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-text-muted mb-0.5">{t.mode}</div>
-              <Badge 
-                variant="outline" 
-                className="border-secondary text-secondary text-xs px-2 py-0.5"
-              >
-                {currentMode.replace('_', ' ').toUpperCase()}
-              </Badge>
-            </div>
-          </div>
-        )}
-
-        {/* Version Info */}
-        <div className="text-text-muted text-xs animate-fade-in">
-          Lucky Stop v1.0
-        </div>
-      </div>
-
-      {/* Floating Mini Wheel */}
-      <div className="absolute top-20 right-8 w-16 h-16 rounded-full bg-gradient-wheel border-2 border-wheel-border animate-spin-wheel opacity-20 hidden lg:block" 
-           style={{ animationDuration: '8s' }}>
-        <div className="absolute inset-2 rounded-full bg-primary opacity-30"></div>
-      </div>
 
       {/* Social Media Dialog */}
       <AlertDialog open={showComingSoon} onOpenChange={setShowComingSoon}>
