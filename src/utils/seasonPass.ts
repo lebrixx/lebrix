@@ -251,7 +251,8 @@ function ensureTodayQuests(data: SeasonPassData): SeasonPassData {
       date: today,
       quest1Completed: false,
       quest2Completed: false,
-      claimed: false,
+      quest1Claimed: false,
+      quest2Claimed: false,
     };
     savePassData(data);
   }
