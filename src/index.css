@@ -1337,3 +1337,9 @@ body { font-family: "Chakra Petch", "Russo One", sans-serif; }
   box-shadow: 0 0 14px rgba(34,211,238,.28);
   font-family: "Russo One", sans-serif; letter-spacing: .03em;
 }
+
+/* Sections: one continuous page background (shared backdrop), empty space on top instead of a band */
+.app-backdrop { background: var(--gradient-game) !important; }
+.section-screen > *, .section-screen .min-h-screen, .section-screen .min-h-screen::before {
+  background: transparent !important; background-image: none !important;
+}
