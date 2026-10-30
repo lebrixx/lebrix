@@ -351,7 +351,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
       {/* Tabs améliorés */}
       <Tabs defaultValue="daily" className="flex-1">
-        <TabsList className="ls-tabbar mb-6">
+        <TabsList className="ls-tabbar grid w-full grid-cols-2 mb-6">
           <TabsTrigger
             value="daily"
             className="relative ls-tab"

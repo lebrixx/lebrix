@@ -287,7 +287,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
 
         {/* Tabs */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-4">
-          <TabsList className="ls-tabbar">
+          <TabsList className="ls-tabbar grid w-full grid-cols-2">
             <TabsTrigger
               value="monthly"
               className="ls-tab"

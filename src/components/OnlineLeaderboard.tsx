@@ -266,7 +266,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
 
         {/* Onglets Classement */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-4">
-          <TabsList className="ls-tabbar">
+          <TabsList className="ls-tabbar grid w-full grid-cols-2">
             <TabsTrigger
               value="global"
               className="ls-tab"
