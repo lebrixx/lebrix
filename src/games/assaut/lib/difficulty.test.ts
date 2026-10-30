@@ -43,13 +43,13 @@ describe("difficulté progressive", () => {
     expect(canSpawnRegular(true)).toBe(false);
     expect(canSpawnRegular(false)).toBe(true);
   });
-  it("rend chaque boss plus résistant et plus difficile", () => {
+  it("rend chaque boss au moins aussi résistant et difficile que le précédent", () => {
     for (let rank = 1; rank < 20; rank++) {
-      expect(bossStats(rank + 1).hp).toBeGreaterThan(bossStats(rank).hp);
+      expect(bossStats(rank + 1).hp).toBeGreaterThanOrEqual(bossStats(rank).hp);
       expect(bossStats(rank + 1).speed).toBeGreaterThanOrEqual(bossStats(rank).speed);
     }
     expect(bossStats(2).cooldown).toBeLessThan(bossStats(1).cooldown);
-    for (let rank = 1; rank < 6; rank++) expect(bossStats(rank + 1).cooldown).toBeLessThan(bossStats(rank).cooldown);
+    for (let rank = 1; rank < 6; rank++) expect(bossStats(rank + 1).cooldown).toBeLessThanOrEqual(bossStats(rank).cooldown);
   });
   it("renforce le boss 2 : plus de vie et des tirs plus rapides", () => {
     expect(bossStats(2).hp).toBe(175);
@@ -57,7 +57,11 @@ describe("difficulté progressive", () => {
     expect(bossStats(2).cooldown).toBeCloseTo(1.0239);
     expect(bossStats(2).count).toBe(7);
     expect(bossStats(2).hp).toBeGreaterThan(bossStats(1).hp);
-    expect(bossStats(3).hp).toBeGreaterThan(bossStats(2).hp);
+  });
+  it("donne au boss 3 exactement la même difficulté que le boss 2", () => {
+    expect(bossStats(3)).toEqual(bossStats(2));
+    expect(bossStats(4).hp).toBeGreaterThan(bossStats(3).hp);
+    expect(bossStats(4).count).toBeGreaterThan(bossStats(3).count);
   });
   it("adoucit uniquement le premier boss : moins de balles en même temps et salves plus espacées", () => {
     expect(bossStats(1).count).toBe(4);
@@ -65,11 +69,11 @@ describe("difficulté progressive", () => {
     for (const age of [1, 4.5, 8, 11.5, 15]) {
       expect(bossVolley(1, age, false, Math.PI / 2).velocities.length).toBeLessThanOrEqual(5);
     }
-    // les boss suivants gardent exactement leurs valeurs d'origine
+    // les boss suivants gardent exactement leurs valeurs d'origine (boss 3 aligné sur le boss 2)
     expect(bossStats(2).count).toBe(7);
     expect(bossStats(2).cooldown).toBeCloseTo(1.0239);
-    expect(bossStats(3).count).toBe(8);
-    expect(bossStats(3).cooldown).toBeCloseTo(0.972);
+    expect(bossStats(3).count).toBe(7);
+    expect(bossStats(3).cooldown).toBeCloseTo(1.0239);
     expect(bossStats(4).count).toBe(9);
     expect(bossStats(4).cooldown).toBeCloseTo(0.902);
   });
@@ -91,7 +95,7 @@ describe("difficulté progressive", () => {
       expect(Math.hypot(volley.velocities[0]?.vx ?? 0, volley.velocities[0]?.vy ?? 0)).toBeCloseTo(145);
       for(let rank=1;rank<30;rank++) {
         const current=bossVolley(rank,age,false,Math.PI/2), next=bossVolley(rank+1,age,false,Math.PI/2);
-        expect(next.cooldown).toBeLessThan(current.cooldown);
+        expect(next.cooldown).toBeLessThanOrEqual(current.cooldown);
         expect(next.velocities.length).toBeGreaterThanOrEqual(current.velocities.length);
       }
     }
