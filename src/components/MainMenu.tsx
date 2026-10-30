@@ -5,10 +5,15 @@ import menuTrophyArt from '@/assets/menu/trophy.png';
 import menuPlayArt from '@/assets/menu/play.png';
 import menuCrownArt from '@/assets/menu/crown.png';
 import menuCubesArt from '@/assets/menu/cubes.png';
+import menuIconGift from '@/assets/menu/icon-gift.png';
+import menuIconNews from '@/assets/menu/icon-news.png';
+import menuIconWheel from '@/assets/menu/icon-wheel.png';
+import menuIconOffer from '@/assets/menu/icon-offer.png';
+import menuIconGear from '@/assets/menu/icon-gear.png';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Gift, Languages, Sparkles, Settings as SettingsIcon, Instagram, RotateCcw, Backpack, Crosshair, Clock, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, FileText, Tag, Box } from 'lucide-react';
+import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Languages, Sparkles, Instagram, RotateCcw, Backpack, Crosshair, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, Box } from 'lucide-react';
 import { isBrixFactoryUnlocked } from '@/utils/pongUnlock';
 import { useToast } from '@/hooks/use-toast';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
@@ -202,7 +207,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
               </button>
             </div>
             <button type="button" className="lsm-icon-btn lsm-settings" onClick={() => setShowSettings(true)} aria-label="Paramètres">
-              <SettingsIcon className="w-7 h-7" />
+              <img src={menuIconGear} alt="" className="lsm-gear-art" draggable={false} />
             </button>
           </div>
 
@@ -210,15 +215,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <div className="lsm-hero">
             <div className="lsm-side">
               <button type="button" className="lsm-tile" onClick={onOpenDailyRewards}>
-                <span className="lsm-tile-box lsm-violet">
-                  <Gift className="w-9 h-9" strokeWidth={1.8} />
+                <span className="lsm-tile-box lsm-tile-art">
+                  <img src={menuIconGift} alt="" className="lsm-tile-img" draggable={false} />
                   {hasAvailableReward && <span className="lsm-badge">!</span>}
                 </span>
                 <span className="lsm-tile-label">CADEAUX</span>
               </button>
               <button type="button" className="lsm-tile" onClick={() => setShowComingSoon(true)}>
-                <span className="lsm-tile-box lsm-dark">
-                  <FileText className="w-8 h-8" strokeWidth={1.8} />
+                <span className="lsm-tile-box lsm-tile-art">
+                  <img src={menuIconNews} alt="" className="lsm-tile-img" draggable={false} />
                 </span>
                 <span className="lsm-tile-label">ACTU</span>
               </button>
@@ -232,15 +237,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
             <div className="lsm-side">
               <button type="button" className="lsm-tile" onClick={() => setShowLuckyWheel(true)}>
-                <span className="lsm-tile-box lsm-cyan">
-                  <Clock className="w-9 h-9" strokeWidth={1.8} />
+                <span className="lsm-tile-box lsm-tile-art">
+                  <img src={menuIconWheel} alt="" className="lsm-tile-img" draggable={false} />
                   {hasFreeSpin && <span className="lsm-badge">1</span>}
                 </span>
                 <span className="lsm-tile-label">{hasFreeSpin ? 'TOUR' : wheelTimer}</span>
               </button>
               <button type="button" className="lsm-tile" onClick={() => setShowPremiumOffer(true)}>
-                <span className="lsm-tile-box lsm-gold">
-                  <Tag className="w-8 h-8" strokeWidth={1.8} />
+                <span className="lsm-tile-box lsm-tile-art">
+                  <img src={menuIconOffer} alt="" className="lsm-tile-img" draggable={false} />
                 </span>
                 <span className="lsm-tile-label">OFFRES</span>
               </button>
