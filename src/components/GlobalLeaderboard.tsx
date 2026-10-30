@@ -56,8 +56,8 @@ const getRankStyle = (position: number) => {
 
 const getUsernameClass = (decorations: string | null | undefined) => {
   if (hasRainbowName(decorations)) return 'font-bold animate-[username-rainbow_3s_linear_infinite]';
-  if (hasGoldPulseName(decorations)) return 'font-bold text-yellow-400 animate-pulse';
-  if (hasPulseName(decorations)) return 'font-bold text-primary animate-pulse';
+  if (hasGoldPulseName(decorations)) return 'font-bold animate-[username-gold-pulse_3s_ease-in-out_infinite]';
+  if (hasPulseName(decorations)) return 'font-bold animate-[username-pulse_3s_ease-in-out_infinite]';
   if (hasPurpleName(decorations)) return 'font-bold text-violet-400';
   return 'font-bold text-text-primary';
 };
