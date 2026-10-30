@@ -13,6 +13,7 @@
 - Bundle Brix Rush sprites as source-controlled imports for native offline play; asset-serving URLs are not available in the local/native runtime.
 - Prepare and reuse Brix Rush decoded images, vehicle tint canvases and terrain patterns before entering a race, and cache painter theme colors outside the animation loop to avoid startup/replay work and per-frame style recalculation.
 - Use the distinct `brix_rush` score identity and the shared ranked/free mode lists; keep historical Orbit Dodge data untouched and excluded so different games never share records.
+- Persist Brix Rush run results locally before forwarding the shared score callback, recover today's recorded Rush best for challenges, and preserve the saved games high-water mark so standalone replay results remain available to global challenges.
 
 - Render the main-menu wordmark as a transparent image with constrained dimensions to preserve the supplied lettering style without changing navigation layout.
 - Use a full-viewport app-content scroller with initially offset app-screens and shared dialog clearance tokens, so fixed controls start lower while scrolling content can reach the phone's top without native insets.
