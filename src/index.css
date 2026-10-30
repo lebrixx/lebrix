@@ -1287,3 +1287,17 @@
 @media (prefers-reduced-motion: reduce) {
   .lsm-root *, .lsm-root *::after { animation: none !important; }
 }
+
+/* Main menu — pulse + quick light shake on key buttons */
+@keyframes lsm-pulse-shake {
+  0%,100% { transform: scale(1) rotate(0); }
+  40% { transform: scale(1.035) rotate(0); }
+  60% { transform: scale(1) rotate(0); }
+  64% { transform: rotate(-1.2deg); } 68% { transform: rotate(1.2deg); }
+  72% { transform: rotate(-.8deg); } 76% { transform: rotate(.8deg); } 80% { transform: rotate(0); }
+}
+@keyframes lsm-pulse-soft { 0%,100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+.lsm-play { animation: lsm-play-glow 3s ease-in-out infinite, lsm-pulse-shake 2.6s ease-in-out infinite; }
+.lsm-row-pass { animation: lsm-pulse-soft 2.8s ease-in-out infinite -1s; }
+.lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-box { animation: lsm-pulse-shake 3s ease-in-out infinite -1.5s, lsm-glow 4s ease-in-out infinite; }
+.lsm-play:active, .lsm-row-pass:active { animation-play-state: paused; }
