@@ -287,10 +287,10 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
 
         {/* Tabs */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-4">
-          <TabsList className="grid w-full grid-cols-2 bg-button-bg border border-wheel-border">
+          <TabsList className="ls-tabbar">
             <TabsTrigger
               value="monthly"
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+              className="ls-tab"
             >
               <Calendar className="w-4 h-4" />
               {t.monthlyTab}
@@ -298,7 +298,7 @@ export const GlobalLeaderboard: React.FC<GlobalLeaderboardProps> = ({ onBack }) 
 
             <TabsTrigger
               value="general"
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-primary data-[state=active]:text-text-primary"
+              className="ls-tab"
             >
               <Globe className="w-4 h-4" />
               {t.globalTab}

@@ -267,10 +267,10 @@ export const Shop: React.FC<ShopProps> = ({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="modes">Modes</TabsTrigger>
-          <TabsTrigger value="boosts">{t.boosts}</TabsTrigger>
-          <TabsTrigger value="offers">{language === 'en' ? 'Offers' : language === 'es' ? 'Ofertas' : 'Offres'}</TabsTrigger>
+        <TabsList className="ls-tabbar mb-8">
+          <TabsTrigger value="modes" className="ls-tab">Modes</TabsTrigger>
+          <TabsTrigger value="boosts" className="ls-tab">{t.boosts}</TabsTrigger>
+          <TabsTrigger value="offers" className="ls-tab">{language === 'en' ? 'Offers' : language === 'es' ? 'Ofertas' : 'Offres'}</TabsTrigger>
         </TabsList>
 
         {/* Game Modes Tab */}

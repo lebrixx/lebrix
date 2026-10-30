@@ -351,27 +351,25 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
       {/* Tabs améliorés */}
       <Tabs defaultValue="daily" className="flex-1">
-        <TabsList className="grid w-full grid-cols-2 mb-6 bg-button-bg/50 p-1 rounded-xl">
-          <TabsTrigger 
-            value="daily" 
-            className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 rounded-lg transition-all"
+        <TabsList className="ls-tabbar mb-6">
+          <TabsTrigger
+            value="daily"
+            className="relative ls-tab"
           >
-            <Calendar className="w-4 h-4 mr-2" />
+            <Calendar className="w-4 h-4" />
             Quotidiens
             {hasDailyRewards && (
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-lg shadow-secondary/50" />
             )}
           </TabsTrigger>
-          <TabsTrigger 
+          <TabsTrigger
             value="global"
-            className={`relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 rounded-lg transition-all ${
-              hasGlobalRewards ? 'bg-gradient-to-r from-secondary/15 to-primary/10 border border-secondary/40 shadow-[0_0_12px_hsl(var(--secondary)/0.25)] animate-pulse-glow' : ''
-            }`}
+            className={`relative ls-tab ${hasGlobalRewards ? 'ls-tab-reward' : ''}`}
           >
-            <Trophy className={`w-4 h-4 mr-2 ${hasGlobalRewards ? 'text-secondary' : ''}`} />
+            <Trophy className={`w-4 h-4 ${hasGlobalRewards ? 'text-secondary' : ''}`} />
             <span className={hasGlobalRewards ? 'text-secondary font-bold' : ''}>Globaux</span>
             {hasGlobalRewards && (
-              <Gift className="w-3.5 h-3.5 ml-1.5 text-secondary animate-bounce" />
+              <Gift className="w-3.5 h-3.5 ml-1 text-secondary animate-bounce" />
             )}
           </TabsTrigger>
         </TabsList>
