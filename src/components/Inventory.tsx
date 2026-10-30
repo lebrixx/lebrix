@@ -275,7 +275,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
         </div>
 
         {/* CONTENT */}
-        <div className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 240px)' }}>
+        <div className="overflow-y-auto" style={asPage ? undefined : { maxHeight: 'calc(90vh - 240px)' }}>
 
           {/* ═══ ITEMS TAB ═══ */}
           {activeTab === 'items' && (
