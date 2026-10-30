@@ -1260,7 +1260,7 @@
 @keyframes lsm-play-glow { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.08) drop-shadow(0 0 14px rgba(59,130,246,.55)); } }
 @keyframes lsm-cubes-drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 
-.lsm-logo-art { animation: lsm-logo-float 5s ease-in-out infinite; }
+.lsm-logo-art { animation: none; }
 .lsm-tile-box { animation: lsm-float 4s ease-in-out infinite; }
 .lsm-tile-img { animation: lsm-icon-pulse 3.2s ease-in-out infinite, lsm-icon-glow 3.2s ease-in-out infinite; }
 .lsm-gear-art { animation: lsm-icon-pulse 4s ease-in-out infinite, lsm-icon-glow 4s ease-in-out infinite; }
@@ -1302,6 +1302,9 @@
 .lsm-play { animation: lsm-play-glow 3s ease-in-out infinite, lsm-pulse-shake 2.6s ease-in-out infinite; }
 .lsm-row-pass { animation: lsm-pulse-soft 2.8s ease-in-out infinite -1s; }
 .lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-box { animation: lsm-pulse-shake 3s ease-in-out infinite -1.5s, lsm-float 4s ease-in-out infinite -3s; }
+.lsm-side:first-child .lsm-tile:nth-child(1) .lsm-tile-box { animation: lsm-pulse-shake 2.6s ease-in-out infinite -.6s, lsm-float 4s ease-in-out infinite -1s; }
+.lsm-side:first-child .lsm-tile:nth-child(1) .lsm-tile-img,
+.lsm-side:last-child .lsm-tile:nth-child(2) .lsm-tile-img { animation: lsm-icon-pulse 3.2s ease-in-out infinite, lsm-play-glow 3s ease-in-out infinite; }
 .lsm-play:active, .lsm-row-pass:active { animation-play-state: paused; }
 
 /* Persistent bottom nav shared by menu, shop, challenges, leaderboard */
