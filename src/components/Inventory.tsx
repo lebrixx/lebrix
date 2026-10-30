@@ -50,7 +50,7 @@ const InvOuter: React.FC<{ asPage?: boolean; isOpen: boolean; onClose: () => voi
 
 const InvInner: React.FC<{ asPage?: boolean; children: React.ReactNode }> = ({ asPage, children }) =>
   asPage
-    ? <div className="inventory-page relative min-h-screen bg-game-darker max-w-md mx-auto before:content-[''] before:absolute before:inset-x-0 before:bottom-full before:h-[100vh] before:bg-game-darker before:pointer-events-none">{children}</div>
+    ? <div className="inventory-page relative min-h-screen max-w-md mx-auto">{children}</div>
     : <DialogContent className="bg-game-darker border-wheel-border max-w-sm max-h-[90vh] overflow-hidden p-0 gap-0 rounded-2xl">{children}</DialogContent>;
 
 export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage }) => {
@@ -210,10 +210,9 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
     <InvOuter asPage={asPage} isOpen={isOpen} onClose={onClose}>
       <InvInner asPage={asPage}>
 
-        {/* HEADER */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-16 bg-primary/20 blur-2xl rounded-full" />
+        {/* HEADER — the shared page background shows straight through, so nothing
+            is clipped at the top edge and the whole screen stays one colour. */}
+        <div className="relative">
           <div className="relative px-5 pt-5 pb-4">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Backpack className="w-5 h-5 text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]" />
