@@ -16,8 +16,10 @@ export function nextBossTime(deathTime: number, defeatedBoss = 0) { return death
 export function bossStats(rank: number) {
   // Denser, faster salvos at every rank; pauses keep shrinking smoothly on long runs.
   // Boss 2 gets an extra bump (more HP, faster shots) that stays below boss 3's values.
+  // Boss 1 reste plus doux : une balle de moins par salve et un léger répit entre les salves.
   const bump = rank === 2 ? 1 : 0;
-  return { hp: 95 + (rank - 1) * 55 + bump * 25, movement: Math.min(140, 55 + rank * 9), speed: Math.min(260, 145 + (rank - 1) * 12 + bump * 6), count: Math.min(14, 5 + rank - 1 + (rank >= 2 ? 1 : 0)), cooldown: 0.5 + 0.65 * Math.exp(-(rank - 1) * 0.16) - bump * 0.03 };
+  const first = rank === 1 ? 1 : 0;
+  return { hp: 95 + (rank - 1) * 55 + bump * 25, movement: Math.min(140, 55 + rank * 9), speed: Math.min(260, 145 + (rank - 1) * 12 + bump * 6), count: Math.min(14, 5 + rank - 1 + (rank >= 2 ? 1 : 0)) - first, cooldown: 0.5 + 0.65 * Math.exp(-(rank - 1) * 0.16) - bump * 0.03 + first * 0.2 };
 }
 export function bossVolley(rank: number, age: number, angry: boolean, aim: number) {
   // Five denser motifs; split fans retain a center corridor rather than a tracking wall.

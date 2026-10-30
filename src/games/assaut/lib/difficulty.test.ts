@@ -59,6 +59,20 @@ describe("difficulté progressive", () => {
     expect(bossStats(2).hp).toBeGreaterThan(bossStats(1).hp);
     expect(bossStats(3).hp).toBeGreaterThan(bossStats(2).hp);
   });
+  it("adoucit uniquement le premier boss : moins de balles en même temps et salves plus espacées", () => {
+    expect(bossStats(1).count).toBe(4);
+    expect(bossStats(1).cooldown).toBeCloseTo(1.35);
+    for (const age of [1, 4.5, 8, 11.5, 15]) {
+      expect(bossVolley(1, age, false, Math.PI / 2).velocities.length).toBeLessThanOrEqual(5);
+    }
+    // les boss suivants gardent exactement leurs valeurs d'origine
+    expect(bossStats(2).count).toBe(7);
+    expect(bossStats(2).cooldown).toBeCloseTo(1.0239);
+    expect(bossStats(3).count).toBe(8);
+    expect(bossStats(3).cooldown).toBeCloseTo(0.972);
+    expect(bossStats(4).count).toBe(9);
+    expect(bossStats(4).cooldown).toBeCloseTo(0.902);
+  });
   it("varie les attaques sur cinq motifs distincts", () => {
     const patterns = new Set();
     for (const age of [1, 4.5, 8, 11.5, 15]) {
@@ -72,8 +86,8 @@ describe("difficulté progressive", () => {
   it("renforce tous les motifs dès le premier boss et rapproche les salves", () => {
     for (const age of [1, 4.5, 8, 11.5, 15]) {
       const volley = bossVolley(1, age, true, Math.PI / 2);
-      expect(volley.cooldown).toBeCloseTo(0.9775);
-      expect(volley.velocities.length).toBeGreaterThanOrEqual(5);
+      expect(volley.cooldown).toBeCloseTo(1.1475);
+      expect(volley.velocities.length).toBeGreaterThanOrEqual(4);
       expect(Math.hypot(volley.velocities[0]?.vx ?? 0, volley.velocities[0]?.vy ?? 0)).toBeCloseTo(145);
       for(let rank=1;rank<30;rank++) {
         const current=bossVolley(rank,age,false,Math.PI/2), next=bossVolley(rank+1,age,false,Math.PI/2);
