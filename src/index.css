@@ -1408,6 +1408,37 @@ body { font-family: "Chakra Petch", "Russo One", sans-serif; }
 .ls-tab.ls-tab-reward {
   color: hsl(var(--secondary-glow));
 }
+/* Pastille de récompense à côté de « Globaux » : rouge glossy, rebond léger et anneau qui rayonne */
+.ls-reward-dot {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 28%, #ff8fab 0%, #f0174b 55%, #b30a35 100%);
+  box-shadow: 0 0 8px rgba(240, 23, 75, 0.8), 0 0 2px rgba(240, 23, 75, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  animation: lsm-badge-bounce 2.4s ease-in-out infinite;
+  transform-origin: center;
+}
+.ls-reward-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(240, 23, 75, 0.7);
+  animation: ls-reward-ring 2.4s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes ls-reward-ring {
+  0% { transform: scale(0.7); opacity: 0.9; }
+  60% { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ls-reward-dot, .ls-reward-dot::after { animation: none; }
+}
 .ls-tab[data-state='active'] {
   background: linear-gradient(180deg, hsl(var(--tab-selected)), hsl(var(--button-hover)));
   border-color: hsl(var(--button-border));
