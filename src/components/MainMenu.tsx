@@ -1,4 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import menuLogoArt from '@/assets/menu/logo.png';
+import menuCoinArt from '@/assets/menu/coin.png';
+import menuTrophyArt from '@/assets/menu/trophy.png';
+import menuPlayArt from '@/assets/menu/play.png';
+import menuCrownArt from '@/assets/menu/crown.png';
+import menuCubesArt from '@/assets/menu/cubes.png';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -189,7 +195,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           {/* Top bar */}
           <div className="lsm-top">
             <div className="lsm-coins">
-              <span className="lsm-coin-icon">€</span>
+              <img src={menuCoinArt} alt="" className="lsm-coin-art" draggable={false} />
               <span className="lsm-coin-value">{coins}</span>
               <button type="button" className="lsm-coin-plus" onClick={onOpenShop} aria-label={t.shop}>
                 <Plus className="w-6 h-6" strokeWidth={2.5} />
@@ -219,11 +225,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             </div>
 
             <div className="lsm-logo-wrap">
-              <div className="lsm-ring" aria-hidden />
-              <div className="lsm-hex" aria-hidden />
-              <Crown className="lsm-crown" aria-hidden />
               <h1 aria-label="Lucky Stop" className="lsm-logo-h1">
-                <img src={luckyStopLogo} alt="Lucky Stop" width={1306} height={735} className="lsm-logo" draggable={false} />
+                <img src={menuLogoArt} alt="Lucky Stop" className="lsm-logo-art" draggable={false} />
               </h1>
             </div>
 
@@ -246,7 +249,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
           {/* Global ranking */}
           <button type="button" className="lsm-rank" onClick={onOpenGlobalLeaderboard}>
-            <Trophy className="lsm-rank-trophy" />
+            <img src={menuTrophyArt} alt="" className="lsm-rank-trophy-art" draggable={false} />
             <span className="lsm-rank-text">
               <span className="lsm-rank-k">CLASSEMENT</span>
               <span className="lsm-rank-t">GLOBAL</span>
@@ -260,14 +263,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
           {/* Play */}
           <button type="button" className="lsm-play" onClick={onStartGame}>
-            <span className="lsm-play-icon"><Play className="w-9 h-9" fill="currentColor" /></span>
+            <img src={menuPlayArt} alt="" className="lsm-play-art" draggable={false} />
             <span className="lsm-play-sep" />
             <span className="lsm-play-label">JOUER</span>
           </button>
 
           {/* Season pass */}
           <button type="button" className="lsm-row lsm-row-pass" onClick={() => setShowSeasonPass(true)}>
-            <span className="lsm-row-icon lsm-gold-icon"><Crown className="w-8 h-8" fill="currentColor" /></span>
+            <img src={menuCrownArt} alt="" className="lsm-crown-art" draggable={false} />
             <span className="lsm-row-body">
               <span className="lsm-row-title">PASS DE SAISON</span>
               <span className="lsm-progress"><span style={{ width: `${passProgress}%` }} /></span>
@@ -291,7 +294,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           >
             <span className="lsm-row-icon lsm-dark-icon">{brixUnlocked ? <Sparkles className="w-7 h-7" /> : <Lock className="w-7 h-7" fill="currentColor" />}</span>
             <span className="lsm-row-body"><span className="lsm-row-title">BRIX FACTORY</span></span>
-            <span className="lsm-cubes" aria-hidden><i /><i /><i /><i /></span>
+            <img src={menuCubesArt} alt="" aria-hidden className="lsm-cubes-art" draggable={false} />
             <ChevronRight className="lsm-chev" />
           </button>
 
