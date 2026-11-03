@@ -1264,7 +1264,7 @@
 @media (max-height: 700px) { .lsm-hero { height: 205px; margin-top: 10px; } .lsm-logo-wrap { transform: translateX(-50%) scale(.9); } .lsm-play { height: 74px; } .lsm-row { height: 54px; } }
 
 /* Main menu — artwork cropped from the supplied reference */
-.lsm-logo-art { width: 208px; height: auto; display: block; -webkit-mask-image: radial-gradient(closest-side, #000 94%, transparent 100%); mask-image: radial-gradient(closest-side, #000 94%, transparent 100%); }
+.lsm-logo-art { width: 208px; height: auto; display: block; }
 .lsm-coin-art { width: 30px; height: 30px; border-radius: 50%; }
 .lsm-rank-trophy-art { width: 42px; height: 40px; -webkit-mask-image: radial-gradient(closest-side, #000 75%, transparent 100%); mask-image: radial-gradient(closest-side, #000 75%, transparent 100%); }
 .lsm-play-art { width: 54px; height: 58px; -webkit-mask-image: radial-gradient(closest-side, #000 80%, transparent 100%); mask-image: radial-gradient(closest-side, #000 80%, transparent 100%); }
