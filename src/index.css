@@ -258,9 +258,11 @@
     min-height: var(--app-usable-height) !important;
   }
 
-  /* Full-height screen: background runs to the very top, no separate safe-area bar. */
+  /* Full-height screen: background runs to the very top, no separate safe-area bar.
+     Uses a relative offset instead of a negative margin, which the compositor clips. */
   .app-content .screen-full {
-    margin-top: calc(-1 * var(--app-top-clearance));
+    position: relative;
+    top: calc(-1 * var(--app-top-clearance));
     min-height: calc(var(--app-usable-height) + var(--app-top-clearance)) !important;
   }
 
@@ -1029,8 +1031,10 @@
   --font-display: 'Russo One', sans-serif;
   --font-body: 'Chakra Petch', sans-serif;
   min-height: calc(var(--app-usable-height) + var(--app-top-clearance));
-  /* Pull the screen over the app clearance so the background runs to the very top with no separate bar. */
-  margin-top: calc(-1 * var(--app-top-clearance));
+  /* Pull the screen over the app clearance so the background runs to the very top with no separate bar.
+     Relative offset: a negative margin gets clipped by the scroll container's compositor. */
+  position: relative;
+  top: calc(-1 * var(--app-top-clearance));
   background: var(--gradient-game);
   color: var(--hub-text);
   font-family: var(--font-body);
