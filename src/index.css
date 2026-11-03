@@ -1204,7 +1204,7 @@
 .lsm-badge-row { position: static; margin-right: 6px; }
 .lsm-badge-nav { top: -8px; right: -12px; }
 
-.lsm-logo-wrap { position: absolute; left: 50%; top: -4px; transform: translateX(-50%); width: 230px; height: 230px; display: grid; place-items: center; pointer-events: none; }
+.lsm-logo-wrap { position: absolute; left: 50%; top: -14px; transform: translateX(-50%); width: 230px; height: 230px; display: grid; place-items: center; pointer-events: none; }
 .lsm-ring { position: absolute; inset: 14px; border-radius: 50%; border: 2px solid rgba(217,70,239,.85);
   box-shadow: 0 0 14px rgba(217,70,239,.8), inset 0 0 18px rgba(139,92,246,.4); }
 .lsm-hex { position: absolute; inset: 30px 22px; background: linear-gradient(160deg, rgba(60,40,110,.6), rgba(20,14,40,.7));
@@ -1264,7 +1264,7 @@
 @media (max-height: 700px) { .lsm-hero { height: 205px; margin-top: 10px; } .lsm-logo-wrap { transform: translateX(-50%) scale(.9); } .lsm-play { height: 74px; } .lsm-row { height: 54px; } }
 
 /* Main menu — artwork cropped from the supplied reference */
-.lsm-logo-art { width: 208px; height: auto; display: block; }
+.lsm-logo-art { width: 188px; height: auto; display: block; }
 .lsm-coin-art { width: 30px; height: 30px; border-radius: 50%; }
 .lsm-rank-trophy-art { width: 42px; height: 40px; -webkit-mask-image: radial-gradient(closest-side, #000 75%, transparent 100%); mask-image: radial-gradient(closest-side, #000 75%, transparent 100%); }
 .lsm-play-art { width: 54px; height: 58px; -webkit-mask-image: radial-gradient(closest-side, #000 80%, transparent 100%); mask-image: radial-gradient(closest-side, #000 80%, transparent 100%); }
