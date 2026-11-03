@@ -258,6 +258,12 @@
     min-height: var(--app-usable-height) !important;
   }
 
+  /* Full-height screen: background runs to the very top, no separate safe-area bar. */
+  .app-content .screen-full {
+    margin-top: calc(-1 * var(--app-top-clearance));
+    min-height: calc(var(--app-usable-height) + var(--app-top-clearance)) !important;
+  }
+
   .app-content .h-screen,
   .app-content .main-menu-container {
     height: var(--app-usable-height) !important;

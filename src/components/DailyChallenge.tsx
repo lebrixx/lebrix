@@ -329,7 +329,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   return (
     <div className="screen-full bg-[hsl(var(--game-dark))] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-14 pb-1">
+      <div className="flex items-center justify-between px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-1">
         <div className="flex items-center gap-3">
           <Button onClick={onBack} variant="ghost" size="icon" className="text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))] shrink-0">
             <ArrowLeft className="w-5 h-5" />
