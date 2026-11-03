@@ -258,6 +258,14 @@
     min-height: var(--app-usable-height) !important;
   }
 
+  /* Full-height screen: background runs to the very top, no separate safe-area bar.
+     Uses a relative offset instead of a negative margin, which the compositor clips. */
+  .app-content .screen-full {
+    position: relative;
+    top: calc(-1 * var(--app-top-clearance));
+    min-height: calc(var(--app-usable-height) + var(--app-top-clearance)) !important;
+  }
+
   .app-content .h-screen,
   .app-content .main-menu-container {
     height: var(--app-usable-height) !important;
@@ -1022,15 +1030,17 @@
   --hub-muted: oklch(0.7 0.03 260);
   --font-display: 'Russo One', sans-serif;
   --font-body: 'Chakra Petch', sans-serif;
-  min-height: var(--app-usable-height);
+  min-height: calc(var(--app-usable-height) + var(--app-top-clearance));
+  /* Pull the screen over the app clearance so the background runs to the very top with no separate bar.
+     Relative offset: a negative margin gets clipped by the scroll container's compositor. */
+  position: relative;
+  top: calc(-1 * var(--app-top-clearance));
   background: var(--gradient-game);
   color: var(--hub-text);
   font-family: var(--font-body);
   letter-spacing: 0;
-  padding: max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));
+  padding: max(14px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));
 }
-/* Fill the initial app clearance without moving any controls into it. */
-.games-home::before { content:''; position:absolute; top:calc(-1 * var(--app-top-clearance)); left:0; right:0; height:var(--app-top-clearance); background:var(--gradient-game); }
 .games-header,.games-heading,.games-list,.games-footer,.games-utilities,.games-warning { max-width:1000px; margin-inline:auto; }
 .games-header { display:flex; align-items:center; justify-content:space-between; padding-block:8px 28px; border-bottom:1px solid hsl(var(--wheel-border)); gap:16px; }
 .hub-logo { width:120px; height:58px; object-fit:contain; flex-shrink:0; }

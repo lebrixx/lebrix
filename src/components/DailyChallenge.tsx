@@ -167,7 +167,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
   if (hasFatalError) {
     return (
-      <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 text-center">
+      <div className="screen-full bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 text-center">
         <Button onClick={onBack} variant="ghost" size="icon" className="absolute top-[max(1rem,env(safe-area-inset-top))] left-4 text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))]">
           <ArrowLeft className="w-5 h-5" />
         </Button>
@@ -187,7 +187,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   if (phase === 'ready') {
     return (
       <div
-        className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
+        className="screen-full bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
         onPointerDown={startTimer}>
 
         <button
@@ -224,7 +224,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
   if (phase === 'running') {
     return (
       <div
-        className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
+        className="screen-full bg-[hsl(var(--game-dark))] flex flex-col items-center justify-center px-6 select-none cursor-pointer active:bg-[hsl(var(--game-darker))] transition-colors"
         onPointerDown={stopTimer}>
 
         <button
@@ -275,7 +275,7 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
     const topPercent = myRank > 0 && totalPlayers > 0 ? Math.max(1, Math.round((myRank / totalPlayers) * 100)) : null;
 
     return (
-      <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col">
+      <div className="screen-full bg-[hsl(var(--game-dark))] flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <span className="text-6xl mb-3">{q.emoji}</span>
           
@@ -327,9 +327,9 @@ export const DailyChallenge: React.FC<DailyChallengeProps> = ({ onBack }) => {
 
   // ────── MAIN SCREEN (intro / result) ──────
   return (
-    <div className="min-h-screen bg-[hsl(var(--game-dark))] flex flex-col">
+    <div className="screen-full bg-[hsl(var(--game-dark))] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-14 pb-1">
+      <div className="flex items-center justify-between px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-1">
         <div className="flex items-center gap-3">
           <Button onClick={onBack} variant="ghost" size="icon" className="text-[hsl(var(--text-muted))] hover:bg-[hsl(var(--button-hover))] shrink-0">
             <ArrowLeft className="w-5 h-5" />

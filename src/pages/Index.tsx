@@ -575,7 +575,7 @@ const Index = () => {
   };
 
   return (
-    <div className="overflow-hidden">
+    <div className={(['modes', 'daily_challenge'] as string[]).includes(currentScreen) ? undefined : 'overflow-hidden'}>
       {showOnboarding && (
         <Onboarding onComplete={() => setShowOnboarding(false)} />
       )}
