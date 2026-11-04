@@ -1,12 +1,11 @@
 // Configuration centralisée des identifiants AdMob.
-// ⚠️ MODE TEST TEMPORAIRE : passer AD_MODE à 'production' pour restaurer les vraies annonces
-// (et remettre l'ID de production dans ios/App/App/Info.plist → GADApplicationIdentifier).
+// L'ID dans ios/App/App/Info.plist → GADApplicationIdentifier doit correspondre au mode choisi.
 
 export type AdMode = 'test' | 'production';
 
-export const AD_MODE: AdMode = 'test';
+export const AD_MODE: AdMode = 'production';
 
-// Identifiants de PRODUCTION (conservés, non utilisés en mode test)
+// Identifiants de PRODUCTION
 const PRODUCTION_IDS = {
   appIdIos: 'ca-app-pub-6790106624716732~9273155360',
   interstitial: 'ca-app-pub-6790106624716732/9034600143',
@@ -20,5 +19,9 @@ const TEST_IDS = {
   rewarded: 'ca-app-pub-3940256099942544/1712485313',
 };
 
-export const AD_IDS = AD_MODE === 'test' ? TEST_IDS : PRODUCTION_IDS;
-export const IS_AD_TEST_MODE = AD_MODE === 'test';
+function isTestMode(mode: AdMode): boolean {
+  return mode === 'test';
+}
+
+export const IS_AD_TEST_MODE = isTestMode(AD_MODE);
+export const AD_IDS = IS_AD_TEST_MODE ? TEST_IDS : PRODUCTION_IDS;
