@@ -19,5 +19,9 @@ const TEST_IDS = {
   rewarded: 'ca-app-pub-3940256099942544/1712485313',
 };
 
-export const AD_IDS = AD_MODE === 'test' ? TEST_IDS : PRODUCTION_IDS;
-export const IS_AD_TEST_MODE = AD_MODE === 'test';
+function isTestMode(mode: AdMode): boolean {
+  return mode === 'test';
+}
+
+export const IS_AD_TEST_MODE = isTestMode(AD_MODE);
+export const AD_IDS = IS_AD_TEST_MODE ? TEST_IDS : PRODUCTION_IDS;
