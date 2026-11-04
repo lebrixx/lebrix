@@ -1,12 +1,11 @@
 // Configuration centralisée des identifiants AdMob.
-// ⚠️ MODE TEST TEMPORAIRE : passer AD_MODE à 'production' pour restaurer les vraies annonces
-// (et remettre l'ID de production dans ios/App/App/Info.plist → GADApplicationIdentifier).
+// L'ID dans ios/App/App/Info.plist → GADApplicationIdentifier doit correspondre au mode choisi.
 
 export type AdMode = 'test' | 'production';
 
-export const AD_MODE: AdMode = 'test';
+export const AD_MODE: AdMode = 'production';
 
-// Identifiants de PRODUCTION (conservés, non utilisés en mode test)
+// Identifiants de PRODUCTION
 const PRODUCTION_IDS = {
   appIdIos: 'ca-app-pub-6790106624716732~9273155360',
   interstitial: 'ca-app-pub-6790106624716732/9034600143',
