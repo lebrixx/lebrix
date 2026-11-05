@@ -71,6 +71,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
   const getModeDisplayName = (mode: string) => {
     const names = {
       classic: 'Cube Dodge',
+      chronophase: 'Chronophase',
       arc_changeant: 'Ball Balance',
       survie_60s: 'Stack Jump',
       assaut: 'Assaut',

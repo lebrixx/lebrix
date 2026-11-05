@@ -18,6 +18,7 @@ import { Inventory } from '@/components/Inventory';
 import { BrixFactory } from '@/components/BrixFactory';
 import { BallBalance3DGame } from '@/components/BallBalance3DGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
+import { ChronophaseGame } from '@/components/ChronophaseGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
 import { AssautGame } from '@/components/AssautGame';
 import { BrixRushGame } from '@/components/BrixRushGame';
@@ -446,6 +447,9 @@ const Index = () => {
               />
             );
           }
+          if (currentMode === 'chronophase') {
+            return <ChronophaseGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} />;
+          }
           if (currentMode === 'brix_arena') {
             return (
               <BrixArenaGame
@@ -516,6 +520,7 @@ const Index = () => {
           const savedData = JSON.parse(localStorage.getItem('luckyStopGame') || '{}');
           const bestScores = {
             classic: savedData[`bestScore_classic`] || 0,
+            chronophase: savedData[`bestScore_chronophase`] || 0,
             arc_changeant: savedData[`bestScore_arc_changeant`] || 0,
             survie_60s: savedData[`bestScore_survie_60s`] || 0,
             assaut: savedData[`bestScore_assaut`] || 0,

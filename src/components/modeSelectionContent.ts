@@ -2,13 +2,13 @@ import { ModeID } from '@/constants/modes';
 import rush from '@/assets/hub/rush.jpg';
 import arena from '@/assets/hub/arena.jpg';
 import assaut from '@/assets/hub/assaut.jpg';
-import cube from '@/assets/hub/cube-dodge.jpg';
+import chrono from '@/assets/hub/chronophase.jpg';
 import ball from '@/assets/hub/ball-balance.jpg';
 import stack from '@/assets/hub/stack-jump.jpg';
 
 export const modeArtwork = {
   [ModeID.BRIX_RUSH]: rush, [ModeID.ASSAUT]: assaut,
-  [ModeID.BRIX_ARENA]: arena, [ModeID.CLASSIC]: cube,
+  [ModeID.BRIX_ARENA]: arena, [ModeID.CHRONOPHASE]: chrono,
   [ModeID.ARC_CHANGEANT]: ball, [ModeID.SURVIE_60S]: stack,
 };
 
