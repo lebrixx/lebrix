@@ -12,11 +12,11 @@ export interface DailyChallenge {
 
 // UNIQUEMENT des défis de score dans un mode spécifique
 export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
-  // Cube Dodge
-  { id: 'classic_score_10', title: 'Cube Débutant', description: 'Fais un score de 10 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 10, reward: { coins: 16 } },
-  { id: 'classic_score_15', title: 'Cube Apprenti', description: 'Fais un score de 20 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 20, reward: { coins: 20 } },
-  { id: 'classic_score_20', title: 'Cube Confirmé', description: 'Fais un score de 35 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 35, reward: { coins: 30 } },
-  { id: 'classic_score_25', title: 'Cube Pro', description: 'Fais un score de 60 en Cube Dodge', type: 'score_in_mode', mode: ModeID.CLASSIC, target: 60, reward: { coins: 40 } },
+  // Chronophase
+  { id: 'chronophase_score_10', title: 'Chrono Débutant', description: 'Fais un score de 10 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 10, reward: { coins: 16 } },
+  { id: 'chronophase_score_20', title: 'Chrono Apprenti', description: 'Fais un score de 20 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 20, reward: { coins: 20 } },
+  { id: 'chronophase_score_35', title: 'Chrono Confirmé', description: 'Fais un score de 35 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 35, reward: { coins: 30 } },
+  { id: 'chronophase_score_60', title: 'Chrono Pro', description: 'Fais un score de 60 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 60, reward: { coins: 40 } },
   
   // Ball Balance
   { id: 'arc_score_8', title: 'Ball Débutant', description: 'Tiens 10 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 10, reward: { coins: 16 } },

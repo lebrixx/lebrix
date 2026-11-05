@@ -3,7 +3,7 @@ import { ModeID, ModeType } from '@/constants/modes';
 export const PONG_UNLOCK_TARGET = 20;
 
 export const PONG_UNLOCK_MODES: ModeType[] = [
-  ModeID.CLASSIC,
+  ModeID.CHRONOPHASE,
   ModeID.ARC_CHANGEANT,
   ModeID.SURVIE_60S,
   ModeID.ASSAUT,

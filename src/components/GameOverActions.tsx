@@ -24,6 +24,7 @@ interface GameOverActionsProps {
 
 const MODE_NAMES: Record<string, string> = {
   classic: 'Cube Dodge',
+  chronophase: 'Chronophase',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump',
   assaut: 'Assaut',
