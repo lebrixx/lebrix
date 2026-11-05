@@ -239,7 +239,7 @@
   #err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:300}
 </style>
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/jsm/"}}
 </script>
 </head>
 <body>
@@ -806,6 +806,7 @@ function goHome(){
   renderer.domElement.style.filter='none'; overlayHTML = null; state = 'menu'; menuInit = false;
 }
 function start(){
+  window.__lsStart = performance.now(); try{ parent.postMessage({type:'chronophase:start'},'*'); }catch(_){}
   clearWorld();
   P = { x:0, lane:1, y:0, vy:0, slide:0, phase:0, falling:false, onG:true, buf:0, slideAfter:false, run:0 };
   dist=0; maxDist=0; gt=0; speed=22; energy=100; snaps=[]; objs=[]; tiles=[]; shards=[]; deco=[]; echoes=[]; parts=[];
@@ -1196,6 +1197,7 @@ function step(){
 function gameOver(){
   state='over'; overT=0; const sc = pts(maxDist);
   newBest = sc > best; if (newBest){ best = sc; localStorage.setItem('chronophase_rush_score', best); }
+  try{ parent.postMessage({type:'chronophase:over',score:sc,duration:Math.round((performance.now()-(window.__lsStart||performance.now()))/1000)},'*'); }catch(_){}
   buzz([30,50,30]);
   showOverlay(`<div class="scrim"></div><div style="position:relative;display:flex;flex-direction:column;align-items:center">
     <div class="broken">FIN DE LA BOUCLE</div>
@@ -1259,6 +1261,7 @@ for (const b of document.querySelectorAll('.b')){
 $('pauseBtn').addEventListener('pointerdown', e=>{ e.preventDefault(); e.stopPropagation(); togglePause(); });
 // --- menus : boutons dans l'overlay ---
 $('overlay').addEventListener('pointerdown', e=>{
+  if (e.target.closest('[data-exit]')){ e.preventDefault(); try{ parent.postMessage({type:'chronophase:exit'},'*'); }catch(_){} return; }
   const t = e.target.closest('[data-start],[data-resume],[data-restart],[data-home],[data-menu],[data-skin]'); if (!t) return;
   if (t.hasAttribute('data-skin')){ e.preventDefault(); au(); openSkins(); return; }
   e.preventDefault(); au();
@@ -1445,6 +1448,7 @@ function menu(){
     <div class="scrimTop"></div><div class="scrimBot"></div>
     <div class="dust"><i style="left:8%;animation-duration:11s;animation-delay:0s"></i><i style="left:19%;animation-duration:14s;animation-delay:3s"></i><i style="left:27%;animation-duration:9s;animation-delay:6s"></i><i style="left:38%;animation-duration:13s;animation-delay:1s"></i><i style="left:49%;animation-duration:12s;animation-delay:4s"></i><i style="left:57%;animation-duration:10s;animation-delay:7s"></i><i style="left:66%;animation-duration:15s;animation-delay:2s"></i><i style="left:74%;animation-duration:11s;animation-delay:5s"></i><i style="left:83%;animation-duration:13s;animation-delay:8s"></i><i style="left:92%;animation-duration:10s;animation-delay:3.5s"></i><i style="left:13%;animation-duration:16s;animation-delay:9s"></i><i style="left:61%;animation-duration:12s;animation-delay:10s"></i></div>
     <div class="top">
+      <div class="menuBtn glass" data-exit aria-label="Accueil" style="width:52px;height:52px;padding:0;justify-content:center;margin-right:8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
       <div class="menuBtn glass" data-menu><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span>MENU</span></div>
       ${best ? `<div class="recPill glass"><i>★</i>${best} PTS</div>` : ''}
     </div>
