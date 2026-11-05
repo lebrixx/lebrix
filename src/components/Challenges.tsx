@@ -48,6 +48,7 @@ interface ChallengesProps {
 }
 
 const MODE_INFO = {
+  [ModeID.CHRONOPHASE]: { name: 'Chronophase', icon: Timer, color: 'text-amber-300', gradient: 'from-amber-400/20 to-cyan-500/5' },
   [ModeID.CLASSIC]: { name: 'Cube Dodge', icon: Target, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-fuchsia-600/5' },
   [ModeID.ARC_CHANGEANT]: { name: 'Ball Balance', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
   [ModeID.SURVIE_60S]: { name: 'Stack Jump', icon: Timer, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-cyan-600/5' },

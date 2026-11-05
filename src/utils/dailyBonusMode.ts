@@ -81,7 +81,7 @@ export function getCoinMultiplier(mode: ModeType): number {
 /** Liste des modes éligibles au tirage (tous sauf expert) */
 export function getEligibleModes(unlockedModes: string[]): ModeType[] {
   const allModes: ModeType[] = [
-    ModeID.CLASSIC,
+    ModeID.CHRONOPHASE,
     ModeID.ARC_CHANGEANT,
     ModeID.SURVIE_60S,
     ModeID.ASSAUT,

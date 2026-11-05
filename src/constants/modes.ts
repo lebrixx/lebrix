@@ -8,6 +8,7 @@ export const ModeID = {
   ASSAUT: "assaut",
   BRIX_RUSH: "brix_rush",
   BRIX_ARENA: "brix_arena",
+  CHRONOPHASE: "chronophase",
   MEMOIRE_EXPERT: "memoire_expert",
   PONG_CIRCULAIRE: "pong_circulaire",
 } as const;
@@ -15,17 +16,18 @@ export const ModeID = {
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé entre les modes et les classements.
-export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.CLASSIC, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S] as const;
+export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.CHRONOPHASE, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S] as const;
 export const FREE_MODES = RANKED_MODES.filter(mode => mode !== ModeID.SURVIE_60S);
 export const MODE_UNLOCK_PRICES: Partial<Record<ModeType, number>> = { [ModeID.SURVIE_60S]: 500 };
 export const TICKET_MODE = ModeID.ARC_CHANGEANT;
 export const requiresTicket = (mode: string): boolean => mode === TICKET_MODE;
-export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA || mode === ModeID.ASSAUT;
+export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA || mode === ModeID.ASSAUT || mode === ModeID.CHRONOPHASE;
 export function resolveSavedMode(saved: string | null): ModeType {
   if (saved === 'zone_mobile') return ModeID.ASSAUT;
   if (saved === 'memoire_expert') return ModeID.BRIX_ARENA;
   if (saved === 'zone_traitresse') return ModeID.BRIX_RUSH;
-  return RANKED_MODES.find(mode => mode === saved) ?? ModeID.CLASSIC;
+  if (saved === 'classic') return ModeID.CHRONOPHASE;
+  return RANKED_MODES.find(mode => mode === saved) ?? ModeID.CHRONOPHASE;
 }
 
 export const cfgBase = {
@@ -75,6 +77,14 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.BRIX_ARENA]: {
     name: "Brix Arena",
     desc: "Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.",
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.CHRONOPHASE]: {
+    name: "Chronophase",
+    desc: "Cours, change de couleur d'un tap et remonte le temps pour traverser chaque obstacle.",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
