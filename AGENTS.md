@@ -23,3 +23,4 @@
 - Keep every resolved URL in bun.lock on https://registry.npmjs.org/; sandbox mirror hosts are unreachable from the publish builder and break installs with DNS errors.
 - Render any viewport-covering layer (main bottom navigation, first-run tutorial) through a body portal, because `.app-screens` is transformed and offsets its content, which breaks `position: fixed` inside it.
 - Give every portal-rendered overlay an explicit `pointer-events-auto`, because an open Radix modal sets `pointer-events: none` on `body` and would otherwise make the overlay unclickable.
+- Host Chronophase's supplied standalone HTML unchanged under `public/games/chronophase` in an iframe with locally vendored Three.js; bridge only start/score/exit via postMessage and use the distinct `chronophase` score identity (historical Cube Dodge `classic` scores stay excluded).
