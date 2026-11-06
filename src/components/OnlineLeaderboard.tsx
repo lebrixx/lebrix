@@ -45,7 +45,6 @@ const modeNames = {
   brix_rush: 'Brix Rush',
   assaut: 'Assaut',
   brix_arena: 'Brix Arena',
-  classic: 'Cube Dodge',
   chronophase: 'Chronophase',
   arc_changeant: 'Ball Balance',
   survie_60s: 'Stack Jump'
