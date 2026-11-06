@@ -1,0 +1,12 @@
+{
+  "name": "CHRONOPHASE RUSH",
+  "short_name": "Chronophase",
+  "start_url": "/chronophase-rush.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#07080d",
+  "theme_color": "#07080d",
+  "icons": [
+    { "src": "/icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
