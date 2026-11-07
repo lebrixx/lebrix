@@ -17,7 +17,7 @@ interface SlotMachineProps {
 const getModeIcon = (modeId: ModeType, size = 'w-8 h-8') => {
   switch (modeId) {
     case ModeID.CHRONOPHASE: return <Clock className={size} />;
-    case ModeID.ARC_CHANGEANT: return <RotateCcw className={size} />;
+    case ModeID.BLOUP: return <RotateCcw className={size} />;
     case ModeID.SURVIE_60S: return <Clock className={size} />;
     case ModeID.ASSAUT: return <RotateCcw className={size} style={{ transform: 'rotate(90deg)' }} />;
     case ModeID.BRIX_RUSH: return <AlertTriangle className={size} />;
@@ -28,7 +28,7 @@ const getModeIcon = (modeId: ModeType, size = 'w-8 h-8') => {
 
 const MODE_ICON_COLORS: Record<string, string> = {
   [ModeID.CHRONOPHASE]: 'text-success',
-  [ModeID.ARC_CHANGEANT]: 'text-primary',
+  [ModeID.BLOUP]: 'text-primary',
   [ModeID.SURVIE_60S]: 'text-danger',
   [ModeID.ASSAUT]: 'text-secondary',
   [ModeID.BRIX_RUSH]: 'text-secondary-glow',

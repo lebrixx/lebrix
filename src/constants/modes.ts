@@ -9,6 +9,7 @@ export const ModeID = {
   BRIX_RUSH: "brix_rush",
   BRIX_ARENA: "brix_arena",
   CHRONOPHASE: "chronophase",
+  BLOUP: "bloup",
   MEMOIRE_EXPERT: "memoire_expert",
   PONG_CIRCULAIRE: "pong_circulaire",
 } as const;
@@ -16,17 +17,18 @@ export const ModeID = {
 export type ModeType = typeof ModeID[keyof typeof ModeID];
 
 // Ordre d'affichage partagé entre les modes et les classements.
-export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.CHRONOPHASE, ModeID.ARC_CHANGEANT, ModeID.SURVIE_60S] as const;
+export const RANKED_MODES = [ModeID.BRIX_RUSH, ModeID.ASSAUT, ModeID.BRIX_ARENA, ModeID.CHRONOPHASE, ModeID.BLOUP, ModeID.SURVIE_60S] as const;
 export const FREE_MODES = RANKED_MODES.filter(mode => mode !== ModeID.SURVIE_60S);
 export const MODE_UNLOCK_PRICES: Partial<Record<ModeType, number>> = { [ModeID.SURVIE_60S]: 500 };
-export const TICKET_MODE = ModeID.ARC_CHANGEANT;
+export const TICKET_MODE = ModeID.BLOUP;
 export const requiresTicket = (mode: string): boolean => mode === TICKET_MODE;
-export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA || mode === ModeID.ASSAUT || mode === ModeID.CHRONOPHASE;
+export const isStandaloneMode = (mode: string): boolean => mode === ModeID.BRIX_RUSH || mode === ModeID.BRIX_ARENA || mode === ModeID.ASSAUT || mode === ModeID.CHRONOPHASE || mode === ModeID.BLOUP;
 export function resolveSavedMode(saved: string | null): ModeType {
   if (saved === 'zone_mobile') return ModeID.ASSAUT;
   if (saved === 'memoire_expert') return ModeID.BRIX_ARENA;
   if (saved === 'zone_traitresse') return ModeID.BRIX_RUSH;
   if (saved === 'classic') return ModeID.CHRONOPHASE;
+  if (saved === 'arc_changeant') return ModeID.BLOUP;
   return RANKED_MODES.find(mode => mode === saved) ?? ModeID.CHRONOPHASE;
 }
 
@@ -58,6 +60,14 @@ interface ModeConfig {
 
 // L'ordre d'affichage est défini par RANKED_MODES, indépendamment des clés.
 export const cfgModes: Record<ModeType, ModeConfig> = {
+  [ModeID.BLOUP]: {
+    name: "Bloup",
+    desc: "Lâche les boules de gelée, fusionne les couleurs et évite de faire déborder le pot. Deux fusions font un point !",
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
   [ModeID.BRIX_RUSH]: {
     name: "Brix Rush",
     desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
