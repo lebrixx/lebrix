@@ -46,7 +46,7 @@ const modeNames = {
   assaut: 'Assaut',
   brix_arena: 'Brix Arena',
   chronophase: 'Chronophase',
-  arc_changeant: 'Ball Balance',
+  bloup: 'Bloup',
   survie_60s: 'Stack Jump'
 };
 

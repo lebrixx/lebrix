@@ -73,6 +73,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreModalProps> = ({
       classic: 'Cube Dodge',
       chronophase: 'Chronophase',
       arc_changeant: 'Ball Balance',
+      bloup: 'Bloup',
       survie_60s: 'Stack Jump',
       assaut: 'Assaut',
       brix_rush: 'Brix Rush',

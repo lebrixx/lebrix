@@ -18,11 +18,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'chronophase_score_35', title: 'Chrono Confirmé', description: 'Fais un score de 35 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 35, reward: { coins: 30 } },
   { id: 'chronophase_score_60', title: 'Chrono Pro', description: 'Fais un score de 60 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 60, reward: { coins: 40 } },
   
-  // Ball Balance
-  { id: 'arc_score_8', title: 'Ball Débutant', description: 'Tiens 10 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 10, reward: { coins: 16 } },
-  { id: 'arc_score_12', title: 'Ball Intermédiaire', description: 'Tiens 20 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 20, reward: { coins: 20 } },
-  { id: 'arc_score_15', title: 'Ball Confirmé', description: 'Tiens 30 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 30, reward: { coins: 30 } },
-  { id: 'arc_score_20', title: 'Ball Expert', description: 'Tiens 45 secondes en Ball Balance', type: 'score_in_mode', mode: ModeID.ARC_CHANGEANT, target: 45, reward: { coins: 46 } },
+  // Bloup — new IDs keep historical Ball Balance progress separate.
+  { id: 'bloup_score_10', title: 'Bloup Débutant', description: 'Fais un score de 10 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 10, reward: { coins: 16 } },
+  { id: 'bloup_score_20', title: 'Bloup Intermédiaire', description: 'Fais un score de 20 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 20, reward: { coins: 20 } },
+  { id: 'bloup_score_30', title: 'Bloup Confirmé', description: 'Fais un score de 30 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 30, reward: { coins: 30 } },
+  { id: 'bloup_score_45', title: 'Bloup Expert', description: 'Fais un score de 45 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 45, reward: { coins: 46 } },
   
   // Stack Jump
   { id: 'survie_score_5', title: 'Stack Débutant', description: 'Fais un score de 5 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },

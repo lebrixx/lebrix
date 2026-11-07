@@ -82,7 +82,7 @@ export function getCoinMultiplier(mode: ModeType): number {
 export function getEligibleModes(unlockedModes: string[]): ModeType[] {
   const allModes: ModeType[] = [
     ModeID.CHRONOPHASE,
-    ModeID.ARC_CHANGEANT,
+    ModeID.BLOUP,
     ModeID.SURVIE_60S,
     ModeID.ASSAUT,
     ModeID.BRIX_RUSH,

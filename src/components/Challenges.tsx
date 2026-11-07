@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Trophy, CheckCircle, Target, Zap, Timer, MapPin, Skull, Gamepad2, Brain, Calendar, Star, Gift, Coins, Flame, Sparkles, HelpCircle, Infinity, Crosshair, Clock, Lock, Crown, ChevronRight } from 'lucide-react';
-import { ModeID } from '@/constants/modes';
+import { ModeID, RANKED_MODES } from '@/constants/modes';
 import { toast } from 'sonner';
 import { BOOSTS, BoostType } from '@/types/boosts';
 import { 
@@ -48,7 +48,7 @@ interface ChallengesProps {
 
 const MODE_INFO = {
   [ModeID.CHRONOPHASE]: { name: 'Chronophase', icon: Timer, color: 'text-amber-300', gradient: 'from-amber-400/20 to-cyan-500/5' },
-  [ModeID.ARC_CHANGEANT]: { name: 'Ball Balance', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
+  [ModeID.BLOUP]: { name: 'Bloup', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
   [ModeID.SURVIE_60S]: { name: 'Stack Jump', icon: Timer, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-cyan-600/5' },
   [ModeID.ASSAUT]: { name: 'Assaut', icon: MapPin, color: 'text-green-400', gradient: 'from-green-500/20 to-green-600/5' },
   [ModeID.BRIX_RUSH]: { name: 'Brix Rush', icon: Target, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-amber-500/5' },
@@ -59,8 +59,7 @@ const MAX_LEVEL = 10;
 
 const createInitialChallengeProgress = (): Record<string, ChallengeProgress> => {
   const initial: Record<string, ChallengeProgress> = {};
-  Object.keys(ModeID).forEach(key => {
-    const mode = ModeID[key as keyof typeof ModeID];
+  RANKED_MODES.forEach(mode => {
     initial[mode] = { mode, currentLevel: 0, pendingRewards: [], lastCheckedScore: 0 };
   });
   return initial;
@@ -202,8 +201,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
     const progress = getChallengeProgress();
     let hasUpdates = false;
 
-    Object.keys(ModeID).forEach(key => {
-      const mode = ModeID[key as keyof typeof ModeID];
+    RANKED_MODES.forEach(mode => {
       const modeProgress = progress[mode];
       const modeBestScore = getBestScoreForMode(mode);
 
@@ -323,7 +321,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const dailyProgress = getDailyChallengeProgress();
 
   const totalLevelsCompleted = Object.values(progress).reduce((sum, p) => sum + p.currentLevel, 0);
-  const allModes = Object.keys(ModeID).map(key => ModeID[key as keyof typeof ModeID]).filter(mode => mode in MODE_INFO);
+  const allModes = [...RANKED_MODES];
   const hasDailyRewards = hasPendingDailyChallengeRewards();
   const hasGlobalRewards = Object.values(progress).some(p => p.pendingRewards.length > 0) || gamesProgress.pendingRewards.length > 0;
   

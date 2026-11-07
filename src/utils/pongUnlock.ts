@@ -4,7 +4,7 @@ export const PONG_UNLOCK_TARGET = 20;
 
 export const PONG_UNLOCK_MODES: ModeType[] = [
   ModeID.CHRONOPHASE,
-  ModeID.ARC_CHANGEANT,
+  ModeID.BLOUP,
   ModeID.SURVIE_60S,
   ModeID.ASSAUT,
   ModeID.BRIX_RUSH,

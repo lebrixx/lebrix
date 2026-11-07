@@ -16,7 +16,7 @@ import { PongCirculaire } from '@/components/PongCirculaire';
 import { BottomNav, BottomNavTab } from '@/components/BottomNav';
 import { Inventory } from '@/components/Inventory';
 import { BrixFactory } from '@/components/BrixFactory';
-import { BallBalance3DGame } from '@/components/BallBalance3DGame';
+import { BloupGame } from '@/components/BloupGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { ChronophaseGame } from '@/components/ChronophaseGame';
 import { StackJump3DGame } from '@/components/StackJump3DGame';
@@ -375,21 +375,8 @@ const Index = () => {
               />
             );
           }
-          if (currentMode === 'arc_changeant') {
-            return (
-              <BallBalance3DGame
-                onBack={() => setCurrentScreen('menu')}
-                onGameOver={handleGameOver}
-                isSoundMuted={isMuted}
-                onToggleSound={toggleMute}
-                playSuccess={playSuccess}
-                playFailure={playFailure}
-                selectedBoosts={selectedBoostsForGame}
-                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
-                coins={gameState.coins}
-                onEarnCoin={addCoins}
-              />
-            );
+          if (currentMode === 'bloup') {
+            return <BloupGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} />;
           }
           if (currentMode === 'classic') {
             return (
@@ -521,7 +508,7 @@ const Index = () => {
           const bestScores = {
             classic: savedData[`bestScore_classic`] || 0,
             chronophase: savedData[`bestScore_chronophase`] || 0,
-            arc_changeant: savedData[`bestScore_arc_changeant`] || 0,
+            bloup: savedData[`bestScore_bloup`] || 0,
             survie_60s: savedData[`bestScore_survie_60s`] || 0,
             assaut: savedData[`bestScore_assaut`] || 0,
             brix_rush: savedData[`bestScore_brix_rush`] || 0,
