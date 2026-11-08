@@ -34,7 +34,7 @@ interface ShopProps {
 const GAME_MODES_SHOP = [
   {
     id: 'expert_tickets',
-    name: 'Pack de Tickets Ball Balance',
+    name: 'Pack de Tickets Bloup',
     description: '__fallingTunnelTicketDesc__',
     price: 100,
     icon: Star,
@@ -221,7 +221,7 @@ export const Shop: React.FC<ShopProps> = ({
               <Ticket className="w-6 h-6 text-secondary" />
               <div className="flex-1">
                 <p className="text-text-primary font-semibold text-sm">{t.ticketPackFallingTunnel}</p>
-                <p className="text-text-muted text-xs">Ball Balance</p>
+                <p className="text-text-muted text-xs">Bloup</p>
               </div>
               <Badge variant="secondary" className="text-xs font-bold">×15</Badge>
             </div>
