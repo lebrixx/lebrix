@@ -60,14 +60,6 @@ interface ModeConfig {
 
 // L'ordre d'affichage est défini par RANKED_MODES, indépendamment des clés.
 export const cfgModes: Record<ModeType, ModeConfig> = {
-  [ModeID.BLOUP]: {
-    name: "Bloup",
-    desc: "Lâche les boules de gelée, fusionne les couleurs et évite de faire déborder le pot. Deux fusions font un point !",
-    keepMovingZone: false,
-    survival: false,
-    survivalTime: 0,
-    variableArc: false
-  },
   [ModeID.BRIX_RUSH]: {
     name: "Brix Rush",
     desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
@@ -95,6 +87,14 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.CHRONOPHASE]: {
     name: "Chronophase",
     desc: "Cours, change de couleur d'un tap et remonte le temps pour traverser chaque obstacle.",
+    keepMovingZone: false,
+    survival: false,
+    survivalTime: 0,
+    variableArc: false
+  },
+  [ModeID.BLOUP]: {
+    name: "Bloup",
+    desc: "Lâche les boules de gelée, fusionne les couleurs et évite de faire déborder le pot. Deux fusions font un point !",
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
