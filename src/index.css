@@ -916,10 +916,8 @@
 /* Brix Arena: isolated original source theme and layout. */
 
 
-@media (max-height: 500px) and (orientation: landscape), (max-width: 500px) and (orientation: portrait) { .brix-arena-original .arena-stick-base { width: 90px; height: 90px; } .brix-arena-original .arena-stick-knob { width: 42px; height: 42px; } .brix-arena-original .arena-dash { width: 82px; height: 82px; } .brix-arena-original .arena-hud { gap: 8px; } .brix-arena-original .arena-stats { min-width: 115px; padding: 8px 12px; } .brix-arena-original .arena-dialog { gap: 24px; } .brix-arena-original .arena-dialog h2 { font-size: 25px; } .brix-arena-original .arena-upgrades { gap: 32px; } .brix-arena-original .arena-upgrades > button { height: 116px; } }
 
 /* Keep the original controls clickable above the invisible joystick capture area. */
-@media (max-height:500px) and (orientation:landscape), (max-width:500px) and (orientation:portrait) { .brix-arena-original .arena-bomb { width:70px; height:70px; right:calc(var(--safe-right) + var(--hud-gap) + 6px); bottom:calc(var(--safe-bottom) + var(--hud-gap) + 106px); } }
 @media (orientation:portrait) and (max-width:900px) {
 }
 
