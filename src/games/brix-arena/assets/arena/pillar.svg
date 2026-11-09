@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="170" viewBox="0 0 60 170">
+  <defs>
+    <linearGradient id="s" x1="0" x2="1"><stop offset="0" stop-color="#8a6538"/><stop offset=".35" stop-color="#e2c08a"/><stop offset=".6" stop-color="#c49a62"/><stop offset="1" stop-color="#6e4d2a"/></linearGradient>
+    <linearGradient id="c" x1="0" x2="1"><stop offset="0" stop-color="#7d5a33"/><stop offset=".4" stop-color="#e8c891"/><stop offset="1" stop-color="#6a4a28"/></linearGradient>
+  </defs>
+  <rect x="4" y="2" width="52" height="10" rx="2" fill="url(#c)"/>
+  <path d="M8 12 h44 l-5 12 h-34 z" fill="url(#c)"/>
+  <rect x="13" y="24" width="34" height="124" fill="url(#s)"/>
+  <g stroke="#6e4d2a" stroke-opacity=".45" stroke-width="1.5"><line x1="20" y1="26" x2="20" y2="146"/><line x1="27" y1="26" x2="27" y2="146"/><line x1="34" y1="26" x2="34" y2="146"/><line x1="41" y1="26" x2="41" y2="146"/></g>
+  <path d="M13 148 h34 l6 9 h-46 z" fill="url(#c)"/>
+  <rect x="3" y="157" width="54" height="11" rx="2" fill="url(#c)"/>
+  <path d="M30 60 l3 9 -2 8 3 10" stroke="#5e4227" stroke-width="1" fill="none" opacity=".6"/>
+</svg>

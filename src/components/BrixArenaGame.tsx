@@ -15,7 +15,7 @@ export function BrixArenaGame({ onBack, onGameOver }: Props) {
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
+    link.href = 'https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700;800&family=Cinzel:wght@600;700;900&family=Chakra+Petch:wght@400;500;600&family=Russo+One&display=swap';
     document.head.appendChild(link);
     return () => link.remove();
   }, []);
