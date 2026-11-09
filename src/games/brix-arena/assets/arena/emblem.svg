@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="560" viewBox="0 0 560 560">
+  <g fill="none" stroke-linecap="butt">
+    <circle cx="280" cy="280" r="262" stroke="#5e4227" stroke-opacity=".35" stroke-width="30"/>
+    <circle cx="280" cy="280" r="262" stroke="#9a744a" stroke-width="22" stroke-dasharray="30 4"/>
+    <circle cx="280" cy="280" r="262" stroke="#c49d68" stroke-width="6" stroke-dasharray="30 4" stroke-opacity=".6" transform="translate(0 -6)"/>
+    <circle cx="280" cy="280" r="206" stroke="#7a5632" stroke-opacity=".45" stroke-width="4" stroke-dasharray="2 10"/>
+    <circle cx="280" cy="280" r="150" stroke="#9a744a" stroke-opacity=".7" stroke-width="10" stroke-dasharray="18 4"/>
+  </g>
+  <g fill="#93704a" stroke="#5e4227" stroke-width="3" stroke-opacity=".5">
+    <path d="M280 168 l26 26 -26 26 -26 -26z"/><path d="M280 340 l26 26 -26 26 -26 -26z"/>
+    <path d="M168 280 l26 -26 26 26 -26 26z"/><path d="M340 280 l26 -26 26 26 -26 26z"/>
+  </g>
+  <g fill="#b48b5a" opacity=".55"><path d="M280 182 l12 12 -12 12 -12 -12z"/><path d="M280 354 l12 12 -12 12 -12 -12z"/><path d="M182 280 l12 -12 12 12 -12 12z"/><path d="M354 280 l12 -12 12 12 -12 12z"/></g>
+  <g transform="translate(280 280)" stroke="#6e4d2a" stroke-opacity=".55" stroke-width="7" stroke-linecap="round">
+    <line x1="-58" y1="-58" x2="58" y2="58"/><line x1="58" y1="-58" x2="-58" y2="58"/>
+  </g>
+  <g transform="translate(280 280)" stroke="#a9824f" stroke-opacity=".6" stroke-width="3" stroke-linecap="round">
+    <line x1="-58" y1="-58" x2="58" y2="58"/><line x1="58" y1="-58" x2="-58" y2="58"/>
+    <line x1="-40" y1="-26" x2="-26" y2="-40"/><line x1="40" y1="-26" x2="26" y2="-40"/>
+  </g>
+  <circle cx="280" cy="280" r="26" fill="#8a6640" stroke="#5e4227" stroke-opacity=".6" stroke-width="4"/>
+</svg>
