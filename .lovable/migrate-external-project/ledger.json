@@ -1,11 +1,12 @@
 {
   "bloup": [
-    {"capability":"code and original interface","source":"bloup-lovable.zip standalone Canvas HTML","outcome":"migrate","status":"pending","next_action":"Preserve engine, menus, physics and sound; bridge start/result/exit only."},
-    {"capability":"schema and authorization","source":"shared secure scores","outcome":"migrate","status":"pending","next_action":"Add distinct bloup identity, exclude historical arc_changeant rankings."},
+    {"capability":"code and original interface","source":"bloup-lovable.zip standalone Canvas HTML","outcome":"migrate","status":"verified","next_action":"Original Canvas engine, menus, physics and sound retained; phone/current/desktop render, natural game over, replay, sound toggle and exit verified."},
+    {"capability":"schema and authorization","source":"shared secure scores","outcome":"migrate","status":"verified","next_action":"Distinct bloup constraint and submit-score deployed; real score 99 read in ranking UI and daily/global challenge progress. Temporary verification scores removed; historical arc_changeant records excluded, not deleted."},
     {"capability":"records and auth identities","source":"local bloup.best1, skin2 and muted; no source accounts/database","outcome":"preserve","status":"verified","next_action":"Retain original local keys and shared identity; no user export required."},
-    {"capability":"uploaded file bytes and external providers","source":"self-contained HTML, Web Audio and Google Outfit font","outcome":"preserve","status":"pending","next_action":"Bundle HTML and font for native offline display."},
+    {"capability":"uploaded file bytes and external providers","source":"self-contained HTML, Web Audio and Google Outfit font","outcome":"preserve","status":"verified","next_action":"HTML and all five Outfit weights bundled; hub artwork captured from actual gameplay."},
     {"capability":"public endpoints, callbacks, webhooks, schedules and secrets","source":"none","outcome":"not applicable","status":"verified","next_action":"No external services or credentials required."},
-    {"capability":"tickets, cutover and verification","source":"existing Ball Balance gate","outcome":"preserve","status":"pending","next_action":"Keep owned tickets and consume one per run/replay; verify original screens and shared progress."}
+    {"capability":"tickets and verification","source":"existing Ball Balance gate","outcome":"preserve","status":"verified","next_action":"114 tests passed; three owned tickets unchanged at pre-game, two after start, one after replay. Native-device rendering remains unmeasured."},
+    {"capability":"production cutover","source":"published frontend","outcome":"migrate","status":"pending","next_action":"User must publish the updated app; native package sync/build is performed on their device."}
   ],
   "source": "assaut-projet.zip",
   "assaut": [
