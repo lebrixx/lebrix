@@ -1,0 +1,2 @@
+ALTER TABLE public.brix_factory_scores ADD COLUMN IF NOT EXISTS factory_earnings bigint NOT NULL DEFAULT 0;
+CREATE INDEX IF NOT EXISTS brix_factory_scores_earnings_idx ON public.brix_factory_scores (factory_earnings DESC);
