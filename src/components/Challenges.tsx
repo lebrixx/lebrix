@@ -49,7 +49,7 @@ interface ChallengesProps {
 const MODE_INFO = {
   [ModeID.CHRONOPHASE]: { name: 'Chronophase', icon: Timer, color: 'text-amber-300', gradient: 'from-amber-400/20 to-cyan-500/5' },
   [ModeID.BLOUP]: { name: 'Bloup', icon: Zap, color: 'text-purple-400', gradient: 'from-purple-500/20 to-purple-600/5' },
-  [ModeID.SURVIE_60S]: { name: 'Stack Jump', icon: Timer, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-cyan-600/5' },
+  [ModeID.SURVIE_60S]: { name: 'Altitude', icon: Timer, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-cyan-600/5' },
   [ModeID.ASSAUT]: { name: 'Assaut', icon: MapPin, color: 'text-green-400', gradient: 'from-green-500/20 to-green-600/5' },
   [ModeID.BRIX_RUSH]: { name: 'Brix Rush', icon: Target, color: 'text-fuchsia-400', gradient: 'from-fuchsia-500/20 to-amber-500/5' },
   [ModeID.BRIX_ARENA]: { name: 'Brix Arena', icon: Brain, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-cyan-600/5' },

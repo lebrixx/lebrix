@@ -24,11 +24,11 @@ export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   { id: 'bloup_score_30', title: 'Bloup Confirmé', description: 'Fais un score de 30 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 30, reward: { coins: 30 } },
   { id: 'bloup_score_45', title: 'Bloup Expert', description: 'Fais un score de 45 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 45, reward: { coins: 46 } },
   
-  // Stack Jump
-  { id: 'survie_score_5', title: 'Stack Débutant', description: 'Fais un score de 5 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
-  { id: 'survie_score_8', title: 'Stack Empileur', description: 'Fais un score de 8 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
-  { id: 'survie_score_12', title: 'Stack Confirmé', description: 'Fais un score de 12 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
-  { id: 'survie_score_15', title: 'Maître Stack', description: 'Fais un score de 15 en Stack Jump', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
+  // Altitude
+  { id: 'survie_score_5', title: 'Altitude Débutant', description: 'Fais un score de 5 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
+  { id: 'survie_score_8', title: 'Altitude Empileur', description: 'Fais un score de 8 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
+  { id: 'survie_score_12', title: 'Altitude Confirmé', description: 'Fais un score de 12 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
+  { id: 'survie_score_15', title: 'Maître Altitude', description: 'Fais un score de 15 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
   // Zone mobile
   { id: 'assaut_score_8', title: 'Pilote Débutant', description: 'Fais un score de 8 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 8, reward: { coins: 20 } },
