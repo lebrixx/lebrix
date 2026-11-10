@@ -27,7 +27,7 @@ const MODE_NAMES: Record<string, string> = {
   chronophase: 'Chronophase',
   arc_changeant: 'Ball Balance',
   bloup: 'Bloup',
-  survie_60s: 'Stack Jump',
+  survie_60s: 'Altitude',
   assaut: 'Assaut',
   brix_rush: 'Brix Rush',
   brix_arena: 'Brix Arena',

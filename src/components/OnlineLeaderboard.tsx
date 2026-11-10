@@ -47,7 +47,7 @@ const modeNames = {
   brix_arena: 'Brix Arena',
   chronophase: 'Chronophase',
   bloup: 'Bloup',
-  survie_60s: 'Stack Jump'
+  survie_60s: 'Altitude'
 };
 
 export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) => {

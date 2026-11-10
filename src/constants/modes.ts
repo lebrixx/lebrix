@@ -118,7 +118,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
     variableArc: false
   },
   [ModeID.SURVIE_60S]: {
-    name: "Stack Jump",
+    name: "Altitude",
     desc: "Empile les plaques le plus haut possible ! Tape pour poser, vise le centre, vise les plaques dorées.",
     keepMovingZone: false,
     survival: false,
