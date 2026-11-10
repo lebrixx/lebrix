@@ -19,7 +19,7 @@ import { BrixFactory } from '@/components/BrixFactory';
 import { BloupGame } from '@/components/BloupGame';
 import { CubeDodge3DGame } from '@/components/CubeDodge3DGame';
 import { ChronophaseGame } from '@/components/ChronophaseGame';
-import { StackJump3DGame } from '@/components/StackJump3DGame';
+import { AltitudeModeGame } from '@/components/AltitudeModeGame';
 import { AssautGame } from '@/components/AssautGame';
 import { BrixRushGame } from '@/components/BrixRushGame';
 import { BrixArenaGame } from '@/components/BrixArenaGame';
@@ -115,6 +115,17 @@ const Index = () => {
     // Initialiser les notifications une seule fois
     initNotifications();
   }, []);
+
+  // Chaque changement de section repart tout en haut de la page.
+  useEffect(() => {
+    const reset = () => {
+      document.querySelectorAll('.app-content, .app-screens, [data-scroll-root]').forEach(el => { (el as HTMLElement).scrollTop = 0; });
+      window.scrollTo(0, 0); document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
+    };
+    reset();
+    const id = requestAnimationFrame(reset);
+    return () => cancelAnimationFrame(id);
+  }, [currentScreen]);
 
   // Afficher la popup d'avis quand le joueur revient au menu
   useEffect(() => {
@@ -396,18 +407,7 @@ const Index = () => {
           }
           if (currentMode === 'survie_60s') {
             return (
-              <StackJump3DGame
-                onBack={() => setCurrentScreen('menu')}
-                onGameOver={handleGameOver}
-                isSoundMuted={isMuted}
-                onToggleSound={toggleMute}
-                playSuccess={playSuccess}
-                playFailure={playFailure}
-                selectedBoosts={selectedBoostsForGame}
-                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
-                coins={gameState.coins}
-                onEarnCoin={addCoins}
-              />
+              <AltitudeModeGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} />
             );
           }
           if (currentMode === 'assaut') {
