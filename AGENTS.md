@@ -25,3 +25,4 @@
 - Give every portal-rendered overlay an explicit `pointer-events-auto`, because an open Radix modal sets `pointer-events: none` on `body` and would otherwise make the overlay unclickable.
 - Host Chronophase's supplied standalone HTML unchanged under `public/games/chronophase` in an iframe with locally vendored Three.js; bridge only start/score/exit via postMessage and use the distinct `chronophase` score identity (historical Cube Dodge `classic` scores stay excluded).
 - Host Bloup's supplied Canvas HTML in a body-portal iframe with bundled Outfit; change only safe-area forwarding and ticket/start/result/exit bridges, using distinct `bloup` scores and retaining the shared ticket inventory so historical Ball Balance records never mix with the replacement.
+- Altitude replaces Stack Jump's game as the supplied React file in `src/games/altitude` (unchanged except start/score/home bridges), reusing the `survie_60s` score identity since it is the same mode renamed.
