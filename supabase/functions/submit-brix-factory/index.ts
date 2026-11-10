@@ -30,6 +30,7 @@ Deno.serve(async (req) => {
       storage_level,
       amplifier_level,
       decorations,
+      factory_earnings,
     } = body ?? {};
 
     if (!device_id || !username || typeof total_brix_produced !== 'number') {
@@ -74,7 +75,7 @@ Deno.serve(async (req) => {
 
     const { data: existing } = await supabase
       .from('brix_factory_scores')
-      .select('total_brix_produced')
+      .select('total_brix_produced, factory_earnings')
       .eq('device_id', device_id)
       .maybeSingle();
 
@@ -83,6 +84,10 @@ Deno.serve(async (req) => {
         ? existing.total_brix_produced
         : safeTotal;
 
+    const safeEarn = typeof factory_earnings === 'number' && isFinite(factory_earnings)
+      ? Math.min(9_000_000_000_000_000, Math.max(0, Math.floor(factory_earnings))) : 0;
+    const nextEarn = Math.max(Number(existing?.factory_earnings ?? 0), safeEarn);
+
     const { error } = await supabase
       .from('brix_factory_scores')
       .upsert(
@@ -90,6 +95,7 @@ Deno.serve(async (req) => {
           device_id,
           username,
           total_brix_produced: nextTotal,
+          factory_earnings: nextEarn,
           reactor_level: rLvl,
           storage_level: sLvl,
           amplifier_level: aLvl,

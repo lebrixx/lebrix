@@ -38,6 +38,7 @@ export type Database = {
           created_at: string
           decorations: string
           device_id: string
+          factory_earnings: number
           id: string
           reactor_level: number
           storage_level: number
@@ -50,6 +51,7 @@ export type Database = {
           created_at?: string
           decorations?: string
           device_id: string
+          factory_earnings?: number
           id?: string
           reactor_level?: number
           storage_level?: number
@@ -62,6 +64,7 @@ export type Database = {
           created_at?: string
           decorations?: string
           device_id?: string
+          factory_earnings?: number
           id?: string
           reactor_level?: number
           storage_level?: number
