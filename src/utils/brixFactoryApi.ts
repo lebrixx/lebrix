@@ -9,12 +9,13 @@ export interface BrixLeaderboardEntry {
   storage_level: number;
   amplifier_level: number;
   decorations: string | null;
+  factory_earnings?: number;
 }
 
 // Cache le classement plusieurs heures pour limiter drastiquement la charge sur Supabase.
 // Brix Factory est un mode idle : les positions ne bougent quasiment pas d'heure en heure.
-const LB_CACHE_KEY = 'brix_lb_cache_v1';
-const LB_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 heures
+const LB_CACHE_KEY = 'brix_lb_cache_v2';
+const LB_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 let lbMemoryCache: { at: number; data: BrixLeaderboardEntry[] } | null = null;
 
 function readLbDiskCache(): { at: number; data: BrixLeaderboardEntry[] } | null {
@@ -55,8 +56,9 @@ export async function fetchBrixLeaderboard(
 
   const { data, error } = await (supabase as any)
     .from('brix_factory_scores')
-    .select('device_id, username, total_brix_produced, reactor_level, storage_level, amplifier_level, decorations')
-    .order('total_brix_produced', { ascending: false })
+    .select('device_id, username, total_brix_produced, reactor_level, storage_level, amplifier_level, decorations, factory_earnings')
+    .gt('factory_earnings', 0)
+    .order('factory_earnings', { ascending: false })
     .limit(limit);
   if (error) {
     // En cas d'erreur, on retombe sur le cache (même expiré) si dispo
@@ -76,6 +78,7 @@ export interface SubmitPayload {
   storageLevel: number;
   amplifierLevel: number;
   decorations?: string;
+  factoryEarnings?: number;
 }
 
 export async function submitBrixScore(p: SubmitPayload): Promise<{ success: boolean; total?: number; error?: string }> {
@@ -92,6 +95,7 @@ export async function submitBrixScore(p: SubmitPayload): Promise<{ success: bool
         storage_level: p.storageLevel,
         amplifier_level: p.amplifierLevel,
         decorations: p.decorations ?? '',
+        factory_earnings: Math.floor(p.factoryEarnings ?? 0),
       },
     });
     if (error) return { success: false, error: error.message };

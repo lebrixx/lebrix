@@ -289,15 +289,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             type="button"
             className="lsm-row lsm-row-brix"
             onClick={() => {
-              if (!brixUnlocked) {
-                try { sessionStorage.setItem('challenges_focus_brix', '1'); } catch {}
-                onOpenChallenges();
-                return;
-              }
               onOpenBrixFactory?.();
             }}
           >
-            <span className="lsm-row-icon lsm-dark-icon">{brixUnlocked ? <Sparkles className="w-7 h-7" /> : <Lock className="w-7 h-7" fill="currentColor" />}</span>
+            <span className="lsm-row-icon lsm-dark-icon"><Sparkles className="w-7 h-7" /></span>
             <span className="lsm-row-body"><span className="lsm-row-title">BRIX FACTORY</span></span>
             <img src={menuCubesArt} alt="" aria-hidden className="lsm-cubes-art" draggable={false} />
             <ChevronRight className="lsm-chev" />

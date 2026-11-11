@@ -1,5 +1,5 @@
 # Project rules
-- Lock the whole app to portrait: iOS via Info.plist supported orientations, Android via `@capacitor/screen-orientation` locked in `src/main.tsx` (optional manifest `screenOrientation="portrait"` hardening); landscape game surfaces keep their CSS transforms and never request OS rotation.
+- Lock the whole app to portrait (except Brix Factory, which unlocks OS rotation while its iframe is mounted and relocks on exit; iOS Info.plist therefore lists landscape and `src/main.tsx` locks portrait at runtime on both platforms): iOS via Info.plist supported orientations, Android via `@capacitor/screen-orientation` locked in `src/main.tsx` (optional manifest `screenOrientation="portrait"` hardening); landscape game surfaces keep their CSS transforms and never request OS rotation.
 - Keep mode-selection presentation and its scoped arcade tokens separate from game engines; bundle hub artwork as imports for native offline display and retain shared mode order and existing access callbacks.
 - Keep Assaut's supplied simulation, Three.js painters, menus and controls isolated in `src/games/assaut`; bundle original artwork for native offline rendering and bridge only navigation and secure score sessions.
 - Keep Assaut bomb damage and defeat rewards in a tested combat helper so lethal bombs cannot advance score counters while normal boss progression stays intact.
@@ -26,3 +26,5 @@
 - Host Chronophase's supplied standalone HTML unchanged under `public/games/chronophase` in an iframe with locally vendored Three.js; bridge only start/score/exit via postMessage and use the distinct `chronophase` score identity (historical Cube Dodge `classic` scores stay excluded).
 - Host Bloup's supplied Canvas HTML in a body-portal iframe with bundled Outfit; change only safe-area forwarding and ticket/start/result/exit bridges, using distinct `bloup` scores and retaining the shared ticket inventory so historical Ball Balance records never mix with the replacement.
 - Altitude replaces Stack Jump's game as the supplied React file in `src/games/altitude` (unchanged except start/score/home bridges), reusing the `survie_60s` score identity since it is the same mode renamed.
+
+- Host Brix Factory (supplied Ferrum HTML) unchanged under `public/games/brix-factory` in a body-portal iframe; bridge only exit, safe-area vars and lifetime earnings, ranked via the `factory_earnings` column so old idle-factory totals never mix.
