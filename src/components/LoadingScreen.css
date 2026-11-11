@@ -1,0 +1,280 @@
+/* ===== Lucky Stop — écran de chargement (mobile-first) ===== */
+
+.ls-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse 75% 60% at 50% 45%,
+    #3a2185 0%,
+    #2c1668 45%,
+    #1d0d4a 100%
+  );
+  font-family: "Fredoka", "Baloo 2", "Nunito", system-ui, -apple-system, sans-serif;
+  color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.ls-loader.ls-exit {
+  opacity: 0;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+/* --- Rayons lumineux qui tournent --- */
+.ls-rays {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 180vmax;
+  height: 180vmax;
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(170, 120, 255, 0.09) 0deg 10deg,
+    transparent 10deg 24deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 55%);
+  mask-image: radial-gradient(circle, #000 0%, transparent 55%);
+  animation: ls-spin 30s linear infinite, ls-fade-in 1.2s ease both;
+}
+
+/* --- Halo qui pulse derrière le logo --- */
+.ls-glow {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 90vmin;
+  height: 90vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 90, 255, 0.35) 0%, transparent 65%);
+  filter: blur(10px);
+  animation: ls-pulse 2.4s ease-in-out infinite;
+}
+
+/* --- Logo --- */
+.ls-logo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(86vw, 440px);
+  margin-top: -6vh;
+}
+
+.ls-crown,
+.ls-title {
+  display: block;
+  height: auto;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  /* logo détouré (PNG transparent) : ombre douce pour le détacher du fond */
+  filter: drop-shadow(0 10px 18px rgba(12, 0, 40, 0.45));
+}
+
+.ls-crown-wrap {
+  width: 35%;
+  margin-bottom: -6%;
+  z-index: 2;
+  animation: ls-crown-drop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.55s both;
+}
+.ls-crown {
+  width: 100%;
+}
+.ls-float { position: relative; }
+
+.ls-title-wrap {
+  position: relative;
+  width: 100%;
+  animation: ls-title-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.ls-title {
+  width: 100%;
+  animation: ls-breathe 2.6s ease-in-out 1.2s infinite;
+}
+
+/* Reflet premium : il ne glisse QUE sur la face des lettres (masque = forme du logo) */
+.ls-crown-wrap { position: relative; }
+.ls-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: url("../assets/loader/title-mask.png");
+  mask-image: url("../assets/loader/title-mask.png");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  /* reflet nacré : frange rosée → filet blanc éclatant → frange bleutée */
+  background: linear-gradient(115deg,
+    transparent 41%,
+    rgba(255, 170, 255, 0) 43.5%,
+    rgba(255, 200, 255, 0.65) 48.4%,
+    #fff 49.5%,
+    #fff 50.5%,
+    rgba(190, 220, 255, 0.65) 51.6%,
+    rgba(150, 200, 255, 0) 56.5%,
+    transparent 59%);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  background-position: 150% 0;
+  animation: ls-shine 3.6s cubic-bezier(0.45, 0, 0.25, 1) 1.5s infinite;
+}
+/* le reflet suit la respiration du titre */
+.ls-title-wrap .ls-shine { animation: ls-shine 3.6s cubic-bezier(0.45, 0, 0.25, 1) 1.5s infinite, ls-breathe 2.6s ease-in-out 1.2s infinite; }
+
+.ls-shine--crown {
+  -webkit-mask-image: url("../assets/loader/crown-mask.png");
+  mask-image: url("../assets/loader/crown-mask.png");
+  animation: ls-shine 3.6s cubic-bezier(0.45, 0, 0.25, 1) 1.15s infinite;
+}
+.ls-crown-wrap .ls-float {
+  animation: ls-crown-float 2.6s ease-in-out 1.5s infinite;
+}
+
+/* --- Étincelles --- */
+.ls-sparkle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  filter: drop-shadow(0 0 6px #e7a8ff);
+  opacity: 0;
+  animation: ls-twinkle 2.2s ease-in-out infinite;
+}
+.ls-sparkle:nth-of-type(1) { top: 4%;  left: 18%; animation-delay: 1.2s; }
+.ls-sparkle:nth-of-type(2) { top: 14%; right: 14%; animation-delay: 1.9s; }
+.ls-sparkle:nth-of-type(3) { bottom: 22%; left: 4%; animation-delay: 2.5s; }
+.ls-sparkle:nth-of-type(4) { bottom: 6%; right: 6%; animation-delay: 1.6s; }
+.ls-sparkle:nth-of-type(5) { top: 46%; right: -2%; animation-delay: 2.9s; }
+
+/* --- Barre de progression --- */
+.ls-progress {
+  position: absolute;
+  left: 50%;
+  bottom: calc(12vh + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(68vw, 320px);
+  text-align: center;
+  animation: ls-rise 0.6s ease 1s both;
+}
+
+.ls-bar {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(10, 2, 35, 0.55);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(168, 120, 255, 0.35);
+  overflow: hidden;
+}
+
+.ls-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7b3dff 0%, #c63dff 55%, #ff5ce1 100%);
+  box-shadow: 0 0 12px rgba(230, 90, 255, 0.8);
+  transition: width 0.35s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+.ls-bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.18) 0 8px,
+    transparent 8px 16px
+  );
+  background-size: 22.6px 22.6px;
+  animation: ls-stripes 0.8s linear infinite;
+}
+.ls-bar-fill::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 2px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  z-index: 1;
+}
+
+.ls-label {
+  margin-top: 12px;
+  font-size: clamp(13px, 3.6vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e9dcff;
+  text-shadow: 0 2px 0 #6a1fb0, 0 0 10px rgba(214, 90, 255, 0.6);
+}
+
+/* ===== Keyframes ===== */
+@keyframes ls-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes ls-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ls-pulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.92); }
+  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+}
+@keyframes ls-title-pop {
+  0%   { opacity: 0; transform: scale(0.3) rotate(-6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes ls-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+@keyframes ls-crown-drop {
+  0%   { opacity: 0; transform: translateY(-120%) rotate(-25deg) scale(0.6); }
+  100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+@keyframes ls-crown-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8%) rotate(3deg); }
+}
+@keyframes ls-shine {
+  0%   { background-position: 150% 0; }
+  40%  { background-position: -50% 0; }
+  100% { background-position: -50% 0; }
+}
+@keyframes ls-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1) rotate(90deg); }
+}
+@keyframes ls-rise {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes ls-stripes { to { background-position: 22.6px 0; } }
+
+/* Respecte les réglages "réduire les animations" */
+@media (prefers-reduced-motion: reduce) {
+  .ls-loader *, .ls-loader *::before, .ls-loader *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Paysage sur téléphone : logo plus petit */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ls-logo { width: min(48vh * 1.9, 60vw); margin-top: -10vh; }
+  .ls-progress { bottom: calc(8vh + env(safe-area-inset-bottom)); }
+}
