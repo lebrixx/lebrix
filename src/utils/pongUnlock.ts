@@ -47,9 +47,9 @@ export function setBrixFactoryOverrideUnlocked(): void {
   } catch {}
 }
 
+/** Brix Factory is unlocked for everyone by default (no challenge required). */
 export function isPongUnlocked(): boolean {
-  if (isBrixFactoryOverrideUnlocked()) return true;
-  return getPongUnlockProgress().every((p) => p.completed);
+  return true;
 }
 
 export const isBrixFactoryUnlocked = isPongUnlocked;
