@@ -2,7 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getDeviceId, getUsername } from '@/utils/localIdentity';
 
 export interface BrixLeaderboardEntry {
-  device_id: string;
+  device_id?: string;
   username: string;
   total_brix_produced: number;
   reactor_level: number;
@@ -14,7 +14,7 @@ export interface BrixLeaderboardEntry {
 
 // Cache le classement plusieurs heures pour limiter drastiquement la charge sur Supabase.
 // Brix Factory est un mode idle : les positions ne bougent quasiment pas d'heure en heure.
-const LB_CACHE_KEY = 'brix_lb_cache_v2';
+const LB_CACHE_KEY = 'brix_lb_cache_v3';
 const LB_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 let lbMemoryCache: { at: number; data: BrixLeaderboardEntry[] } | null = null;
 
@@ -56,7 +56,7 @@ export async function fetchBrixLeaderboard(
 
   const { data, error } = await (supabase as any)
     .from('brix_factory_scores')
-    .select('device_id, username, total_brix_produced, reactor_level, storage_level, amplifier_level, decorations, factory_earnings')
+    .select('username, total_brix_produced, reactor_level, storage_level, amplifier_level, decorations, factory_earnings')
     .gt('factory_earnings', 0)
     .order('factory_earnings', { ascending: false })
     .limit(limit);

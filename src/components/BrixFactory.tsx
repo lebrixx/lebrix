@@ -155,7 +155,7 @@ export function BrixFactory({ onBack }: { onBack: () => void }) {
             {ranked.slice(3, 50).map((r, i) => {
               const mine = me && r.username.toLowerCase() === me.toLowerCase();
               return (
-                <li key={r.device_id} className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 ${mine ? 'border-secondary/60 bg-secondary/15' : 'border-primary/15 bg-card/60'}`}>
+                <li key={r.username} className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 ${mine ? 'border-secondary/60 bg-secondary/15' : 'border-primary/15 bg-card/60'}`}>
                   <span className="w-7 text-center text-sm font-black text-muted-foreground">{i + 4}</span>
                   <span className="flex-1 truncate text-sm font-semibold">{r.username}</span>
                   <span className="text-sm font-black">{formatMoney(r.factory_earnings ?? 0)}</span>
