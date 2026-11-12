@@ -96,75 +96,111 @@ export function BrixFactory({ onBack }: { onBack: () => void }) {
   }
 
   const ranked = (rows ?? []).filter((r) => (r.factory_earnings ?? 0) > 0);
-  const myIndex = ranked.findIndex((r) => me && r.username.toLowerCase() === me.toLowerCase());
+  const isMe = (n: string) => !!me && n.toLowerCase() === me.toLowerCase();
+  const myIndex = ranked.findIndex((r) => isMe(r.username));
   const podium = ranked.slice(0, 3);
-  const medal = ['text-amber-300', 'text-slate-200', 'text-orange-400'];
+  const pod = [
+    { i: 1, h: 'h-16', ring: 'ring-slate-300/70', tone: 'text-slate-200', label: '2' },
+    { i: 0, h: 'h-24', ring: 'ring-amber-300/80', tone: 'text-amber-300', label: '1' },
+    { i: 2, h: 'h-12', ring: 'ring-orange-400/70', tone: 'text-orange-400', label: '3' },
+  ];
 
   return (
     <div className="min-h-full flex flex-col px-4 pb-28 text-foreground">
-      <div className="flex items-center gap-3 pt-2">
-        <button type="button" onClick={onBack} aria-label="Retour" className="w-11 h-11 rounded-2xl bg-card/70 border border-primary/30 flex items-center justify-center active:scale-95 transition">
+      {/* Header */}
+      <div className="flex items-center pt-2">
+        <button type="button" onClick={onBack} aria-label="Retour" className="w-11 h-11 rounded-full bg-card/70 border border-border/60 flex items-center justify-center active:scale-95 transition">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-xl font-black tracking-wide">BRIX FACTORY</h1>
+        <div className="flex-1 text-center">
+          <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-secondary">Mode usine</div>
+          <h1 className="text-2xl font-black tracking-wider leading-none mt-0.5">BRIX FACTORY</h1>
+        </div>
+        <div className="w-11" />
       </div>
 
       {/* Hero */}
-      <div className="relative mt-4 rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/25 via-card/80 to-secondary/20 p-5 overflow-hidden shadow-[0_10px_40px_hsl(var(--primary)/0.25)]">
-        <img src={menuCubesArt} alt="" aria-hidden className="absolute -right-4 -top-2 w-36 opacity-90 animate-[float_4s_ease-in-out_infinite]" draggable={false} />
-        <div className="flex items-center gap-2 text-secondary text-xs font-bold uppercase tracking-widest"><Factory className="w-4 h-4" /> Usine</div>
-        <p className="mt-2 max-w-[62%] text-sm text-muted-foreground leading-snug">Construis ton empire industriel : machines, énergie, camions et recherche.</p>
-        <div className="mt-4 flex gap-3">
-          <div className="rounded-2xl bg-background/50 border border-primary/20 px-3 py-2">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Ton record</div>
-            <div className="font-black text-lg">{formatMoney(best)}</div>
+      <section className="relative mt-5 rounded-[28px] border border-border/60 bg-card/60 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-transparent to-transparent" />
+        <div className="absolute left-1/2 top-6 -translate-x-1/2 w-48 h-48 rounded-full bg-secondary/25 blur-3xl" />
+        <div className="relative flex flex-col items-center px-5 pt-5 pb-5">
+          <img src={menuCubesArt} alt="" aria-hidden draggable={false} className="w-40 h-40 object-contain drop-shadow-xl animate-[float_4s_ease-in-out_infinite]" />
+          <p className="mt-1 text-center text-sm text-muted-foreground leading-snug max-w-[260px]">
+            Bâtis ton empire industriel : machines, énergie, camions et recherche.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 w-full rounded-2xl bg-background/50 border border-border/50 divide-x divide-border/50">
+            <div className="py-3 text-center">
+              <div className="flex items-center justify-center gap-1 text-[10px] uppercase tracking-widest text-muted-foreground"><Factory className="w-3 h-3" /> Record</div>
+              <div className="mt-1 font-black text-lg">{formatMoney(best)}</div>
+            </div>
+            <div className="py-3 text-center">
+              <div className="flex items-center justify-center gap-1 text-[10px] uppercase tracking-widest text-muted-foreground"><Trophy className="w-3 h-3" /> Rang</div>
+              <div className="mt-1 font-black text-lg">{myIndex >= 0 ? `#${myIndex + 1}` : '—'}</div>
+            </div>
           </div>
-          <div className="rounded-2xl bg-background/50 border border-primary/20 px-3 py-2">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Ton rang</div>
-            <div className="font-black text-lg">{myIndex >= 0 ? `#${myIndex + 1}` : '—'}</div>
-          </div>
+
+          <button type="button" onClick={() => setPlaying(true)} className="group relative mt-4 w-full h-16 rounded-2xl bg-gradient-to-r from-secondary to-primary text-primary-foreground font-black text-xl tracking-[0.25em] flex items-center justify-center gap-3 shadow-[0_10px_30px_hsl(var(--secondary)/0.45)] active:scale-[0.97] transition overflow-hidden">
+            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-foreground/25 to-transparent animate-[shimmer_2.8s_ease-in-out_infinite]" />
+            <Play className="w-7 h-7 relative" fill="currentColor" /> <span className="relative">JOUER</span>
+          </button>
         </div>
-        <button type="button" onClick={() => setPlaying(true)} className="mt-5 w-full h-14 rounded-2xl bg-gradient-to-r from-secondary to-primary text-primary-foreground font-black text-lg tracking-widest flex items-center justify-center gap-2 shadow-[0_8px_24px_hsl(var(--secondary)/0.4)] active:scale-[0.97] transition animate-pulse">
-          <Play className="w-6 h-6" fill="currentColor" /> JOUER
-        </button>
-      </div>
+      </section>
 
       {/* Leaderboard */}
-      <div className="mt-6 flex items-center gap-2">
-        <Trophy className="w-5 h-5 text-amber-300" />
-        <h2 className="font-black tracking-wide">CLASSEMENT</h2>
-        <span className="ml-auto text-xs text-muted-foreground">Gains totaux</span>
-      </div>
+      <section className="mt-6 rounded-[28px] border border-border/60 bg-card/60 p-4">
+        <div className="flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-amber-300" />
+          <h2 className="font-black tracking-wider">CLASSEMENT</h2>
+          <span className="ml-auto text-[10px] uppercase tracking-widest text-muted-foreground">Gains totaux</span>
+        </div>
 
-      {rows === null ? (
-        <div className="mt-6 text-center text-muted-foreground text-sm">Chargement…</div>
-      ) : ranked.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-primary/20 bg-card/60 p-5 text-center text-sm text-muted-foreground">Sois le premier à entrer dans le classement !</div>
-      ) : (
-        <>
-          <div className="mt-3 grid grid-cols-3 gap-2 items-end">
-            {[1, 0, 2].map((i) => podium[i] && (
-              <div key={i} className={`rounded-2xl border border-primary/25 bg-card/70 p-2 text-center ${i === 0 ? 'pb-5 pt-4' : 'pb-3'}`}>
-                <Crown className={`mx-auto w-6 h-6 ${medal[i]}`} fill="currentColor" />
-                <div className="mt-1 text-xs font-bold truncate">{podium[i].username}</div>
-                <div className="text-[11px] text-secondary font-black">{formatMoney(podium[i].factory_earnings ?? 0)}</div>
+        {rows === null ? (
+          <div className="py-10 text-center text-muted-foreground text-sm">Chargement…</div>
+        ) : ranked.length === 0 ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">Sois le premier à entrer dans le classement !</div>
+        ) : (
+          <>
+            <div className="mt-5 grid grid-cols-3 gap-2 items-end">
+              {pod.map(({ i, h, ring, tone, label }) => {
+                const r = podium[i];
+                if (!r) return <div key={i} />;
+                return (
+                  <div key={i} className="flex flex-col items-center min-w-0">
+                    {i === 0 && <Crown className="w-6 h-6 text-amber-300 mb-1" fill="currentColor" />}
+                    <div className={`w-12 h-12 rounded-full bg-background/70 ring-2 ${ring} flex items-center justify-center font-black text-lg ${tone}`}>
+                      {r.username.slice(0, 1).toUpperCase()}
+                    </div>
+                    <div className={`mt-1.5 w-full truncate text-center text-xs font-bold ${isMe(r.username) ? 'text-secondary' : ''}`}>{r.username}</div>
+                    <div className="text-[11px] font-black text-secondary">{formatMoney(r.factory_earnings ?? 0)}</div>
+                    <div className={`mt-2 w-full ${h} rounded-t-xl bg-gradient-to-b from-primary/40 to-primary/5 border-t border-x border-border/50 flex items-start justify-center pt-1.5 font-black text-2xl ${tone}`}>{label}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {ranked.length > 3 && (
+              <ol className="mt-3 divide-y divide-border/40">
+                {ranked.slice(3, 50).map((r, k) => (
+                  <li key={r.username} className={`flex items-center gap-3 px-2 py-2.5 ${isMe(r.username) ? 'rounded-xl bg-secondary/15' : ''}`}>
+                    <span className="w-7 text-center text-xs font-black text-muted-foreground">{k + 4}</span>
+                    <span className="flex-1 truncate text-sm font-semibold">{r.username}</span>
+                    <span className="text-sm font-black tabular-nums">{formatMoney(r.factory_earnings ?? 0)}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            {me && myIndex >= 50 && (
+              <div className="mt-3 flex items-center gap-3 rounded-xl border border-secondary/50 bg-secondary/15 px-2 py-2.5">
+                <span className="w-7 text-center text-xs font-black">{myIndex + 1}</span>
+                <span className="flex-1 truncate text-sm font-semibold">{me}</span>
+                <span className="text-sm font-black">{formatMoney(ranked[myIndex].factory_earnings ?? 0)}</span>
               </div>
-            ))}
-          </div>
-          <ol className="mt-3 space-y-2">
-            {ranked.slice(3, 50).map((r, i) => {
-              const mine = me && r.username.toLowerCase() === me.toLowerCase();
-              return (
-                <li key={r.username} className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 ${mine ? 'border-secondary/60 bg-secondary/15' : 'border-primary/15 bg-card/60'}`}>
-                  <span className="w-7 text-center text-sm font-black text-muted-foreground">{i + 4}</span>
-                  <span className="flex-1 truncate text-sm font-semibold">{r.username}</span>
-                  <span className="text-sm font-black">{formatMoney(r.factory_earnings ?? 0)}</span>
-                </li>
-              );
-            })}
-          </ol>
-        </>
-      )}
+            )}
+          </>
+        )}
+      </section>
     </div>
   );
 }
