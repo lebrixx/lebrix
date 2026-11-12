@@ -15,6 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Play, ShoppingBag, Trophy, Star, Coins, Gamepad2, Crown, Languages, Sparkles, Instagram, RotateCcw, Backpack, Crosshair, Globe, Calendar, ChevronRight, Lightbulb, Lock, Plus, Box } from 'lucide-react';
 import { isBrixFactoryUnlocked } from '@/utils/pongUnlock';
+import { preloadGameModes } from '@/utils/preloadAssets';
 import { useToast } from '@/hooks/use-toast';
 import { fetchMonthlyGlobalLeaderboard, GlobalPlayerScore } from '@/utils/globalScoresApi';
 import { getLocalIdentity } from '@/utils/localIdentity';
@@ -102,6 +103,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const isAndroid = useMemo(() => Capacitor.getPlatform() === 'android', []);
   const { toast: uiToast } = useToast();
   const [brixUnlocked, setBrixUnlocked] = useState<boolean>(() => isBrixFactoryUnlocked());
+  useEffect(() => { preloadGameModes(); }, []);
   useEffect(() => {
     const check = () => setBrixUnlocked(isBrixFactoryUnlocked());
     check();
