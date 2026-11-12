@@ -1,0 +1,164 @@
+/* =====================================================================
+   BRIX FACTORY — Écran d'accueil (avant-partie)
+   Tout est rangé sous #brix-accueil : aucun style ne déborde sur ton projet.
+   ===================================================================== */
+#brix-accueil{
+  --ink:#1d2742; --mut:#6a7896; --soft:#97a3bb; --line:#e4e9f2; --bg2:#f3f6fb;
+  --green:#22c55e; --greenD:#15803d; --orange:#f59e0b; --orangeD:#b45309;
+  --st:env(safe-area-inset-top); --sb:env(safe-area-inset-bottom); --sl:env(safe-area-inset-left); --sr:env(safe-area-inset-right);
+  --font:"SF Pro Rounded",ui-rounded,"Nunito","Varela Round","Segoe UI",system-ui,-apple-system,sans-serif;
+  position:fixed;inset:0;z-index:1000;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;
+  font-family:var(--font);font-size:13px;color:var(--ink);user-select:none;-webkit-user-select:none;
+  padding:calc(14px + var(--st)) calc(14px + var(--sr)) calc(14px + var(--sb)) calc(14px + var(--sl));
+  background:#8fd06a;
+}
+#brix-accueil *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+#brix-accueil button{font-family:inherit;border:0;cursor:pointer;background:none;color:inherit}
+
+/* fond : image de l'usine qui se balade doucement + vignette */
+#brix-accueil .ba-fond{position:fixed;inset:-6%;background:url("fond-usine.jpg") center/cover no-repeat;animation:ba-balade 40s ease-in-out infinite alternate;z-index:-2}
+#brix-accueil .ba-vignette{position:fixed;inset:0;z-index:-1;background:radial-gradient(70% 75% at 50% 48%,rgba(20,28,48,.12),rgba(20,28,48,.62))}
+@keyframes ba-balade{from{transform:translate(-2.5%,-1%) scale(1.04)}to{transform:translate(2.5%,1.5%) scale(1.1)}}
+#brix-accueil.ba-sortie{animation:ba-out .45s ease forwards}
+@keyframes ba-out{to{opacity:0;transform:scale(1.04)}}
+@keyframes ba-in{from{opacity:0;transform:translateY(-14px) scale(.85)}}
+@keyframes ba-flotte{50%{transform:translateY(-8px)}}
+@keyframes ba-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04);filter:brightness(1.08)}}
+
+/* mise en page */
+#brix-accueil .ba-wrap{margin:auto;display:flex;gap:16px;align-items:center;justify-content:center;width:100%;max-width:980px}
+#brix-accueil .ba-main{display:flex;flex-direction:column;align-items:center;gap:12px;width:min(380px,100%);animation:ba-in .55s cubic-bezier(.2,1.3,.4,1)}
+#brix-accueil .ba-card{background:rgba(255,255,255,.96);border-radius:22px;padding:14px;width:100%;box-shadow:0 6px 0 rgba(29,39,66,.15),0 24px 50px rgba(10,15,30,.35)}
+
+/* logo */
+#brix-accueil .ba-logo{text-align:center;margin-bottom:2px}
+#brix-accueil .ba-logo img{width:96px;height:96px;display:block;margin:0 auto -8px;padding:8px;border-radius:30px;background:linear-gradient(#fef08a,#f59e0b);box-shadow:inset 0 -5px 0 rgba(146,64,14,.35),0 0 0 4px #fff,0 10px 24px rgba(20,28,48,.45);animation:ba-flotte 3.2s ease-in-out infinite}
+#brix-accueil .ba-logo h1{font-size:60px;line-height:1;font-weight:900;letter-spacing:3px;color:#fde047;
+  background:linear-gradient(#fef08a 20%,#f59e0b 75%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 3px 0 #92400e) drop-shadow(0 0 2px #1d2742) drop-shadow(0 8px 14px rgba(20,28,48,.45))}
+#brix-accueil .ba-logo h1 span{display:block;font-size:.5em;letter-spacing:.42em;margin:2px -.42em 0 0}
+#brix-accueil .ba-logo .ba-tag{display:inline-block;margin-top:6px;background:#1d2742;color:#fff;font-weight:900;font-size:12px;letter-spacing:2px;padding:5px 12px;border-radius:20px;text-transform:uppercase;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+
+/* boutons */
+#brix-accueil .ba-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 13px;border-radius:13px;font-weight:900;font-size:14px;color:#fff;background:var(--green);box-shadow:inset 0 -4px 0 var(--greenD);transition:transform .08s,filter .15s;white-space:nowrap}
+#brix-accueil .ba-btn:active{transform:translateY(2px) scale(.98)}
+#brix-accueil .ba-btn.orange{background:var(--orange);box-shadow:inset 0 -4px 0 var(--orangeD)}
+#brix-accueil .ba-btn.gris{background:#e7ecf4;color:var(--ink);box-shadow:inset 0 -4px 0 #c8d1df}
+#brix-accueil .ba-jouer{width:100%;min-height:62px;font-size:22px;letter-spacing:1px;border-radius:16px;animation:ba-pulse 1.6s infinite}
+#brix-accueil .ba-ligne{display:flex;gap:8px;margin-top:9px}
+#brix-accueil .ba-ligne .ba-btn{flex:1}
+#brix-accueil .ba-ligne .ba-btn.ic{flex:none;width:44px;padding:0;font-size:18px}
+#brix-accueil .ba-ligne .ba-btn.ic.off{opacity:.45}
+
+/* résumé de la partie */
+#brix-accueil .ba-partie{display:flex;gap:8px;margin-bottom:12px}
+#brix-accueil .ba-kv{flex:1;text-align:center;padding:7px 4px;background:var(--bg2);border-radius:13px}
+#brix-accueil .ba-kv b{display:block;font-size:15px;font-weight:900}
+#brix-accueil .ba-kv span{font-size:10.5px;font-weight:800;color:var(--mut)}
+#brix-accueil .ba-absence{background:#dcfce7;color:#166534;border-radius:12px;padding:7px 10px;font-weight:800;font-size:12px;text-align:center;margin:-4px 0 10px}
+#brix-accueil .ba-intro{text-align:center;margin:0 4px 11px;line-height:1.4;font-size:11.5px;font-weight:900;color:var(--mut)}
+#brix-accueil .ba-ver{font-size:10px;font-weight:800;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+
+/* top 3 */
+#brix-accueil .ba-top{padding:10px 12px}
+#brix-accueil .tp-h{display:flex;align-items:center;justify-content:space-between;font-weight:900;font-size:13px;margin-bottom:7px}
+#brix-accueil .tp-h button{font-weight:900;font-size:12px;color:#d97706;background:#fef3c7;border-radius:10px;padding:5px 9px}
+#brix-accueil .tp-l{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#brix-accueil .tp{position:relative;background:var(--bg2);border-radius:13px;padding:7px 4px 6px;text-align:center;min-width:0}
+#brix-accueil .tp:nth-child(1){background:linear-gradient(#fef3c7,#fffbeb)}
+#brix-accueil .tp:nth-child(2){background:linear-gradient(#e5e7eb,#f8fafc)}
+#brix-accueil .tp:nth-child(3){background:linear-gradient(#fed7aa,#fff7ed)}
+#brix-accueil .tp.me{box-shadow:0 0 0 2px #22c55e inset}
+#brix-accueil .tp .md{position:absolute;top:-4px;left:3px;font-size:17px}
+#brix-accueil .tp .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;margin:0 auto 3px;color:#fff;font-weight:900;font-size:13px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+#brix-accueil .tp b{display:block;font-size:11.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#brix-accueil .tp small{display:block;font-size:11px;font-weight:900;color:#16a34a}
+#brix-accueil .tp-me{margin-top:7px;text-align:center;font-size:11.5px;font-weight:800;color:var(--mut)}
+#brix-accueil .tp-me b{color:var(--ink)} #brix-accueil .tp-me i{font-style:normal;color:var(--soft)}
+
+/* panneau classement complet */
+#brix-accueil .ba-board{width:min(400px,100%);display:none;flex-direction:column;max-height:calc(100vh - 28px - var(--st) - var(--sb));animation:ba-in .45s cubic-bezier(.2,1.3,.4,1)}
+#brix-accueil.board .ba-board{display:flex}
+#brix-accueil .ba-board .hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#brix-accueil .ba-board .hd .gi{width:40px;height:40px;font-size:20px;border-radius:13px;background:linear-gradient(#fde047,#f59e0b);display:grid;place-items:center;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+#brix-accueil .ba-board .hd b{display:block;font-size:17px;font-weight:900}
+#brix-accueil .ba-board .hd small{font-size:11.5px;font-weight:800;color:var(--mut)}
+#brix-accueil .ba-board .hd .x{margin-left:auto;width:36px;height:36px;border-radius:12px;background:var(--bg2);font-size:16px;font-weight:900;color:var(--mut);flex:none}
+#brix-accueil .lb-soon{display:flex;gap:8px;align-items:center;background:#eff6ff;border:2px dashed #93c5fd;color:#1e40af;border-radius:13px;padding:7px 10px;font-size:11.5px;font-weight:800;margin-bottom:8px;line-height:1.35}
+#brix-accueil .lb-list{overflow:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;padding:2px}
+#brix-accueil .lb{display:flex;align-items:center;gap:9px;background:var(--bg2);border-radius:13px;padding:6px 10px 6px 6px;font-weight:800}
+#brix-accueil .lb .rk{width:28px;text-align:center;font-weight:900;font-size:14px;color:var(--mut);flex:none}
+#brix-accueil .lb .rk.md{font-size:21px}
+#brix-accueil .lb .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:14px;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+#brix-accueil .lb .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+#brix-accueil .lb .sc{font-weight:900;font-size:13px;color:#16a34a}
+#brix-accueil .lb.ex .av,#brix-accueil .lb.ex .nm,#brix-accueil .lb.ex .sc{opacity:.6}
+#brix-accueil .lb.g1{background:linear-gradient(90deg,#fef3c7,#fffbeb)}
+#brix-accueil .lb.g2{background:linear-gradient(90deg,#e5e7eb,#f8fafc)}
+#brix-accueil .lb.g3{background:linear-gradient(90deg,#fed7aa,#fff7ed)}
+#brix-accueil .lb.me{background:#dcfce7;box-shadow:0 0 0 2px #22c55e inset,0 -6px 10px -4px rgba(29,39,66,.18);position:sticky;bottom:0;top:0;z-index:1}
+#brix-accueil .lb-name{display:flex;gap:7px;margin-top:9px;align-items:center}
+#brix-accueil .lb-name label{font-size:11.5px;font-weight:900;color:var(--mut);flex:none}
+#brix-accueil .lb-name input{flex:1;min-width:0;height:38px;border-radius:11px;border:2px solid var(--line);background:var(--bg2);padding:0 10px;font:800 14px var(--font);color:var(--ink);user-select:text;-webkit-user-select:text}
+#brix-accueil .lb-name input:focus{outline:none;border-color:#22c55e}
+
+/* popup paysage / portrait */
+#brix-accueil .ba-pop{position:fixed;inset:0;z-index:5;display:grid;place-items:center;padding:12px;background:rgba(20,28,48,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#brix-accueil .ba-pop>div{background:#fff;border-radius:24px;padding:22px 22px 18px;width:min(380px,100%);text-align:center;box-shadow:0 6px 0 rgba(29,39,66,.15),0 30px 70px rgba(10,15,30,.45);animation:ba-in .4s cubic-bezier(.2,1.3,.4,1)}
+#brix-accueil .ba-pop .ic{font-size:46px;line-height:1;margin-bottom:8px}
+#brix-accueil .ba-pop h2{font-size:20px;font-weight:900;margin-bottom:6px}
+#brix-accueil .ba-pop p{color:var(--mut);font-weight:700;line-height:1.45;font-size:13px;margin-bottom:14px}
+#brix-accueil .ba-pop p b{color:var(--ink)}
+#brix-accueil .ba-pop .ba-btn{width:100%;min-height:52px;font-size:16px}
+
+/* écrans moyens : le classement complet remplace l'écran principal */
+@media (min-width:860px) and (min-height:520px){#brix-accueil.board .ba-board{max-height:560px}}
+@media (max-width:859px){#brix-accueil.board .ba-main{display:none}}
+
+/* téléphone en paysage : tout en plus compact, sur deux colonnes */
+@media (max-height:500px){
+  #brix-accueil .ba-logo img{width:58px;height:58px;padding:5px;border-radius:19px;margin-bottom:-4px}
+  #brix-accueil .ba-logo h1{font-size:42px}
+  #brix-accueil .ba-logo .ba-tag{margin-top:3px;font-size:10.5px}
+  #brix-accueil .ba-main{gap:7px}
+  #brix-accueil .ba-card{padding:10px 12px}
+  #brix-accueil .ba-partie{margin-bottom:8px}
+  #brix-accueil .ba-jouer{min-height:52px;font-size:19px}
+  #brix-accueil .ba-ligne{margin-top:7px}
+  #brix-accueil .ba-ligne .ba-btn{min-height:40px}
+  #brix-accueil .ba-ligne .ba-btn.ic{width:40px}
+  #brix-accueil .ba-top{padding:7px 9px}
+  #brix-accueil .tp-h{margin-bottom:5px;font-size:12px}
+  #brix-accueil .tp-h button{padding:3px 8px}
+  #brix-accueil .tp-l{grid-template-columns:1fr;gap:3px}
+  #brix-accueil .tp{padding:3px 8px;display:flex;align-items:center;gap:6px;text-align:left;border-radius:10px}
+  #brix-accueil .tp .md{position:static;font-size:14px}
+  #brix-accueil .tp .av{display:none}
+  #brix-accueil .tp b{flex:1}
+  #brix-accueil .tp small{font-size:10.5px}
+  #brix-accueil .tp-me{margin-top:4px;font-size:10.5px}
+  #brix-accueil .ba-ver{display:none}
+  #brix-accueil .ba-board{padding:9px 10px}
+  #brix-accueil .ba-board .hd{margin-bottom:6px}
+  #brix-accueil .ba-board .hd .gi{width:32px;height:32px;font-size:16px;border-radius:10px}
+  #brix-accueil .ba-board .hd b{font-size:15px}
+  #brix-accueil .ba-board .hd .x{width:32px;height:32px}
+  #brix-accueil .lb-soon{padding:4px 8px;font-size:10.5px;margin-bottom:5px}
+  #brix-accueil .lb-soon span:first-child{display:none}
+  #brix-accueil .lb-list{gap:3px}
+  #brix-accueil .lb{padding:3px 8px 3px 4px}
+  #brix-accueil .lb .av{width:26px;height:26px;font-size:12px}
+  #brix-accueil .lb .nm,#brix-accueil .lb .sc{font-size:12px}
+  #brix-accueil .lb .rk.md{font-size:17px}
+  #brix-accueil .lb-name{margin-top:6px}
+  #brix-accueil .lb-name input{height:32px;font-size:13px}
+  #brix-accueil .ba-pop>div{padding:16px 16px 14px}
+}
+@media (max-height:500px) and (min-width:600px){
+  #brix-accueil .ba-main{display:grid;grid-template-columns:1fr 1.15fr;grid-template-areas:"logo card" "top card";width:min(680px,100%);column-gap:16px;row-gap:8px;align-items:center}
+  #brix-accueil .ba-logo{grid-area:logo}
+  #brix-accueil .ba-carte-jeu{grid-area:card}
+  #brix-accueil .ba-top{grid-area:top}
+  #brix-accueil.board .ba-main{display:none}
+  #brix-accueil .ba-board{width:min(460px,100%)}
+}
