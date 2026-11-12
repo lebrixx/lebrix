@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Précharge une liste d'assets (images, sons, vidéos, polices…) et renvoie
@@ -52,8 +52,28 @@ export function useAssetPreloader(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urls.join("|")]);
 
-  const progress = total === 0 ? 100 : Math.round((loaded / total) * 100);
-  return { progress: done ? 100 : progress, done };
+  // Barre réelle : suit les fichiers réellement chargés, lissée et rythmée
+  // pour ne jamais sauter directement à 100 % quand tout est en cache.
+  const real = total === 0 ? 1 : loaded / total;
+  const [shown, setShown] = useState(0);
+  const realRef = useRef(real);
+  realRef.current = done ? 1 : real;
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const step = () => {
+      const timeCap = Math.min(1, (performance.now() - start) / (minDurationMs * 0.9));
+      const target = Math.min(realRef.current, timeCap);
+      setShown((v) => {
+        const next = v + (target - v) * 0.12;
+        return Math.abs(target - next) < 0.002 ? target : next;
+      });
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [minDurationMs]);
+  return { progress: Math.round(shown * 100), done: done && shown >= 0.999 };
 }
 
 const IMAGE = /\.(png|jpe?g|webp|avif|gif|svg)(\?.*)?$/i;

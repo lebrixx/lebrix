@@ -1320,3 +1320,6 @@ body { font-family: "Chakra Petch", "Russo One", sans-serif; }
   box-shadow: 0 0 8px hsl(var(--primary) / 0.35);
 }
 .ls-tab[data-state='active'] svg { color: hsl(var(--primary)); }
+
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
