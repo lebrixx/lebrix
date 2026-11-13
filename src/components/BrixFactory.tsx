@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, Crown, Factory, Play, Trophy } from 'lucide-react';
 import { fetchBrixLeaderboard, submitBrixScore, type BrixLeaderboardEntry } from '@/utils/brixFactoryApi';
 import { getUsername } from '@/utils/localIdentity';
 import { lockPortraitOrientation, unlockOrientation } from '@/utils/orientation';
-import menuCubesArt from '@/assets/menu/cubes.png';
 
 const BEST_KEY = 'brix_factory_earnings_best';
 const readBest = () => Number(localStorage.getItem(BEST_KEY) || 0) || 0;
