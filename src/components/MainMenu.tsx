@@ -4,7 +4,8 @@ import menuCoinArt from '@/assets/menu/coin.png';
 import menuTrophyArt from '@/assets/menu/trophy.png';
 import menuPlayArt from '@/assets/menu/play.png';
 import menuCrownArt from '@/assets/menu/crown.png';
-import menuCubesArt from '@/assets/menu/cubes.png';
+import brixFactoryLogo from '@/assets/menu/brix-factory-logo.png';
+import brixFactoryWorld from '@/assets/menu/brix-factory-world.jpg';
 import menuIconGift from '@/assets/menu/icon-gift.png';
 import menuIconNews from '@/assets/menu/icon-news.png';
 import menuIconWheel from '@/assets/menu/icon-wheel.png';
@@ -287,18 +288,20 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </button>
 
           {/* Brix Factory */}
-          <button
+          <Button
             type="button"
+            variant="ghost"
             className="lsm-row lsm-row-brix"
+            aria-label="Brix Factory"
             onClick={() => {
               onOpenBrixFactory?.();
             }}
           >
-            <span className="lsm-row-icon lsm-dark-icon"><Sparkles className="w-7 h-7" /></span>
-            <span className="lsm-row-body"><span className="lsm-row-title">BRIX FACTORY</span></span>
-            <img src={menuCubesArt} alt="" aria-hidden className="lsm-cubes-art" draggable={false} />
+            <img src={brixFactoryWorld} alt="" aria-hidden className="lsm-factory-world" draggable={false} />
+            <span className="lsm-factory-logo"><img src={brixFactoryLogo} alt="" draggable={false} /></span>
+            <span className="lsm-row-body"><span className="lsm-factory-title">BRIX<span>FACTORY</span></span></span>
             <ChevronRight className="lsm-chev" />
-          </button>
+          </Button>
 
           <div className="lsm-nav-spacer" aria-hidden />
         </div>

@@ -1088,7 +1088,41 @@
 
 .lsm-row { position: relative; display: flex; align-items: center; gap: 16px; height: 62px; margin-top: 16px; padding: 0 16px 0 16px; border-radius: 18px; overflow: hidden; text-align: left; }
 .lsm-row-pass { background: linear-gradient(90deg, #1e0f3c, #2a1458 70%, #1a0f36); border: 1.5px solid rgba(168,85,247,.55); box-shadow: 0 0 12px rgba(168,85,247,.2); margin-top: 20px; }
-.lsm-row-brix { background: linear-gradient(90deg, #150f2c, #1a1238); border: 1.5px solid rgba(110,90,190,.45); margin-top: 10px; }
+.lsm-row-brix {
+  --factory-ink: 222 39% 19%;
+  --factory-steel: 215 25% 83%;
+  --factory-paper: 210 38% 97%;
+  --factory-gold: 45 96% 59%;
+  --factory-gold-deep: 32 95% 44%;
+  --factory-light: 0 0% 100%;
+  --factory-shadow: 222 39% 12%;
+  --factory-surface: linear-gradient(110deg, hsl(var(--factory-paper)), hsl(var(--factory-steel)));
+  --factory-button-shadow: inset 0 2px 0 hsl(var(--factory-light) / .8), inset 0 -3px 0 hsl(var(--factory-ink) / .15), 0 4px 0 hsl(var(--factory-shadow) / .65);
+  isolation: isolate; width: 100%; height: 68px; min-height: 68px; gap: 12px; padding: 0 12px 0 10px;
+  margin-top: 12px; border: 2px solid hsl(var(--factory-gold)); border-radius: 14px;
+  background: var(--factory-surface); box-shadow: var(--factory-button-shadow);
+  color: hsl(var(--factory-ink)); font-family: ui-rounded, "Nunito", "Segoe UI", sans-serif;
+  animation: lsm-factory-breathe 4.8s ease-in-out infinite;
+}
+.lsm-row-brix:hover { background: var(--factory-surface); color: hsl(var(--factory-ink)); }
+.lsm-factory-world { position: absolute; inset: 0 0 0 auto; width: 63%; height: 100%; object-fit: cover; object-position: 50% 48%; z-index: -2; }
+.lsm-row-brix::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, hsl(var(--factory-paper)) 0%, hsl(var(--factory-paper) / .96) 36%, hsl(var(--factory-paper) / .2) 76%, hsl(var(--factory-ink) / .14)); }
+.lsm-row-brix::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 38%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, hsl(var(--factory-light) / .65), transparent);
+  transform: translateX(-150%) skewX(-20deg); animation: lsm-factory-shine 5.2s ease-in-out infinite; }
+.lsm-factory-logo { width: 48px; height: 48px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px;
+  background: linear-gradient(hsl(var(--factory-gold)), hsl(var(--factory-gold-deep)));
+  border: 2px solid hsl(var(--factory-light)); box-shadow: inset 0 -3px 0 hsl(var(--factory-ink) / .2), 0 2px 0 hsl(var(--factory-ink) / .2); }
+.lsm-factory-logo img { width: 46px; height: 46px; object-fit: contain; animation: lsm-factory-machine 3.6s ease-in-out infinite; }
+.lsm-factory-title { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; font-size: 24px; line-height: 1; font-weight: 900; letter-spacing: 0;
+  color: hsl(var(--factory-gold)); text-shadow: 0 1px 0 hsl(var(--factory-ink)), 1px 0 0 hsl(var(--factory-ink)), -1px 0 0 hsl(var(--factory-ink)), 0 -1px 0 hsl(var(--factory-ink)), 0 2px 0 hsl(var(--factory-ink)); }
+.lsm-factory-title span { font-size: 14px; line-height: 1.2; color: hsl(var(--factory-ink)); text-shadow: 0 1px 0 hsl(var(--factory-light) / .7); }
+.lsm-row-brix .lsm-chev { width: 26px; height: 26px; padding: 4px; border-radius: 50%; color: hsl(var(--factory-ink)); background: hsl(var(--factory-gold)); box-shadow: 0 2px 0 hsl(var(--factory-gold-deep)); }
+.lsm-row-brix:active { animation-play-state: paused; transform: translateY(2px); }
+@keyframes lsm-factory-breathe { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes lsm-factory-machine { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes lsm-factory-shine { 0%,62% { transform: translateX(-150%) skewX(-20deg); } 90%,100% { transform: translateX(380%) skewX(-20deg); } }
 .lsm-row-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; }
 .lsm-gold-icon { color: #fff4d6; background: linear-gradient(180deg, #c27a16, #7a4a0a); border: 1.5px solid #f5b02e; box-shadow: 0 0 10px rgba(245,176,46,.5); }
 .lsm-gold-icon svg { width: 24px; height: 24px; }
