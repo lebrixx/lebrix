@@ -28,3 +28,4 @@
 - Altitude replaces Stack Jump's game as the supplied React file in `src/games/altitude` (unchanged except start/score/home bridges), reusing the `survie_60s` score identity since it is the same mode renamed.
 
 - Host Brix Factory (supplied Ferrum HTML) unchanged under `public/games/brix-factory` in a body-portal iframe; bridge only exit, safe-area vars and lifetime earnings, ranked via the `factory_earnings` column so old idle-factory totals never mix.
+- Keep the home Brix Factory button's factory tokens scoped and bundle its supplied logo/world as imports, so its industrial identity works offline without retheming the game.
