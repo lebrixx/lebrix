@@ -27,12 +27,25 @@ export function preloadGameModes() {
   if (modesStarted) return;
   modesStarted = true;
   const base = import.meta.env.BASE_URL;
+  // Brix Arena and Chronophase first so they are smooth from their very first launch.
+  const isPriority = (p: string) => p.includes('brix-arena') || p.includes('chronophase');
+  const assetEntries = Object.entries(modeAssets);
   const queue = [
-    ...Object.values(modeAssets),
-    ...PUBLIC_MODE_FILES.map((p) => base + p),
+    ...assetEntries.filter(([p]) => isPriority(p)).map(([, u]) => u),
+    ...PUBLIC_MODE_FILES.filter(isPriority).map((p) => base + p),
+    ...assetEntries.filter(([p]) => !isPriority(p)).map(([, u]) => u),
+    ...PUBLIC_MODE_FILES.filter((p) => !isPriority(p)).map((p) => base + p),
   ];
+  // Chronophase's Three.js modules: let the browser fetch + compile them ahead of time.
+  PUBLIC_MODE_FILES.filter((p) => p.startsWith('games/chronophase/vendor/')).forEach((p) => {
+    const l = document.createElement('link');
+    l.rel = 'modulepreload';
+    l.href = base + p;
+    document.head.appendChild(l);
+  });
   // Warm lazily loaded code chunks too.
   import('@/games/brix-arena/ArenaLobby3D').catch(() => {});
+  import('three').catch(() => {});
   const idle = (cb: () => void) =>
     'requestIdleCallback' in window ? (window as any).requestIdleCallback(cb, { timeout: 1500 }) : setTimeout(cb, 200);
   const next = () => {
