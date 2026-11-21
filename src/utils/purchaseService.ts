@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
-import { purchasePremiumPack } from '@/utils/seasonPass';
 import { PREMIUM_PRODUCT_ID } from '@/utils/productIds';
+import { grantPremium } from '@/utils/restorePurchases';
 
 const PRODUCT_ID = PREMIUM_PRODUCT_ID;
 const PREMIUM_FLAG = 'ls_premium_no_ads';
@@ -10,9 +10,8 @@ const PREMIUM_FLAG = 'ls_premium_no_ads';
  */
 function activatePremium(onAddCoins?: (amount: number) => void): void {
   console.log('[purchaseService] Activating premium benefits...');
-  const result = purchasePremiumPack();
-  localStorage.setItem(PREMIUM_FLAG, 'true');
-  onAddCoins?.(result.coins);
+  const result = grantPremium();
+  if (result.coins > 0) onAddCoins?.(result.coins);
   console.log('[purchaseService] Premium activated — coins:', result.coins);
 }
 
@@ -124,7 +123,7 @@ export async function verifyPremiumOnLaunch(): Promise<void> {
     });
 
     const hasPremium = purchases?.some(
-      (p: any) => p.productIdentifier === PRODUCT_ID
+      (p: any) => (p.productIdentifier ?? p.identifier) === PRODUCT_ID
     );
 
     if (hasPremium && !isPremiumActive()) {

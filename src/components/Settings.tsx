@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins, Star, Lightbulb, PlayCircle } from 'lucide-react';
+import { Volume2, VolumeX, Bell, BellOff, Languages, Send, Settings2, Coins, Star, Lightbulb, PlayCircle, RotateCcw, ShieldCheck } from 'lucide-react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLanguage, translations, Language } from '@/hooks/useLanguage';
@@ -40,6 +40,37 @@ export const Settings: React.FC<SettingsProps> = ({
     return saved !== null ? saved === 'true' : true;
   });
   const [isSendingTest, setIsSendingTest] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  // Restaurer tous les achats définitifs (Premium + Multicolore)
+  const handleRestorePurchases = async () => {
+    if (isRestoring) return;
+    setIsRestoring(true);
+    try {
+      const { restorePurchases } = await import('@/utils/restorePurchases');
+      const result = await restorePurchases();
+      if (result === 'restored') toast({ title: t.purchasesRestored });
+      else if (result === 'none') toast({ title: t.premiumNoPurchases, variant: 'destructive' });
+      else toast({ title: t.premiumRestoreError, variant: 'destructive' });
+    } catch {
+      toast({ title: t.premiumRestoreError, variant: 'destructive' });
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
+  // RGPD : permet de revoir son choix de consentement publicitaire à tout moment
+  const handleAdPrivacy = async () => {
+    try {
+      const { AdMob, AdmobConsentStatus } = await import('@capacitor-community/admob');
+      await AdMob.resetConsentInfo();
+      const info = await AdMob.requestConsentInfo();
+      if (info.isConsentFormAvailable && info.status === AdmobConsentStatus.REQUIRED) await AdMob.showConsentForm();
+      else toast({ title: t.adPrivacyNotRequired });
+    } catch {
+      toast({ title: t.errorGenericDesc, variant: 'destructive' });
+    }
+  };
   const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'prompt'>('prompt');
 
   // Check permission status on open
@@ -323,6 +354,45 @@ export const Settings: React.FC<SettingsProps> = ({
 
 
 
+
+          {/* Restaurer les achats (exigé par Apple pour les achats définitifs) */}
+          <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
+            <div className="flex items-center gap-3">
+              <RotateCcw className="w-5 h-5 text-primary" />
+              <Label className="text-text-primary text-base">
+                {t.restorePurchasesLabel}
+              </Label>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={isRestoring}
+              onClick={handleRestorePurchases}
+              className="border-wheel-border hover:bg-button-hover text-text-primary"
+            >
+              {isRestoring ? '…' : t.restoreButton}
+            </Button>
+          </div>
+
+          {/* Choix de confidentialité publicitaire (RGPD) */}
+          {Capacitor.isNativePlatform() && (
+            <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+                <Label className="text-text-primary text-base">
+                  {t.adPrivacyLabel}
+                </Label>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleAdPrivacy}
+                className="border-wheel-border hover:bg-button-hover text-text-primary"
+              >
+                {t.manageButton}
+              </Button>
+            </div>
+          )}
 
           {Capacitor.isNativePlatform() && (
             <div className="flex items-center justify-between pt-2 border-t border-wheel-border/30">

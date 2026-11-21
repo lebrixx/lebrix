@@ -1,3 +1,4 @@
+import { whenAdsPromptsDone } from '@/ads/adsBootstrap';
 // Service de notifications push
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
@@ -318,6 +319,8 @@ export async function scheduleWheelNotification() {
 
 // Initialiser les notifications au chargement
 export async function initNotifications() {
+  // Attendre la fin des demandes pub (RGPD + ATT) pour ne jamais empiler deux fenêtres système
+  await whenAdsPromptsDone();
   const hasAskedPermission = localStorage.getItem('notificationsPermissionAsked');
   const enabled = localStorage.getItem('notificationsEnabled') === 'true';
 

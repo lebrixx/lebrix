@@ -39,7 +39,7 @@ import { BoostType } from '@/types/boosts';
 import { useSound } from '@/hooks/useSound';
 import { isPongUnlocked } from '@/utils/pongUnlock';
 import { initNotifications } from '@/utils/notifications';
-import { RateAppDialog, shouldShowRateDialog, incrementRateGameCount } from '@/components/RateAppDialog';
+import { recordGameForReview, requestNativeReview, openStoreReviewPage } from '@/utils/appReview';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 
 type GameScreen = 'menu' | 'game' | 'shop' | 'challenges' | 'modes' | 'leaderboard' | 'daily_challenge' | 'global_leaderboard' | 'reflex_grid' | 'inventory';
@@ -56,7 +56,6 @@ const Index = () => {
   const [lastGameScore, setLastGameScore] = useState(0);
   const [hasAvailableReward, setHasAvailableReward] = useState(false);
   const [selectedBoostsForGame, setSelectedBoostsForGame] = useState<BoostType[]>([]);
-  const [showRateDialog, setShowRateDialog] = useState(false);
   const [shopTarget, setShopTarget] = useState<'tickets' | null>(null);
   const [pendingRateDialog, setPendingRateDialog] = useState(false);
   // Convertisseur de score activé au lancement d'une partie d'un mode autonome
@@ -130,11 +129,12 @@ const Index = () => {
     return () => cancelAnimationFrame(id);
   }, [currentScreen]);
 
-  // Afficher la popup d'avis quand le joueur revient au menu
+  // Demande d'avis NATIVE (Apple/Google) quand le joueur revient au menu après une bonne partie
   useEffect(() => {
     if (currentScreen === 'menu' && pendingRateDialog) {
       setPendingRateDialog(false);
-      setTimeout(() => setShowRateDialog(true), 800);
+      const id = window.setTimeout(() => { void requestNativeReview(); }, 800);
+      return () => window.clearTimeout(id);
     }
   }, [currentScreen, pendingRateDialog]);
 
@@ -235,24 +235,8 @@ const Index = () => {
     // Pong Circulaire: coming soon — pas de déblocage
 
 
-    // Rate dialog logic:
-    // 1st trigger: score >30 in non-classic mode (if never triggered before)
-    // 2nd trigger: score >=55 in non-classic mode (only if user dismissed first time)
-    if (currentMode !== 'classic' && !isStandaloneMode(currentMode)) {
-      const rateData = JSON.parse(localStorage.getItem('ls_rate_app') || '{}');
-      if (!rateData.rated) {
-        const alreadyTriggered30 = localStorage.getItem('ls_rate_triggered_30');
-        const alreadyTriggered55 = localStorage.getItem('ls_rate_triggered_55');
-
-        if (!alreadyTriggered30 && finalScore > 30) {
-          localStorage.setItem('ls_rate_triggered_30', 'true');
-          setPendingRateDialog(true);
-        } else if (alreadyTriggered30 && !alreadyTriggered55 && rateData.dismissed && finalScore >= 55) {
-          localStorage.setItem('ls_rate_triggered_55', 'true');
-          setPendingRateDialog(true);
-        }
-      }
-    }
+    // Avis : uniquement la fenêtre native, après quelques parties réussies (aucun filtrage)
+    if (recordGameForReview(finalScore)) setPendingRateDialog(true);
 
     // Afficher une interstitielle si toutes les conditions sont remplies
     if (!isStandaloneMode(currentMode)) import('@/ads/InterstitialService').then(({ Interstitials }) => {
@@ -377,7 +361,7 @@ const Index = () => {
             onSpendCoins={spendCoins}
             isSoundMuted={isMuted}
             onToggleSound={toggleMute}
-            onOpenRateDialog={() => setShowRateDialog(true)}
+            onOpenRateDialog={openStoreReviewPage}
             onOpenDailyChallenge={() => setCurrentScreen('daily_challenge')}
             onReplayOnboarding={() => setReplayOnboarding(true)}
             onOpenBrixFactory={() => setCurrentScreen('reflex_grid')}
@@ -635,10 +619,7 @@ const Index = () => {
         onRewardClaimed={handleDailyRewardClaimed}
       />
 
-      <RateAppDialog
-        isOpen={showRateDialog}
-        onClose={() => setShowRateDialog(false)}
-      />
+
     </div>
   );
 };

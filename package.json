@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@capacitor-community/admob": "^7.0.3",
+    "@capacitor-community/in-app-review": "^7.1.0",
     "@capacitor/android": "^7.4.3",
     "@capacitor/cli": "^7.4.3",
     "@capacitor/core": "^7.4.3",

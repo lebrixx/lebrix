@@ -18,6 +18,25 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
   const { language } = useLanguage();
   const t = translations[language];
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  const handleRestore = async () => {
+    if (isRestoring) return;
+    setIsRestoring(true);
+    try {
+      const { restorePurchases } = await import('@/utils/restorePurchases');
+      const result = await restorePurchases();
+      if (result === 'restored') {
+        toast({ title: t.purchasesRestored });
+        if (hasRainbowUnlocked()) { setAlreadyOwned(true); onPurchased?.(); }
+      } else if (result === 'none') toast({ title: t.premiumNoPurchases, variant: 'destructive' });
+      else toast({ title: t.premiumRestoreError, variant: 'destructive' });
+    } catch {
+      toast({ title: t.premiumRestoreError, variant: 'destructive' });
+    } finally {
+      setIsRestoring(false);
+    }
+  };
   const [storePrice, setStorePrice] = useState<string | null>(null);
   const [alreadyOwned, setAlreadyOwned] = useState<boolean>(hasRainbowUnlocked());
 
@@ -101,7 +120,7 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
                 <span className="text-2xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
                   {storePrice ?? '1,99 €'}
                 </span>
-                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">Achat unique - Pas d'abonnement</div>
+                <div className="text-[9px] text-text-muted mt-0.5 tracking-wide uppercase">{t.oneTimePurchase}</div>
               </div>
 
               <Button
@@ -116,8 +135,11 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
                 {t.securePayment}
               </p>
 
+              <button onClick={handleRestore} disabled={isRestoring} className="text-[11px] text-text-secondary underline underline-offset-2 hover:text-text-primary transition-colors disabled:opacity-60">
+                {isRestoring ? '…' : t.restorePurchasesLabel}
+              </button>
               <button onClick={onClose} className="text-[11px] text-text-muted hover:text-text-secondary transition-colors">
-                Non merci
+                {t.noThanks}
               </button>
             </div>
           </div>

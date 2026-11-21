@@ -1,7 +1,8 @@
 import { AdMob, InterstitialAdPluginEvents, AdOptions } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { restoreNativeUi } from '@/utils/nativeUi';
-import { AD_IDS, IS_AD_TEST_MODE } from './adConfig';
+import { AD_IDS } from './adConfig';
+import { ensureAdsReady } from './adsBootstrap';
 
 const INTERSTITIAL_AD_UNIT_ID = AD_IDS.interstitial;
 const INITIAL_DELAY_MS = 300000; // 5 minutes minimum après lancement
@@ -23,8 +24,8 @@ class InterstitialService {
     if (this.isInitialized) return;
 
     try {
-      await AdMob.initialize({ initializeForTesting: IS_AD_TEST_MODE });
-      console.log(`[AdMob] initialized in ${IS_AD_TEST_MODE ? 'TEST' : 'production'} mode`);
+      // Initialisation + consentement RGPD + ATT, une seule fois pour toute l'app
+      if (!(await ensureAdsReady())) throw new Error('Ads unavailable on this platform');
 
       this.isInitialized = true;
       console.log('[Interstitial] AdMob initialized successfully');

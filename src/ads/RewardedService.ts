@@ -1,7 +1,8 @@
 import { AdMob, RewardAdOptions, RewardAdPluginEvents } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { restoreNativeUi } from '@/utils/nativeUi';
-import { AD_IDS, IS_AD_TEST_MODE } from './adConfig';
+import { AD_IDS } from './adConfig';
+import { ensureAdsReady } from './adsBootstrap';
 
 const REWARDED_AD_UNIT_ID = AD_IDS.rewarded;
 const COOLDOWN_MS = 60000; // 60 secondes entre chaque rewarded
@@ -43,8 +44,8 @@ private currentKind: RewardKind | null = null;
     }
 
     try {
-      await AdMob.initialize({ initializeForTesting: IS_AD_TEST_MODE });
-      console.log(`[AdMob] initialized in ${IS_AD_TEST_MODE ? 'TEST' : 'production'} mode`);
+      // Initialisation + consentement RGPD + ATT, une seule fois pour toute l'app
+      if (!(await ensureAdsReady())) throw new Error('Ads unavailable on this platform');
       console.log('[Rewarded] AdMob initialized successfully');
       this.state = 'loading';
       this.preload();
