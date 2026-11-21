@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { trs } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -453,7 +454,7 @@ export const OnlineLeaderboard: React.FC<OnlineLeaderboardProps> = ({ onBack }) 
           onClick={handleScrollButton}
           size="icon"
           className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-button-bg/40 border border-wheel-border/50 hover:bg-button-bg/60 shadow-lg backdrop-blur-sm transition-all hover:scale-110 z-50"
-          aria-label={isAtTop ? 'Aller en bas du classement' : 'Revenir en haut du classement'}
+          aria-label={isAtTop ? trs('Aller en bas du classement', 'Go to the bottom of the leaderboard', 'Ir al final de la clasificación') : trs('Revenir en haut du classement', 'Back to the top of the leaderboard', 'Volver arriba de la clasificación')}
         >
           <ChevronsDown className={`w-4 h-4 text-primary/70 transition-transform ${isAtTop ? '' : 'rotate-180'}`} />
         </Button>

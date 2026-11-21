@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { trs } from '@/i18n/tr';
 import { createPortal } from 'react-dom';
 import { fetchBrixLeaderboard, submitBrixScore, type BrixLeaderboardEntry } from '@/utils/brixFactoryApi';
 import { getUsername } from '@/utils/localIdentity';
@@ -139,7 +140,7 @@ function AccueilHost({ best, rows, onBack, onPlay }: { best: number; rows: BrixL
       if (root) {
         root.style.pointerEvents = 'auto';
         const b = document.createElement('button');
-        b.setAttribute('aria-label', 'Retour au menu');
+        b.setAttribute('aria-label', trs('Retour au menu', 'Back to menu', 'Volver al menú'));
         b.textContent = '←';
         b.style.cssText = 'position:fixed;z-index:5;top:calc(env(safe-area-inset-top) + 12px);left:calc(env(safe-area-inset-left) + 12px);width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.96);color:#1d2742;font-size:22px;font-weight:900;box-shadow:0 4px 0 rgba(29,39,66,.2)';
         b.addEventListener('click', (e) => { e.stopPropagation(); w.EcranAccueil.fermer(); cb.current.onBack(); });

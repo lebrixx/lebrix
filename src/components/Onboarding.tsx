@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { trs } from '@/i18n/tr';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -396,11 +397,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, replay = fal
                 <div className="flex items-center justify-center gap-6 pt-2">
                   <div className="flex items-center gap-2 text-xs text-text-muted">
                     <Calendar className="w-4 h-4 text-primary" />
-                    Global
+                    {trs("Global", "Global", "Global")}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-text-muted">
                     <Globe className="w-4 h-4 text-secondary" />
-                    Par mode
+                    {trs("Par mode", "By mode", "Por modo")}
                   </div>
                 </div>
               </div>

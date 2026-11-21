@@ -1,3 +1,4 @@
+import { trs } from '@/i18n/tr';
 // Configuration des modes de jeu
 
 export const ModeID = {
@@ -62,7 +63,7 @@ interface ModeConfig {
 export const cfgModes: Record<ModeType, ModeConfig> = {
   [ModeID.BRIX_RUSH]: {
     name: "Brix Rush",
-    desc: "Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !",
+    get desc() { return trs("Traverse les routes avec ton animal, esquive les voitures et contourne les barrières. Va le plus loin possible !", "Cross the roads with your animal, dodge the cars and get around the fences. Go as far as you can!", "Cruza las carreteras con tu animal, esquiva los coches y rodea las vallas. ¡Llega lo más lejos posible!"); },
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -70,7 +71,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.ASSAUT]: {
     name: "Assaut",
-    desc: "Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.",
+    get desc() { return trs("Pilote ton F-104 dans l’espace, collecte les bonus et affronte les vaisseaux boss.", "Fly your F-104 through space, collect power-ups and take on the boss ships.", "Pilota tu F-104 por el espacio, recoge bonus y enfréntate a las naves jefe."); },
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -78,7 +79,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.BRIX_ARENA]: {
     name: "Brix Arena",
-    desc: "Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.",
+    get desc() { return trs("Affronte les robots, esquive les tirs et améliore ton équipement tous les dix points. Un point toutes les trois secondes de survie.", "Fight the robots, dodge their shots and upgrade your gear every ten points. One point for every three seconds you survive.", "Enfréntate a los robots, esquiva los disparos y mejora tu equipo cada diez puntos. Un punto por cada tres segundos de supervivencia."); },
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -86,7 +87,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.CHRONOPHASE]: {
     name: "Chronophase",
-    desc: "Cours, change de couleur d'un tap et remonte le temps pour traverser chaque obstacle.",
+    get desc() { return trs("Cours, change de couleur d'un tap et remonte le temps pour traverser chaque obstacle.", "Run, change color with a tap and rewind time to get through every obstacle.", "Corre, cambia de color con un toque y retrocede en el tiempo para superar cada obstáculo."); },
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -94,7 +95,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.BLOUP]: {
     name: "Bloup",
-    desc: "Lâche les boules de gelée, fusionne les couleurs et évite de faire déborder le pot. Deux fusions font un point !",
+    get desc() { return trs("Lâche les boules de gelée, fusionne les couleurs et évite de faire déborder le pot. Deux fusions font un point !", "Drop the jelly balls, merge the colors and don't let the jar overflow. Two merges make one point!", "Suelta las bolas de gelatina, fusiona los colores y evita que el bote se desborde. ¡Dos fusiones dan un punto!"); },
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
@@ -119,7 +120,7 @@ export const cfgModes: Record<ModeType, ModeConfig> = {
   },
   [ModeID.SURVIE_60S]: {
     name: "Altitude",
-    desc: "Pose chaque plaque au millimètre. Monte plus haut que jamais.",
+    get desc() { return trs("Pose chaque plaque au millimètre. Monte plus haut que jamais.", "Place every plate to the millimeter. Climb higher than ever.", "Coloca cada placa al milímetro. Sube más alto que nunca."); },
     keepMovingZone: false,
     survival: false,
     survivalTime: 0,
