@@ -1,4 +1,5 @@
 import React from 'react';
+import { shareStoreUrl } from '@/utils/storeLinks';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, RotateCcw, Zap, Share2, Crown } from 'lucide-react';
 import { RewardButton } from '@/ads/RewardIntegration';
@@ -56,7 +57,7 @@ export const GameOverActions: React.FC<GameOverActionsProps> = ({
     const text = (t.shareScoreText || 'I scored {score} on {mode} in Lucky Stop! Can you beat me?')
       .replace('{score}', String(score))
       .replace('{mode}', modeName);
-    const url = 'https://lebrix.lovable.app';
+    const url = shareStoreUrl();
     try {
       if (Capacitor.isNativePlatform()) {
         const { Share } = await import('@capacitor/share');

@@ -7,10 +7,9 @@ const allAppAssets = import.meta.glob(
 ) as Record<string, string>;
 
 const MODE_DIRS = ['/src/assets/brix-rush/', '/src/assets/brix-arena/'];
-const UNUSED = ['/src/assets/mobile-issue-'];
 
 export const LAUNCH_ASSETS: string[] = Object.entries(allAppAssets)
-  .filter(([p]) => !MODE_DIRS.some((d) => p.startsWith(d)) && !UNUSED.some((u) => p.startsWith(u)))
+  .filter(([p]) => !MODE_DIRS.some((d) => p.startsWith(d)))
   .map(([, u]) => u);
 
 /** Stage 2 (main menu, background): game-mode sprites, hosted games and 3D models. */

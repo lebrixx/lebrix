@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import { APP_STORE_ID, ANDROID_PACKAGE } from '@/utils/storeLinks';
 
 /**
  * Avis sur les stores, conforme aux règles Apple (5.6.1) et Google :
@@ -6,8 +7,6 @@ import { Capacitor } from '@capacitor/core';
  * - aucun filtrage « tu aimes le jeu ? » avant d'envoyer vers le store ;
  * - le bouton « Laisse-nous un avis » (action volontaire du joueur) ouvre directement la page d'avis.
  */
-const APP_STORE_ID = '6753086875';
-const ANDROID_PACKAGE = 'com.bryangouzou.luckystop';
 const STATE_KEY = 'ls_native_review';
 const MIN_GAMES = 6;
 const MIN_DAYS_BETWEEN = 45;

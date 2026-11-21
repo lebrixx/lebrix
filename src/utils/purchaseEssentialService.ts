@@ -91,6 +91,8 @@ export async function purchaseEssentialNative(): Promise<'purchased' | 'cancelle
     const result = await NativePurchases.purchaseProduct({
       productIdentifier: PRODUCT_ID,
       productType: PURCHASE_TYPE.INAPP,
+      // Android : consomme l'achat pour que le pack puisse être racheté (sinon « article déjà possédé »).
+      isConsumable: true,
     });
 
     if (result.transactionId) {
