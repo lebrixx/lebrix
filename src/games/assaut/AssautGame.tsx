@@ -9,7 +9,9 @@ import f104 from "./assets/f104.png";
 import { createSpaceBackground } from "./lib/space-background";
 import { createGameVisuals } from "./lib/game-visuals";
 import { Button } from "./Button";
-import { ArrowLeft, Bomb, Home, Play } from "lucide-react";
+import { ArrowLeft, Bomb, Home, Play, Zap } from "lucide-react";
+import type { BoostType } from "@/types/boosts";
+import { START_BONUS } from "@/utils/runBoosts";
 import { avoidBodies, droneSpawnX, droneVelocity, separateDrones } from './lib/drone-motion';
 import { applyBombDamage, defeatReward } from './lib/combat';
 
@@ -31,7 +33,13 @@ const STATS: Record<Exclude<Kind, "boss">, { hp: number; r: number; pts: number 
   shooter: { hp: 5, r: 15, pts: 40 },
 };
 
-export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; onStart: () => void; onFinish: (score: number, duration: number) => void }) {
+export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts, armedBoosts = [], onBoostFx }: {
+  onBack: () => void; onStart: () => void; onFinish: (score: number, duration: number) => void;
+  /** Lucky Stop : boosts consommés au décollage, bouton du menu, effets visuels. */
+  takeBoosts?: () => BoostType[]; onOpenBoosts?: () => void; armedBoosts?: BoostType[]; onBoostFx?: (kind: "shield" | "revive" | "start") => void;
+}) {
+  const runBoosts = useRef<BoostType[]>([]);
+  const boostFx = useRef(onBoostFx); boostFx.current = onBoostFx;
   const canvas = useRef<HTMLCanvasElement>(null);
   const bombReq = useRef(false);
   const menuBackground = useRef<HTMLCanvasElement>(null);
@@ -66,6 +74,7 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
       { transform: end, filter: "brightness(1)" },
     ], { duration: 1000, easing: "cubic-bezier(.6,0,.2,1)", fill: "forwards" });
     launchActive.current = true; launchDone.current = false;
+    runBoosts.current = takeBoosts?.() ?? [];
     onStart();
     setLaunching(true);
     window.setTimeout(() => setState("play"), 120);
@@ -116,7 +125,10 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
     let prevX = pl.x, bank = 0;
     let target: { x: number; y: number } | null = null;
     let enemies: Enemy[] = [], shots: Bullet[] = [], foe: Bullet[] = [], drops: Drop[] = [], parts: Part[] = [];
-    let score = 0, kills = 0, combo = 0, comboT = 0, time = 0, nextBoss = BOSS_EVERY, bossCount = 0, spawnT = 1.5, tankT = 0, banner = 0, bannerText = "", lastLevel = 0, shake = 0, flash = 0;
+    const boosts = runBoosts.current; runBoosts.current = [];
+    let reviveArmed = boosts.includes("revive");
+    if (boosts.includes("shield")) pl.shield = 1;
+    let score = boosts.includes("start_20") ? START_BONUS : 0, kills = 0, combo = 0, comboT = 0, time = 0, nextBoss = BOSS_EVERY, bossCount = 0, spawnT = 1.5, tankT = 0, banner = 0, bannerText = "", lastLevel = 0, shake = 0, flash = 0;
     let raf = 0, last = performance.now(), dead = false;
     let firstBossDeath: number | null = null;
 
@@ -155,11 +167,21 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
     };
     const hurt = () => {
       if (pl.inv > 0) return;
-      if (pl.shield > 0) { pl.shield = 0; pl.inv = 1; burst(pl.x, pl.y, C.p, 20); return; }
+      if (pl.shield > 0) { pl.shield = 0; pl.inv = 1; burst(pl.x, pl.y, C.p, 20); pops.push({ x: pl.x, y: pl.y - 40, text: "BOUCLIER", c: C.s, l: 1.2 }); return; }
       pl.hp--; pl.inv = 1.5; shake = 0.3; combo = 0;
       burst(pl.x, pl.y, C.fg, 25);
-      if (pl.hp <= 0) dead = true;
+      if (pl.hp <= 0) {
+        if (reviveArmed) {
+          // Seconde chance : le F-104 repart avec 3 vies, l'écran est nettoyé des tirs ennemis.
+          reviveArmed = false; pl.hp = 3; pl.inv = 2.5; foe = []; flash = 0.4;
+          burst(pl.x, pl.y, C.s, 40);
+          pops.push({ x: pl.x, y: pl.y - 40, text: "SECONDE CHANCE", c: C.s, l: 1.8 });
+          boostFx.current?.("revive");
+        } else dead = true;
+      }
     };
+
+    if (score > 0) { pops.push({ x: W / 2, y: PLAYER_Y - 70, text: `+${score} AU DÉPART`, c: C.a, l: 2 }); boostFx.current?.("start"); }
 
     const toCanvas = (cx: number, cy: number) => {
       const r = cv.getBoundingClientRect();
@@ -459,6 +481,15 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
         ctx.fillStyle = C.b; ctx.beginPath(); ctx.roundRect(16, y + 16, 116, 4, 2); ctx.fill();
         ctx.fillStyle = c; ctx.beginPath(); ctx.roundRect(16, y + 16, 116 * (fx[k] / (info.dur ?? 1)), 4, 2); ctx.fill();
       }
+      if (reviveArmed) {
+        const y = TOP + 64 + (row + (pl.shield ? 1 : 0)) * 28;
+        ctx.globalAlpha = 0.8; ctx.fillStyle = C.ink;
+        ctx.beginPath(); ctx.roundRect(8, y, 132, 24, 7); ctx.fill(); ctx.globalAlpha = 1;
+        ctx.strokeStyle = C.d; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(8, y, 132, 24, 7); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.fillStyle = C.d; ctx.font = "bold 11px 'Work Sans', sans-serif";
+        ctx.fillText("♥ SECONDE CHANCE", 16, y + 16);
+      }
       if (pl.shield) {
         const y = TOP + 64 + row * 28;
         ctx.globalAlpha = 0.8; ctx.fillStyle = C.ink;
@@ -584,6 +615,12 @@ export function AssautGame({ onBack, onStart, onFinish }: { onBack: () => void; 
                   ))}
                 </div>
               </div>
+              {onOpenBoosts && (
+                <Button onClick={onOpenBoosts} disabled={launching} variant="ghost" type="button" className="arena-btn arena-btn-sm arena-boost-btn w-full max-w-64 gap-2 py-2.5 text-xs tracking-[0.2em]">
+                  <Zap className="h-4 w-4" /> BOOSTS
+                  {armedBoosts.length > 0 && <span className="arena-boost-count">{armedBoosts.length}</span>}
+                </Button>
+              )}
               <Button onClick={launch} disabled={launching} className="arena-btn w-full max-w-64 py-4 text-base">
                 <Play />
                 {state === "menu" ? "JOUER" : "REJOUER"}

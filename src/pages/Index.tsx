@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MainMenu } from '@/components/MainMenu';
 import { CircleTap } from '@/components/CircleTap';
 import { Shop } from '@/components/Shop';
@@ -24,6 +24,7 @@ import { AssautGame } from '@/components/AssautGame';
 import { BrixRushGame } from '@/components/BrixRushGame';
 import { BrixArenaGame } from '@/components/BrixArenaGame';
 import { getTickets } from '@/utils/ticketSystem';
+import { emitBoostFx } from '@/utils/runBoosts';
 
 import { useGameLogic } from '@/hooks/useGameLogic';
 import { useBoosts } from '@/hooks/useBoosts';
@@ -58,6 +59,8 @@ const Index = () => {
   const [showRateDialog, setShowRateDialog] = useState(false);
   const [shopTarget, setShopTarget] = useState<'tickets' | null>(null);
   const [pendingRateDialog, setPendingRateDialog] = useState(false);
+  // Convertisseur de score activé au lancement d'une partie d'un mode autonome
+  const runConverterRef = useRef(false);
   
   // État du thème actuel avec persistance
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
@@ -178,7 +181,9 @@ const Index = () => {
     updateQuestScore(finalScore);
     
     // Consommer les boosts utilisés + appliquer "Convertisseur de score"
-    const hasConverter = selectedBoostsForGame.includes('bigger_zone');
+    const hasConverter = selectedBoostsForGame.includes('bigger_zone') || runConverterRef.current;
+    const fromStandaloneRun = runConverterRef.current;
+    runConverterRef.current = false;
     if (selectedBoostsForGame.length > 0) {
       updateQuestBoostUsed();
     }
@@ -190,7 +195,9 @@ const Index = () => {
       const bonus = Math.floor(finalScore / 3);
       if (bonus > 0) {
         addCoins(bonus);
-        toast({
+        // Les modes autonomes sont affichés au-dessus des toasts : on montre le gain dans le jeu.
+        if (fromStandaloneRun) emitBoostFx({ kind: 'converter', amount: bonus });
+        else toast({
           title: t.convertBonusTitle,
           description: t.convertBonusDesc.replace('{bonus}', String(bonus)),
         });
@@ -335,6 +342,12 @@ const Index = () => {
     }
   };
 
+  // Boosts consommés au lancement d'une partie d'un mode autonome
+  const handleRunBoosts = useCallback((boosts: BoostType[]) => {
+    runConverterRef.current = boosts.includes('bigger_zone');
+    if (boosts.length > 0) updateQuestBoostUsed();
+  }, []);
+
   const handleBoostReward = (boost: BoostType) => {
     addBoost(boost);
   };
@@ -407,7 +420,7 @@ const Index = () => {
           }
           if (currentMode === 'survie_60s') {
             return (
-              <AltitudeModeGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} />
+              <AltitudeModeGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} onRunBoosts={handleRunBoosts} />
             );
           }
           if (currentMode === 'assaut') {
@@ -415,6 +428,7 @@ const Index = () => {
               <AssautGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
+                onRunBoosts={handleRunBoosts}
               />
             );
           }
@@ -427,21 +441,21 @@ const Index = () => {
                 onToggleSound={toggleMute}
                 playSuccess={playSuccess}
                 playFailure={playFailure}
-                selectedBoosts={selectedBoostsForGame}
-                onSetBoosts={(b) => setSelectedBoostsForGame(b)}
                 coins={gameState.coins}
                 onEarnCoin={addCoins}
+                onRunBoosts={handleRunBoosts}
               />
             );
           }
           if (currentMode === 'chronophase') {
-            return <ChronophaseGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} />;
+            return <ChronophaseGame onBack={() => setCurrentScreen('menu')} onGameOver={handleGameOver} onRunBoosts={handleRunBoosts} />;
           }
           if (currentMode === 'brix_arena') {
             return (
               <BrixArenaGame
                 onBack={() => setCurrentScreen('menu')}
                 onGameOver={handleGameOver}
+                onRunBoosts={handleRunBoosts}
               />
             );
           }

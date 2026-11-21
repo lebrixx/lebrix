@@ -343,3 +343,11 @@
 .brix-arena-original .arena-incoming svg { color:#ff7a6a; }
 .brix-arena-original:has(.arena-boss) .arena-incoming { top:calc(var(--safe-top) + var(--hud-gap) + 76px); }
 @keyframes arena-incoming { 50% { box-shadow:0 0 14px rgba(255,60,40,.55); } }
+
+/* Lucky Stop : bouton Boosts (lobby + fin de combat) */
+.brix-arena-original .arena-boost-btn { position:relative; height:46px; border-radius:14px; gap:8px; font-family:var(--font-display); letter-spacing:.14em; text-transform:uppercase; font-size:14px; color:var(--accent); background:linear-gradient(135deg, oklch(0.22 0.02 90 / .92), oklch(0.15 0.01 90 / .92)); border:1px solid color-mix(in srgb, var(--accent) 70%, transparent); box-shadow:0 0 18px color-mix(in srgb, var(--accent) 30%, transparent), inset 0 1px 0 oklch(1 0 0 / .08); }
+.brix-arena-original .arena-boost-btn:hover { color:var(--accent); background:linear-gradient(135deg, oklch(0.26 0.02 90 / .95), oklch(0.18 0.01 90 / .95)); }
+.brix-arena-original .arena-boost-btn svg { width:18px; height:18px; fill:color-mix(in srgb, var(--accent) 35%, transparent); }
+.brix-arena-original .arena-boost-count { display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--accent); color:var(--accent-foreground); font-size:11px; letter-spacing:0; }
+.brix-arena-original .arena-dialog .arena-boost-btn { min-width:200px; }
+.brix-arena-original .arena-revive-on { color:#ff7b8a; margin-left:4px; fill:rgba(255,123,138,.25); }

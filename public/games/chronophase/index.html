@@ -140,6 +140,14 @@
   .skinBtn i{width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 0 12px rgba(227,197,141,.25)}
   .skinBtn b{color:var(--gold);font-weight:600;letter-spacing:.24em}
   .skinBtn:active{transform:scale(.97)}
+  /* bouton BOOSTS (Lucky Stop) */
+  .boostBtn{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 18px;border-radius:30px;margin-bottom:12px;cursor:pointer;font-size:10px;letter-spacing:.24em;color:var(--gold);border-color:rgba(227,197,141,.45);box-shadow:0 0 18px rgba(227,197,141,.14)}
+  .boostBtn svg{flex:none}
+  .boostBtn .bc{display:none;min-width:20px;height:20px;padding:0 6px;border-radius:20px;background:linear-gradient(180deg,#f3e2bd,var(--gold));color:#14110b;font-size:11px;font-weight:700;letter-spacing:0;align-items:center;justify-content:center}
+  .boostBtn .bc.on{display:inline-flex}
+  .boostBtn:active{transform:scale(.97)}
+  .over-boost{margin:0 auto 4px}
+  #bChips{margin-top:8px;font-size:15px;letter-spacing:.25em;min-height:1px}
   /* sélecteur de skins (feuille en bas, le perso reste visible au-dessus) */
   #skins{position:fixed;inset:0;z-index:40;display:none}
   #skins.on{display:block}
@@ -244,7 +252,7 @@
 </head>
 <body>
 <div id="hud" style="display:none">
-  <div id="tl"><div id="dist">0<span>pts</span></div><div id="best"></div></div>
+  <div id="tl"><div id="dist">0<span>pts</span></div><div id="best"></div><div id="bChips"></div></div>
   <div id="tr">
     <div class="lbl"><span>TEMPS</span><i id="enTxt">100</i></div>
     <div id="bar"><div id="fill"></div></div>
@@ -805,8 +813,40 @@ function goHome(){
   $('hud').style.display='none'; $('pad').style.display='none'; $('scan').style.display='none'; $('vig').style.boxShadow='none';
   renderer.domElement.style.filter='none'; overlayHTML = null; state = 'menu'; menuInit = false;
 }
+// ============ BOOSTS (pont Lucky Stop) ============
+let armedBoosts = [];
+const runB = { bonus:0, shield:false, revive:false };
+const BOOST_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
+const boostBtnHTML = (cls='') => `<div class="boostBtn glass ${cls}" data-boosts>${BOOST_SVG}<span>BOOSTS</span><i class="bc${armedBoosts.length ? ' on' : ''}" style="font-style:normal">${armedBoosts.length || ''}</i></div>`;
+function updBoostBtns(){ document.querySelectorAll('[data-boosts] .bc').forEach(el => { el.textContent = armedBoosts.length || ''; el.classList.toggle('on', armedBoosts.length > 0); }); if (overlayHTML !== null) overlayHTML = $('overlay').innerHTML; }
+function renderBoostChips(){ const el = $('bChips'); if (el) el.textContent = [runB.shield ? '🛡️' : '', runB.revive ? '❤️‍🔥' : ''].filter(Boolean).join(' '); }
+addEventListener('message', e => {
+  if (e.source !== parent) return;
+  const d = e.data;
+  if (d && d.type === 'chronophase:armed'){ armedBoosts = Array.isArray(d.boosts) ? d.boosts.filter(b => typeof b === 'string') : []; updBoostBtns(); }
+});
+// Bouclier / Seconde chance : remonte automatiquement le temps d'~1,3 s au lieu de mourir.
+function boostSave(){
+  if (!runB.shield && !runB.revive) return false;
+  const kind = runB.shield ? 'shield' : 'revive';
+  if (runB.shield) runB.shield = false; else runB.revive = false;
+  const back = Math.min(Math.max(0, snaps.length - 1), 80);
+  for (let i = 0; i < back; i++) snaps.pop();
+  if (snaps.length) restore(snaps[snaps.length - 1]);
+  P.falling = false; P.vy = Math.max(P.vy, 0);
+  energy = Math.max(energy, kind === 'revive' ? 100 : 60);
+  timeScale = .25; shake = .5; flashT = .5; input.rewind = false; rwPointers.clear(); rewindSound(false);
+  toast(kind === 'shield' ? 'BOUCLIER' : 'SECONDE CHANCE', '#E3C58D'); buzz([20,40,20]); sfx.shard();
+  burst(P.x, P.y+1, dist, 0xe3c58d, 30, 5, .8);
+  renderBoostChips();
+  try{ parent.postMessage({type:'chronophase:boost', kind}, '*'); }catch(_){}
+  return true;
+}
+
 function start(){
-  window.__lsStart = performance.now(); try{ parent.postMessage({type:'chronophase:start'},'*'); }catch(_){}
+  const usedBoosts = armedBoosts.slice(); armedBoosts = [];
+  runB.bonus = usedBoosts.includes('start_20') ? 20 : 0; runB.shield = usedBoosts.includes('shield'); runB.revive = usedBoosts.includes('revive');
+  window.__lsStart = performance.now(); try{ parent.postMessage({type:'chronophase:start', boosts: usedBoosts},'*'); }catch(_){}
   clearWorld();
   P = { x:0, lane:1, y:0, vy:0, slide:0, phase:0, falling:false, onG:true, buf:0, slideAfter:false, run:0 };
   dist=0; maxDist=0; gt=0; speed=22; energy=100; snaps=[]; objs=[]; tiles=[]; shards=[]; deco=[]; echoes=[]; parts=[];
@@ -815,6 +855,8 @@ function start(){
   ensureWorld();
   acc = 0; last = performance.now(); ip.ok = false;
   state='play'; paused=false; showOverlay(''); $('hud').style.display='block';
+  renderBoostChips();
+  if (runB.bonus) setTimeout(() => toast('+' + runB.bonus + ' PTS', '#E3C58D'), 250);
 }
 
 // ============ GÉNÉRATION ============
@@ -1104,6 +1146,7 @@ const objS = o => o.v ? o.s - o.v*(gt - o.t0) : o.s;
 const nearestLane = x => x < -1.3 ? 0 : x > 1.3 ? 2 : 1;
 
 function die(){
+  if (boostSave()) return;
   state='dead'; deadT=0; deaths++; shake=.8; input.rewind=false; rwPointers.clear(); sfx.die(); buzz(120);
   burst(P.x, P.y+1, dist, COLS[P.phase], 50, 8, 1.2); burst(P.x, P.y+1, dist, 0xe8705f, 20, 6, .8);
 }
@@ -1195,7 +1238,7 @@ function step(){
   if (state !== 'menu' && state !== 'over'){ ensureWorld(); if (Math.random() < .05) cull(); }
 }
 function gameOver(){
-  state='over'; overT=0; const sc = pts(maxDist);
+  state='over'; overT=0; const sc = pts(maxDist) + runB.bonus;
   newBest = sc > best; if (newBest){ best = sc; localStorage.setItem('chronophase_rush_score', best); }
   try{ parent.postMessage({type:'chronophase:over',score:sc,duration:Math.round((performance.now()-(window.__lsStart||performance.now()))/1000)},'*'); }catch(_){}
   buzz([30,50,30]);
@@ -1209,7 +1252,7 @@ function gameOver(){
       <div>${shardsTaken}<small>ÉCLATS</small></div>
       <div>${(rewoundTotal/60).toFixed(1)}s<small>REMBOBINÉ</small></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:12px;width:min(300px,86vw)"><button class="cta" data-start>REJOUER</button><button class="ghost" data-home>ACCUEIL</button></div></div>`);
+    <div style="display:flex;flex-direction:column;gap:12px;width:min(300px,86vw)">${boostBtnHTML('over-boost')}<button class="cta" data-start>REJOUER</button><button class="ghost" data-home>ACCUEIL</button></div></div>`);
 }
 
 // ============ INPUT ============
@@ -1262,6 +1305,7 @@ $('pauseBtn').addEventListener('pointerdown', e=>{ e.preventDefault(); e.stopPro
 // --- menus : boutons dans l'overlay ---
 $('overlay').addEventListener('pointerdown', e=>{
   if (e.target.closest('[data-exit]')){ e.preventDefault(); try{ parent.postMessage({type:'chronophase:exit'},'*'); }catch(_){} return; }
+  if (e.target.closest('[data-boosts]')){ e.preventDefault(); e.stopPropagation(); buzz(8); try{ parent.postMessage({type:'chronophase:boosts-open'},'*'); }catch(_){} return; }
   const t = e.target.closest('[data-start],[data-resume],[data-restart],[data-home],[data-menu],[data-skin]'); if (!t) return;
   if (t.hasAttribute('data-skin')){ e.preventDefault(); au(); openSkins(); return; }
   e.preventDefault(); au();
@@ -1463,13 +1507,14 @@ function menu(){
     <div class="b glass demoBtn" style="color:var(--gold)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 6v12L3 12zM21 6v12l-8.5-6z"/></svg><small class="rwl"><span>REMONTE LE</span>TEMPS</small></div>
     <div class="bottom">
       <div class="skinBtn glass" data-skin><i style="background:${SKINS[skinI].sw}"></i><span>SKIN</span><b>${SKINS[skinI].name}</b><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.5 2l3 3-3 3"/></svg></div>
+      ${boostBtnHTML()}
       <div class="playWrap"><button class="cta" data-start>JOUER</button></div>
       <div class="sub3">GLISSE · TAPE · MAINTIENS</div>
     </div>
   </div>`);
 }
 function hud(){
-  { const sc = pts(dist), el = $('dist'); if (el._sc !== sc){ el.innerHTML = sc + '<span>pts</span>'; if (el._sc !== undefined && sc > el._sc){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); buzz(10); } el._sc = sc; } }
+  { const sc = pts(dist) + runB.bonus, el = $('dist'); if (el._sc !== sc){ el.innerHTML = sc + '<span>pts</span>'; if (el._sc !== undefined && sc > el._sc){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); buzz(10); } el._sc = sc; } }
   txt($('best'), Math.floor(dist) + ' M · RECORD ' + best);
   st($('fill'),'width',energy.toFixed(1) + '%'); txt($('enTxt'), String(Math.floor(energy)));
   st($('fill'),'opacity',energy < 20 ? .5 + .5*Math.abs(Math.sin(performance.now()/300)) : 1);
@@ -1502,7 +1547,7 @@ function hud(){
   if (state === 'dead') showOverlay(`<div class="broken">LIGNE TEMPORELLE BRISÉE</div>`);
   else if (playing) showOverlay(paused ? `<div class="scrim"></div><div class="pmenu">
       <div class="kicker" style="margin:0 0 6px .6em">MENU</div><div class="title" style="font-size:30px">PAUSE</div>
-      <div class="pstats glass"><div>${pts(dist)}<small>POINTS</small></div><div>${best}<small>RECORD</small></div></div>
+      <div class="pstats glass"><div>${pts(dist) + runB.bonus}<small>POINTS</small></div><div>${best}<small>RECORD</small></div></div>
       <button class="cta" data-resume>REPRENDRE</button>
       <button class="ghost" data-restart>RECOMMENCER</button>
       <button class="ghost" data-home>ACCUEIL</button></div>` : '');

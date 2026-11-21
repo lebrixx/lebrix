@@ -891,6 +891,13 @@
   will-change: transform;
 }
 .brix-original .grass-menu-btn:active { box-shadow: 0 1px 0 color-mix(in oklab, var(--primary) 55%, black); }
+.brix-original .grass-boost-btn { background: var(--accent); color: var(--accent-foreground); box-shadow: 0 4px 0 color-mix(in oklab, var(--accent) 55%, black), 0 0 18px color-mix(in oklab, var(--accent) 45%, transparent), 0 8px 18px color-mix(in oklab, black 35%, transparent); transition: opacity .25s; }
+.brix-original .grass-boost-btn:hover { background: var(--accent); color: var(--accent-foreground); }
+.brix-original .grass-boost-btn:active { box-shadow: 0 1px 0 color-mix(in oklab, var(--accent) 55%, black); }
+.brix-original .grass-boost-btn svg { animation: grass-boost-pulse 1.6s ease-in-out infinite; }
+.brix-original .grass-boost-count { display: inline-grid; place-items: center; min-width: 1.15rem; height: 1.15rem; padding: 0 .25rem; margin-left: .1rem; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: .7rem; line-height: 1; }
+@keyframes grass-boost-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+@media (prefers-reduced-motion: reduce) { .brix-original .grass-boost-btn svg { animation: none; } }
 
 .brix-original .arcade-btn { height: auto; }
 .brix-original .pad-btn { padding: 0; }

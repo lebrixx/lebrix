@@ -58,3 +58,8 @@
 .assaut-original .text-muted-foreground { color: var(--muted-foreground); }
 .assaut-original .border-muted-foreground { border-color: var(--muted-foreground); }
 .assaut-original .arena-bomb { padding: 0; height: auto; background: transparent; box-shadow: none; }
+
+/* Lucky Stop : bouton Boosts du menu */
+.assaut-original .arena-boost-btn { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 55%, transparent); box-shadow: 0 0 18px color-mix(in oklab, var(--primary) 25%, transparent), inset 0 0 12px color-mix(in oklab, var(--primary) 12%, transparent); }
+.assaut-original .arena-boost-btn:hover { color: var(--primary); }
+.assaut-original .arena-boost-count { display: inline-grid; place-items: center; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: .7rem; letter-spacing: 0; }

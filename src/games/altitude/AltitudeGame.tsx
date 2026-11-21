@@ -23,9 +23,18 @@ type AltitudeGameProps = {
   /** Lucky Stop bridge: run start / end. */
   onStart?: () => void;
   onGameOver?: (score: number, durationMs: number) => void;
+  /** Lucky Stop : boosts (bouton du menu / de l'écran de fin, consommation au lancement, effets). */
+  onOpenBoosts?: () => void;
+  takeBoosts?: () => string[];
+  armedBoosts?: number;
+  onBoostFx?: (kind: "shield" | "revive" | "start") => void;
 };
 
-export default function AltitudeGame({ onBackToMenu, onStart, onGameOver }: AltitudeGameProps) {
+export default function AltitudeGame({ onBackToMenu, onStart, onGameOver, onOpenBoosts, takeBoosts, armedBoosts = 0, onBoostFx }: AltitudeGameProps) {
+  const openBoostsRef = useRef(onOpenBoosts); openBoostsRef.current = onOpenBoosts;
+  const takeBoostsRef = useRef(takeBoosts); takeBoostsRef.current = takeBoosts;
+  const boostFxRef = useRef(onBoostFx); boostFxRef.current = onBoostFx;
+  const hasBoosts = !!onOpenBoosts;
   const rootRef = useRef<HTMLDivElement>(null);
   const backRef = useRef(onBackToMenu);
   backRef.current = onBackToMenu;
@@ -38,13 +47,22 @@ export default function AltitudeGame({ onBackToMenu, onStart, onGameOver }: Alti
     root.innerHTML = ALTITUDE_MARKUP;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const stop = startAltitude(root, { onBackToMenu: () => backRef.current && backRef.current(), onStart: () => startRef.current?.(), onGameOver: (s, d) => overRef.current?.(s, d) });
+    const stop = startAltitude(root, { onBackToMenu: () => backRef.current && backRef.current(), onStart: () => startRef.current?.(), onGameOver: (s, d) => overRef.current?.(s, d),
+      hasBoosts, onOpenBoosts: () => openBoostsRef.current?.(), takeBoosts: () => takeBoostsRef.current?.() ?? [], onBoostFx: (k) => boostFxRef.current?.(k) });
     return () => {
       stop();
       root.innerHTML = "";
       document.body.style.overflow = prevOverflow;
     };
   }, []);
+
+  // Pastille du nombre de boosts armés sur les boutons du menu et de l'écran de fin
+  useEffect(() => {
+    rootRef.current?.querySelectorAll<HTMLElement>("[data-boost-count]").forEach(el => {
+      el.textContent = armedBoosts ? String(armedBoosts) : "";
+      el.classList.toggle("alt-hidden", !armedBoosts);
+    });
+  }, [armedBoosts]);
 
   return (
     <>
@@ -172,6 +190,20 @@ const ALTITUDE_CSS = `
     border:1px solid rgba(255,255,255,.2); transition: background .2s; }
   .altitude-root .btn2:hover { background: rgba(255,255,255,.16); }
 
+  /* ---------- Boosts (Lucky Stop) ---------- */
+  .altitude-root .alt-boost { pointer-events:auto; display:inline-flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; padding:12px 24px; border-radius:999px; cursor:pointer;
+    font:inherit; font-size:12px; font-weight:700; letter-spacing:.28em; text-indent:.28em; text-transform:uppercase; color:#fff;
+    background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.32); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.25); transition: transform .15s, background .2s; }
+  .altitude-root .alt-boost:active { transform: scale(.97); }
+  .altitude-root .alt-boost svg { width:16px; height:16px; }
+  .altitude-root .alt-boost .cnt { display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:#fff; color:#140b2e; font-size:11px; letter-spacing:0; text-indent:0; }
+  .altitude-root .alt-boost.alt-hidden, .altitude-root .alt-boost .cnt.alt-hidden { display:none; }
+  .altitude-root .card .alt-boost { width:100%; margin:0 0 12px; border-radius:16px; padding:14px; }
+  .altitude-root #boostChips { margin-top:8px; font-size:18px; letter-spacing:.3em; min-height:1px; }
+  .altitude-root[data-style="neon"] .alt-boost { border-color: rgba(63,244,255,.7); box-shadow: 0 0 22px rgba(63,244,255,.35), inset 0 0 12px rgba(255,79,230,.25); }
+  .altitude-root[data-style="neon"] .alt-boost .cnt { background: linear-gradient(90deg,#3ff4ff,#ff4fe6); color:#12021f; }
+
   /* ---------- Ambiance néon ---------- */
   .altitude-root[data-style="neon"] #score { text-shadow: 0 0 12px rgba(63,244,255,.9), 0 0 36px rgba(255,60,230,.6); font-weight:300; }
   .altitude-root[data-style="neon"] h1 { background: linear-gradient(180deg,#e8feff,#3ff4ff 60%,#ff4fe6); -webkit-background-clip:text; background-clip:text;
@@ -193,6 +225,7 @@ const ALTITUDE_MARKUP = `
 <div id="hud" class="alt-hidden">
   <div id="score">0</div>
   <div id="alt">0 m</div>
+  <div id="boostChips"></div>
 </div>
 <div id="combo"></div>
 
@@ -206,6 +239,7 @@ const ALTITUDE_MARKUP = `
       <button data-style="bricks"><span class="sw sw-bricks"></span>Briques</button>
       <button data-style="neon"><span class="sw sw-neon"></span>Néon</button>
     </div><br>
+    <button class="alt-boost alt-hidden" data-boost-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Boosts<span class="cnt alt-hidden" data-boost-count></span></button><br>
     <div class="pill"><span class="dot"></span>Toucher pour jouer</div>
     <div class="best-mini" id="menuBest"></div>
   </div>
@@ -221,6 +255,7 @@ const ALTITUDE_MARKUP = `
       <div class="stat"><b id="sPerf">0</b><span>PARFAITS</span></div>
       <div class="stat"><b id="sCombo">0</b><span>COMBO MAX</span></div>
     </div>
+    <button class="alt-boost alt-hidden" data-boost-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Boosts<span class="cnt alt-hidden" data-boost-count></span></button>
     <button class="btn" id="again">Rejouer</button>
     <button class="btn2" id="toMenu">Changer de style</button>
     <button class="btn2" id="backMenu">Retour au menu</button>
@@ -246,7 +281,7 @@ const ALTITUDE_MARKUP = `
 `;
 
 /* ============================== MOTEUR DU JEU ============================== */
-function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; onStart?: () => void; onGameOver?: (score: number, durationMs: number) => void } = {}): () => void {
+function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; onStart?: () => void; onGameOver?: (score: number, durationMs: number) => void; hasBoosts?: boolean; onOpenBoosts?: () => void; takeBoosts?: () => string[]; onBoostFx?: (kind: "shield" | "revive" | "start") => void } = {}): () => void {
   let runStartedAt = 0;
   // ---- Gestion du cycle de vie (montage / démontage React) ----
   let disposed = false, rafId = 0;
@@ -291,6 +326,9 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
   let best = +(localStorage.getItem('altitude_best') || 0);
   let rings = [], sparks = [], meteors = [];
   let overTimer = 0;
+  // Boosts de la partie en cours
+  let bonus = 0, shieldLeft = false, reviveLeft = false;
+  const renderBoostChips = () => { const el = root.querySelector('#boostChips'); if (el) el.textContent = [shieldLeft ? '🛡️' : '', reviveLeft ? '❤️‍🔥' : ''].filter(Boolean).join(' '); };
 
   const top = () => stack[stack.length - 1];
   const blockHue = i => hue0 + i * 4.5;
@@ -344,7 +382,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
     const b = { x: p.x, z: p.z, w: p.w, d: p.d, y: p.y + p.h, h: BH, c, hue: c.h };
     dir = Math.random() < .5 ? 1 : -1;
     b[axis] = p[axis] - dir * RANGE;
-    speed = Math.min(10 + score * 0.17, 21);
+    speed = Math.min(10 + (stack.length - 1) * 0.17, 21);
     moving = b;
   }
 
@@ -401,7 +439,11 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
     ui.menu.classList.add('alt-hidden'); ui.over.classList.add('alt-hidden'); ui.hud.classList.remove('alt-hidden');
     $('homeBtn').classList.add('alt-hidden');
     $('pauseBtn').classList.remove('alt-hidden');
-    ui.score.textContent = '0'; ui.alt.textContent = '0 m';
+    const used = options.takeBoosts ? options.takeBoosts() : [];
+    bonus = used.includes('start_20') ? 20 : 0; shieldLeft = used.includes('shield'); reviveLeft = used.includes('revive');
+    score = bonus; renderBoostChips();
+    ui.score.textContent = String(score); ui.alt.textContent = '0 m';
+    if (bonus) { popText(`+${bonus} au départ`); options.onBoostFx?.('start'); }
     sndStart();
     runStartedAt = performance.now(); options.onStart?.();
   }
@@ -433,6 +475,18 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
     } else if (ad >= p[sz]) {
       debris.push(Object.assign({}, b, { vy: 0, vx: Math.sign(delta) * 3, ax: k, a: 1, back: delta < 0 }));
       moving = null;
+      if (shieldLeft || reviveLeft) {
+        // Bouclier puis Seconde chance : la plaque ratée tombe, une nouvelle arrive, la tour est intacte.
+        const kind = shieldLeft ? 'shield' : 'revive';
+        if (shieldLeft) shieldLeft = false; else reviveLeft = false;
+        combo = 0; shake = .5; vibrate([20, 30, 20]);
+        rings.push({ x: p.x, z: p.z, w: p.w, d: p.d, y: p.y + p.h + studH(), t: 0, c: p.c });
+        popText(kind === 'shield' ? 'Bouclier !' : 'Seconde chance !');
+        tone(660, .25, 'sine', .12); tone(990, .3, 'sine', .08, 0, .08);
+        renderBoostChips(); options.onBoostFx?.(kind);
+        spawn();
+        return;
+      }
       gameOver();
       return;
     } else {
@@ -446,10 +500,10 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
       shake = Math.min(.6, ad / 6);
       sndPlace(); vibrate(8);
     }
-    score = stack.length - 1;
+    score = stack.length - 1 + bonus;
     ui.score.textContent = score;
     ui.score.classList.remove('bump'); void ui.score.offsetWidth; ui.score.classList.add('bump');
-    ui.alt.textContent = `${(score * 3.2).toFixed(0)} m`;
+    ui.alt.textContent = `${((stack.length - 1) * 3.2).toFixed(0)} m`;
     spawn();
   }
 
@@ -513,7 +567,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
   on(document, 'visibilitychange', () => { if (document.hidden) pauseGame(); });
 
   function onPress(e) {
-    if (e && e.target && e.target.closest && e.target.closest('#mute, #homeBtn, #styles, #toMenu, #backMenu, #again, #pauseBtn, #pause')) return;
+    if (e && e.target && e.target.closest && e.target.closest('#mute, #homeBtn, #styles, #toMenu, #backMenu, #again, #pauseBtn, #pause, [data-boost-open]')) return;
     // sécurité mobile : un toucher sur la zone des boutons du haut ne pose jamais de plaque
     if (e && e.clientX !== undefined) {
       for (const el of [pauseBtn, ui.mute]) {
@@ -529,6 +583,11 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
   }
   on(root, 'pointerdown', e => onPress(e));
   ui.again.addEventListener('click', e => { e.stopPropagation(); start(); });
+  root.querySelectorAll('[data-boost-open]').forEach(btn => {
+    if (options.hasBoosts) btn.classList.remove('alt-hidden');
+    btn.addEventListener('pointerdown', e => e.stopPropagation());
+    btn.addEventListener('click', e => { e.stopPropagation(); options.onOpenBoosts?.(); });
+  });
   on(window, 'keydown', e => {
     if (e.code === 'Escape' || e.code === 'KeyP') { if (state === 'play') pauseGame(); else if (state === 'pause') resumeGame(); return; }
     if (state === 'pause') { if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); resumeGame(); } return; }

@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { respawnDue, resetToStart } from "./respawn";
-import { Home } from "lucide-react";
+import { Home, Zap } from "lucide-react";
+import type { BoostType } from "@/types/boosts";
+import { emitBoostFx, START_BONUS } from "@/utils/runBoosts";
 import type { Me, RemoteState } from "./net";
 import { CELL, HOP_MS, ROWS, VIEW_H, blockedByFence, carsAt, fencesAt, hitByCar, laneAt, toMeters } from "./world";
 import { positionUpdateDue } from "./sync";
@@ -21,6 +23,11 @@ type Props = {
   send: (s: Omit<RemoteState, "t">) => void;
   animals: React.MutableRefObject<Record<string, AnimalId>>;
   onScores: (rows: { id: string; name: string; hue: number; x: number; best: number; dead: boolean; me: boolean }[]) => void;
+  /** Boosts : ouverture du sélecteur, nombre de boosts armés, consommation au premier pas de la course. */
+  onOpenBoosts?: () => void;
+  armedBoosts?: BoostType[];
+  takeBoosts?: () => BoostType[];
+  onRunActive?: (active: boolean) => void;
 };
 
 type Dir = "up" | "down" | "left" | "right";
@@ -32,13 +39,18 @@ function cssVar(name: string) {
 /** Shared clock so traffic is identical on every screen. */
 const sharedTime = () => Date.now() / 1000;
 
-export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, onDeath }: Props) {
+export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, onDeath, onOpenBoosts, armedBoosts = [], takeBoosts, onRunActive }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const queue = useRef<Dir[]>([]);
   const deathCallback = useRef(onDeath);
   deathCallback.current = onDeath;
   const menuRef = useRef<HTMLButtonElement>(null);
+  const boostRef = useRef<HTMLButtonElement>(null);
+  const takeBoostsRef = useRef(takeBoosts);
+  takeBoostsRef.current = takeBoosts;
+  const runActiveRef = useRef(onRunActive);
+  runActiveRef.current = onRunActive;
 
   const press = (d: Dir) => { if (queue.current.length < 2) queue.current.push(d); };
 
@@ -89,6 +101,10 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
     const startRow = Math.floor(ROWS / 2);
     const p = { col: 0, row: startRow, fromCol: 0, fromRow: startRow, hopT: 0, dead: false, deadT: 0, best: 0, started: false };
     let runStartedAt = Date.now();
+    // Boosts de la course en cours (consommés au premier pas, remis à zéro à chaque réapparition)
+    let runActive = false;
+    const run = { bonus: 0, shield: false, revive: false, invUntil: 0 };
+    const resetRun = () => { runActive = false; run.bonus = 0; run.shield = false; run.revive = false; run.invUntil = 0; runActiveRef.current?.(false); };
     let camX = 0;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const rendered: Record<string, { x: number; y: number; targetX: number; targetY: number; stepT: number; dx: number; dy: number }> = {};
@@ -176,6 +192,15 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
       if (!p.dead && now - p.hopT >= HOP_MS && queue.current.length) {
         const d = queue.current.shift();
         p.started = true;
+        if (!runActive) {
+          runActive = true; runStartedAt = Date.now();
+          const used = takeBoostsRef.current?.() ?? [];
+          run.bonus = used.includes("start_20") ? START_BONUS : 0;
+          run.shield = used.includes("shield");
+          run.revive = used.includes("revive");
+          if (run.bonus) emitBoostFx({ kind: "start" });
+          runActiveRef.current?.(true);
+        }
         p.fromCol = p.col; p.fromRow = p.row;
         let nc = p.col, nr = p.row;
         if (d === "right") nc++;
@@ -187,12 +212,24 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
         p.best = Math.max(p.best, p.col * CELL);
       }
       if (p.dead && respawnDue(now, p.deadT)) {
-        resetToStart(p, startRow); queue.current = []; runStartedAt = Date.now();
+        resetToStart(p, startRow); queue.current = []; runStartedAt = Date.now(); resetRun();
       }
       const k = Math.min(1, (now - p.hopT) / HOP_MS);
       const px = (p.fromCol + (p.col - p.fromCol) * k) * CELL;
       const py = (p.fromRow + (p.row - p.fromRow) * k) * CELL;
-      if (!p.dead && hitByCar(seed, Math.round(px / CELL), py, t)) { p.dead = true; p.deadT = now; queue.current = []; deathCallback.current?.(p.col, (Date.now() - runStartedAt) / 1000); }
+      if (!p.dead && now >= run.invUntil && hitByCar(seed, Math.round(px / CELL), py, t)) {
+        if (run.shield || run.revive) {
+          // Bouclier puis Seconde chance : le choc est encaissé, courte invulnérabilité, on continue sur place.
+          const kind = run.shield ? "shield" : "revive";
+          if (run.shield) run.shield = false; else run.revive = false;
+          run.invUntil = now + (kind === "shield" ? 1500 : 2200);
+          emitBoostFx({ kind });
+        } else {
+          p.dead = true; p.deadT = now; queue.current = [];
+          deathCallback.current?.(p.col + run.bonus, (Date.now() - runStartedAt) / 1000);
+        }
+      }
+      const invulnerable = !p.dead && now < run.invUntil;
 
       const target = px - Math.min(W * 0.3, 200);
       camX += (target - camX) * 0.12;
@@ -279,13 +316,31 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
         else if (sx > W) offRight.push(r);
         else drawChick(sx, rr.y, r.hue, 0.7, r.name, r.dead, stepPose(now - rr.stepT, rr.dx, rr.dy, r.dead), animals.current[r.id]);
       }
-      drawChick(px - camX, py, me.hue, p.dead ? 0.5 : 1, me.name, p.dead, stepPose(now - p.hopT, p.col - p.fromCol, p.row - p.fromRow, p.dead), animals.current[me.id]);
+      if (invulnerable) {
+        // Bulle de protection autour de l'animal pendant l'invulnérabilité
+        const left = (run.invUntil - now) / 1000;
+        ctx.save();
+        ctx.globalAlpha = Math.min(0.85, left * 1.4);
+        ctx.strokeStyle = c.line; ctx.lineWidth = 3; ctx.shadowColor = c.line; ctx.shadowBlur = 14;
+        ctx.beginPath(); ctx.arc(px - camX + CELL / 2, py + CELL / 2 - 4, CELL * 0.78 + Math.sin(now / 90) * 2, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+      }
+      drawChick(px - camX, py, me.hue, p.dead ? 0.5 : invulnerable && Math.floor(now / 90) % 2 ? 0.45 : 1, me.name, p.dead, stepPose(now - p.hopT, p.col - p.fromCol, p.row - p.fromRow, p.dead), animals.current[me.id]);
       ctx.restore();
       // Menu button is anchored in the start grass: same incline transform as the world.
       if (menuRef.current) {
         const wx = CELL * 1.5 - camX, wy = CELL * 1.6;
         const mx = (wx - 0.16 * wy + VIEW_H * 0.08) * scale, my = (0.86 * wy + VIEW_H * 0.07) * scale;
         menuRef.current.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+      }
+      // Bouton Boosts juste sous « Menu », dans la même herbe de départ ; masqué une fois la course lancée.
+      if (boostRef.current) {
+        const wx = CELL * 1.5 - camX, wy = CELL * 2.75;
+        const bx = (wx - 0.16 * wy + VIEW_H * 0.08) * scale, by = (0.86 * wy + VIEW_H * 0.07) * scale;
+        const el = boostRef.current;
+        el.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%)`;
+        const hidden = runActive || p.dead;
+        if (el.dataset.hidden !== String(hidden)) { el.dataset.hidden = String(hidden); el.style.opacity = hidden ? "0" : "1"; el.style.pointerEvents = hidden ? "none" : "auto"; }
       }
       ctx.font = "600 12px 'Chakra Petch', sans-serif";
       offLeft.forEach((r, i) => {
@@ -299,7 +354,10 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
 
       ctx.fillStyle = c.text; ctx.textAlign = "center";
       ctx.font = "400 22px 'Russo One', sans-serif";
-      ctx.fillText(`${p.col}`, W / 2, 30);
+      ctx.fillText(`${p.col + run.bonus}`, W / 2, 30);
+      // Boosts encore actifs pendant la course
+      const activeIcons = [run.shield ? "🛡️" : "", run.revive ? "❤️‍🔥" : ""].filter(Boolean).join(" ");
+      if (runActive && !p.dead && activeIcons) { ctx.font = "16px sans-serif"; ctx.fillText(activeIcons, W / 2, 52); }
       if (!p.started) {
         ctx.font = "400 16px 'Russo One', sans-serif";
         ctx.fillText("▶ POUR TRAVERSER · ▲ ▼ POUR ESQUIVER", W / 2, VIEW_H / 2 - 40);
@@ -344,6 +402,12 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
       <Button ref={menuRef} onClick={onMenu} variant="ghost" className="grass-menu-btn" aria-label="Retour au menu">
         <Home className="h-4 w-4" /> Menu
       </Button>
+      {onOpenBoosts && (
+        <Button ref={boostRef} onClick={onOpenBoosts} variant="ghost" className="grass-menu-btn grass-boost-btn" aria-label="Boosts">
+          <Zap className="h-4 w-4" /> Boosts
+          {armedBoosts.length > 0 && <span className="grass-boost-count">{armedBoosts.length}</span>}
+        </Button>
+      )}
       <div className="game-pad game-pad-left flex-col">
         <Button variant="ghost" className="pad-btn" aria-label="Monter" {...btn("up")}>▲</Button>
         <Button variant="ghost" className="pad-btn" aria-label="Descendre" {...btn("down")}>▼</Button>

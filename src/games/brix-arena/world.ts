@@ -201,6 +201,8 @@ export class ArenaWorld {
   levels: Record<UpgradeId, number> = Object.fromEntries(Object.keys(UPGRADES).map(k => [k, 0])) as Record<UpgradeId, number>;
   choices: UpgradeId[] = [];
   shieldReady = false; shieldTimer = 0;
+  // Boosts Lucky Stop (appliqués au lancement par applyRunBoosts)
+  scoreBonus = 0; boostShield = false; reviveArmed = false;
   private leechCount = 0;
   private trailDrop = 0;
 
@@ -253,7 +255,15 @@ export class ArenaWorld {
   }
 
   // ---------------------------------------------------------------- actions
-  start() { this.phase = "playing"; for (let i = 0; i < 5; i++) this.spawnEnemy(); this.spawn = spawnInterval(0); }
+  /** Boosts de partie : bouclier à usage unique, seconde chance, départ avec des points. */
+  applyRunBoosts(boosts: readonly string[]) {
+    this.scoreBonus = boosts.includes("start_20") ? 20 : 0;
+    this.boostShield = boosts.includes("shield");
+    this.reviveArmed = boosts.includes("revive");
+    this.score = this.scoreBonus;
+  }
+
+  start() { this.phase = "playing"; if (this.scoreBonus) this.announce("DÉPART +" + this.scoreBonus, "La foule t’offre une avance", "calm"); for (let i = 0; i < 5; i++) this.spawnEnemy(); this.spawn = spawnInterval(0); }
 
   get dashCooldownMax() { return 2.5 - 0.3 * this.levels.trail; }
   get magnetRadius() { return 70 + 60 * this.levels.magnet; }
@@ -434,6 +444,11 @@ export class ArenaWorld {
 
   hurt() {
     if (this.invincible > 0 || this.dashTime > 0 || this.phase !== "playing") return;
+    if (this.boostShield) {
+      this.boostShield = false; this.invincible = 1;
+      this.emit({ type: "shield", x: this.hero.position.x, y: this.hero.position.y });
+      return;
+    }
     if (this.shieldReady) {
       this.shieldReady = false; this.shieldTimer = SHIELD_RECHARGE[this.levels.shield] ?? 20; this.invincible = 0.6;
       this.emit({ type: "shield", x: this.hero.position.x, y: this.hero.position.y });
@@ -441,7 +456,14 @@ export class ArenaWorld {
     }
     this.hp--; this.invincible = 1;
     this.emit({ type: "hurt" });
-    if (this.hp <= 0) this.phase = "over";
+    if (this.hp <= 0) {
+      if (this.reviveArmed) {
+        // Seconde chance : le héros se relève avec toute sa vie, brièvement invulnérable.
+        this.reviveArmed = false; this.hp = this.maxHp; this.invincible = 2.5;
+        this.emit({ type: "shield", x: this.hero.position.x, y: this.hero.position.y });
+        this.announce("SECONDE CHANCE", "Le héros se relève !", "win");
+      } else this.phase = "over";
+    }
   }
 
   /** Area damage. Friendly blasts hit enemies; hostile ones also hit the hero. */
@@ -804,7 +826,7 @@ export class ArenaWorld {
       if (this.room === 0 && h.x > WIDTH - 18) this.switchRoom(1);
       else if (this.room === 1 && h.x < 18) this.switchRoom(0);
     }
-    this.score = Math.floor((this.elapsed + 1e-9) / SCORE_SECONDS);
+    this.score = Math.floor((this.elapsed + 1e-9) / SCORE_SECONDS) + this.scoreBonus;
     if (this.phase === "playing" && this.xp >= this.xpNext) {
       this.xp -= this.xpNext; this.level++; this.xpNext = xpFor(this.level);
       this.rollChoices();

@@ -16,6 +16,7 @@ import { prepareBrixImages } from '@/games/brix-rush/images';
 import { prepareVehicleSprites } from '@/games/brix-rush/vehicles';
 import { prepareTerrainSprites } from '@/games/brix-rush/terrain';
 import { recordBrixRushResult } from '@/utils/brixRushProgress';
+import { RunBoostFxLayer, RunBoostPicker, useRunBoostSelection } from '@/components/boosts/RunBoosts';
 
 interface Props {
   onBack?: () => void;
@@ -28,6 +29,7 @@ interface Props {
   onSetBoosts?: (boosts: BoostType[]) => void;
   coins?: number;
   onEarnCoin?: (amount: number) => void;
+  onRunBoosts?: (boosts: BoostType[]) => void;
 }
 
 type Room = { code: string; public: boolean; solo: boolean };
@@ -35,7 +37,15 @@ type Room = { code: string; public: boolean; solo: boolean };
 /** Temporarily off: flip to true to re-enable live rooms. */
 const MULTIPLAYER_ENABLED = false;
 
-export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
+export function BrixRushGame({ onBack, onGameOver, onSetBoosts, onRunBoosts }: Props) {
+  const boosts = useRunBoostSelection();
+  const runBoostsRef = useRef(onRunBoosts);
+  runBoostsRef.current = onRunBoosts;
+  const takeBoosts = useCallback(() => {
+    const used = boosts.take();
+    runBoostsRef.current?.(used);
+    return used;
+  }, [boosts.take]);
   const { me, ready } = useIdentity();
   const name = resolveBrixUsername(getUsername());
   const [code, setCode] = useState('');
@@ -98,7 +108,7 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
     startGameSession();
   }, []);
 
-  const menu = useCallback(() => { setRoom(null); setRows([]); }, []);
+  const menu = useCallback(() => { setRoom(null); setRows([]); boosts.setOpen(false); }, [boosts.setOpen]);
 
   return createPortal(
     <div className={`brix-original game-screen${room && status !== 'full' ? ' brix-race' : ''}`}>
@@ -129,13 +139,17 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts }: Props) {
         <p className="brix-muted">{MAX_PLAYERS} coureurs sont déjà dans la salle {room.code}.</p>
         <Button variant="ghost" className="arcade-btn" onClick={menu}>Retour</Button>
       </main> : me && <>
-        <RunnerGame key={room.code} seed={COURSE_SEED} me={me} remote={remote} send={send} animals={animalsRef} onScores={setRows} onMenu={menu} onDeath={death} />
+        <RunnerGame key={room.code} seed={COURSE_SEED} me={me} remote={remote} send={send} animals={animalsRef} onScores={setRows} onMenu={menu} onDeath={death}
+          onOpenBoosts={() => boosts.setOpen(true)} armedBoosts={boosts.selected} takeBoosts={takeBoosts}
+          onRunActive={(active) => { if (active) boosts.setOpen(false); }} />
         <div className="game-hud">
           <Button variant="ghost" className="brix-hud-title brix-display brix-primary text-glow" onClick={menu}>BRIX RUSH</Button>
           <span className="chip">{room.public ? 'Publique' : 'Privée'} · {room.code}</span>
           <span className="chip">{players.length}/{MAX_PLAYERS}{status === 'connecting' ? ' · connexion…' : status === 'error' ? ' · hors ligne' : ''}</span>
         </div>
         <Leaderboard rows={rows} />
+        <RunBoostFxLayer theme="rush" />
+        <RunBoostPicker theme="rush" open={boosts.open} selected={boosts.selected} onChange={boosts.setSelected} onClose={() => boosts.setOpen(false)} />
       </>}
     </div>, document.body);
 }

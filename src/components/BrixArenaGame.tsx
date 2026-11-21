@@ -2,14 +2,26 @@ import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { ArenaGame } from '@/games/brix-arena/ArenaGame';
 import { startGameSession } from '@/utils/scoresApi';
+import type { BoostType } from '@/types/boosts';
+import { RunBoostFxLayer, RunBoostPicker, useRunBoostSelection } from '@/components/boosts/RunBoosts';
 
 interface Props {
   onBack: () => void;
   onGameOver: (score: number, duration: number) => void;
+  onRunBoosts?: (boosts: BoostType[]) => void;
 }
 
 /** Navigation and rankings only: the supplied game owns all play and UI. */
-export function BrixArenaGame({ onBack, onGameOver }: Props) {
+export function BrixArenaGame({ onBack, onGameOver, onRunBoosts }: Props) {
+  const boosts = useRunBoostSelection();
+  const runBoostsRef = useRef(onRunBoosts);
+  runBoostsRef.current = onRunBoosts;
+  const takeBoosts = useCallback(() => {
+    boosts.setOpen(false);
+    const used = boosts.take();
+    runBoostsRef.current?.(used);
+    return used;
+  }, [boosts.take, boosts.setOpen]);
   const gameOver = useRef(onGameOver);
   gameOver.current = onGameOver;
   useEffect(() => {
@@ -28,5 +40,15 @@ export function BrixArenaGame({ onBack, onGameOver }: Props) {
     } catch { /* Original game continues if storage is unavailable. */ }
     gameOver.current(score, duration);
   }, []);
-  return createPortal(<ArenaGame onBack={onBack} onStart={startGameSession} onFinish={finish} />, document.body);
+  return createPortal(
+    <ArenaGame
+      onBack={onBack} onStart={startGameSession} onFinish={finish}
+      takeBoosts={takeBoosts} onOpenBoosts={() => boosts.setOpen(true)} armedBoosts={boosts.selected}
+      overlay={<>
+        <RunBoostFxLayer theme="arena" zIndex={90} />
+        <RunBoostPicker theme="arena" zIndex={95} open={boosts.open} selected={boosts.selected} onChange={boosts.setSelected} onClose={() => boosts.setOpen(false)} />
+      </>}
+    />,
+    document.body,
+  );
 }

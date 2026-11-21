@@ -27,7 +27,7 @@ type Hud = {
   phase: string; hp: number; maxHp: number; score: number; elapsed: number; kills: number; dash: number;
   bombs: number; bombProgress: number; menuOpen: boolean; level: number; xp: number; xpNext: number;
   boss: { name: string; hp: number; max: number } | null; banner: Banner | null; choices: UpgradeId[];
-  levels: Partial<Record<UpgradeId, number>>; bossesKilled: number; shield: boolean; incoming: number; room: number;
+  levels: Partial<Record<UpgradeId, number>>; bossesKilled: number; shield: boolean; incoming: number; room: number; revive?: boolean;
 };
 const EMPTY_HUD: Hud = { phase: "ready", hp: 5, maxHp: 5, score: 0, elapsed: 0, kills: 0, dash: 0, bombs: 1, bombProgress: 0, menuOpen: false, level: 1, xp: 0, xpNext: 10, boss: null, banner: null, choices: [], levels: {}, bossesKilled: 0, shield: false, incoming: 0, room: 0 };
 
@@ -36,7 +36,14 @@ function Laurels({ children, className = "" }: { children: React.ReactNode; clas
   return <div className={`arena-laurels ${className}`}><img src={laurelUrl} alt="" aria-hidden /><div>{children}</div><img src={laurelUrl} alt="" aria-hidden className="arena-laurel-flip" /></div>;
 }
 
-export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; onStart?: () => void; onFinish?: (score: number, duration: number) => void }) {
+export function ArenaGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts, armedBoosts = [], overlay }: {
+  onBack?: () => void; onStart?: () => void; onFinish?: (score: number, duration: number) => void;
+  /** Lucky Stop : boosts consommés au lancement d'un combat. */
+  takeBoosts?: () => string[]; onOpenBoosts?: () => void; armedBoosts?: string[];
+  /** Calques Lucky Stop (sélecteur de boosts, effets) rendus dans l'écran pour suivre sa rotation. */
+  overlay?: import("react").ReactNode;
+}) {
+  const takeBoostsRef = useRef(takeBoosts); takeBoostsRef.current = takeBoosts;
   const callbacks = useRef({ onStart, onFinish }); callbacks.current = { onStart, onFinish };
   const finished = useRef(false);
   const canvas = useRef<HTMLCanvasElement>(null), stage = useRef<HTMLElement>(null);
@@ -53,11 +60,11 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
       phase: g.phase, hp: g.hp, maxHp: g.maxHp, score: g.score, elapsed: g.elapsed, kills: g.kills, dash: g.dashCooldown,
       bombs: g.bombs, bombProgress: g.bombProgress, menuOpen: g.menuOpen, level: g.level, xp: g.xp, xpNext: g.xpNext,
       boss: g.boss ? { name: BOSS_NAMES[(g.bossIndex - 1) % BOSS_NAMES.length] ?? "BOSS", hp: Math.max(0, g.boss.hp), max: g.boss.maxHp } : null,
-      banner: g.banner, choices: [...g.choices], levels, bossesKilled: g.bossesKilled, shield: g.shieldReady, incoming: g.followers.length, room: g.room,
+      banner: g.banner, choices: [...g.choices], levels, bossesKilled: g.bossesKilled, shield: g.shieldReady || g.boostShield, revive: g.reviveArmed, incoming: g.followers.length, room: g.room,
     });
     if (g.score > bestRef.current) { bestRef.current = g.score; setBest(g.score); try { localStorage.setItem("brix-arena-survival-best", String(g.score)); } catch { /* optional storage */ } }
   };
-  const start = () => { finished.current = false; callbacks.current.onStart?.(); world.current?.dispose(); const g = new ArenaWorld(); world.current = g; g.start(); keys.current.clear(); input.current = { x: 0, y: 0 }; publish(); };
+  const start = () => { finished.current = false; callbacks.current.onStart?.(); world.current?.dispose(); const g = new ArenaWorld(); world.current = g; g.applyRunBoosts(takeBoostsRef.current?.() ?? []); g.start(); keys.current.clear(); input.current = { x: 0, y: 0 }; publish(); };
   const pause = () => { const g = world.current; if (!g) return; if (g.menuOpen) g.resumeMenu(); else g.openMenu(); keys.current.clear(); input.current = { x: 0, y: 0 }; stickPointer.current = null; publish(); };
   const choose = (u: UpgradeId) => { keys.current.clear(); input.current = { x: 0, y: 0 }; stickPointer.current = null; world.current?.upgrade(u); publish(); };
   const bomb = () => { world.current?.bomb(); publish(); };
@@ -346,7 +353,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
     <header className="arena-hud"><Button variant="secondary" onClick={pause} aria-label="Menu"><ArrowLeft />Menu</Button></header>
     <div className="arena-stats">
       <div className="arena-score"><Trophy size={16} /><span>{hud.score}<small>Record {best}</small></span></div>
-      <div className="arena-health" aria-label={`${hud.hp} vies sur ${hud.maxHp}`}>{hud.maxHp <= 8 ? Array.from({ length: hud.maxHp }, (_, i) => <Heart key={i} size={15} className={i < hud.hp ? "is-full" : "is-empty"} />) : <><Heart size={15} className="is-full" />{hud.hp}/{hud.maxHp}</>}{hud.shield && <Shield size={13} className="arena-shield-on" aria-label="Bouclier prêt" />}</div>
+      <div className="arena-health" aria-label={`${hud.hp} vies sur ${hud.maxHp}`}>{hud.maxHp <= 8 ? Array.from({ length: hud.maxHp }, (_, i) => <Heart key={i} size={15} className={i < hud.hp ? "is-full" : "is-empty"} />) : <><Heart size={15} className="is-full" />{hud.hp}/{hud.maxHp}</>}{hud.shield && <Shield size={13} className="arena-shield-on" aria-label="Bouclier prêt" />}{hud.revive && <HeartPulse size={13} className="arena-revive-on" aria-label="Seconde chance prête" />}</div>
     </div>
     {inRun && <div className="arena-xp" aria-label={`Niveau ${hud.level}`}>
       <b>NIV. {hud.level}</b>
@@ -386,6 +393,7 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
       <div className="arena-lobby-right">
         <div className="arena-lobby-kit"><img src={healthKitUrl} alt="Kit de soin" /><div><b>KIT DE SOIN</b><span>Ramasse-le : <em>+1 vie</em></span></div></div>
         <div className="arena-lobby-kit arena-lobby-gem"><Gem size={30} /><div><b>CRISTAUX</b><span>Ramasse-les pour <em>choisir un pouvoir</em></span></div></div>
+        {onOpenBoosts && <Button variant="secondary" className="arena-boost-btn" onClick={onOpenBoosts}><Zap />Boosts{armedBoosts.length > 0 && <span className="arena-boost-count">{armedBoosts.length}</span>}</Button>}
         <Button className="arena-lobby-play" onClick={start}><Swords />JOUER</Button>
         <small className="arena-lobby-hint">Une porte à droite mène à la Fosse Ardente : cristaux ×2, geysers de lave</small>
       </div>
@@ -414,7 +422,9 @@ export function ArenaGame({ onBack, onStart, onFinish }: { onBack?: () => void; 
         </ul>
         {taken.length > 0 && <div className="arena-build">{taken.map(([id, n]) => { const Icon = UPGRADE_ICON[id]; return <span key={id} title={UPGRADES[id].name}><Icon size={16} />{n}</span>; })}</div>}
       </>}
+      {hud.phase === "over" && onOpenBoosts && <Button variant="secondary" className="arena-boost-btn" onClick={onOpenBoosts}><Zap />Boosts{armedBoosts.length > 0 && <span className="arena-boost-count">{armedBoosts.length}</span>}</Button>}
       <Button className="arena-start" onClick={hud.phase === "paused" ? pause : start}>{hud.phase === "over" ? <RotateCcw /> : <Play />}{hud.phase === "over" ? "Rejouer" : "Reprendre"}</Button>
     </div></div>}
+    {overlay}
   </main>;
 }
