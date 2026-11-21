@@ -6,19 +6,106 @@ const corsHeaders = {
 };
 
 // Configuration constants
+// Plafond absolu par mode (les meilleurs scores réels sont < 200 en novembre 2026).
 const SCORE_LIMITS: Record<string, number> = {
-  classic: 10000,
-  arc_changeant: 8000,
-  survie_60s: 6000,
-  zone_mobile: 7000,
-  assaut: 7000,
-  chronophase: 5000,
-  bloup: 8000,
-  brix_rush: 8000,
-  brix_arena: 5000,
-  zone_traitresse: 8000, // Accept older installed app versions; current rankings exclude this identity.
-  memoire_expert: 5000
+  classic: 2000,
+  arc_changeant: 2000,
+  survie_60s: 2000,
+  zone_mobile: 2000,
+  assaut: 2000,
+  chronophase: 2000,
+  bloup: 2000,
+  brix_rush: 2000,
+  brix_arena: 2000,
+  zone_traitresse: 2000, // Accept older installed app versions; current rankings exclude this identity.
+  memoire_expert: 2000
 };
+
+// Rythme maximal réaliste (points par seconde de partie), volontairement très large.
+// Brix Arena : 1 point / 3 s. Brix Rush : 1 colonne par saut (110 ms mini). Assaut : ~2 points / 3 éliminations.
+const MAX_POINTS_PER_SECOND: Record<string, number> = {
+  brix_arena: 0.5,
+  assaut: 2,
+  chronophase: 3,
+  bloup: 3,
+  survie_60s: 4,
+  brix_rush: 6,
+};
+const DEFAULT_POINTS_PER_SECOND = 5; // anciens modes encore envoyés par d'anciennes versions de l'app
+const SCORE_HEADROOM = 30;            // boost « départ à 20 » + marge
+const CLOCK_GRACE_SECONDS = 60;       // horloge du téléphone en avance sur le serveur
+
+/**
+ * Le score est-il atteignable dans la durée de la partie ?
+ * L'app envoie toujours session_start_time (au pire « maintenant − 10 s ») : une valeur absente est traitée pareil.
+ * Une horloge de téléphone très en avance ne donne pas de verdict (on ne pénalise pas un joueur honnête).
+ */
+function isPlausibleForDuration(mode: string, score: number, sessionStart: unknown, now = Date.now()): boolean {
+  let start = Number(sessionStart);
+  if (!Number.isFinite(start) || start <= 0) start = now - 10_000;
+  const seconds = (now - start) / 1000;
+  if (seconds < -CLOCK_GRACE_SECONDS) return true; // horloge du téléphone manifestement en avance
+  const rate = MAX_POINTS_PER_SECOND[mode] ?? DEFAULT_POINTS_PER_SECOND;
+  return score <= SCORE_HEADROOM + rate * (Math.max(0, seconds) + CLOCK_GRACE_SECONDS);
+}
+
+// Client Supabase (service role) : typé souplement, le schéma n'est pas généré pour les fonctions.
+// deno-lint-ignore no-explicit-any
+type Db = any;
+
+// Limite de fréquence persistante (table rate_limits), en plus de la limite en mémoire.
+const PERSISTENT_WINDOW_MS = 10 * 60 * 1000;
+const PERSISTENT_MAX_SUBMISSIONS = 40;
+
+async function overPersistentLimit(supabase: Db, deviceId: string): Promise<boolean> {
+  const key = `score:${deviceId}`.slice(0, 200);
+  const now = new Date();
+  const { data } = await supabase.from('rate_limits').select('submission_count, window_start').eq('fingerprint', key).maybeSingle();
+  const windowStart = data?.window_start ? new Date(data.window_start) : null;
+  const inWindow = windowStart && now.getTime() - windowStart.getTime() < PERSISTENT_WINDOW_MS;
+  const count = inWindow ? (data?.submission_count ?? 0) : 0;
+  if (count >= PERSISTENT_MAX_SUBMISSIONS) return true;
+  await supabase.from('rate_limits').upsert({
+    fingerprint: key,
+    submission_count: count + 1,
+    window_start: inWindow ? data!.window_start : now.toISOString(),
+    last_submission: now.toISOString(),
+  }, { onConflict: 'fingerprint' });
+  return false;
+}
+
+// Décorations qui existent dans le jeu : au plus un emblème et une couleur.
+const EMBLEMS = new Set(['star', 'fire', 'sparkle', 'crown', 'diamond', 'trophy', 'dragon']);
+const COLORS = new Set(['purple_name', 'pulse_name', 'gold_pulse_name', 'rainbow_name']);
+
+/** null = aucune décoration, undefined = valeur invalide (ignorée, sans bloquer le score). */
+function normalizeDecorations(value: unknown): string | null | undefined {
+  if (value === null || value === '') return null;
+  if (typeof value !== 'string' || value.length > 40) return undefined;
+  const parts = value.split(',').map((p) => p.trim()).filter(Boolean);
+  if (parts.length > 2) return undefined;
+  const emblems = parts.filter((p) => EMBLEMS.has(p));
+  const colors = parts.filter((p) => COLORS.has(p));
+  if (emblems.length + colors.length !== parts.length || emblems.length > 1 || colors.length > 1) return undefined;
+  return [...emblems, ...colors].join(',') || null;
+}
+
+/**
+ * Applique la décoration. Seul l'appareil « propriétaire » du pseudo (celui qui l'a utilisé en premier)
+ * peut la propager à toutes les lignes du pseudo ; un autre appareil ne modifie que ses propres lignes.
+ */
+async function syncDecorations(supabase: Db, deviceId: string, username: string, decorations: string | null) {
+  const { data: first } = await supabase
+    .from('scores')
+    .select('device_id')
+    .ilike('username', username)
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  let query = supabase.from('scores').update({ decorations }).ilike('username', username);
+  if (first && first.device_id !== deviceId) query = query.eq('device_id', deviceId);
+  await query;
+}
 
 const RATE_LIMIT_WINDOW = 15000;
 const MAX_SUBMISSIONS_PER_WINDOW = 20;
@@ -55,7 +142,9 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, username, score, mode, session_start_time, client_fingerprint, decorations, submission_id, username_changed } = await req.json();
+    const { device_id, username, score, mode, session_start_time, client_fingerprint, decorations: rawDecorations, submission_id, username_changed } = await req.json();
+    // Décorations validées ; une valeur inconnue est ignorée (le score, lui, est traité normalement).
+    const decorations = rawDecorations === undefined ? undefined : normalizeDecorations(rawDecorations);
 
     console.log('Score submission attempt:', { device_id, username, score, mode, submission_id, username_changed });
 
@@ -99,7 +188,17 @@ Deno.serve(async (req) => {
       );
     }
 
-    // In-memory rate limiting only
+    // Score impossible dans la durée de la partie → refusé.
+    // Réponse 200 (success: false) : l'app abandonne ce score au lieu de le renvoyer en boucle.
+    if (!isPlausibleForDuration(mode, score, session_start_time)) {
+      console.warn('Implausible score rejected:', { mode, score, session_start_time });
+      return new Response(
+        JSON.stringify({ success: false, error: 'implausible_score' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // In-memory rate limiting
     const fingerprint = `${device_id}_${client_fingerprint || 'unknown'}`;
     const now = Date.now();
     const rateLimitData = rateLimitMap.get(fingerprint);
@@ -119,6 +218,13 @@ Deno.serve(async (req) => {
       }
     } else {
       rateLimitMap.set(fingerprint, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    }
+
+    if (await overPersistentLimit(supabase, device_id)) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'rate_limited' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // ===== CONSOLIDATION: Only when username actually changed =====
@@ -291,10 +397,7 @@ Deno.serve(async (req) => {
         console.log(`No improvement for ${username}: best=${existingScore.best_score}, weekly=${existingScore.weekly_score}, monthly=${existingScore.monthly_score}, submitted=${score}`);
 
         if (decorations !== undefined) {
-          await supabase
-            .from('scores')
-            .update({ decorations: decorations || null })
-            .ilike('username', username);
+          await syncDecorations(supabase, device_id, username, decorations);
         }
 
         return new Response(
@@ -306,10 +409,7 @@ Deno.serve(async (req) => {
 
     // Sync decorations across all entries for this username
     if (decorations !== undefined) {
-      await supabase
-        .from('scores')
-        .update({ decorations: decorations || null })
-        .ilike('username', username);
+      await syncDecorations(supabase, device_id, username, decorations);
     }
 
     // Upsert the score
@@ -324,7 +424,7 @@ Deno.serve(async (req) => {
         monthly_score,
         monthly_updated_at: new Date().toISOString(),
         mode,
-        decorations: decorations || null,
+        decorations: decorations === undefined ? (existingScore ? undefined : null) : decorations,
         created_at: existingScore ? undefined : new Date().toISOString()
       }, { onConflict: 'device_id,username,mode' })
       .select();

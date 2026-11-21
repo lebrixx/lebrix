@@ -57,13 +57,12 @@ serve(async (req) => {
       return json({ error: 'Invalid decorations' }, 400);
     }
 
-    // Sécurité : seul un appareil qui possède déjà un score sous ce pseudo peut en changer la décoration.
-    // (device_id n'est pas lisible publiquement, il ne peut donc pas être usurpé depuis le classement.)
+    // Sécurité : seul un appareil qui a déjà un score sous ce pseudo peut agir.
     const { count, error: ownerError } = await supabase
       .from('scores')
       .select('id', { count: 'exact', head: true })
       .eq('device_id', device_id)
-      .eq('username', username);
+      .ilike('username', username);
 
     if (ownerError) {
       console.error('Ownership check failed:', ownerError);
@@ -74,11 +73,19 @@ serve(async (req) => {
       return json({ success: true, updated: 0 });
     }
 
-    // Le joueur est bien propriétaire du pseudo : on applique la décoration à toutes ses lignes (tous modes, tous appareils).
-    const { error } = await supabase
+    // Le « propriétaire » du pseudo est l'appareil qui l'a utilisé en premier : lui seul propage la décoration
+    // à toutes les lignes du pseudo. Un autre appareil (ex. quelqu'un qui reprend le même pseudo) ne modifie que les siennes.
+    const { data: first } = await supabase
       .from('scores')
-      .update({ decorations: normalized })
-      .eq('username', username);
+      .select('device_id')
+      .ilike('username', username)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    let query = supabase.from('scores').update({ decorations: normalized }).ilike('username', username);
+    if (first && first.device_id !== device_id) query = query.eq('device_id', device_id);
+    const { error } = await query;
 
     if (error) {
       console.error('Database error:', error);
