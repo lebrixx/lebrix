@@ -37,4 +37,4 @@ CREATE POLICY "Public brix factory rows with earnings" ON public.brix_factory_sc
   FOR SELECT TO anon, authenticated USING (factory_earnings > 0);
 
 REVOKE SELECT ON public.daily_precision_scores FROM anon, authenticated;
-GRANT SELECT (id, username, target, result, gap, challenge_date, decorations, created_at) ON public.daily_precision_scores TO anon, authenticated;
+GRANT SELECT (id, username, target, result, gap, challenge_date, decorations, created_at) ON public.daily_precision_scores TO anon, authenticated;;
