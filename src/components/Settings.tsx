@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTr } from '@/i18n/tr';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -33,6 +34,7 @@ export const Settings: React.FC<SettingsProps> = ({
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
   const { toast } = useToast();
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
@@ -312,7 +314,7 @@ export const Settings: React.FC<SettingsProps> = ({
             <div className="flex items-center gap-3">
               <Lightbulb className="w-5 h-5 text-primary" />
               <Label className="text-text-primary text-base">
-                Conseil du jour
+                {tr("Conseil du jour", "Tip of the day", "Consejo del día")}
               </Label>
             </div>
             <Button
@@ -324,7 +326,7 @@ export const Settings: React.FC<SettingsProps> = ({
               }}
               className="border-wheel-border hover:bg-button-hover text-text-primary"
             >
-              Voir
+              {tr("Voir", "View", "Ver")}
             </Button>
           </div>
 
@@ -334,7 +336,7 @@ export const Settings: React.FC<SettingsProps> = ({
               <div className="flex items-center gap-3">
                 <PlayCircle className="w-5 h-5 text-primary" />
                 <Label className="text-text-primary text-base">
-                  Revoir l'introduction
+                  {tr("Revoir l'introduction", "Replay the intro", "Volver a ver la introducción")}
                 </Label>
               </div>
               <Button
@@ -346,7 +348,7 @@ export const Settings: React.FC<SettingsProps> = ({
                 }}
                 className="border-wheel-border hover:bg-button-hover text-text-primary"
               >
-                Relancer
+                {tr("Relancer", "Replay", "Repetir")}
               </Button>
             </div>
           )}

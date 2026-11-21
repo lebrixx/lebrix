@@ -1,3 +1,4 @@
+import { trs } from '@/i18n/tr';
 export type ThemeDef = {
   id: string;
   name: string;
@@ -15,9 +16,9 @@ export type ThemeDef = {
 export const THEMES: ThemeDef[] = [
   {
     id: 'theme-neon',
-    name: 'Néon Électrique',
+    get name() { return trs("Néon Électrique", "Electric Neon", "Neón Eléctrico"); },
     price: 0,
-    description: 'Violet profond + accents cyan néon (thème par défaut)',
+    get description() { return trs("Violet profond + accents cyan néon (thème par défaut)", "Deep purple + neon cyan accents (default theme)", "Violeta profundo + acentos cian neón (tema por defecto)"); },
     rarity: 'common',
     preview: {
       background: 'linear-gradient(135deg, #0e0a18 0%, #17112a 50%, #1e1836 100%)',
@@ -27,9 +28,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-sunset',
-    name: 'Coucher de Soleil',
+    get name() { return trs("Coucher de Soleil", "Sunset", "Atardecer"); },
     price: 120,
-    description: 'Dégradé orange/ambre avec arc vert contrasté',
+    get description() { return trs("Dégradé orange/ambre avec arc vert contrasté", "Orange/amber gradient with a contrasting green arc", "Degradado naranja/ámbar con arco verde contrastado"); },
     rarity: 'common',
     preview: {
       background: 'linear-gradient(135deg, #7a2e0b 0%, #a74b12 50%, #c97717 100%)',
@@ -39,9 +40,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-ocean',
-    name: 'Profondeur Océanique',
+    get name() { return trs("Profondeur Océanique", "Ocean Depths", "Profundidad Oceánica"); },
     price: 150,
-    description: 'Bleus profonds + accents turquoise lumineux',
+    get description() { return trs("Bleus profonds + accents turquoise lumineux", "Deep blues + bright turquoise accents", "Azules profundos + acentos turquesa luminosos"); },
     rarity: 'rare',
     preview: {
       background: 'linear-gradient(135deg, #07263f 0%, #0a3a5c 50%, #0f5e82 100%)',
@@ -51,9 +52,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-forest',
-    name: 'Forêt Enchantée',
+    get name() { return trs("Forêt Enchantée", "Enchanted Forest", "Bosque Encantado"); },
     price: 150,
-    description: 'Verts profonds + arc lime éclatant',
+    get description() { return trs("Verts profonds + arc lime éclatant", "Deep greens + bright lime arc", "Verdes profundos + arco lima brillante"); },
     rarity: 'rare',
     preview: {
       background: 'linear-gradient(135deg, #0f2e1f 0%, #174a31 50%, #1f6a46 100%)',
@@ -63,9 +64,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-volcanic',
-    name: 'Éruption Volcanique',
+    get name() { return trs("Éruption Volcanique", "Volcanic Eruption", "Erupción Volcánica"); },
     price: 200,
-    description: 'Rouges sombres, bar jaune vif, arc vert lisible',
+    get description() { return trs("Rouges sombres, bar jaune vif, arc vert lisible", "Dark reds, bright yellow bar, readable green arc", "Rojos oscuros, barra amarilla viva, arco verde legible"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #2b0b0b 0%, #4a0f12 50%, #6b1417 100%)',
@@ -75,9 +76,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-cosmic',
-    name: 'Nébuleuse Cosmique',
+    get name() { return trs("Nébuleuse Cosmique", "Cosmic Nebula", "Nebulosa Cósmica"); },
     price: 260,
-    description: 'Violets cosmiques + accents lavande/vert',
+    get description() { return trs("Violets cosmiques + accents lavande/vert", "Cosmic purples + lavender/green accents", "Violetas cósmicos + acentos lavanda/verde"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #120826 0%, #2a1556 50%, #3b2f7a 100%)',
@@ -87,9 +88,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-golden',
-    name: 'Luxe Doré',
+    get name() { return trs("Luxe Doré", "Golden Luxury", "Lujo Dorado"); },
     price: 240,
-    description: 'Bruns foncés + doré, arc vert contrasté',
+    get description() { return trs("Bruns foncés + doré, arc vert contrasté", "Dark browns + gold, contrasting green arc", "Marrones oscuros + dorado, arco verde contrastado"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #2a1e07 0%, #3b2c0a 50%, #4d3a0d 100%)',
@@ -99,9 +100,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-emerald',
-    name: 'Émeraude Pure',
+    get name() { return trs("Émeraude Pure", "Pure Emerald", "Esmeralda Pura"); },
     price: 180,
-    description: 'Verts profonds + arc vert clair très visible',
+    get description() { return trs("Verts profonds + arc vert clair très visible", "Deep greens + highly visible light green arc", "Verdes profundos + arco verde claro muy visible"); },
     rarity: 'rare',
     preview: {
       background: 'linear-gradient(135deg, #06281f 0%, #0b3b2e 50%, #115543 100%)',
@@ -111,9 +112,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-plasma',
-    name: 'Énergie Plasma',
+    get name() { return trs("Énergie Plasma", "Plasma Energy", "Energía Plasma"); },
     price: 220,
-    description: 'Bleus électriques + arc vert fluorescent',
+    get description() { return trs("Bleus électriques + arc vert fluorescent", "Electric blues + fluorescent green arc", "Azules eléctricos + arco verde fluorescente"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #0b1740 0%, #13286b 50%, #1b3b99 100%)',
@@ -123,9 +124,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-shadow',
-    name: 'Ombres Mystiques',
+    get name() { return trs("Ombres Mystiques", "Mystic Shadows", "Sombras Místicas"); },
     price: 300,
-    description: 'Gris anthracite + accents violet, arc vert lumineux',
+    get description() { return trs("Gris anthracite + accents violet, arc vert lumineux", "Charcoal grey + purple accents, bright green arc", "Gris antracita + acentos violeta, arco verde luminoso"); },
     rarity: 'legendary',
     preview: {
       background: 'linear-gradient(135deg, #0b0b0b 0%, #1a1f24 50%, #2a3340 100%)',
@@ -135,9 +136,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-royal',
-    name: 'Majesté Royale',
+    get name() { return trs("Majesté Royale", "Royal Majesty", "Majestad Real"); },
     price: -1, // Pas achetable, uniquement via récompense 7 jours
-    description: 'Thème exclusif des fidèles - Or royal et pourpre impérial',
+    get description() { return trs("Thème exclusif des fidèles - Or royal et pourpre impérial", "Exclusive theme for loyal players - Royal gold and imperial purple", "Tema exclusivo para fieles - Oro real y púrpura imperial"); },
     rarity: 'legendary',
     preview: {
       background: 'linear-gradient(135deg, #1a0d2e 0%, #2d1b69 50%, #5b21b6 100%)',
@@ -148,9 +149,9 @@ export const THEMES: ThemeDef[] = [
   // Nouveaux skins premium
   {
     id: 'theme-diamond',
-    name: 'Éclat de Diamant',
+    get name() { return trs("Éclat de Diamant", "Diamond Shine", "Brillo de Diamante"); },
     price: 500,
-    description: 'Pureté cristalline avec reflets prismatiques',
+    get description() { return trs("Pureté cristalline avec reflets prismatiques", "Crystal purity with prismatic reflections", "Pureza cristalina con reflejos prismáticos"); },
     rarity: 'legendary',
     preview: {
       background: 'linear-gradient(135deg, #0a0a0a 0%, #1e1e2e 50%, #2a2a3a 100%)',
@@ -160,9 +161,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-phoenix',
-    name: 'Résurrection du Phénix',
+    get name() { return trs("Résurrection du Phénix", "Phoenix Rising", "Resurrección del Fénix"); },
     price: 450,
-    description: 'Flammes éternelles aux couleurs incandescentes',
+    get description() { return trs("Flammes éternelles aux couleurs incandescentes", "Eternal flames in glowing colors", "Llamas eternas de colores incandescentes"); },
     rarity: 'legendary',
     preview: {
       background: 'linear-gradient(135deg, #7c2d12 0%, #dc2626 50%, #f97316 100%)',
@@ -172,9 +173,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-aurora',
-    name: 'Aurore Boréale',
+    get name() { return trs("Aurore Boréale", "Northern Lights", "Aurora Boreal"); },
     price: 400,
-    description: 'Lumières polaires dansantes dans la nuit arctique',
+    get description() { return trs("Lumières polaires dansantes dans la nuit arctique", "Polar lights dancing in the arctic night", "Luces polares danzando en la noche ártica"); },
     rarity: 'legendary',
     preview: {
       background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
@@ -184,9 +185,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-nebula',
-    name: 'Nébuleuse Stellaire',
+    get name() { return trs("Nébuleuse Stellaire", "Stellar Nebula", "Nebulosa Estelar"); },
     price: 380,
-    description: 'Poussières d\'étoiles et gaz cosmiques luminescents',
+    get description() { return trs("Poussières d'étoiles et gaz cosmiques luminescents", "Stardust and glowing cosmic gases", "Polvo de estrellas y gases cósmicos luminiscentes"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #1e1b4b 0%, #3730a3 50%, #7c3aed 100%)',
@@ -196,9 +197,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-void',
-    name: 'Abysses du Néant',
+    get name() { return trs("Abysses du Néant", "Void Abyss", "Abismos de la Nada"); },
     price: 360,
-    description: 'Profondeurs infinies aux lueurs violettes mystérieuses',
+    get description() { return trs("Profondeurs infinies aux lueurs violettes mystérieuses", "Endless depths with mysterious purple glows", "Profundidades infinitas con misteriosos destellos violetas"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%)',
@@ -208,9 +209,9 @@ export const THEMES: ThemeDef[] = [
   },
   {
     id: 'theme-crystal',
-    name: 'Caverne de Cristal',
+    get name() { return trs("Caverne de Cristal", "Crystal Cavern", "Caverna de Cristal"); },
     price: 340,
-    description: 'Formations cristallines aux reflets bleu glacé',
+    get description() { return trs("Formations cristallines aux reflets bleu glacé", "Crystal formations with icy blue reflections", "Formaciones cristalinas con reflejos azul hielo"); },
     rarity: 'epic',
     preview: {
       background: 'linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #0284c7 100%)',

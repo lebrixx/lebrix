@@ -1,4 +1,5 @@
 import { ModeID } from '@/constants/modes';
+import { trs } from '@/i18n/tr';
 
 export interface DailyChallenge {
   id: string;
@@ -10,43 +11,45 @@ export interface DailyChallenge {
   reward: { coins: number };
 }
 
+const scoreGoal = (target: number, mode: string) => trs(`Fais un score de ${target} en ${mode}`, `Score ${target} in ${mode}`, `Consigue ${target} puntos en ${mode}`);
+
 // UNIQUEMENT des défis de score dans un mode spécifique
 export const ALL_DAILY_CHALLENGES: DailyChallenge[] = [
   // Chronophase
-  { id: 'chronophase_score_10', title: 'Chrono Débutant', description: 'Fais un score de 10 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 10, reward: { coins: 16 } },
-  { id: 'chronophase_score_20', title: 'Chrono Apprenti', description: 'Fais un score de 20 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 20, reward: { coins: 20 } },
-  { id: 'chronophase_score_35', title: 'Chrono Confirmé', description: 'Fais un score de 35 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 35, reward: { coins: 30 } },
-  { id: 'chronophase_score_60', title: 'Chrono Pro', description: 'Fais un score de 60 en Chronophase', type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 60, reward: { coins: 40 } },
+  { id: 'chronophase_score_10', get title() { return trs("Chrono Débutant", "Chrono Rookie", "Chrono Novato"); }, get description() { return scoreGoal(10, 'Chronophase'); }, type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 10, reward: { coins: 16 } },
+  { id: 'chronophase_score_20', get title() { return trs("Chrono Apprenti", "Chrono Apprentice", "Chrono Aprendiz"); }, get description() { return scoreGoal(20, 'Chronophase'); }, type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 20, reward: { coins: 20 } },
+  { id: 'chronophase_score_35', get title() { return trs("Chrono Confirmé", "Chrono Skilled", "Chrono Experto"); }, get description() { return scoreGoal(35, 'Chronophase'); }, type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 35, reward: { coins: 30 } },
+  { id: 'chronophase_score_60', get title() { return trs("Chrono Pro", "Chrono Pro", "Chrono Pro"); }, get description() { return scoreGoal(60, 'Chronophase'); }, type: 'score_in_mode', mode: ModeID.CHRONOPHASE, target: 60, reward: { coins: 40 } },
   
   // Bloup — new IDs keep historical Ball Balance progress separate.
-  { id: 'bloup_score_10', title: 'Bloup Débutant', description: 'Fais un score de 10 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 10, reward: { coins: 16 } },
-  { id: 'bloup_score_20', title: 'Bloup Intermédiaire', description: 'Fais un score de 20 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 20, reward: { coins: 20 } },
-  { id: 'bloup_score_30', title: 'Bloup Confirmé', description: 'Fais un score de 30 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 30, reward: { coins: 30 } },
-  { id: 'bloup_score_45', title: 'Bloup Expert', description: 'Fais un score de 45 en Bloup', type: 'score_in_mode', mode: ModeID.BLOUP, target: 45, reward: { coins: 46 } },
+  { id: 'bloup_score_10', get title() { return trs("Bloup Débutant", "Bloup Rookie", "Bloup Novato"); }, get description() { return scoreGoal(10, 'Bloup'); }, type: 'score_in_mode', mode: ModeID.BLOUP, target: 10, reward: { coins: 16 } },
+  { id: 'bloup_score_20', get title() { return trs("Bloup Intermédiaire", "Bloup Intermediate", "Bloup Intermedio"); }, get description() { return scoreGoal(20, 'Bloup'); }, type: 'score_in_mode', mode: ModeID.BLOUP, target: 20, reward: { coins: 20 } },
+  { id: 'bloup_score_30', get title() { return trs("Bloup Confirmé", "Bloup Skilled", "Bloup Experto"); }, get description() { return scoreGoal(30, 'Bloup'); }, type: 'score_in_mode', mode: ModeID.BLOUP, target: 30, reward: { coins: 30 } },
+  { id: 'bloup_score_45', get title() { return trs("Bloup Expert", "Bloup Expert", "Bloup Maestro"); }, get description() { return scoreGoal(45, 'Bloup'); }, type: 'score_in_mode', mode: ModeID.BLOUP, target: 45, reward: { coins: 46 } },
   
   // Altitude
-  { id: 'survie_score_5', title: 'Altitude Débutant', description: 'Fais un score de 5 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
-  { id: 'survie_score_8', title: 'Altitude Empileur', description: 'Fais un score de 8 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
-  { id: 'survie_score_12', title: 'Altitude Confirmé', description: 'Fais un score de 12 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
-  { id: 'survie_score_15', title: 'Maître Altitude', description: 'Fais un score de 15 en Altitude', type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
+  { id: 'survie_score_5', get title() { return trs("Altitude Débutant", "Altitude Rookie", "Altitude Novato"); }, get description() { return scoreGoal(5, 'Altitude'); }, type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 5, reward: { coins: 16 } },
+  { id: 'survie_score_8', get title() { return trs("Altitude Empileur", "Altitude Stacker", "Altitude Apilador"); }, get description() { return scoreGoal(8, 'Altitude'); }, type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 8, reward: { coins: 26 } },
+  { id: 'survie_score_12', get title() { return trs("Altitude Confirmé", "Altitude Skilled", "Altitude Experto"); }, get description() { return scoreGoal(12, 'Altitude'); }, type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 12, reward: { coins: 36 } },
+  { id: 'survie_score_15', get title() { return trs("Maître Altitude", "Altitude Master", "Maestro de Altitude"); }, get description() { return scoreGoal(15, 'Altitude'); }, type: 'score_in_mode', mode: ModeID.SURVIE_60S, target: 15, reward: { coins: 50 } },
   
   // Zone mobile
-  { id: 'assaut_score_8', title: 'Pilote Débutant', description: 'Fais un score de 8 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 8, reward: { coins: 20 } },
-  { id: 'assaut_score_12', title: 'Chasseur spatial', description: 'Fais un score de 12 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 12, reward: { coins: 30 } },
-  { id: 'assaut_score_15', title: 'Pilote Confirmé', description: 'Fais un score de 15 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 15, reward: { coins: 40 } },
-  { id: 'assaut_score_20', title: 'Expert Assaut', description: 'Fais un score de 20 en Assaut', type: 'score_in_mode', mode: ModeID.ASSAUT, target: 20, reward: { coins: 50 } },
+  { id: 'assaut_score_8', get title() { return trs("Pilote Débutant", "Rookie Pilot", "Piloto Novato"); }, get description() { return scoreGoal(8, 'Assaut'); }, type: 'score_in_mode', mode: ModeID.ASSAUT, target: 8, reward: { coins: 20 } },
+  { id: 'assaut_score_12', get title() { return trs("Chasseur spatial", "Space Hunter", "Cazador espacial"); }, get description() { return scoreGoal(12, 'Assaut'); }, type: 'score_in_mode', mode: ModeID.ASSAUT, target: 12, reward: { coins: 30 } },
+  { id: 'assaut_score_15', get title() { return trs("Pilote Confirmé", "Skilled Pilot", "Piloto Experto"); }, get description() { return scoreGoal(15, 'Assaut'); }, type: 'score_in_mode', mode: ModeID.ASSAUT, target: 15, reward: { coins: 40 } },
+  { id: 'assaut_score_20', get title() { return trs("Expert Assaut", "Assault Expert", "Experto en Asalto"); }, get description() { return scoreGoal(20, 'Assaut'); }, type: 'score_in_mode', mode: ModeID.ASSAUT, target: 20, reward: { coins: 50 } },
   
   // Brix Rush
-  { id: 'brix_rush_score_5', title: 'Rush Novice', description: 'Fais un score de 5 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 5, reward: { coins: 20 } },
-  { id: 'brix_rush_score_8', title: 'Rush Habile', description: 'Fais un score de 8 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 8, reward: { coins: 30 } },
-  { id: 'brix_rush_score_10', title: 'Rush Confirmé', description: 'Fais un score de 10 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 10, reward: { coins: 40 } },
-  { id: 'brix_rush_score_15', title: 'Maître des routes', description: 'Fais un score de 15 en Brix Rush', type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 15, reward: { coins: 56 } },
+  { id: 'brix_rush_score_5', get title() { return trs("Rush Novice", "Rush Rookie", "Rush Novato"); }, get description() { return scoreGoal(5, 'Brix Rush'); }, type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 5, reward: { coins: 20 } },
+  { id: 'brix_rush_score_8', get title() { return trs("Rush Habile", "Rush Skillful", "Rush Hábil"); }, get description() { return scoreGoal(8, 'Brix Rush'); }, type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 8, reward: { coins: 30 } },
+  { id: 'brix_rush_score_10', get title() { return trs("Rush Confirmé", "Rush Skilled", "Rush Experto"); }, get description() { return scoreGoal(10, 'Brix Rush'); }, type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 10, reward: { coins: 40 } },
+  { id: 'brix_rush_score_15', get title() { return trs("Maître des routes", "Road Master", "Maestro de la carretera"); }, get description() { return scoreGoal(15, 'Brix Rush'); }, type: 'score_in_mode', mode: ModeID.BRIX_RUSH, target: 15, reward: { coins: 56 } },
   
   // Brix Arena
-  { id: 'brix_arena_score_3', title: 'Premier survivant', description: 'Fais un score de 3 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 3, reward: { coins: 20 } },
-  { id: 'brix_arena_score_5', title: 'Esquiveur', description: 'Fais un score de 5 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 5, reward: { coins: 36 } },
-  { id: 'brix_arena_score_8', title: 'Tactique', description: 'Fais un score de 8 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 8, reward: { coins: 50 } },
-  { id: 'brix_arena_score_10', title: 'Maître de l’arène', description: 'Fais un score de 10 en Brix Arena', type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 10, reward: { coins: 60 } },
+  { id: 'brix_arena_score_3', get title() { return trs("Premier survivant", "First Survivor", "Primer superviviente"); }, get description() { return scoreGoal(3, 'Brix Arena'); }, type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 3, reward: { coins: 20 } },
+  { id: 'brix_arena_score_5', get title() { return trs("Esquiveur", "Dodger", "Esquivador"); }, get description() { return scoreGoal(5, 'Brix Arena'); }, type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 5, reward: { coins: 36 } },
+  { id: 'brix_arena_score_8', get title() { return trs("Tactique", "Tactician", "Táctico"); }, get description() { return scoreGoal(8, 'Brix Arena'); }, type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 8, reward: { coins: 50 } },
+  { id: 'brix_arena_score_10', get title() { return trs("Maître de l’arène", "Arena Master", "Maestro de la arena"); }, get description() { return scoreGoal(10, 'Brix Arena'); }, type: 'score_in_mode', mode: ModeID.BRIX_ARENA, target: 10, reward: { coins: 60 } },
 ];
 
 export interface DailyChallengeProgress {

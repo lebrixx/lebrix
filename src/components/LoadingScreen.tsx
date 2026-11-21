@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { trs } from '@/i18n/tr';
 import crownUrl from "@/assets/loader/crown.png";
 import titleUrl from "@/assets/loader/title.png";
 import "./LoadingScreen.css";
@@ -61,7 +62,7 @@ export default function LoadingScreen({ progress, done, onFinished }: Props) {
         <div className="ls-bar">
           <div className="ls-bar-fill" style={{ width: `${Math.max(pct, 4)}%` }} />
         </div>
-        <div className="ls-label">{pct < 100 ? `Chargement… ${pct}%` : "C'est parti !"}</div>
+        <div className="ls-label">{pct < 100 ? `${trs('Chargement…', 'Loading…', 'Cargando…')} ${pct}%` : trs("C'est parti !", "Let's go!", "¡Vamos!")}</div>
       </div>
     </div>
   );

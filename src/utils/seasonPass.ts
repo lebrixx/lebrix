@@ -1,3 +1,4 @@
+import { trs } from '@/i18n/tr';
 // Season Pass System - Diamonds, Tiers, Daily Challenges, Decorations
 
 export type UsernameColor = 'violet' | 'pulse' | 'gold_pulse' | 'rainbow' | null;
@@ -47,19 +48,19 @@ const STORAGE_KEY = 'ls_season_pass';
 
 // Decorations available in the Season Pass (9 tiers)
 export const DECORATIONS: Decoration[] = [
-  { id: 'star', name: 'Étoile', prefix: '⭐ ', suffix: '', tier: 1, preview: '⭐ Pseudo' },
-  { id: 'fire', name: 'Flamme', prefix: '🔥 ', suffix: ' 🔥', tier: 2, preview: '🔥 Pseudo 🔥' },
-  { id: 'sparkle', name: 'Étincelle', prefix: '✨ ', suffix: ' ✨', tier: 3, preview: '✨ Pseudo ✨' },
-  { id: 'purple_name', name: 'Pseudo Violet', prefix: '', suffix: '', tier: 4, preview: '💜 Pseudo en violet', isColorReward: true, color: 'violet' },
-  { id: 'crown', name: 'Couronne', prefix: '👑 ', suffix: '', tier: 5, preview: '👑 Pseudo' },
-  { id: 'diamond', name: 'Diamant', prefix: '💎 ', suffix: ' 💎', tier: 6, preview: '💎 Pseudo 💎' },
-  { id: 'trophy', name: 'Trophée', prefix: '🏆 ', suffix: ' 🏆', tier: 7, preview: '🏆 Pseudo 🏆' },
-  { id: 'dragon', name: 'Dragon', prefix: '🐉 ', suffix: ' 🐉', tier: 8, preview: '🐉 Pseudo 🐉' },
-  { id: 'pulse_name', name: 'Pseudo Pulsé', prefix: '', suffix: '', tier: 9, preview: '💫 Pseudo pulsé', isColorReward: true, color: 'pulse' },
+  { id: 'star', get name() { return trs('Étoile', 'Star', 'Estrella'); }, prefix: '⭐ ', suffix: '', tier: 1, get preview() { return '⭐ ' + trs('Pseudo', 'Name', 'Nombre') + ''; } },
+  { id: 'fire', get name() { return trs('Flamme', 'Flame', 'Llama'); }, prefix: '🔥 ', suffix: ' 🔥', tier: 2, get preview() { return '🔥 ' + trs('Pseudo', 'Name', 'Nombre') + ' 🔥'; } },
+  { id: 'sparkle', get name() { return trs('Étincelle', 'Sparkle', 'Destello'); }, prefix: '✨ ', suffix: ' ✨', tier: 3, get preview() { return '✨ ' + trs('Pseudo', 'Name', 'Nombre') + ' ✨'; } },
+  { id: 'purple_name', get name() { return trs('Pseudo Violet', 'Purple name', 'Nombre morado'); }, prefix: '', suffix: '', tier: 4, get preview() { return '💜 ' + trs('Pseudo en violet', 'Name in purple', 'Nombre en morado'); }, isColorReward: true, color: 'violet' },
+  { id: 'crown', get name() { return trs('Couronne', 'Crown', 'Corona'); }, prefix: '👑 ', suffix: '', tier: 5, get preview() { return '👑 ' + trs('Pseudo', 'Name', 'Nombre') + ''; } },
+  { id: 'diamond', get name() { return trs('Diamant', 'Diamond', 'Diamante'); }, prefix: '💎 ', suffix: ' 💎', tier: 6, get preview() { return '💎 ' + trs('Pseudo', 'Name', 'Nombre') + ' 💎'; } },
+  { id: 'trophy', get name() { return trs('Trophée', 'Trophy', 'Trofeo'); }, prefix: '🏆 ', suffix: ' 🏆', tier: 7, get preview() { return '🏆 ' + trs('Pseudo', 'Name', 'Nombre') + ' 🏆'; } },
+  { id: 'dragon', get name() { return trs('Dragon', 'Dragon', 'Dragón'); }, prefix: '🐉 ', suffix: ' 🐉', tier: 8, get preview() { return '🐉 ' + trs('Pseudo', 'Name', 'Nombre') + ' 🐉'; } },
+  { id: 'pulse_name', get name() { return trs('Pseudo Pulsé', 'Pulsing name', 'Nombre pulsante'); }, prefix: '', suffix: '', tier: 9, get preview() { return '💫 ' + trs('Pseudo pulsé', 'Pulsing name', 'Nombre pulsante'); }, isColorReward: true, color: 'pulse' },
 ];
 
 // Gold Pulse decoration — unlocked only via Premium Pack or promo code LEBRIX
-export const GOLD_PULSE_DECORATION: Decoration = { id: 'gold_pulse_name', name: 'Or Pulsé', prefix: '', suffix: '', tier: 0, preview: '✨ Pseudo or pulsé', isColorReward: true, color: 'gold_pulse' };
+export const GOLD_PULSE_DECORATION: Decoration = { id: 'gold_pulse_name', get name() { return trs('Or Pulsé', 'Pulsing gold', 'Oro pulsante'); }, prefix: '', suffix: '', tier: 0, get preview() { return '✨ ' + trs('Pseudo or pulsé', 'Name in pulsing gold', 'Nombre en oro pulsante'); }, isColorReward: true, color: 'gold_pulse' };
 
 // All decorations including premium-exclusive ones (used for rendering/applying)
 export const ALL_DECORATIONS: Decoration[] = [...DECORATIONS, GOLD_PULSE_DECORATION];

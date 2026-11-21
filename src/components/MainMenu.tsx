@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTr } from '@/i18n/tr';
 import menuLogoArt from '@/assets/menu/logo.png';
 import menuCoinArt from '@/assets/menu/coin.png';
 import menuTrophyArt from '@/assets/menu/trophy.png';
@@ -86,6 +87,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 }) => {
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
   const navigate = useNavigate();
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showLuckyWheel, setShowLuckyWheel] = useState(false);
@@ -209,7 +211,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 <Plus className="w-6 h-6" strokeWidth={2.5} />
               </button>
             </div>
-            <button type="button" className="lsm-icon-btn lsm-settings" onClick={() => setShowSettings(true)} aria-label="Paramètres">
+            <button type="button" className="lsm-icon-btn lsm-settings" onClick={() => setShowSettings(true)} aria-label={tr("Paramètres", "Settings", "Ajustes")}>
               <img src={menuIconGear} alt="" className="lsm-gear-art" draggable={false} />
             </button>
           </div>
@@ -359,7 +361,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <Star className="w-5 h-5 fill-current drop-shadow-sm" />
-                  <span className="font-bold text-[15px] tracking-wide drop-shadow-sm">Laisse-nous un avis !</span>
+                  <span className="font-bold text-[15px] tracking-wide drop-shadow-sm">{tr("Laisse-nous un avis !", "Leave us a review!", "¡Déjanos una reseña!")}</span>
                   <Star className="w-5 h-5 fill-current drop-shadow-sm" />
                 </Button>
               </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTr } from '@/i18n/tr';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { trackSent, trackSkipped } from '@/utils/edgeFunctionMetrics';
@@ -66,6 +67,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
 
   const identity = getLocalIdentity();
 
@@ -330,8 +332,8 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
                     🎫
                   </div>
                   <div className="flex-1">
-                    <p className="font-bold text-sm text-text-primary">Ticket Partie</p>
-                    <p className="text-[10px] text-text-muted">Permet de jouer sur les modes premium</p>
+                    <p className="font-bold text-sm text-text-primary">{tr("Ticket de partie", "Game ticket", "Ticket de partida")}</p>
+                    <p className="text-[10px] text-text-muted">{tr("Permet de jouer aux modes premium", "Lets you play premium modes", "Permite jugar a los modos premium")}</p>
                   </div>
                   <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm border ${
                     tickets > 0

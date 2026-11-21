@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTr } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -61,6 +62,7 @@ export const Shop: React.FC<ShopProps> = ({
 }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
   
   const [activeTab, setActiveTab] = useState('modes');
 
@@ -309,7 +311,7 @@ export const Shop: React.FC<ShopProps> = ({
                         {isUnlocked && (
                           <Badge variant="secondary" className="mt-1">
                             <Check className="w-3 h-3 mr-1" />
-                            Débloqué
+                            {tr("Débloqué", "Unlocked", "Desbloqueado")}
                           </Badge>
                         )}
                       </div>
@@ -378,7 +380,7 @@ export const Shop: React.FC<ShopProps> = ({
                         disabled
                       >
                         <Check className="w-4 h-4 mr-2" />
-                        Mode Débloqué
+                        {tr("Mode débloqué", "Mode unlocked", "Modo desbloqueado")}
                       </Button>
                     ) : (
                       <Button 
@@ -427,6 +429,7 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
@@ -528,7 +531,7 @@ const BoostsSection: React.FC<BoostsSectionProps> = ({ coins, onSpendCoins }) =>
                   disabled={isShowing || !isReady() || cooldownRemaining > 0}
                 >
                   <Video className="w-4 h-4 mr-2" />
-                  Obtenir via pub
+                  {tr("Obtenir via pub", "Get with an ad", "Conseguir con anuncio")}
                   {cooldownRemaining > 0 && (
                     <span className="ml-1 text-xs">({cooldownRemaining}s)</span>
                   )}

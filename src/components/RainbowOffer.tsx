@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTr } from '@/i18n/tr';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Loader2, Sparkles, Check } from 'lucide-react';
@@ -17,6 +18,7 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
   const { toast } = useToast();
   const { language } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
@@ -98,17 +100,17 @@ export const RainbowOffer: React.FC<RainbowOfferProps> = ({ isOpen, onClose, onP
                 <Sparkles className="w-6 h-6 text-pink-300 animate-pulse" />
               </div>
               <h2 className="text-lg font-black text-text-primary tracking-tight">
-                Pseudo <span className="animate-[username-rainbow_3s_linear_infinite]">Multicolore</span>
+                {tr("Pseudo", "Rainbow", "Nombre")} <span className="animate-[username-rainbow_3s_linear_infinite]">{tr("Multicolore", "username", "multicolor")}</span>
               </h2>
               <p className="text-[10px] text-text-muted mt-1.5 px-2 leading-snug">
-                Ton pseudo s'anime avec toutes les couleurs de l'arc-en-ciel dans le classement.
+                {tr("Ton pseudo s'anime avec toutes les couleurs de l'arc-en-ciel dans le classement.", "Your username shimmers with every color of the rainbow on the leaderboard.", "Tu nombre se anima con todos los colores del arcoíris en la clasificación.")}
               </p>
             </div>
 
             <div className="px-4 pb-2">
               <div className="rounded-xl border border-pink-400/30 bg-game-darker/50 p-3 flex items-center justify-center">
                 <span className="text-2xl font-black animate-[username-rainbow_3s_linear_infinite]">
-                  TonPseudo
+                  {tr("TonPseudo", "YourName", "TuNombre")}
                 </span>
               </div>
             </div>

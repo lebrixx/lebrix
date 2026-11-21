@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTr } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Crown, Check, Gift, Star, Video, Target, Zap, Palette } from 'lucide-react';
@@ -34,6 +35,7 @@ interface SeasonPassProps {
 export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins = 0, onSpendCoins }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const tr = useTr();
   const [passData, setPassData] = useState<SeasonPassData>(getSeasonPassData());
   const { toast } = useToast();
   const { showRewardedAd, isShowing, isReady, getCooldown } = useRewardedAd();
@@ -146,7 +148,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
       setPassData(newData);
       toast({ title: t.diamondPurchased, description: t.coinToDiamond });
     } else {
-      toast({ title: 'Coins insuffisants', description: 'Il te faut au moins 1 coin.', variant: 'destructive' });
+      toast({ title: tr('Pièces insuffisantes', 'Not enough coins', 'Monedas insuficientes'), description: tr('Il te faut au moins 1 pièce.', 'You need at least 1 coin.', 'Necesitas al menos 1 moneda.'), variant: 'destructive' });
     }
   };
 
@@ -184,7 +186,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
             <div className="flex items-center justify-center gap-2 mb-3">
               <Crown className="w-5 h-5 text-secondary drop-shadow-[0_0_8px_hsl(var(--secondary))]" />
               <h2 className="text-lg font-extrabold tracking-wide text-text-primary uppercase">
-                Pass de Saison
+                {tr("Pass de saison", "Season Pass", "Pase de temporada")}
               </h2>
               <Crown className="w-5 h-5 text-secondary drop-shadow-[0_0_8px_hsl(var(--secondary))]" />
             </div>
@@ -241,7 +243,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                       <div className="w-7 h-7 rounded-lg bg-secondary/20 flex items-center justify-center">
                         <Star className="w-4 h-4 text-secondary" />
                       </div>
-                      <span className="font-bold text-sm text-text-primary">Quêtes du jour</span>
+                      <span className="font-bold text-sm text-text-primary">{tr("Quêtes du jour", "Daily quests", "Misiones del día")}</span>
                     </div>
                     <span className="text-xs font-bold bg-secondary/20 text-secondary border border-secondary/30 rounded-full px-2 py-0.5">
                       {t.bothQuestsReward}
@@ -264,9 +266,9 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs font-semibold leading-tight ${dailyQuests.quest1Completed ? 'text-secondary' : 'text-text-secondary'}`}>
-                        Score de 20+ dans une partie
+                        {tr("Score de 20+ dans une partie", "Score 20+ in a game", "Consigue 20+ puntos en una partida")}
                       </p>
-                      <p className="text-[10px] text-text-muted mt-0.5">N'importe quel mode</p>
+                      <p className="text-[10px] text-text-muted mt-0.5">{tr("N'importe quel mode", "Any mode", "Cualquier modo")}</p>
                     </div>
                     {dailyQuests.quest1Completed ? (
                       <span className={`text-[10px] font-black shrink-0 px-1.5 py-0.5 rounded-full border ${
@@ -295,9 +297,9 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs font-semibold leading-tight ${dailyQuests.quest2Completed ? 'text-secondary' : 'text-text-secondary'}`}>
-                        Utiliser un boost en jeu
+                        {tr("Utiliser un boost en jeu", "Use a boost in a game", "Usa un boost en una partida")}
                       </p>
-                      <p className="text-[10px] text-text-muted mt-0.5">N'importe quel boost ou mode</p>
+                      <p className="text-[10px] text-text-muted mt-0.5">{tr("N'importe quel boost ou mode", "Any boost or mode", "Cualquier boost o modo")}</p>
                     </div>
                     {dailyQuests.quest2Completed ? (
                       <span className={`text-[10px] font-black shrink-0 px-1.5 py-0.5 rounded-full border ${
@@ -399,7 +401,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                                   }`}>{tier.decoration.name}</span>
                                   {isUnlocked && (
                                     <span className="text-[9px] font-black bg-secondary/20 text-secondary px-1.5 py-0.5 rounded-full border border-secondary/30 uppercase tracking-wider">
-                                      Débloqué
+                                      {tr("Débloqué", "Unlocked", "Desbloqueado")}
                                     </span>
                                   )}
                                 </div>
@@ -408,11 +410,11 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                                 }`}>
                                   {tier.decoration.isColorReward
                                     ? tier.decoration.color === 'gold_pulse'
-                                      ? <span className="font-semibold animate-[username-gold-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(45, 100%, 55%)' }}>TonPseudo or pulsé</span>
+                                      ? <span className="font-semibold animate-[username-gold-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(45, 100%, 55%)' }}>{tr("TonPseudo or pulsé", "YourName pulsing gold", "TuNombre dorado pulsante")}</span>
                                       : tier.decoration.color === 'pulse'
-                                      ? <span className="font-semibold animate-[username-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>TonPseudo pulsé</span>
-                                      : <span style={{ color: '#a855f7' }} className="font-semibold">TonPseudo en violet</span>
-                                    : tier.decoration.preview.replace('Pseudo', 'TonPseudo')
+                                      ? <span className="font-semibold animate-[username-pulse_3s_ease-in-out_infinite]" style={{ color: 'hsl(var(--primary))' }}>{tr("TonPseudo pulsé", "YourName pulsing", "TuNombre pulsante")}</span>
+                                      : <span style={{ color: '#a855f7' }} className="font-semibold">{tr("TonPseudo en violet", "YourName in purple", "TuNombre en morado")}</span>
+                                    : tier.decoration.preview.replace(tr('Pseudo', 'Name', 'Nombre'), tr('TonPseudo', 'YourName', 'TuNombre'))
                                   }
                                 </p>
                               </div>
