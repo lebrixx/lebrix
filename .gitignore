@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Supabase CLI (état local de la liaison)
+supabase/.temp
+supabase/.branches
