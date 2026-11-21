@@ -1,4 +1,5 @@
 import { MoonSpin } from "./MoonSpin";
+import { trs } from "@/i18n/tr";
 import { moonAsRock, moonPass } from "./lib/moon";
 import { earthPass } from "./lib/earth";
 import { useEffect, useRef, useState } from "react";
@@ -167,7 +168,7 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
     };
     const hurt = () => {
       if (pl.inv > 0) return;
-      if (pl.shield > 0) { pl.shield = 0; pl.inv = 1; burst(pl.x, pl.y, C.p, 20); pops.push({ x: pl.x, y: pl.y - 40, text: "BOUCLIER", c: C.s, l: 1.2 }); return; }
+      if (pl.shield > 0) { pl.shield = 0; pl.inv = 1; burst(pl.x, pl.y, C.p, 20); pops.push({ x: pl.x, y: pl.y - 40, text: trs("BOUCLIER", "SHIELD", "ESCUDO"), c: C.s, l: 1.2 }); return; }
       pl.hp--; pl.inv = 1.5; shake = 0.3; combo = 0;
       burst(pl.x, pl.y, C.fg, 25);
       if (pl.hp <= 0) {
@@ -175,13 +176,13 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
           // Seconde chance : le F-104 repart avec 3 vies, l'écran est nettoyé des tirs ennemis.
           reviveArmed = false; pl.hp = 3; pl.inv = 2.5; foe = []; flash = 0.4;
           burst(pl.x, pl.y, C.s, 40);
-          pops.push({ x: pl.x, y: pl.y - 40, text: "SECONDE CHANCE", c: C.s, l: 1.8 });
+          pops.push({ x: pl.x, y: pl.y - 40, text: trs("SECONDE CHANCE", "SECOND CHANCE", "SEGUNDA OPORTUNIDAD"), c: C.s, l: 1.8 });
           boostFx.current?.("revive");
         } else dead = true;
       }
     };
 
-    if (score > 0) { pops.push({ x: W / 2, y: PLAYER_Y - 70, text: `+${score} AU DÉPART`, c: C.a, l: 2 }); boostFx.current?.("start"); }
+    if (score > 0) { pops.push({ x: W / 2, y: PLAYER_Y - 70, text: trs(`+${score} AU DÉPART`, `+${score} HEAD START`, `+${score} DE SALIDA`), c: C.a, l: 2 }); boostFx.current?.("start"); }
 
     const toCanvas = (cx: number, cy: number) => {
       const r = cv.getBoundingClientRect();
@@ -243,7 +244,7 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
         spawnT = 1.5; tankT = tankDelay(Math.random()); banner = 2; bannerText = `⚠ BOSS ${bossCount} ⚠`;
       }
       const lvl = Math.floor(time / 30);
-      if (lvl > lastLevel) { lastLevel = lvl; if (!bossAlive && banner <= 0) { banner = 1.2; bannerText = "DANGER +"; } }
+      if (lvl > lastLevel) { lastLevel = lvl; if (!bossAlive && banner <= 0) { banner = 1.2; bannerText = trs("DANGER +", "DANGER +", "PELIGRO +"); } }
       // Le blindé est en pause pendant un duel : le compte à rebours reprend juste après.
       if (bossAlive) spawnT = 1.5; else tankT -= dt;
       if (spawnT <= 0 && canSpawnRegular(bossAlive)) {
@@ -354,7 +355,7 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
           burst(e.x, e.y, kindColor[e.kind], e.kind === "boss" ? 80 : 14);
           shake = Math.max(shake, e.kind === "boss" ? 0.6 : 0.08);
           const r = Math.random();
-          if (e.kind === "boss") { const rank = e.rank ?? bossCount; if (rank === 1) firstBossDeath = time; nextBoss = nextBossTime(time, rank); if (rank === 3) { pl.shield = 1; pops.push({ x: pl.x, y: pl.y - 40, text: "BOUCLIER", c: C.s, l: 1.6 }); } else { if (pl.power < 9) pl.power++; pops.push({ x: pl.x, y: pl.y - 40, text: "ARME +1", c: C.p, l: 1.6 }); } drops.push({ x: e.x, y: e.y, type: randomBonus(), t: 0 }, { x: e.x - 40, y: e.y, type: "heal", t: 0 }, { x: e.x + 40, y: e.y, type: randomBonus(), t: 0 }); }
+          if (e.kind === "boss") { const rank = e.rank ?? bossCount; if (rank === 1) firstBossDeath = time; nextBoss = nextBossTime(time, rank); if (rank === 3) { pl.shield = 1; pops.push({ x: pl.x, y: pl.y - 40, text: trs("BOUCLIER", "SHIELD", "ESCUDO"), c: C.s, l: 1.6 }); } else { if (pl.power < 9) pl.power++; pops.push({ x: pl.x, y: pl.y - 40, text: trs("ARME +1", "WEAPON +1", "ARMA +1"), c: C.p, l: 1.6 }); } drops.push({ x: e.x, y: e.y, type: randomBonus(), t: 0 }, { x: e.x - 40, y: e.y, type: "heal", t: 0 }, { x: e.x + 40, y: e.y, type: randomBonus(), t: 0 }); }
           else if (r < (e.kind === "tank" ? 0.6 : e.kind === "shooter" ? 0.15 : 0.09)) drops.push({ x: e.x, y: e.y, type: randomBonus(), t: 0 });
           return false;
         }
@@ -462,7 +463,7 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
       ctx.fillText(`${mm}:${String(ss).padStart(2, "0")}`, W / 2 - 20, TOP + 24);
       ctx.fillStyle = C.d; ctx.fillText("♥".repeat(pl.hp), W - 14 - pl.hp * 13, TOP + 24);
       ctx.fillStyle = C.m; ctx.font = "12px 'Work Sans', sans-serif";
-      ctx.fillText(`ARME ${pl.power}`, 12, TOP + 44);
+      ctx.fillText(`${trs("ARME", "WEAPON", "ARMA")} ${pl.power}`, 12, TOP + 44);
       pops = pops.filter((p) => (p.l -= dt) > 0);
       ctx.textAlign = "center"; ctx.font = "900 15px 'Work Sans', sans-serif";
       for (const p of pops) { p.y -= 40 * dt; ctx.globalAlpha = Math.min(1, p.l * 1.5); ctx.fillStyle = p.c; ctx.fillText(p.text, p.x, p.y); }
@@ -488,7 +489,7 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
         ctx.strokeStyle = C.d; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.roundRect(8, y, 132, 24, 7); ctx.stroke(); ctx.globalAlpha = 1;
         ctx.fillStyle = C.d; ctx.font = "bold 11px 'Work Sans', sans-serif";
-        ctx.fillText("♥ SECONDE CHANCE", 16, y + 16);
+        ctx.fillText(trs("♥ SECONDE CHANCE", "♥ SECOND CHANCE", "♥ 2ª OPORTUNIDAD"), 16, y + 16);
       }
       if (pl.shield) {
         const y = TOP + 64 + row * 28;
@@ -497,7 +498,7 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
         ctx.strokeStyle = C.s; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.roundRect(8, y, 132, 24, 7); ctx.stroke(); ctx.globalAlpha = 1;
         ctx.fillStyle = C.s; ctx.font = "bold 11px 'Work Sans', sans-serif";
-        ctx.fillText("◯ BOUCLIER ACTIF", 16, y + 16);
+        ctx.fillText(trs("◯ BOUCLIER ACTIF", "◯ SHIELD ON", "◯ ESCUDO ACTIVO"), 16, y + 16);
       }
       if (combo > 2) { ctx.fillStyle = C.a; ctx.fillText(`COMBO x${combo}`, W - 110, TOP + 44); }
       const boss = enemies.find((e) => e.kind === "boss");
@@ -551,9 +552,9 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
         {state === "play" && !launching && (
           <>
             <Button onClick={() => setPause(true)} className="arena-btn arena-btn-sm absolute left-1/2 top-[calc(env(safe-area-inset-top)+3.5rem)] -translate-x-1/2">
-              <ArrowLeft /> MENU
+              <ArrowLeft /> {trs("MENU", "MENU", "MENÚ")}
             </Button>
-            <Button variant="ghost" type="button" aria-label={`Bombe, ${bombsLeft} restante${bombsLeft > 1 ? "s" : ""}`} disabled={bombsLeft <= 0}
+            <Button variant="ghost" type="button" aria-label={trs(`Bombe, ${bombsLeft} restante${bombsLeft > 1 ? "s" : ""}`, `Bomb, ${bombsLeft} left`, `Bomba, quedan ${bombsLeft}`)} disabled={bombsLeft <= 0}
               onPointerDown={(e) => { e.preventDefault(); bombReq.current = true; }}
               onClick={() => (bombReq.current = true)}
               className="arena-bomb absolute bottom-[calc(env(safe-area-inset-bottom)+1.4rem)] left-6">
@@ -564,9 +565,9 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
             </Button>
             {paused && (
               <div className="arena-menu absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 px-6 text-center">
-                <h2 className="arena-title text-5xl">PAUSE</h2>
-                <Button onClick={() => setPause(false)} className="arena-btn w-56"><Play /> REPRENDRE</Button>
-                <Button onClick={() => { setPause(false); setState("menu"); }} variant="outline" className="arena-btn arena-btn-sm w-56"><ArrowLeft /> MENU</Button>
+                <h2 className="arena-title text-5xl">{trs("PAUSE", "PAUSED", "PAUSA")}</h2>
+                <Button onClick={() => setPause(false)} className="arena-btn w-56"><Play /> {trs("REPRENDRE", "RESUME", "REANUDAR")}</Button>
+                <Button onClick={() => { setPause(false); setState("menu"); }} variant="outline" className="arena-btn arena-btn-sm w-56"><ArrowLeft /> {trs("MENU", "MENU", "MENÚ")}</Button>
               </div>
             )}
           </>
@@ -575,13 +576,13 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
           <>
           <canvas ref={menuBackground} aria-hidden className="absolute inset-0 h-full w-full" />
           {!launching && (
-            <Button variant="ghost" onClick={onBack} type="button" aria-label="Menu principal" className="arena-btn arena-btn-sm arena-home absolute left-4 top-[calc(env(safe-area-inset-top)+1rem)] z-20 flex items-center justify-center rounded-full">
+            <Button variant="ghost" onClick={onBack} type="button" aria-label={trs("Menu principal", "Main menu", "Menú principal")} className="arena-btn arena-btn-sm arena-home absolute left-4 top-[calc(env(safe-area-inset-top)+1rem)] z-20 flex items-center justify-center rounded-full">
               <Home />
             </Button>
           )}
           <div className={`arena-menu absolute inset-0 transition-[background] duration-700 ${launching ? "arena-launch" : ""} flex flex-col items-center justify-between overflow-hidden px-6 pb-[calc(env(safe-area-inset-bottom)+1.75rem)] pt-[calc(env(safe-area-inset-top)+2.5rem)] text-center`}>
             <header className={`relative z-10 flex flex-col items-center gap-1 transition-opacity duration-300 ${launching ? "opacity-0" : ""}`}>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-primary">Combat aérien</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-primary">{trs("Combat aérien", "Air combat", "Combate aéreo")}</p>
               <h1 className="arena-title text-6xl tracking-tight">ASSAUT</h1>
             </header>
             <div className="flex flex-col items-center gap-4">
@@ -590,17 +591,17 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
               <img ref={menuShip} src={f104} alt="F-104 Starfighter" className="arena-ship relative z-10 h-36 w-auto" />
               {state === "over" ? (
                 <div className={`arena-card w-64 px-5 py-4 transition-opacity duration-300 ${launching ? "opacity-0" : ""}`}>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-destructive">Abattu</p>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-destructive">{trs("Abattu", "Shot down", "Derribado")}</p>
                   <p className="arena-title text-4xl">{result.score}</p>
-                  <p className="text-xs text-muted-foreground">Survie {Math.floor(result.time / 60)}:{String(Math.floor(result.time % 60)).padStart(2, "0")} · Record {best}</p>
+                  <p className="text-xs text-muted-foreground">{trs("Survie", "Survived", "Supervivencia")} {Math.floor(result.time / 60)}:{String(Math.floor(result.time % 60)).padStart(2, "0")} · {trs("Record", "Best", "Récord")} {best}</p>
                 </div>
               ) : (
-                <div className={`arena-card px-5 py-2 text-sm transition-opacity duration-300 ${launching ? "opacity-0" : ""}`}>Record <span className="font-bold text-foreground">{best}</span></div>
+                <div className={`arena-card px-5 py-2 text-sm transition-opacity duration-300 ${launching ? "opacity-0" : ""}`}>{trs("Record", "Best", "Récord")} <span className="font-bold text-foreground">{best}</span></div>
               )}
             </div>
             <div className={`flex w-full max-w-sm flex-col items-center gap-5 transition-opacity duration-300 ${launching ? "opacity-0" : ""}`}>
               <div className="flex w-full flex-col items-center gap-2">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">Bonus à récolter</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">{trs("Bonus à récolter", "Power-ups to collect", "Bonus para recoger")}</p>
                 <div className="grid w-full grid-cols-5 gap-2">
                   {MENU_BONUS.map((b) => (
                     <div key={b.key} className="arena-card flex flex-col items-center gap-1.5 px-1 py-2.5">
@@ -623,9 +624,9 @@ export function AssautGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts
               )}
               <Button onClick={launch} disabled={launching} className="arena-btn w-full max-w-64 py-4 text-base">
                 <Play />
-                {state === "menu" ? "JOUER" : "REJOUER"}
+                {state === "menu" ? trs("JOUER", "PLAY", "JUGAR") : trs("REJOUER", "PLAY AGAIN", "REPETIR")}
               </Button>
-              <p className="text-xs text-muted-foreground">Glisse le doigt pour piloter</p>
+              <p className="text-xs text-muted-foreground">{trs("Glisse le doigt pour piloter", "Slide your finger to fly", "Desliza el dedo para pilotar")}</p>
             </div>
           </div>
           </>

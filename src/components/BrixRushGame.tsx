@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { trs } from '@/i18n/tr';
 import { createPortal } from 'react-dom';
 import { Home, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -113,39 +114,39 @@ export function BrixRushGame({ onBack, onGameOver, onSetBoosts, onRunBoosts }: P
   return createPortal(
     <div className={`brix-original game-screen${room && status !== 'full' ? ' brix-race' : ''}`}>
       {!room ? <main className="arcade-bg brix-home">
-        <Button variant="ghost" className="brix-exit" onClick={onBack} aria-label="Retour à Lucky Stop"><Home /></Button>
+        <Button variant="ghost" className="brix-exit" onClick={onBack} aria-label={trs("Retour à Lucky Stop", "Back to Lucky Stop", "Volver a Lucky Stop")}><Home /></Button>
         <div className="brix-home-inner">
           <h1 className="flex justify-center"><img src={brixRushLogo} alt="BRIX RUSH" className="h-36 w-full max-w-72 object-contain" /></h1>
-          <p className="mt-4 text-center brix-muted">Même ligne de départ. {MAX_PLAYERS} coureurs max. Pas de fin.</p>
+          <p className="mt-4 text-center brix-muted">{trs(`Même ligne de départ. ${MAX_PLAYERS} coureurs max. Pas de fin.`, `Same starting line. ${MAX_PLAYERS} runners max. No finish line.`, `Misma línea de salida. ${MAX_PLAYERS} corredores como máximo. Sin final.`)}</p>
           <div className="panel mt-8 space-y-4 p-6">
-            <p className="text-sm uppercase brix-muted">Pseudo</p>
-            <p className="brix-username">{name ?? 'Pseudo requis'}</p>
-            <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || preparing || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>Jouer seul</Button>
+            <p className="text-sm uppercase brix-muted">{trs("Pseudo", "Username", "Apodo")}</p>
+            <p className="brix-username">{name ?? trs('Pseudo requis', 'Username required', 'Apodo obligatorio')}</p>
+            <Button variant="ghost" className="arcade-btn w-full" disabled={!ok || busy || preparing || !ready} onClick={() => go({ code: randomCode(), public: true, solo: true })}>{trs('Jouer seul', 'Play solo', 'Jugar solo')}</Button>
             {MULTIPLAYER_ENABLED ? <>
-            <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? "Recherche d’une salle…" : 'Multijoueur'}</Button>
+            <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full" disabled={!ok || busy || !ready} onClick={() => setBusy(true)}>{busy ? trs('Recherche d’une salle…', 'Finding a room…', 'Buscando sala…') : trs('Multijoueur', 'Multiplayer', 'Multijugador')}</Button>
             <div className="brix-friends pt-4">
-              <p className="mb-2 text-sm uppercase brix-muted">Entre amis</p>
+              <p className="mb-2 text-sm uppercase brix-muted">{trs("Entre amis", "With friends", "Con amigos")}</p>
               <div className="flex gap-2">
-                <input aria-label="Code de salle" className="arcade-input uppercase" maxLength={5} value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="CODE" />
-                <Button variant="ghost" className="arcade-btn arcade-btn-ghost" disabled={!ok || code.length < 4 || !ready} onClick={() => go({ code, public: false, solo: false })}>Rejoindre</Button>
+                <input aria-label={trs("Code de salle", "Room code", "Código de sala")} className="arcade-input uppercase" maxLength={5} value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder={trs("CODE", "CODE", "CÓDIGO")} />
+                <Button variant="ghost" className="arcade-btn arcade-btn-ghost" disabled={!ok || code.length < 4 || !ready} onClick={() => go({ code, public: false, solo: false })}>{trs('Rejoindre', 'Join', 'Unirse')}</Button>
               </div>
-              <Button variant="link" className="brix-private mt-3 w-full text-sm" disabled={!ok || !ready} onClick={() => go({ code: randomCode(), public: false, solo: false })}>Créer une salle privée</Button>
+              <Button variant="link" className="brix-private mt-3 w-full text-sm" disabled={!ok || !ready} onClick={() => go({ code: randomCode(), public: false, solo: false })}>{trs('Créer une salle privée', 'Create a private room', 'Crear una sala privada')}</Button>
             </div>
-            </> : <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full gap-2" disabled aria-label="Multijoueur bientôt disponible"><Lock className="h-5 w-5" />Multijoueur <span className="text-xs opacity-80">SOON</span></Button>}
+            </> : <Button variant="ghost" className="arcade-btn arcade-btn-alt w-full gap-2" disabled aria-label={trs("Multijoueur bientôt disponible", "Multiplayer coming soon", "Multijugador próximamente")}><Lock className="h-5 w-5" />{trs("Multijoueur", "Multiplayer", "Multijugador")} <span className="text-xs opacity-80">SOON</span></Button>}
           </div>
         </div>
       </main> : status === 'full' ? <main className="arcade-bg brix-full">
-        <p className="brix-display text-4xl brix-danger">Salle pleine</p>
-        <p className="brix-muted">{MAX_PLAYERS} coureurs sont déjà dans la salle {room.code}.</p>
-        <Button variant="ghost" className="arcade-btn" onClick={menu}>Retour</Button>
+        <p className="brix-display text-4xl brix-danger">{trs("Salle pleine", "Room full", "Sala llena")}</p>
+        <p className="brix-muted">{trs(`${MAX_PLAYERS} coureurs sont déjà dans la salle ${room.code}.`, `${MAX_PLAYERS} runners are already in room ${room.code}.`, `Ya hay ${MAX_PLAYERS} corredores en la sala ${room.code}.`)}</p>
+        <Button variant="ghost" className="arcade-btn" onClick={menu}>{trs("Retour", "Back", "Volver")}</Button>
       </main> : me && <>
         <RunnerGame key={room.code} seed={COURSE_SEED} me={me} remote={remote} send={send} animals={animalsRef} onScores={setRows} onMenu={menu} onDeath={death}
           onOpenBoosts={() => boosts.setOpen(true)} armedBoosts={boosts.selected} takeBoosts={takeBoosts}
           onRunActive={(active) => { if (active) boosts.setOpen(false); }} />
         <div className="game-hud">
           <Button variant="ghost" className="brix-hud-title brix-display brix-primary text-glow" onClick={menu}>BRIX RUSH</Button>
-          <span className="chip">{room.public ? 'Publique' : 'Privée'} · {room.code}</span>
-          <span className="chip">{players.length}/{MAX_PLAYERS}{status === 'connecting' ? ' · connexion…' : status === 'error' ? ' · hors ligne' : ''}</span>
+          <span className="chip">{room.public ? trs('Publique', 'Public', 'Pública') : trs('Privée', 'Private', 'Privada')} · {room.code}</span>
+          <span className="chip">{players.length}/{MAX_PLAYERS}{status === 'connecting' ? trs(' · connexion…', ' · connecting…', ' · conectando…') : status === 'error' ? trs(' · hors ligne', ' · offline', ' · sin conexión') : ''}</span>
         </div>
         <Leaderboard rows={rows} />
         <RunBoostFxLayer theme="rush" />

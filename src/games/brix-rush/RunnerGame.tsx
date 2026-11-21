@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { trs } from "@/i18n/tr";
 import { Button } from "@/components/ui/button";
 import { respawnDue, resetToStart } from "./respawn";
 import { Home, Zap } from "lucide-react";
@@ -360,10 +361,10 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
       if (runActive && !p.dead && activeIcons) { ctx.font = "16px sans-serif"; ctx.fillText(activeIcons, W / 2, 52); }
       if (!p.started) {
         ctx.font = "400 16px 'Russo One', sans-serif";
-        ctx.fillText("▶ POUR TRAVERSER · ▲ ▼ POUR ESQUIVER", W / 2, VIEW_H / 2 - 40);
+        ctx.fillText(trs("▶ POUR TRAVERSER · ▲ ▼ POUR ESQUIVER", "▶ TO CROSS · ▲ ▼ TO DODGE", "▶ PARA CRUZAR · ▲ ▼ PARA ESQUIVAR"), W / 2, VIEW_H / 2 - 40);
       } else if (p.dead) {
         ctx.fillStyle = c.car; ctx.font = "400 26px 'Russo One', sans-serif";
-        ctx.fillText(`ÉCRASÉ · record ${toMeters(p.best)}`, W / 2, VIEW_H / 2 - 40);
+        ctx.fillText(trs(`ÉCRASÉ · record ${toMeters(p.best)}`, `CRUSHED · best ${toMeters(p.best)}`, `ATROPELLADO · récord ${toMeters(p.best)}`), W / 2, VIEW_H / 2 - 40);
       }
 
       if (positionUpdateDue(now, sendT)) {
@@ -399,8 +400,8 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
   return (
     <div ref={wrapRef} className="game-stage touch-none select-none">
       <canvas ref={canvasRef} aria-label="Brix Rush" />
-      <Button ref={menuRef} onClick={onMenu} variant="ghost" className="grass-menu-btn" aria-label="Retour au menu">
-        <Home className="h-4 w-4" /> Menu
+      <Button ref={menuRef} onClick={onMenu} variant="ghost" className="grass-menu-btn" aria-label={trs("Retour au menu", "Back to menu", "Volver al menú")}>
+        <Home className="h-4 w-4" /> {trs("Menu", "Menu", "Menú")}
       </Button>
       {onOpenBoosts && (
         <Button ref={boostRef} onClick={onOpenBoosts} variant="ghost" className="grass-menu-btn grass-boost-btn" aria-label="Boosts">
@@ -409,12 +410,12 @@ export function RunnerGame({ seed, me, remote, send, animals, onScores, onMenu, 
         </Button>
       )}
       <div className="game-pad game-pad-left flex-col">
-        <Button variant="ghost" className="pad-btn" aria-label="Monter" {...btn("up")}>▲</Button>
-        <Button variant="ghost" className="pad-btn" aria-label="Descendre" {...btn("down")}>▼</Button>
+        <Button variant="ghost" className="pad-btn" aria-label={trs("Monter", "Up", "Subir")} {...btn("up")}>▲</Button>
+        <Button variant="ghost" className="pad-btn" aria-label={trs("Descendre", "Down", "Bajar")} {...btn("down")}>▼</Button>
       </div>
       <div className="game-pad game-pad-right items-end">
-        <Button variant="ghost" className="pad-btn" aria-label="Reculer" {...btn("left")}>◀</Button>
-        <Button variant="ghost" className="pad-btn" aria-label="Avancer" {...btn("right")}>▶</Button>
+        <Button variant="ghost" className="pad-btn" aria-label={trs("Reculer", "Back", "Retroceder")} {...btn("left")}>◀</Button>
+        <Button variant="ghost" className="pad-btn" aria-label={trs("Avancer", "Forward", "Avanzar")} {...btn("right")}>▶</Button>
       </div>
     </div>
   );
