@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { trs } from '@/i18n/tr';
 import { useTr } from '@/i18n/tr';
 import menuLogoArt from '@/assets/menu/logo.png';
 import menuCoinArt from '@/assets/menu/coin.png';
@@ -224,13 +225,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                   <img src={menuIconGift} alt="" className="lsm-tile-img" draggable={false} />
                   {hasAvailableReward && <span className="lsm-badge">!</span>}
                 </span>
-                <span className="lsm-tile-label">CADEAUX</span>
+                <span className="lsm-tile-label">{trs('CADEAUX', 'GIFTS', 'REGALOS')}</span>
               </button>
               <button type="button" className="lsm-tile" onClick={() => setShowComingSoon(true)}>
                 <span className="lsm-tile-box lsm-tile-art">
                   <img src={menuIconNews} alt="" className="lsm-tile-img" draggable={false} />
                 </span>
-                <span className="lsm-tile-label">ACTU</span>
+                <span className="lsm-tile-label">{trs('ACTU', 'NEWS', 'NOVEDADES')}</span>
               </button>
             </div>
 
@@ -246,13 +247,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                   <img src={menuIconWheel} alt="" className="lsm-tile-img" draggable={false} />
                   {hasFreeSpin && <span className="lsm-badge">1</span>}
                 </span>
-                <span className="lsm-tile-label">{hasFreeSpin ? 'TOUR' : wheelTimer}</span>
+                <span className="lsm-tile-label">{hasFreeSpin ? trs('TOUR', 'SPIN', 'GIRO') : wheelTimer}</span>
               </button>
               <button type="button" className="lsm-tile" onClick={() => setShowPremiumOffer(true)}>
                 <span className="lsm-tile-box lsm-tile-art">
                   <img src={menuIconOffer} alt="" className="lsm-tile-img" draggable={false} />
                 </span>
-                <span className="lsm-tile-label">OFFRES</span>
+                <span className="lsm-tile-label">{trs('OFFRES', 'OFFERS', 'OFERTAS')}</span>
               </button>
             </div>
           </div>
@@ -261,8 +262,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <button type="button" className="lsm-rank" onClick={onOpenGlobalLeaderboard}>
             <img src={menuTrophyArt} alt="" className="lsm-rank-trophy-art" draggable={false} />
             <span className="lsm-rank-text">
-              <span className="lsm-rank-k">CLASSEMENT</span>
-              <span className="lsm-rank-t">GLOBAL</span>
+              <span className="lsm-rank-k">{trs('CLASSEMENT', 'RANKING', 'CLASIFICACIÓN')}</span>
+              <span className="lsm-rank-t">{trs('GLOBAL', 'GLOBAL', 'GLOBAL')}</span>
               <span className="lsm-rank-n">
                 <span className="lsm-rank-crown"><Crown className="w-3.5 h-3.5" /></span>
                 {globalRank && globalRank.rank > 0 ? `#${globalRank.rank}` : '—'}
@@ -275,14 +276,14 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <button type="button" className="lsm-play" onClick={onStartGame}>
             <img src={menuPlayArt} alt="" className="lsm-play-art" draggable={false} />
             <span className="lsm-play-sep" />
-            <span className="lsm-play-label">JOUER</span>
+            <span className="lsm-play-label">{trs('JOUER', 'PLAY', 'JUGAR')}</span>
           </button>
 
           {/* Season pass */}
           <button type="button" className="lsm-row lsm-row-pass" onClick={() => setShowSeasonPass(true)}>
             <img src={menuCrownArt} alt="" className="lsm-crown-art" draggable={false} />
             <span className="lsm-row-body">
-              <span className="lsm-row-title">PASS DE SAISON</span>
+              <span className="lsm-row-title">{trs('PASS DE SAISON', 'SEASON PASS', 'PASE DE TEMPORADA')}</span>
               <span className="lsm-progress"><span style={{ width: `${passProgress}%` }} /></span>
             </span>
             {hasPassReward && <span className="lsm-badge lsm-badge-row">!</span>}

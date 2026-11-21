@@ -45,7 +45,7 @@ private currentKind: RewardKind | null = null;
 
     try {
       // Initialisation + consentement RGPD + ATT, une seule fois pour toute l'app
-      if (!(await ensureAdsReady())) throw new Error('Ads unavailable on this platform');
+      if (!(await ensureAdsReady())) return; // web ou échec : pas de pub, sans bruit
       console.log('[Rewarded] AdMob initialized successfully');
       this.state = 'loading';
       this.preload();

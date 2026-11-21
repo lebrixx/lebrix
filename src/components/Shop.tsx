@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { trs } from '@/i18n/tr';
 import { useTr } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -270,7 +271,7 @@ export const Shop: React.FC<ShopProps> = ({
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-6xl mx-auto">
         <TabsList className="ls-tabbar grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="modes" className="ls-tab">Modes</TabsTrigger>
+          <TabsTrigger value="modes" className="ls-tab">{trs('Modes', 'Modes', 'Modos')}</TabsTrigger>
           <TabsTrigger value="boosts" className="ls-tab">{t.boosts}</TabsTrigger>
           <TabsTrigger value="offers" className="ls-tab">{language === 'en' ? 'Offers' : language === 'es' ? 'Ofertas' : 'Offres'}</TabsTrigger>
         </TabsList>
@@ -326,7 +327,7 @@ export const Shop: React.FC<ShopProps> = ({
                     {isTicketPack && (
                       <div className="mb-4 p-3 bg-primary/10 border border-primary/30 rounded-lg">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-text-muted">Tickets actuels:</span>
+                          <span className="text-sm text-text-muted">{trs('Tickets actuels :', 'Current tickets:', 'Tickets actuales:')}</span>
                           <div className="flex items-center gap-1 text-primary">
                             <Ticket className="w-4 h-4" />
                             <span className="font-bold">{currentTickets}</span>
@@ -337,7 +338,7 @@ export const Shop: React.FC<ShopProps> = ({
 
                     {/* Price */}
                     <div className="flex items-center justify-between mb-4 p-3 bg-wheel-segment/20 rounded-lg border border-wheel-border">
-                      <span className="text-sm text-text-muted">Prix:</span>
+                      <span className="text-sm text-text-muted">{trs('Prix :', 'Price:', 'Precio:')}</span>
                       <div className="flex items-center gap-1 text-secondary">
                         <Coins className="w-4 h-4" />
                         <span className="font-bold">{mode.price}</span>

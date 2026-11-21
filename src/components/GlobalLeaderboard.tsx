@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { trs } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -126,7 +127,7 @@ const LeaderboardList: React.FC<LeaderboardListProps> = ({
                       const displayName = entry.username.length > 12 ? `${entry.username.substring(0, 12)}...` : entry.username;
                       return applyDecoration(displayName, entry.decorations || null);
                     })()}
-                    {isCurrentUser && <span className="text-[10px] text-primary ml-1">(toi)</span>}
+                    {isCurrentUser && <span className="text-[10px] text-primary ml-1">{trs('(toi)', '(you)', '(tú)')}</span>}
                   </h3>
                   <div className="flex items-center gap-1 text-[10px] text-text-muted">
                     <Gamepad2 className="w-3 h-3" />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { trs } from '@/i18n/tr';
 import { useTr } from '@/i18n/tr';
 import { useLanguage, translations } from '@/hooks/useLanguage';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -218,7 +219,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
           <div className="relative px-5 pt-5 pb-4">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Backpack className="w-5 h-5 text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]" />
-              <h2 className="text-lg font-extrabold tracking-wide text-text-primary uppercase">Inventaire</h2>
+              <h2 className="text-lg font-extrabold tracking-wide text-text-primary uppercase">{trs("Inventaire", "Inventory", "Inventario")}</h2>
               <Backpack className="w-5 h-5 text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]" />
             </div>
 
@@ -228,13 +229,13 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
               <div className="flex flex-col items-center gap-1 bg-game-dark/70 border border-wheel-border/40 rounded-xl py-2.5 px-1">
                 <span className="text-base">💎</span>
                 <span className="text-lg font-black text-text-primary">{passData.diamonds}</span>
-                <span className="text-[9px] text-text-muted uppercase tracking-wide">Diamants</span>
+                <span className="text-[9px] text-text-muted uppercase tracking-wide">{trs("Diamants", "Diamonds", "Diamantes")}</span>
               </div>
               {/* Tickets */}
               <div className="flex flex-col items-center gap-1 bg-game-dark/70 border border-wheel-border/40 rounded-xl py-2.5 px-1">
                 <Ticket className="w-4 h-4 text-secondary" />
                 <span className="text-lg font-black text-text-primary">{tickets}</span>
-                <span className="text-[9px] text-text-muted uppercase tracking-wide">Tickets</span>
+                <span className="text-[9px] text-text-muted uppercase tracking-wide">{trs("Tickets", "Tickets", "Tickets")}</span>
               </div>
               {/* Boosts total */}
               <div className="flex flex-col items-center gap-1 bg-game-dark/70 border border-wheel-border/40 rounded-xl py-2.5 px-1">
@@ -269,7 +270,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
                     : 'text-text-muted hover:text-text-secondary'
                 }`}
               >
-                <Zap className="w-3.5 h-3.5" /> Objets
+                <Zap className="w-3.5 h-3.5" /> {trs("Objets", "Items", "Objetos")}
               </button>
             </div>
           </div>
@@ -323,7 +324,7 @@ export const Inventory: React.FC<InventoryProps> = ({ isOpen, onClose, asPage })
               {/* Tickets section */}
               <div>
                 <p className="text-[10px] text-text-muted uppercase tracking-widest mb-2.5 font-semibold px-0.5 flex items-center gap-1.5">
-                  <Ticket className="w-3 h-3 text-secondary" /> Tickets de mode
+                  <Ticket className="w-3 h-3 text-secondary" /> {trs("Tickets de mode", "Mode tickets", "Tickets de modo")}
                 </p>
                 <div className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 ${
                   tickets > 0 ? 'border-secondary/30 bg-secondary/5' : 'border-wheel-border/30 bg-game-dark/30 opacity-60'

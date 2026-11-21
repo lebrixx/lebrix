@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { trs } from '@/i18n/tr';
 import { useTr } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -215,7 +216,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                   <Video className="w-3.5 h-3.5 text-secondary" />
                 </div>
                 <div className="flex flex-col items-start leading-none">
-                  <span className="text-[9px] text-secondary/80 font-bold uppercase tracking-wider">Regarder →</span>
+                  <span className="text-[9px] text-secondary/80 font-bold uppercase tracking-wider">{trs('Regarder →', 'Watch →', 'Ver →')}</span>
                   <span className="text-xs font-black text-text-primary">+1 💎</span>
                 </div>
               </button>
@@ -324,7 +325,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
                   )}
                   {dailyQuests.quest1Claimed && dailyQuests.quest2Claimed && (
                     <div className="flex items-center justify-center gap-1.5 text-xs text-secondary font-semibold py-1">
-                      <Check className="w-3.5 h-3.5" /> Récompense récupérée aujourd'hui !
+                      <Check className="w-3.5 h-3.5" /> {trs('Récompense récupérée aujourd’hui !', 'Reward claimed today!', '¡Recompensa recogida hoy!')}
                     </div>
                   )}
                   {claimableCount === 0 && !(dailyQuests.quest1Claimed && dailyQuests.quest2Claimed) && (
@@ -339,7 +340,7 @@ export const SeasonPass: React.FC<SeasonPassProps> = ({ isOpen, onClose, coins =
               {/* Tiers */}
               <div>
                 <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-3 px-0.5 flex items-center gap-1.5">
-                  <Crown className="w-3.5 h-3.5 text-secondary" /> Paliers à débloquer
+                  <Crown className="w-3.5 h-3.5 text-secondary" /> {trs('Paliers à débloquer', 'Tiers to unlock', 'Niveles por desbloquear')}
                 </h3>
                 <div className="relative">
                   {/* Timeline line */}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { trs } from '@/i18n/tr';
 import { createPortal } from 'react-dom';
 import { Home, ShoppingBag, Box, Star, Trophy } from 'lucide-react';
 import { hasPendingChallengeRewards } from '@/utils/challengeUtils';
@@ -20,11 +21,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ active, onSelect }) => {
   }, []);
 
   const items: { id: BottomNavTab; label: string; icon: React.ReactNode }[] = [
-    { id: 'menu', label: 'ACCUEIL', icon: <Home strokeWidth={1.8} /> },
-    { id: 'shop', label: 'BOUTIQUE', icon: <ShoppingBag strokeWidth={1.8} /> },
-    { id: 'inventory', label: 'INVENTAIRE', icon: <Box strokeWidth={1.8} /> },
-    { id: 'challenges', label: 'DÉFIS', icon: <span className="relative"><Star strokeWidth={1.8} />{pending && <span className="lsm-badge lsm-badge-nav">!</span>}</span> },
-    { id: 'leaderboard', label: 'CLASSEMENT', icon: <Trophy strokeWidth={1.8} /> },
+    { id: 'menu', label: trs('ACCUEIL', 'HOME', 'INICIO'), icon: <Home strokeWidth={1.8} /> },
+    { id: 'shop', label: trs('BOUTIQUE', 'SHOP', 'TIENDA'), icon: <ShoppingBag strokeWidth={1.8} /> },
+    { id: 'inventory', label: trs('INVENTAIRE', 'INVENTORY', 'INVENTARIO'), icon: <Box strokeWidth={1.8} /> },
+    { id: 'challenges', label: trs('DÉFIS', 'CHALLENGES', 'RETOS'), icon: <span className="relative"><Star strokeWidth={1.8} />{pending && <span className="lsm-badge lsm-badge-nav">!</span>}</span> },
+    { id: 'leaderboard', label: trs('CLASSEMENT', 'RANKING', 'CLASIFICACIÓN'), icon: <Trophy strokeWidth={1.8} /> },
   ];
 
   return createPortal(

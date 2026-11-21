@@ -33,6 +33,8 @@
   const CLE_PSEUDO='brix_pseudo';
 
   let el=null,o={},pseudo='',tPseudo=0;
+  // Lucky Stop : langue passée dans ouvrir({ lang })
+  const T=(fr,en,es)=>o.lang==='en'?en:o.lang==='es'?es:fr;
 
   function html(){
     const p=o.partie,c=o.chemin||'';
@@ -41,24 +43,24 @@
  <div class="ba-main">
   <div class="ba-logo"><img src="${c}logo-foreuse.png" alt=""><h1>BRIX<span>FACTORY</span></h1><div class="ba-tag">${esc(o.sousTitre||'Idle Tycoon')}</div></div>
   <div class="ba-card ba-carte-jeu">
-   ${p?`<div class="ba-partie"><div class="ba-kv"><b>${fmt(p.enCaisse||0)} $</b><span>en caisse</span></div><div class="ba-kv"><b>${fmt(p.totalGagne||0)} $</b><span>gagnés au total</span></div><div class="ba-kv"><b>${p.lignes||0}/${p.lignesMax||11}</b><span>lignes</span></div></div>
-   ${o.gainsAbsence>=1?`<div class="ba-absence">💤 Ton usine a gagné <b>+${fmt(o.gainsAbsence)} $</b> pendant ton absence</div>`:''}`
-   :`<div class="ba-intro">Construis ton usine, améliore tes machines et deviens le plus grand industriel du classement !</div>`}
-   <button class="ba-btn ba-jouer" data-ba="jouer">▶ ${p?'CONTINUER':'JOUER'}</button>
+   ${p?`<div class="ba-partie"><div class="ba-kv"><b>${fmt(p.enCaisse||0)} $</b><span>${T("en caisse", "in the till", "en caja")}</span></div><div class="ba-kv"><b>${fmt(p.totalGagne||0)} $</b><span>${T("gagnés au total", "earned in total", "ganados en total")}</span></div><div class="ba-kv"><b>${p.lignes||0}/${p.lignesMax||11}</b><span>${T("lignes", "lines", "líneas")}</span></div></div>
+   ${o.gainsAbsence>=1?`<div class="ba-absence">${T("💤 Ton usine a gagné", "💤 Your factory earned", "💤 Tu fábrica ganó")} <b>+${fmt(o.gainsAbsence)} $</b> ${T("pendant ton absence", "while you were away", "mientras no estabas")}</div>`:''}`
+   :`<div class="ba-intro">${T("Construis ton usine, améliore tes machines et deviens le plus grand industriel du classement !", "Build your factory, upgrade your machines and become the biggest industrialist on the leaderboard!", "¡Construye tu fábrica, mejora tus máquinas y conviértete en el mayor industrial de la clasificación!")}</div>`}
+   <button class="ba-btn ba-jouer" data-ba="jouer">▶ ${p?T("CONTINUER", "CONTINUE", "CONTINUAR"):T("JOUER", "PLAY", "JUGAR")}</button>
    <div class="ba-ligne">
-    <button class="ba-btn orange" data-ba="board">🏆︎ Classement</button>
-    <button class="ba-btn gris ic" data-ba="musique" title="Musique">♫</button>
-    <button class="ba-btn gris ic" data-ba="sons" title="Sons">🔊︎</button>
+    <button class="ba-btn orange" data-ba="board">${T("🏆︎ Classement", "🏆︎ Leaderboard", "🏆︎ Clasificación")}</button>
+    <button class="ba-btn gris ic" data-ba="musique" title="${T('Musique', 'Music', 'Música')}">♫</button>
+    <button class="ba-btn gris ic" data-ba="sons" title="${T('Sons', 'Sounds', 'Sonidos')}">🔊︎</button>
    </div>
   </div>
   <div class="ba-card ba-top" data-r="top"></div>
-  <div class="ba-ver">Mode de jeu BRIX FACTORY · ${esc(o.version||'v1.0')}</div>
+  <div class="ba-ver">${T("Mode de jeu BRIX FACTORY ·", "BRIX FACTORY game mode ·", "Modo de juego BRIX FACTORY ·")} ${esc(o.version||'v1.0')}</div>
  </div>
  <div class="ba-board ba-card">
-  <div class="hd"><div class="gi">🏆︎</div><div><b>Classement mondial</b><small>Argent gagné au total</small></div><button class="x" data-ba="fermer-board">✕</button></div>
+  <div class="hd"><div class="gi">🏆︎</div><div><b>${T("Classement mondial", "World leaderboard", "Clasificación mundial")}</b><small>${T("Argent gagné au total", "Total money earned", "Dinero ganado en total")}</small></div><button class="x" data-ba="fermer-board">✕</button></div>
   <div data-r="soon"></div>
   <div class="lb-list" data-r="list"></div>
-  <div class="lb-name"><label for="baPseudo">Ton pseudo</label><input id="baPseudo" maxlength="16" placeholder="Ton pseudo" autocomplete="off"></div>
+  <div class="lb-name"><label for="baPseudo">${T("Ton pseudo", "Your username", "Tu apodo")}</label><input id="baPseudo" maxlength="16" placeholder="${T('Ton pseudo', 'Your username', 'Tu apodo')}" autocomplete="off"></div>
  </div>
 </div>`;
   }
@@ -74,13 +76,13 @@
     let rows=null;try{rows=o.classement&&o.classement.fetch?await o.classement.fetch():null}catch(e){rows=null}
     if(!el)return;
     const ex=!Array.isArray(rows);if(ex)rows=exemples();
-    const moi={name:pseudo||'Toi',score:Math.floor(o.score||0),me:1};
+    const moi={name:pseudo||T("Toi", "You", "Tú"),score:Math.floor(o.score||0),me:1};
     const all=rows.filter(r=>!r.me).concat([moi]).sort((a,b)=>b.score-a.score);
-    $('soon').innerHTML=ex?`<div class="lb-soon"><span style="font-size:18px">🌐︎</span><span>Le classement en ligne arrive bientôt. Pour l'instant, ces joueurs sont des <b>exemples</b>.</span></div>`:'';
-    $('list').innerHTML=all.map((r,i)=>`<div class="lb${i<3?' g'+(i+1):''}${r.me?' me':ex?' ex':''}"><span class="rk${i<3?' md':''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="av" style="background:${r.me?'#22c55e':col(r.name)}">${r.me?'★':esc(r.name[0]||'?')}</span><span class="nm">${esc(r.name)}${r.me&&pseudo?' <small style="color:#16a34a">(toi)</small>':''}</span><span class="sc">${fmt(r.score)} $</span></div>`).join('');
+    $('soon').innerHTML=ex?`<div class="lb-soon"><span style="font-size:18px">🌐︎</span><span>${T("Le classement en ligne arrive bientôt. Pour l'instant, ces joueurs sont des", "The online leaderboard is coming soon. For now, these players are", "La clasificación en línea llegará pronto. Por ahora, estos jugadores son")} <b>${T("exemples", "examples", "ejemplos")}</b>.</span></div>`:'';
+    $('list').innerHTML=all.map((r,i)=>`<div class="lb${i<3?' g'+(i+1):''}${r.me?' me':ex?' ex':''}"><span class="rk${i<3?' md':''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="av" style="background:${r.me?'#22c55e':col(r.name)}">${r.me?'★':esc(r.name[0]||'?')}</span><span class="nm">${esc(r.name)}${r.me&&pseudo?' <small style="color:#16a34a">'+T("(toi)", "(you)", "(tú)")+'</small>':''}</span><span class="sc">${fmt(r.score)} $</span></div>`).join('');
     $('list').scrollTop=0;
     const rang=all.findIndex(r=>r.me)+1;
-    $('top').innerHTML=`<div class="tp-h"><span>🏆︎ Top 3 mondial</span><button data-ba="board">Voir tout ›</button></div><div class="tp-l">${all.slice(0,3).map((r,i)=>`<div class="tp${r.me?' me':''}"><span class="md">${['🥇','🥈','🥉'][i]}</span><span class="av" style="background:${r.me?'#22c55e':col(r.name)}">${r.me?'★':esc(r.name[0]||'?')}</span><b>${esc(r.me?(pseudo||'Toi'):r.name)}</b><small>${fmt(r.score)} $</small></div>`).join('')}</div><div class="tp-me">Toi : <b>${rang}<sup>${rang===1?'er':'e'}</sup></b> · ${fmt(Math.floor(o.score||0))} $${ex?' · <i>joueurs d\'exemple</i>':''}</div>`;
+    $('top').innerHTML=`<div class="tp-h"><span>${T("🏆︎ Top 3 mondial", "🏆︎ World top 3", "🏆︎ Top 3 mundial")}</span><button data-ba="board">${T("Voir tout ›", "See all ›", "Ver todo ›")}</button></div><div class="tp-l">${all.slice(0,3).map((r,i)=>`<div class="tp${r.me?' me':''}"><span class="md">${['🥇','🥈','🥉'][i]}</span><span class="av" style="background:${r.me?'#22c55e':col(r.name)}">${r.me?'★':esc(r.name[0]||'?')}</span><b>${esc(r.me?(pseudo||T("Toi", "You", "Tú")):r.name)}</b><small>${fmt(r.score)} $</small></div>`).join('')}</div><div class="tp-me">${T("Toi :", "You:", "Tú:")} <b>${rang}<sup>${o.lang==='en'?(rang===1?'st':rang===2?'nd':rang===3?'rd':'th'):o.lang==='es'?'º':(rang===1?'er':'e')}</sup></b> · ${fmt(Math.floor(o.score||0))} $${ex?' · <i>'+T("joueurs d'exemple", "example players", "jugadores de ejemplo")+'</i>':''}</div>`;
   }
 
   // la popup paysage / portrait, à chaque appui sur Jouer
@@ -89,7 +91,7 @@
     const montrer=mode==='toujours'||(mode==='tactile'&&matchMedia('(pointer:coarse)').matches);
     if(!montrer){suite();return}
     const d=document.createElement('div');d.className='ba-pop';
-    d.innerHTML=`<div><div class="ic">📱↻</div><h2>Paysage ou portrait ?</h2><p>Le jeu marche dans les deux sens, mais il est <b>plus agréable en paysage</b>.</p><button class="ba-btn" data-ba="ok">C'est parti !</button></div>`;
+    d.innerHTML=`<div><div class="ic">📱↻</div><h2>${T("Paysage ou portrait ?", "Landscape or portrait?", "¿Horizontal o vertical?")}</h2><p>${T("Le jeu marche dans les deux sens, mais il est", "The game works both ways, but it is", "El juego funciona en ambos sentidos, pero es")} <b>${T("plus agréable en paysage", "nicer in landscape", "más agradable en horizontal")}</b>.</p><button class="ba-btn" data-ba="ok">${T("C'est parti !", "Let's go!", "¡Vamos!")}</button></div>`;
     el.appendChild(d);
     d.addEventListener('click',e=>{if(e.target===d||e.target.closest('[data-ba=ok]')){e.stopPropagation();d.remove();suite()}});
   }
@@ -97,7 +99,7 @@
   function jouer(){
     const nm=el.querySelector('#baPseudo').value.trim().slice(0,16);
     if(nm!==pseudo){pseudo=nm;localStorage.setItem(CLE_PSEUDO,nm)}
-    if(o.classement&&o.classement.submit)Promise.resolve(o.classement.submit(pseudo||'Joueur',Math.floor(o.score||0))).catch(()=>{});
+    if(o.classement&&o.classement.submit)Promise.resolve(o.classement.submit(pseudo||T("Joueur", "Player", "Jugador"),Math.floor(o.score||0))).catch(()=>{});
     popupOrientation(()=>{const f=o.onJouer;fermer(true);f&&f()});
   }
 

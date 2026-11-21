@@ -629,7 +629,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
               <Gamepad2 className="w-4 h-4 text-amber-400" />
               <span className="text-sm">
                 <span className="text-amber-400 font-bold">{actualGamesPlayed}</span>
-                <span className="text-text-muted"> parties</span>
+                <span className="text-text-muted"> {trs('parties', 'games', 'partidas')}</span>
               </span>
             </div>
           </div>
@@ -675,7 +675,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                   </Button>
                 ) : (
                   <div className="text-xs text-amber-400 font-medium px-2 py-1 rounded-lg bg-amber-400/10">
-                    +1 boost
+                    {trs('+1 boost', '+1 boost', '+1 boost')}
                   </div>
                 )}
               </div>

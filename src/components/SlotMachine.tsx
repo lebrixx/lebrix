@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { trs } from '@/i18n/tr';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -190,7 +191,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({
             <div className="animate-scale-in text-center space-y-2">
               <div className="flex items-center justify-center gap-2">
                 <Sparkles className="w-4 h-4 text-secondary" />
-                <span className="text-secondary font-black text-lg drop-shadow-[0_0_8px_hsl(var(--secondary)/0.4)]">x2 COINS</span>
+                <span className="text-secondary font-black text-lg drop-shadow-[0_0_8px_hsl(var(--secondary)/0.4)]">{trs('x2 PIÈCES', 'x2 COINS', 'x2 MONEDAS')}</span>
                 <Sparkles className="w-4 h-4 text-secondary" />
               </div>
               <div className="flex items-center justify-center gap-2">

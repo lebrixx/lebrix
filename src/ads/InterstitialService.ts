@@ -25,7 +25,7 @@ class InterstitialService {
 
     try {
       // Initialisation + consentement RGPD + ATT, une seule fois pour toute l'app
-      if (!(await ensureAdsReady())) throw new Error('Ads unavailable on this platform');
+      if (!(await ensureAdsReady())) return; // web ou échec : pas de pub, sans bruit
 
       this.isInitialized = true;
       console.log('[Interstitial] AdMob initialized successfully');

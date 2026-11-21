@@ -353,7 +353,7 @@ body.evon #toasts{top:132px}
     <div class="sp"></div>
     <div class="pill buymode" id="buyMode"></div>
   </div>
-  <div id="quest"><div class="qh"><i>!</i>Mission<span class="more">Comment faire ›</span></div><div class="qt" id="qT"></div><div class="qb"><i id="qB"></i></div><div class="qf"><span id="qP"></span><span>Récompense : <b id="qR"></b></span></div><button class="btn claim" id="qC">Récupérer la récompense</button></div>
+  <div id="quest"><div class="qh"><i>!</i><span data-i18n="Mission|Mission|Misión">Mission</span><span class="more" data-i18n="Comment faire ›|How to ›|Cómo hacerlo ›">Comment faire ›</span></div><div class="qt" id="qT"></div><div class="qb"><i id="qB"></i></div><div class="qf"><span id="qP"></span><span><span data-i18n="Récompense :|Reward:|Recompensa:">Récompense :</span> <b id="qR"></b></span></div><button class="btn claim" id="qC" data-i18n="Récupérer la récompense|Claim the reward|Recoger la recompensa">Récupérer la récompense</button></div>
   <div id="dock"></div>
   <div class="zoomctl"><button id="zIn">+</button><button id="zOut">−</button></div>
   <div id="sheet"><div class="shd" id="shHead"></div><div class="sbd" id="shBody"></div></div>
@@ -368,6 +368,8 @@ body.evon #toasts{top:132px}
 // Langue transmise par Lucky Stop (?lang=fr|en|es)
 const LS_LANG=(new URLSearchParams(location.search).get('lang')||'fr').slice(0,2);
 const T=(fr,en,es)=>LS_LANG==='en'?en:LS_LANG==='es'?es:fr;
+document.documentElement.lang=LS_LANG;
+document.querySelectorAll('[data-i18n]').forEach(el=>{const [fr,en,es]=el.dataset.i18n.split('|');el.textContent=T(fr,en,es)});
 
 'use strict';
 const $=s=>document.querySelector(s);
@@ -743,7 +745,7 @@ const ACH=[
   {id:'ord10',ic:'📦︎',n:T("Fournisseur officiel", "Official supplier", "Proveedor oficial"),d:T("Réussir 10 commandes spéciales", "Complete 10 special orders", "Completar 10 pedidos especiales"),p:()=>S.orders,g:10},
   {id:'fix5',ic:'🔧︎',n:T("Mécano", "Mechanic", "Mecánico"),d:T("Réparer 5 pannes", "Repair 5 breakdowns", "Reparar 5 averías"),p:()=>S.repairs,g:5},
   {id:'q10',ic:'!',n:T("Bon élève", "Good student", "Buen alumno"),d:T("Terminer 10 missions", "Complete 10 missions", "Completar 10 misiones"),p:()=>S.quest,g:10},
-  {id:'mega1',ic:'▲',n:'Bâtisseur',d:T("Terminer un mégaprojet", "Complete a megaproject", "Completar un megaproyecto"),p:()=>S.mega.stage,g:1},
+  {id:'mega1',ic:'▲',n:T("Bâtisseur", "Builder", "Constructor"),d:T("Terminer un mégaprojet", "Complete a megaproject", "Completar un megaproyecto"),p:()=>S.mega.stage,g:1},
   {id:'pat',ic:'✦',n:T("Inventeur", "Inventor", "Inventor"),d:T("Déposer des brevets une fois", "File patents once", "Registrar patentes una vez"),p:()=>S.resets,g:1},
 ];
 function checkAch(){if(G.income>S.bestInc)S.bestInc=G.income;
@@ -1405,7 +1407,7 @@ function drawGarage(b,t){
   box(x,y,0,w,d,2,'#e5e7eb',{top:'#14b8a6'});
   for(let q=0;q<4;q++){const xx=GAR.x+.5+q*1.8;poly([P(xx,y+d,0),P(xx+1.25,y+d,0),P(xx+1.25,y+d,1.4),P(xx,y+d,1.4)],'#94a3b8',OUT,1);
     ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;ctx.beginPath();for(let z=.2;z<1.4;z+=.2){ctx.moveTo(...P(xx,y+d,z));ctx.lineTo(...P(xx+1.25,y+d,z))}ctx.stroke()}
-  box(x+w/2-1.7,y+.6,2,3.4,.18,.55,'#0f766e');signTxt(x+w/2,y+.78,2.27,'TRANSPORT');
+  box(x+w/2-1.7,y+.6,2,3.4,.18,.55,'#0f766e');signTxt(x+w/2,y+.78,2.27,T("TRANSPORT", "TRANSPORT", "TRANSPORTE"));
   const blk=G.dlvBlk>.5,aff=S.money>=bulk(FLEET.cost,FLEET.g,S.fleet-1,1),q=P(x+w/2,y+.9,2.6);
   addTag(q[0],q[1],T("Transport · Nv ", "Transport · Lv ", "Transporte · Nv ")+S.fleet,`${Math.min(4,trucksN())} ${T(`camion${trucksN()>1?'s':''}`, `truck${trucksN()>1?'s':''}`, `camión${trucksN()>1?'es':''}`)} · ${$t(G.dlv)} / ${$t(fleetCap())} ${T("par s", "per s", "por s")}`,blk?'#ef4444':'#14b8a6',blk?'!':aff?'▲':null,{type:'fleet',r:80});
   hits.push({type:'fleet',x:P(GAR.x+GAR.w/2,GAR.y+GAR.d/2,0)[0],y:P(GAR.x+GAR.w/2,GAR.y+GAR.d/2,0)[1],r:120});
@@ -1419,7 +1421,7 @@ function drawBonusB(b,t){
   for(let q=0;q<4;q++){const a=x+.5+q*1.35;poly([P(a,y+d,.5),P(a+.8,y+d,.5),P(a+.8,y+d,1.7),P(a,y+d,1.7)],'#93c5fd',OUT,1)}
   for(let q=0;q<2;q++){const a=y+.5+q*1.3;poly([P(x+w,a,.5),P(x+w,a+.8,.5),P(x+w,a+.8,1.7),P(x+w,a,1.7)],'#7fb2e6',OUT,1)}
   poly([P(x+w/2-.45,y+d,0),P(x+w/2+.45,y+d,0),P(x+w/2+.45,y+d,.9),P(x+w/2-.45,y+d,.9)],'#92400e');
-  box(x+w/2-1.5,y+.5,h,3,.18,.55,'#d97706');signTxt(x+w/2,y+.68,h+.27,'BONUS');
+  box(x+w/2-1.5,y+.5,h,3,.18,.55,'#d97706');signTxt(x+w/2,y+.68,h+.27,T("BONUS", "BONUS", "BONUS"));
   // étoile dorée qui tourne sur le toit
   {const [sx,sy]=P(x+w/2,y+d/2,h+1.5),sc=Math.cos(t*1.6);glow(sx,sy,34,'#fde047',.6);ctx.save();ctx.translate(sx,sy+Math.sin(t*2)*3);ctx.scale(Math.max(.15,Math.abs(sc)),1);
     ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?8:18;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}ctx.closePath();ctx.fillStyle=sc>0?'#facc15':'#eab308';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.restore()}
@@ -1439,7 +1441,7 @@ function drawOffice(b,t){
   for(let a=x+.6;a<x+w;a+=.6){ctx.moveTo(...P(a,y+d,0));ctx.lineTo(...P(a,y+d,h))}ctx.stroke();
   if(NF>.3){poly([P(x,y+d,0),P(x+w,y+d,0),P(x+w,y+d,h),P(x,y+d,h)],'rgba(253,230,138,.35)');LT(x+w/2,y+d,h/2,60)}
   poly([P(x+w/2-.5,y+d,0),P(x+w/2+.5,y+d,0),P(x+w/2+.5,y+d,.8),P(x+w/2-.5,y+d,.8)],'#334155');
-  box(x+w/2-1.7,y+.5,h,3.4,.18,.55,'#7c3aed');signTxt(x+w/2,y+.68,h+.27,'MANAGERS');
+  box(x+w/2-1.7,y+.5,h,3.4,.18,.55,'#7c3aed');signTxt(x+w/2,y+.68,h+.27,T("MANAGERS", "MANAGERS", "MÁNAGERS"));
   const n=MACH.filter(m=>mgrL(m.id)).length,can=MACH.some(m=>S.m[m.id].lic&&mgrL(m.id)<5&&S.money>=mgrCost(m,mgrL(m.id))),q=P(x+w/2,y+.6,h+1);
   addTag(q[0],q[1],T("Bureau des managers", "Managers' office", "Oficina de mánagers"),n?`${T(`${n} manager${n>1?'s':''} engagé${n>1?'s':''}`, `${n} manager${n>1?'s':''} hired`, `${n} mánager${n>1?'s':''} contratado${n>1?'s':''}`)}`:T("Engage ton premier manager !", "Hire your first manager!", "¡Contrata a tu primer mánager!"),'#7c3aed',can?'▲':null,{type:'mgr',r:80});
   hits.push({type:'mgr',x:P(x+w/2,y+d/2,0)[0],y:P(x+w/2,y+d/2,0)[1]-30,r:100});
@@ -1448,7 +1450,7 @@ function drawDC(b,t){
   const {x,y,w,d,h}=b;
   box(x,y,0,w,d,h,'#f1e4cf',{top:'#d9604a'});
   for(let q=0;q<3;q++){const xx=x+1.6+q*1.6;poly([P(xx,y+d,0),P(xx+1.2,y+d,0),P(xx+1.2,y+d,1.3),P(xx,y+d,1.3)],'#64748b',OUT,1)}
-  box(x+w/2-1.9,y+.6,h,3.8,.18,.55,'#b91c1c');signTxt(x+w/2,y+.78,h+.27,'CLIENTS');
+  box(x+w/2-1.9,y+.6,h,3.8,.18,.55,'#b91c1c');signTxt(x+w/2,y+.78,h+.27,T("CLIENTS", "CUSTOMERS", "CLIENTES"));
   const pile=Math.min(5,Math.floor(dcPile));for(let q=0;q<pile;q++)box(x+.3+(q%3)*.42,y+d+.1+Math.floor(q/3)*.42,0,.36,.36,.3,dcCol,{flat:1});
 }
 function drawCity(t,dt,vx0,vx1,vy0,vy1){
@@ -1748,7 +1750,7 @@ function drawYard(t){
    const canRes=S.labLic&&RESEARCH.some(r=>{const l=rl(r.id),mx=r.tech?1:r.max;return l<mx&&!(r.req&&!rl(r.req))&&S.rp>=r.cost(l)});
    if(S.labLic){const aff=S.money>=bulk(LAB.cost,LAB.g,S.labs,1),nt=RESEARCH.filter(techOk).sort((a,b)=>a.cost(0)-b.cost(0))[0];
      if(nt){const c=nt.cost(0),ok=S.rp>=c,u=TECHU(nt.id);addTag(q[0],q[1],ok?''+T("Découverte prête :", "Discovery ready:", "Descubrimiento listo:")+' '+nt.n:T("Labo · prochaine découverte", "Lab · next discovery", "Laboratorio · próximo descubrimiento"),ok?`${T(`Débloque « ${u.w||nt.n} » : touche-moi !`, `Unlock “${u.w||nt.n}”: tap me!`, `Desbloquea «${u.w||nt.n}»: ¡tócame!`)}`:`${nt.n} · ${etaTxt(c-S.rp)}`,ok?'#22c55e':'#3b82f6',ok?'!':canRes?'+':aff?'▲':null,{type:'lab'},S.rp/c)}
-     else addTag(q[0],q[1],T("Laboratoire · Nv ", "Lab · Lv ", "Laboratorio · Nv ")+S.labs,canRes?T("Bonus disponible !", "Bonus available!", "¡Bonus disponible!"):`+${fmt(G.rps)} points/s`,'#3b82f6',canRes?'!':aff?'▲':null,{type:'lab'})}
+     else addTag(q[0],q[1],T("Laboratoire · Nv ", "Lab · Lv ", "Laboratorio · Nv ")+S.labs,canRes?T("Bonus disponible !", "Bonus available!", "¡Bonus disponible!"):`${T(`+${fmt(G.rps)} points/s`, `+${fmt(G.rps)} points/s`, `+${fmt(G.rps)} puntos/s`)}`,'#3b82f6',canRes?'!':aff?'▲':null,{type:'lab'})}
    else addTag(q[0],q[1],T("Laboratoire de recherche", "Research lab", "Laboratorio de investigación"),`${T(`Débloque des technologies · $${fmt(LAB.lic)}`, `Unlocks technologies · $${fmt(LAB.lic)}`, `Desbloquea tecnologías · $${fmt(LAB.lic)}`)}`,'#94a3b8',S.money>=LAB.lic?'+':null,{type:'lab'});}
 }
 function drawWalls(){
@@ -2020,7 +2022,7 @@ function buildSheet(){
       h+=`<div class="ttl">${T("Prochaine découverte", "Next discovery", "Próximo descubrimiento")}</div>`;
       if(n){const u=TECHU(n.id);
         h+=`<div class="disc" data-r="disc"><div class="top">${thumbImg(u.k)}<div style="flex:1;min-width:0"><div class="nm">${n.n}</div><div class="un">${u.u||n.d}</div><div class="bar" style="--c:#3b82f6"><i data-r="dbar"></i></div><div class="eta" data-r="deta"></div></div></div><button class="btn lg blue" data-a="res" data-id="${n.id}" data-r="dbtn"></button></div>`}
-      else h+=`<div class="status ok">${T("Toutes les découvertes possibles sont faites ! Dépense tes points au bâtiment", "Every possible discovery is done! Spend your points at the building", "¡Todos los descubrimientos posibles están hechos! Gasta tus puntos en el edificio")} <b>BONUS</b>.</div>`;
+      else h+=`<div class="status ok">${T("Toutes les découvertes possibles sont faites ! Dépense tes points au bâtiment", "Every possible discovery is done! Spend your points at the building", "¡Todos los descubrimientos posibles están hechos! Gasta tus puntos en el edificio")} <b>${T("BONUS", "BONUS", "BONUS")}</b>.</div>`;
       h+=`<div class="ttl">${T("Toutes les découvertes", "All discoveries", "Todos los descubrimientos")}</div>`;
       for(const r of RESEARCH.filter(r=>r.tech)){const done=rl(r.id)>0,lk=r.req&&!rl(r.req),u=TECHU(r.id);
         h+=`<div class="item${done?' done':lk?' lock':''}" data-r="ti-${r.id}">${thumbImg(u.k)}<div class="tx"><b>${r.n}</b><small>${done?T("✓ Découvert · ", "✓ Discovered · ", "✓ Descubierto · "):''}${u.u}${lk?`${T(` · d'abord « ${RI[r.req].n} »`, ` · first “${RI[r.req].n}”`, ` · primero «${RI[r.req].n}»`)}`:''}</small>${done||lk?'':`<div class="bar" style="--c:#3b82f6"><i data-r="tb-${r.id}"></i></div>`}</div>${done?'<span class="b9" style="color:#16a34a;font-size:20px">✓</span>':lk?'<span class="mut">🔒︎</span>':`<button class="btn sm blue" data-a="res" data-id="${r.id}" data-r="rb-${r.id}"></button>`}</div>`}
@@ -2082,7 +2084,7 @@ function advice(m){
     if(!pm||!S.m[pm.id].lic)return{cls:'warn',t:`${T(`Pas assez de « ${RES[r].n} ».`, `Not enough “${RES[r].n}”.`, `No hay suficiente «${RES[r].n}».`)}`,s:T("Construis la ligne qui le produit.", "Build the line that produces it.", "Construye la línea que lo produce.")};
     const tl=S.m[pm.id].units.reduce((a,b)=>a+b,0),perLvl=lineSpd(pm)/pm.t*yieldMult()*G.pf/Math.max(1,tl);
     const n=Math.max(1,Math.ceil(def/Math.max(1e-9,perLvl)*.6)),plan=linePlan(pm.id,n);
-    return{cls:G.eff[m.id]<.3?'bad':'warn',t:`${T(`Pas assez de « ${RES[r].n} » : il en faut ${fmt(need)}/s, l'usine n'en produit que ${fmt(G.rate[r])}/s.`, `Not enough “${RES[r].n}”: it needs ${fmt(need)}/s, the factory only makes ${fmt(G.rate[r])}/s.`, `No hay suficiente «${RES[r].n}»: se necesitan ${fmt(need)}/s, la fábrica solo produce ${fmt(G.rate[r])}/s.`)}`,s:`${T(`Améliore la ligne « ${pm.n} » (environ ${n} niveaux).`, `Upgrade the “${pm.n}” line (about ${n} levels).`, `Mejora la línea «${pm.n}» (unos ${n} niveles).`)}`,btn:{a:'fixline',id:pm.id,n,label:`${pm.n} +${n} niveaux · ${$t(plan.cost)}`,dis:S.money<plan.cost}}}
+    return{cls:G.eff[m.id]<.3?'bad':'warn',t:`${T(`Pas assez de « ${RES[r].n} » : il en faut ${fmt(need)}/s, l'usine n'en produit que ${fmt(G.rate[r])}/s.`, `Not enough “${RES[r].n}”: it needs ${fmt(need)}/s, the factory only makes ${fmt(G.rate[r])}/s.`, `No hay suficiente «${RES[r].n}»: se necesitan ${fmt(need)}/s, la fábrica solo produce ${fmt(G.rate[r])}/s.`)}`,s:`${T(`Améliore la ligne « ${pm.n} » (environ ${n} niveaux).`, `Upgrade the “${pm.n}” line (about ${n} levels).`, `Mejora la línea «${pm.n}» (unos ${n} niveles).`)}`,btn:{a:'fixline',id:pm.id,n,label:`${T(`${pm.n} +${n} niveaux · ${$t(plan.cost)}`, `${pm.n} +${n} levels · ${$t(plan.cost)}`, `${pm.n} +${n} niveles · ${$t(plan.cost)}`)}`,dis:S.money<plan.cost}}}
   if(why==='truck'||(S.sell[m.out]&&G.dlvBlk>.5)){const n=fleetNeedLv(),c=bulk(FLEET.cost,FLEET.g,S.fleet-1,n);
     return{cls:why==='truck'?'bad':'warn',t:why==='truck'?T("Le quai déborde : les camions n'arrivent plus à tout livrer, la ligne ralentit.", "The dock is overflowing: trucks can't deliver everything, the line is slowing down.", "El muelle está desbordado: los camiones no pueden entregarlo todo, la línea se ralentiza."):T("Les camions sont saturés : une partie des ventes attend sur le quai.", "Trucks are maxed out: some sales are waiting on the dock.", "Los camiones están saturados: parte de las ventas espera en el muelle."),s:`${T(`Livraisons : ${$t(G.dlv)}/s sur ${$t(fleetCap())}/s possibles.`, `Deliveries: ${$t(G.dlv)}/s out of ${$t(fleetCap())}/s possible.`, `Entregas: ${$t(G.dlv)}/s de ${$t(fleetCap())}/s posibles.`)}`,btn:{a:'fixfleet',id:'fleet',n,label:`${T(`Camions +${n} niveau${n>1?'x':''} · ${$t(c)}`, `Trucks +${n} level${n>1?'s':''} · ${$t(c)}`, `Camiones +${n} nivel${n>1?'es':''} · ${$t(c)}`)}`,dis:S.money<c}}}
   if(why==='full')return{cls:'warn',t:T("Stock plein : la vente est coupée.", "Stock full: selling is stopped.", "Almacén lleno: la venta está detenida."),s:T("Active « Vendre le surplus » ou livre le stock au mégaprojet.", "Turn on “Sell the surplus” or deliver the stock to the megaproject.", "Activa «Vender el excedente» o entrega el stock al megaproyecto.")};
@@ -2099,9 +2101,9 @@ function updSheet(){
     set('sub',`${T(`Niveau ${lv} · ${o.units.length} machine${o.units.length>1?'s':''} sur la ligne`, `Level ${lv} · ${o.units.length} machine${o.units.length>1?'s':''} on the line`, `Nivel ${lv} · ${o.units.length} máquina${o.units.length>1?'s':''} en la línea`)}`);
     // sélecteur
     let uh='';o.units.forEach((l,i)=>{uh+=`<button class="unit${i===u?' on':''}" data-a="sel" data-id="${i}">n°${i+1}<b>${T("Nv ", "Lv ", "Nv ")}${l}</b>${S.money>=unitCost(m,i,l)?'<span class="up">▲</span>':''}</button>`});
-    if(o.units.length<SLOTS){const ni=o.units.length,ok=slotOk(m,ni);uh+=`<button class="unit add${ok?' ok':''}" data-a="slotview">${ok?'+':'🔒︎'}<b>${ok?'Ajouter':T("Nv ", "Lv ", "Nv ")+SLOTREQ[ni]}</b></button>`}
+    if(o.units.length<SLOTS){const ni=o.units.length,ok=slotOk(m,ni);uh+=`<button class="unit add${ok?' ok':''}" data-a="slotview">${ok?'+':'🔒︎'}<b>${ok?T("Ajouter", "Add", "Añadir"):T("Nv ", "Lv ", "Nv ")+SLOTREQ[ni]}</b></button>`}
     set('units',uh);
-    const k2=mileCount(lv);set('lb',`<div style="text-align:center"><small>NIVEAU</small><b>${lv}</b></div>`);if(refs.lb)refs.lb.style.background=tierCol(lv);
+    const k2=mileCount(lv);set('lb',`<div style="text-align:center"><small>${T("NIVEAU", "LEVEL", "NIVEL")}</small><b>${lv}</b></div>`);if(refs.lb)refs.lb.style.background=tierCol(lv);
     set('st',`<span style="color:${tierCol(lv)}">${TIERN[Math.min(7,mileCount(lv))]}</span> `+stars(lv));
     const nm=nextMile(lv),pm=prevMile(lv);
     if(nm){set('ml',`${T(`Palier ${nm} → vitesse ×2`, `Milestone ${nm} → speed ×2`, `Hito ${nm} → velocidad ×2`)}`);w('mb',(lv-pm)/(nm-pm)*100);set('mln',`${T(`Encore ${nm-lv} niveau${nm-lv>1?'x':''} · ${k2} palier${k2>1?'s':''} atteint${k2>1?'s':''}`, `${nm-lv} more level${nm-lv>1?'s':''} · ${k2} milestone${k2>1?'s':''} reached`, `Faltan ${nm-lv} nivel${nm-lv>1?'es':''} · ${k2} hito${k2>1?'s':''} alcanzado${k2>1?'s':''}`)}`)}else{set('ml',T("Tous les paliers atteints", "All milestones reached", "Todos los hitos alcanzados"));w('mb',100);set('mln','')}
@@ -2123,7 +2125,7 @@ function updSheet(){
     w('pwbar',r*100);if(refs.pwbar)refs.pwbar.style.background=r>1?'linear-gradient(90deg,#fb923c,#ef4444)':'';
     set('pwtxt',r>1?`${T(`Les machines tournent à ${Math.round(G.pf*100)}% de leur vitesse.`, `Machines run at ${Math.round(G.pf*100)}% of their speed.`, `Las máquinas funcionan al ${Math.round(G.pf*100)}% de su velocidad.`)}`:`${T(`Marge : ${fmt(G.cap-G.dem)} MW. Améliorer une machine augmente sa consommation.`, `Headroom: ${fmt(G.cap-G.dem)} MW. Upgrading a machine increases its power use.`, `Margen: ${fmt(G.cap-G.dem)} MW. Mejorar una máquina aumenta su consumo.`)}`);
     if(r>1){const def=G.dem-G.cap,g=bestGen(),n=Math.max(1,Math.ceil(def/g.out)),c=bulk(g.cost,g.g,S.gens[g.id],n);
-      set('pwfix',`<div class="status bad">Il manque ${fmt(def)} MW<button class="btn red" data-a="fixgen" data-id="${g.id}" data-n="${n}" ${S.money<c?'disabled':''}>${T(`${g.n} +${n} niveaux · ${$t(c)}`, `${g.n} +${n} levels · ${$t(c)}`, `${g.n} +${n} niveles · ${$t(c)}`)}</button></div>`)}else set('pwfix','');
+      set('pwfix',`<div class="status bad">${T(`Il manque ${fmt(def)} MW`, `${fmt(def)} MW short`, `Faltan ${fmt(def)} MW`)}<button class="btn red" data-a="fixgen" data-id="${g.id}" data-n="${n}" ${S.money<c?'disabled':''}>${T(`${g.n} +${n} niveaux · ${$t(c)}`, `${g.n} +${n} levels · ${$t(c)}`, `${g.n} +${n} niveles · ${$t(c)}`)}</button></div>`)}else set('pwfix','');
     for(const g of GENS){set('gn-'+g.id,S.gens[g.id]?T("· Nv ", "· Lv ", "· Nv ")+fmt(S.gens[g.id]):'');const b=refs['gb-'+g.id];if(!b)continue;const p=buyPlan(g.cost,g.g,S.gens[g.id]);set('gb-'+g.id,`${S.gens[g.id]?'▲ +'+p.k:T("Construire", "Build", "Construir")} · ${$m(p.c)}`);dis(b,S.money<p.c)}
   }
   else if(k==='mgr'){if(!S.office){dis(shBody.querySelector('[data-a="office"]'),S.money<OFFICE);return}
@@ -2156,7 +2158,7 @@ function updSheet(){
       set('rl-'+r.id,`${T(`niv. ${l}/${r.max}`, `lvl ${l}/${r.max}`, `niv. ${l}/${r.max}`)}`);if(l>=r.max){set('rb-'+r.id,'MAX');dis(b,true);w('bb-'+r.id,100)}else{set('rb-'+r.id,fmt(r.cost(l))+' '+RPI);dis(b,S.rp<r.cost(l));w('bb-'+r.id,S.rp/r.cost(l)*100);if(refs['bi-'+r.id])refs['bi-'+r.id].classList.toggle('ready',S.rp>=r.cost(l))}}
     {const nt=RESEARCH.filter(r=>techOk(r)&&S.rp>=r.cost(0)).length,nb=RESEARCH.filter(r=>!r.tech&&rl(r.id)<r.max&&S.rp>=r.cost(rl(r.id))).length;
      set('tbd1',nt?nt:'');set('tbd2',nb?nb:'');{const tb=shBody.querySelectorAll('.tabs button');if(tb[1])tb[1].classList.toggle('hot',nb>0&&!tb[1].classList.contains('on'));if(tb[0])tb[0].classList.toggle('hot',nt>0&&!tb[0].classList.contains('on'))}
-     set('bteaser',`<button class="teaser${nb?'':' calm'}" data-a="gobonus"><span class="ugi" style="background:linear-gradient(#fde047,#f59e0b)">★</span><span style="flex:1;text-align:left"><b>${nb?`${T(`${nb} bonus permanent${nb>1?'s':''} à acheter !`, `${nb} permanent bonus${nb>1?'es':''} to buy!`, `¡${nb} bonus permanente${nb>1?'s':''} por comprar!`)}`:T("Bonus permanents", "Permanent bonuses", "Bonus permanentes")}</b><small>${T("Tes points servent aussi au bâtiment", "Your points are also used at the", "Tus puntos también sirven en el edificio")} <b>BONUS</b>${T(", à côté des managers.", ", next to the managers.", ", junto a los mánagers.")}</small></span>${nb?`<span class="tbn">${nb}</span>`:''}<span class="b9" style="font-size:18px;color:#d97706">›</span></button>`)}
+     set('bteaser',`<button class="teaser${nb?'':' calm'}" data-a="gobonus"><span class="ugi" style="background:linear-gradient(#fde047,#f59e0b)">★</span><span style="flex:1;text-align:left"><b>${nb?`${T(`${nb} bonus permanent${nb>1?'s':''} à acheter !`, `${nb} permanent bonus${nb>1?'es':''} to buy!`, `¡${nb} bonus permanente${nb>1?'s':''} por comprar!`)}`:T("Bonus permanents", "Permanent bonuses", "Bonus permanentes")}</b><small>${T("Tes points servent aussi au bâtiment", "Your points are also used at the", "Tus puntos también sirven en el edificio")} <b>${T("BONUS", "BONUS", "BONUS")}</b>${T(", à côté des managers.", ", next to the managers.", ", junto a los mánagers.")}</small></span>${nb?`<span class="tbn">${nb}</span>`:''}<span class="b9" style="font-size:18px;color:#d97706">›</span></button>`)}
   }
   else if(k==='market'){for(const r in RES){if(!refs['mk-'+r])continue;const f=priceF(r);
     set('mk-'+r,S.sell[r]?`<b style="color:${f>.8?'#16a34a':f>.5?'#d97706':'#dc2626'}">${$t(RES[r].v*valueMult()*f)}</b> ${T(`l'unité (×${f.toFixed(2)})`, `each (×${f.toFixed(2)})`, `la unidad (×${f.toFixed(2)})`)} · ${$t(G.rev[r])}/s`:`${T(`Vente coupée · stock ${fmt(S.stock[r])} / ${fmt(storeCap())}`, `Selling stopped · stock ${fmt(S.stock[r])} / ${fmt(storeCap())}`, `Venta detenida · stock ${fmt(S.stock[r])} / ${fmt(storeCap())}`)}`)}}

@@ -124,6 +124,7 @@ function AccueilHost({ best, rows, onBack, onPlay }: { best: number; rows: BrixL
       const w = window as any;
       w.EcranAccueil.ouvrir({
         partie: null,
+        lang: currentLang(),
         gainsAbsence: 0,
         score: best,
         chemin: ACCUEIL,
