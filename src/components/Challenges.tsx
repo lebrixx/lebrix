@@ -57,6 +57,8 @@ const MODE_INFO = {
 };
 
 const MAX_LEVEL = 10;
+/** Écart de score entre deux paliers des défis globaux par mode (15, 30, 45… 150). */
+const TIER_STEP = 15;
 
 const createInitialChallengeProgress = (): Record<string, ChallengeProgress> => {
   const initial: Record<string, ChallengeProgress> = {};
@@ -211,7 +213,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       // Débloquer TOUS les paliers atteints d'un coup
       const unlockedTargets: number[] = [];
       while (modeProgress.currentLevel < MAX_LEVEL) {
-        const nextTarget = (modeProgress.currentLevel + 1) * 10;
+        const nextTarget = (modeProgress.currentLevel + 1) * TIER_STEP;
         if (modeBestScore >= nextTarget) {
           modeProgress.pendingRewards.push(nextTarget);
           modeProgress.currentLevel++;
@@ -280,7 +282,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
       
-      toast.success(`+${totalCoins} coins !`);
+      toast.success(trs(`+${totalCoins} pièces !`, `+${totalCoins} coins!`, `¡+${totalCoins} monedas!`));
     }
   };
 
@@ -611,7 +613,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
           {showHowItWorks && (
             <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-text-muted space-y-1">
               <p>• <strong>{trs("Parties jouées (∞) :", "Games played (∞):", "Partidas jugadas (∞):")}</strong> {trs("toutes les 50 parties → 1 boost.", "every 50 games → 1 boost.", "cada 50 partidas → 1 boost.")}</p>
-              <p>• <strong>{trs("Défis par mode :", "Mode challenges:", "Retos por modo:")}</strong> {trs("paliers de score 10 → 100. Chaque palier atteint débloque des pièces à réclamer (5, 10, 15...).", "score tiers 10 → 100. Each tier reached unlocks coins to claim (5, 10, 15...).", "niveles de puntuación 10 → 100. Cada nivel alcanzado desbloquea monedas para reclamar (5, 10, 15...).")}</p>
+              <p>• <strong>{trs("Défis par mode :", "Mode challenges:", "Retos por modo:")}</strong> {trs("paliers de score tous les 15 points (15 → 150). Chaque palier atteint débloque des pièces à réclamer (la moitié du palier : 7, 15, 22…).", "score tiers every 15 points (15 → 150). Each tier reached unlocks coins to claim (half the tier: 7, 15, 22…).", "niveles de puntuación cada 15 puntos (15 → 150). Cada nivel alcanzado desbloquea monedas para reclamar (la mitad del nivel: 7, 15, 22…).")}</p>
               <p>• {trs("Les récompenses restent en attente jusqu'à réclamation.", "Rewards stay pending until you claim them.", "Las recompensas quedan pendientes hasta que las reclames.")}</p>
             </div>
           )}
@@ -689,7 +691,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
               const modeBestScore = getBestScoreForMode(mode);
               const info = MODE_INFO[mode];
               const Icon = info.icon;
-              const currentTarget = (modeProgress.currentLevel + 1) * 10;
+              const currentTarget = (modeProgress.currentLevel + 1) * TIER_STEP;
               const isCompleted = modeProgress.currentLevel >= MAX_LEVEL;
               const progressPercent = isCompleted ? 100 : Math.min((modeBestScore / currentTarget) * 100, 100);
               const hasPending = modeProgress.pendingRewards.length > 0;
