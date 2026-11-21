@@ -16,6 +16,7 @@
  * Sauvegardes locales (localStorage) : altitude_best, altitude_style, altitude_muted.
  */
 import { useEffect, useRef } from "react";
+import { trs } from "@/i18n/tr";
 
 type AltitudeGameProps = {
   /** Appelé par le bouton « Retour au menu » de l'écran de fin (sinon le bouton ne fait rien). */
@@ -44,7 +45,7 @@ export default function AltitudeGame({ onBackToMenu, onStart, onGameOver, onOpen
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    root.innerHTML = ALTITUDE_MARKUP;
+    root.innerHTML = altitudeMarkup();
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const stop = startAltitude(root, { onBackToMenu: () => backRef.current && backRef.current(), onStart: () => startRef.current?.(), onGameOver: (s, d) => overRef.current?.(s, d),
@@ -218,7 +219,7 @@ const ALTITUDE_CSS = `
 `;
 
 /* ============================== INTERFACE ============================== */
-const ALTITUDE_MARKUP = `
+const altitudeMarkup = () => `
 <canvas id="c"></canvas>
 <div id="flash"></div>
 
@@ -230,52 +231,52 @@ const ALTITUDE_MARKUP = `
 <div id="combo"></div>
 
 <div id="menu" class="overlay">
-  <div class="eyebrow">EMPILE VERS LE CIEL</div>
+  <div class="eyebrow">${trs("EMPILE VERS LE CIEL", "STACK TO THE SKY", "APILA HASTA EL CIELO")}</div>
   <h1>ALTITUDE</h1>
-  <div class="tag">Pose chaque plaque au millimètre. Monte plus haut que jamais.</div>
+  <div class="tag">${trs("Pose chaque plaque au millimètre. Monte plus haut que jamais.", "Place every plate to the millimeter. Climb higher than ever.", "Coloca cada placa al milímetro. Sube más alto que nunca.")}</div>
   <div class="cta">
     <div class="styles" id="styles">
-      <button data-style="classic"><span class="sw sw-classic"></span>Classique</button>
-      <button data-style="bricks"><span class="sw sw-bricks"></span>Briques</button>
-      <button data-style="neon"><span class="sw sw-neon"></span>Néon</button>
+      <button data-style="classic"><span class="sw sw-classic"></span>${trs("Classique", "Classic", "Clásico")}</button>
+      <button data-style="bricks"><span class="sw sw-bricks"></span>${trs("Briques", "Bricks", "Ladrillos")}</button>
+      <button data-style="neon"><span class="sw sw-neon"></span>${trs("Néon", "Neon", "Neón")}</button>
     </div><br>
-    <button class="alt-boost alt-hidden" data-boost-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Boosts<span class="cnt alt-hidden" data-boost-count></span></button><br>
-    <div class="pill"><span class="dot"></span>Toucher pour jouer</div>
+    <button class="alt-boost alt-hidden" data-boost-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>${trs("Boosts", "Boosts", "Boosts")}<span class="cnt alt-hidden" data-boost-count></span></button><br>
+    <div class="pill"><span class="dot"></span>${trs("Toucher pour jouer", "Tap to play", "Toca para jugar")}</div>
     <div class="best-mini" id="menuBest"></div>
   </div>
 </div>
 
 <div id="over" class="overlay alt-hidden">
   <div class="card">
-    <div class="label">HAUTEUR ATTEINTE</div>
+    <div class="label">${trs("HAUTEUR ATTEINTE", "HEIGHT REACHED", "ALTURA ALCANZADA")}</div>
     <div class="big" id="finalScore">0</div>
-    <div class="badge alt-hidden" id="newBest">NOUVEAU RECORD</div>
+    <div class="badge alt-hidden" id="newBest">${trs("NOUVEAU RECORD", "NEW RECORD", "NUEVO RÉCORD")}</div>
     <div class="stats">
-      <div class="stat"><b id="sBest">0</b><span>RECORD</span></div>
-      <div class="stat"><b id="sPerf">0</b><span>PARFAITS</span></div>
-      <div class="stat"><b id="sCombo">0</b><span>COMBO MAX</span></div>
+      <div class="stat"><b id="sBest">0</b><span>${trs("RECORD", "BEST", "RÉCORD")}</span></div>
+      <div class="stat"><b id="sPerf">0</b><span>${trs("PARFAITS", "PERFECTS", "PERFECTOS")}</span></div>
+      <div class="stat"><b id="sCombo">0</b><span>${trs("COMBO MAX", "MAX COMBO", "COMBO MÁX")}</span></div>
     </div>
-    <button class="alt-boost alt-hidden" data-boost-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Boosts<span class="cnt alt-hidden" data-boost-count></span></button>
-    <button class="btn" id="again">Rejouer</button>
-    <button class="btn2" id="toMenu">Changer de style</button>
-    <button class="btn2" id="backMenu">Retour au menu</button>
-    <div class="hint">ou appuie sur Espace</div>
+    <button class="alt-boost alt-hidden" data-boost-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>${trs("Boosts", "Boosts", "Boosts")}<span class="cnt alt-hidden" data-boost-count></span></button>
+    <button class="btn" id="again">${trs("Rejouer", "Play again", "Repetir")}</button>
+    <button class="btn2" id="toMenu">${trs("Changer de style", "Change style", "Cambiar estilo")}</button>
+    <button class="btn2" id="backMenu">${trs("Retour au menu", "Back to menu", "Volver al menú")}</button>
+    <div class="hint">${trs("ou appuie sur Espace", "or press Space", "o pulsa Espacio")}</div>
   </div>
 </div>
 
-<button id="mute" aria-label="Son"></button>
-<button id="homeBtn" aria-label="Accueil"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></button>
-<button id="pauseBtn" class="alt-hidden" aria-label="Menu">
+<button id="mute" aria-label="${trs("Son", "Sound", "Sonido")}"></button>
+<button id="homeBtn" aria-label="${trs("Accueil", "Home", "Inicio")}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></button>
+<button id="pauseBtn" class="alt-hidden" aria-label="${trs("Menu", "Menu", "Menú")}">
   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg>
 </button>
 
 <div id="pause" class="overlay alt-hidden">
   <div class="card">
-    <div class="title">PAUSE</div>
-    <div class="sub" id="pauseInfo">Étage 0</div>
-    <button class="btn" id="resume">Reprendre la partie</button>
-    <button class="btn2" id="quit">Retour au menu</button>
-    <div class="hint">ou appuie sur Espace pour reprendre</div>
+    <div class="title">${trs("PAUSE", "PAUSED", "PAUSA")}</div>
+    <div class="sub" id="pauseInfo">${trs("Étage 0", "Floor 0", "Piso 0")}</div>
+    <button class="btn" id="resume">${trs("Reprendre la partie", "Resume the game", "Reanudar la partida")}</button>
+    <button class="btn2" id="quit">${trs("Retour au menu", "Back to menu", "Volver al menú")}</button>
+    <div class="hint">${trs("ou appuie sur Espace pour reprendre", "or press Space to resume", "o pulsa Espacio para reanudar")}</div>
   </div>
 </div>
 `;
@@ -443,7 +444,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
     bonus = used.includes('start_20') ? 20 : 0; shieldLeft = used.includes('shield'); reviveLeft = used.includes('revive');
     score = bonus; renderBoostChips();
     ui.score.textContent = String(score); ui.alt.textContent = '0 m';
-    if (bonus) { popText(`+${bonus} au départ`); options.onBoostFx?.('start'); }
+    if (bonus) { popText(trs(`+${bonus} au départ`, `+${bonus} head start`, `+${bonus} de salida`)); options.onBoostFx?.('start'); }
     sndStart();
     runStartedAt = performance.now(); options.onStart?.();
   }
@@ -469,7 +470,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
       if (combo >= 3) rings.push({ x: b.x, z: b.z, w: b.w, d: b.d, y: b.y + b.h + studH(), t: -.15, c: b.c });
       burst(b, 18 + combo * 4);
       floorPulse = 1;
-      popText(combo > 1 ? `Parfait ×${combo}` : 'Parfait');
+      popText(combo > 1 ? `${trs('Parfait', 'Perfect', 'Perfecto')} ×${combo}` : trs('Parfait', 'Perfect', 'Perfecto'));
       sndPerfect(combo); vibrate(15);
       if (combo >= 5) { ui.flash.classList.remove('on'); void ui.flash.offsetWidth; ui.flash.classList.add('on'); }
     } else if (ad >= p[sz]) {
@@ -481,7 +482,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
         if (shieldLeft) shieldLeft = false; else reviveLeft = false;
         combo = 0; shake = .5; vibrate([20, 30, 20]);
         rings.push({ x: p.x, z: p.z, w: p.w, d: p.d, y: p.y + p.h + studH(), t: 0, c: p.c });
-        popText(kind === 'shield' ? 'Bouclier !' : 'Seconde chance !');
+        popText(kind === 'shield' ? trs('Bouclier !', 'Shield!', '¡Escudo!') : trs('Seconde chance !', 'Second chance!', '¡Segunda oportunidad!'));
         tone(660, .25, 'sine', .12); tone(990, .3, 'sine', .08, 0, .08);
         renderBoostChips(); options.onBoostFx?.(kind);
         spawn();
@@ -534,7 +535,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
     state = 'menu'; reset();
     ui.over.classList.add('alt-hidden'); ui.hud.classList.add('alt-hidden'); ui.menu.classList.remove('alt-hidden');
     $('homeBtn').classList.remove('alt-hidden');
-    ui.menuBest.textContent = best ? `RECORD  ${best}` : '';
+    ui.menuBest.textContent = best ? `${trs('RECORD', 'BEST', 'RÉCORD')}  ${best}` : '';
   }
   $('homeBtn').addEventListener('click', e => { e.stopPropagation(); if (options.onBackToMenu) options.onBackToMenu(); });
   $('toMenu').addEventListener('click', e => { e.stopPropagation(); goMenu(); });
@@ -546,7 +547,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
   function pauseGame() {
     if (state !== 'play') return;
     state = 'pause';
-    $('pauseInfo').textContent = `Étage ${score}`;
+    $('pauseInfo').textContent = `${trs('Étage', 'Floor', 'Piso')} ${score}`;
     pauseEl.classList.remove('alt-hidden'); pauseBtn.classList.add('alt-hidden');
     tone(520, .1, 'sine', .07);
   }
@@ -985,7 +986,7 @@ function startAltitude(root: HTMLElement, options: { onBackToMenu?: () => void; 
 
   // ================== Loop ==================
   setStyle(STYLE);
-  ui.menuBest.textContent = best ? `RECORD  ${best}` : '';
+  ui.menuBest.textContent = best ? `${trs('RECORD', 'BEST', 'RÉCORD')}  ${best}` : '';
 
   let last = performance.now();
   function frame(now) {
