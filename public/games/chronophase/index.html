@@ -287,7 +287,23 @@
 </div></div>
 <div id="err">Impossible de charger le moteur 3D (connexion internet requise la première fois).</div>
 
+<script>
+// Langue transmise par Lucky Stop (?lang=fr|en|es) — traduit le balisage statique.
+window.LS_LANG = (new URLSearchParams(location.search).get('lang') || 'fr').slice(0, 2);
+(function(){
+  const L = window.LS_LANG; if (L === 'fr') return;
+  const D = { 'TEMPS':['TIME','TIEMPO'], 'BLEU':['BLUE','AZUL'], 'REMBOBINAGE':['REWINDING','REBOBINANDO'], 'REMONTE LE':['REWIND','RETROCEDE EL'],
+    'TUTO':['HOW TO','TUTORIAL'], 'RETOUR':['BACK','ATRÁS'], 'SUIVANT':['NEXT','SIGUIENTE'], 'PERSONNAGE':['CHARACTER','PERSONAJE'], 'SKINS':['SKINS','ASPECTOS'],
+    'VALIDER':['CONFIRM','VALIDAR'], 'TAPE':['TAP','TOCA'], 'COULEUR':['COLOR','COLOR'],
+    'Impossible de charger le moteur 3D (connexion internet requise la première fois).':['Unable to load the 3D engine (internet connection required the first time).','No se puede cargar el motor 3D (se necesita conexión a internet la primera vez).'] };
+  const i = L === 'en' ? 0 : 1;
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  for (const n of nodes) { const k = n.nodeValue.trim(); if (D[k]) n.nodeValue = n.nodeValue.replace(k, D[k][i]); }
+})();
+</script>
 <script type="module">
+const T = (fr, en, es) => window.LS_LANG === 'en' ? en : window.LS_LANG === 'es' ? es : fr;
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -302,7 +318,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 const LANES = [-2.6, 0, 2.6], TILE = 10;
 const JUMP_V = 11.5, GRAV = 34, SLIDE_T = 0.7;
 const COLS = [0x7bc4e4, 0xe58fb8];
-const UI = ['#7BC4E4', '#E58FB8'], NAMES = ['BLEU', 'ROSE'];
+const UI = ['#7BC4E4', '#E58FB8'], NAMES = [T("BLEU", "BLUE", "AZUL"), T("ROSE", "PINK", "ROSA")];
 const C = COLS.map(c => new THREE.Color(c));
 const rnd = (a,b)=>a+Math.random()*(b-a), ri = (a,b)=>Math.floor(rnd(a,b+1));
 const _els = {}; const $ = id => _els[id] || (_els[id] = document.getElementById(id));
@@ -536,7 +552,7 @@ const matWellStrip = std({ color:0x9fb4e8, emissive:0x9fb4e8, emissiveIntensity:
 const texWellSign = canvasTex(1024, 150, (g,w,h)=>{
   g.fillStyle='#14110c'; g.fillRect(0,0,w,h); g.strokeStyle='#e3c58d'; g.lineWidth=6; g.strokeRect(5,5,w-10,h-10);
   g.fillStyle='#f3e2bd'; g.textAlign='center'; g.textBaseline='middle'; g.font='600 54px Sora, system-ui, sans-serif';
-  g.fillText('P U I T S   T E M P O R E L S', w/2, h*.4); g.font='400 28px Sora, system-ui, sans-serif'; g.fillStyle='#c9b48a'; g.fillText('UN SEUL PUITS TE RAMÈNE SUR LA ROUTE', w/2, h*.76);
+  g.fillText(T("P U I T S   T E M P O R E L S", "T I M E   W E L L S", "P O Z O S   T E M P O R A L E S"), w/2, h*.4); g.font='400 28px Sora, system-ui, sans-serif'; g.fillStyle='#c9b48a'; g.fillText(T("UN SEUL PUITS TE RAMÈNE SUR LA ROUTE", "ONLY ONE WELL TAKES YOU BACK TO THE ROAD", "SOLO UN POZO TE DEVUELVE A LA CARRETERA"), w/2, h*.76);
 });
 const matWellSign = std({ map:texWellSign, emissiveMap:texWellSign, emissive:0xffffff, emissiveIntensity:.9, roughness:.5 });
 const texDeadX = canvasTex(256, 256, (g,w,h)=>{ g.clearRect(0,0,w,h); g.strokeStyle='rgba(232,112,95,.95)'; g.lineWidth=26; g.lineCap='round'; g.beginPath(); g.moveTo(w*.24,h*.24); g.lineTo(w*.76,h*.76); g.moveTo(w*.76,h*.24); g.lineTo(w*.24,h*.76); g.stroke(); g.lineWidth=8; g.beginPath(); g.arc(w/2,h/2,w*.45,0,Math.PI*2); g.stroke(); });
@@ -736,11 +752,11 @@ let limbs = mBase.limbs;
 
 // --- SKINS : la couleur de phase (bleu/rose) reste toujours visible sur le perso ---
 const SKINS = [
-  { id:'chrono', name:'CHRONO', desc:'Robot graphite, l’original', sw:'linear-gradient(135deg,#4a5163,#1d212b)', model:mBase, mat: pMat },
-  { id:'aurum',  name:'AURUM',  desc:'Robot d’or et auréole d’horloge', sw:'linear-gradient(135deg,#f6e6c4,#b8945a)', model:mBase,
+  { id:'chrono', name:'CHRONO', desc:T("Robot graphite, l’original", "Graphite robot, the original", "Robot grafito, el original"), sw:'linear-gradient(135deg,#4a5163,#1d212b)', model:mBase, mat: pMat },
+  { id:'aurum',  name:'AURUM',  desc:T("Robot d’or et auréole d’horloge", "Golden robot with a clock halo", "Robot dorado con aureola de reloj"), sw:'linear-gradient(135deg,#f6e6c4,#b8945a)', model:mBase,
     mat: new THREE.MeshPhysicalMaterial({ color:0xd8b26a, roughness:.22, metalness:1, clearcoat:1, clearcoatRoughness:.1 }) },
-  { id:'renard', name:'RENARD', desc:'Renard des heures à quatre pattes', sw:'linear-gradient(135deg,#e39a5a,#8a4420)', model:mFox },
-  { id:'orbe',   name:'ORBE',   desc:'Sphère qui roule, anneau en orbite', sw:'radial-gradient(circle at 35% 30%,#ffffff,#c9cfdc 55%,#7d8597)', model:mOrb },
+  { id:'renard', name:T("RENARD", "FOX", "ZORRO"), desc:T("Renard des heures à quatre pattes", "Four-legged fox of the hours", "Zorro de las horas a cuatro patas"), sw:'linear-gradient(135deg,#e39a5a,#8a4420)', model:mFox },
+  { id:'orbe',   name:T("ORBE", "ORB", "ORBE"),   desc:T("Sphère qui roule, anneau en orbite", "Rolling sphere with an orbiting ring", "Esfera rodante con anillo en órbita"), sw:'radial-gradient(circle at 35% 30%,#ffffff,#c9cfdc 55%,#7d8597)', model:mOrb },
 ];
 // auréole (AURUM)
 const halo = new THREE.Group(); body.add(halo); halo.position.set(0, 2.22, 0);
@@ -836,7 +852,7 @@ function boostSave(){
   P.falling = false; P.vy = Math.max(P.vy, 0);
   energy = Math.max(energy, kind === 'revive' ? 100 : 60);
   timeScale = .25; shake = .5; flashT = .5; input.rewind = false; rwPointers.clear(); rewindSound(false);
-  toast(kind === 'shield' ? 'BOUCLIER' : 'SECONDE CHANCE', '#E3C58D'); buzz([20,40,20]); sfx.shard();
+  toast(kind === 'shield' ? T("BOUCLIER", "SHIELD", "ESCUDO") : T("SECONDE CHANCE", "SECOND CHANCE", "2ª OPORTUNIDAD"), '#E3C58D'); buzz([20,40,20]); sfx.shard();
   burst(P.x, P.y+1, dist, 0xe3c58d, 30, 5, .8);
   renderBoostChips();
   try{ parent.postMessage({type:'chronophase:boost', kind}, '*'); }catch(_){}
@@ -856,7 +872,7 @@ function start(){
   acc = 0; last = performance.now(); ip.ok = false;
   state='play'; paused=false; showOverlay(''); $('hud').style.display='block';
   renderBoostChips();
-  if (runB.bonus) setTimeout(() => toast('+' + runB.bonus + ' PTS', '#E3C58D'), 250);
+  if (runB.bonus) setTimeout(() => toast('+' + runB.bonus + ' ' + T("PTS", "PTS", "PTS"), '#E3C58D'), 250);
 }
 
 // ============ GÉNÉRATION ============
@@ -992,12 +1008,12 @@ function genChunk(){
   }
   const c = ri(0,1);
   switch(type){
-    case 't_block': laneObs('block',1,s); hint(s,'<b>← →</b> pour changer de voie','<b>← →</b>','Glisse <b>à gauche</b> ou <b>à droite</b> pour changer de voie'); end = s+9; break;
-    case 't_low': for (let l=0;l<3;l++) laneObs('low',l,s); shardLine(1,s-4,3,4,true); hint(s,'<b>↑</b> ou <b>ESPACE</b> pour sauter','<b>↑</b>','Glisse <b>vers le haut</b> pour sauter'); break;
-    case 't_high': for (let l=0;l<3;l++) laneObs('high',l,s); hint(s,'<b>↓</b> pour glisser sous la barrière','<b>↓</b>','Glisse <b>vers le bas</b> pour passer dessous'); break;
-    case 't_wall': phaseWall(0,3.9,s,1); addShard(0,1,s+.35); hint(s,'Mur <b style="color:var(--b)">ROSE</b> : deviens <b style="color:var(--b)">ROSE</b> (SHIFT) et tu passes au travers.','Mur <b style="color:var(--b)">ROSE</b> : <b>touche l\'écran</b> pour devenir <b style="color:var(--b)">ROSE</b><br>et passer au travers.'); break;
-    case 't_bridge': end = holeRow(s, 20, [0,0,0]); shardLine(1, Math.ceil(s/TILE)*TILE+2, 5, 4); hint(s,'Sol <b style="color:var(--a)">BLEU</b> : redeviens <b style="color:var(--a)">BLEU</b> (SHIFT) pour marcher dessus.','Sol <b style="color:var(--a)">BLEU</b> : <b>touche l\'écran</b> pour redevenir <b style="color:var(--a)">BLEU</b><br>et marcher dessus.'); break;
-    case 't_shards': for (let l=0;l<3;l++) if (l!==1) laneObs('block',l,s); shardLine(1,s,4,2.5); hint(s,'Une esquive mal engagée ? Maintiens <b style="color:var(--gold)">R</b> pour revenir en arrière — avant l\'impact.','Une esquive mal engagée ? Maintiens <b style="color:var(--gold)">TEMPS</b><br>pour revenir en arrière — avant l\'impact.'); end = s+9; break;
+    case 't_block': laneObs('block',1,s); hint(s,T("<b>← →</b> pour changer de voie", "<b>← →</b> to change lanes", "<b>← →</b> para cambiar de carril"),'<b>← →</b>','Glisse <b>à gauche</b> ou <b>à droite</b> pour changer de voie'); end = s+9; break;
+    case 't_low': for (let l=0;l<3;l++) laneObs('low',l,s); shardLine(1,s-4,3,4,true); hint(s,T("<b>↑</b> ou <b>ESPACE</b> pour sauter", "<b>↑</b> or <b>SPACE</b> to jump", "<b>↑</b> o <b>ESPACIO</b> para saltar"),'<b>↑</b>','Glisse <b>vers le haut</b> pour sauter'); break;
+    case 't_high': for (let l=0;l<3;l++) laneObs('high',l,s); hint(s,T("<b>↓</b> pour glisser sous la barrière", "<b>↓</b> to slide under the barrier", "<b>↓</b> para deslizarte bajo la barrera"),'<b>↓</b>','Glisse <b>vers le bas</b> pour passer dessous'); break;
+    case 't_wall': phaseWall(0,3.9,s,1); addShard(0,1,s+.35); hint(s,'Mur <b style="color:var(--b)">ROSE</b> : deviens <b style="color:var(--b)">ROSE</b> (SHIFT) et tu passes au travers.',T("Mur <b style=\"color:var(--b)\">ROSE</b> : <b>touche l'écran</b> pour devenir <b style=\"color:var(--b)\">ROSE</b><br>et passer au travers.", "<b style=\"color:var(--b)\">PINK</b> wall: <b>tap the screen</b> to turn <b style=\"color:var(--b)\">PINK</b><br>and go through it.", "Muro <b style=\"color:var(--b)\">ROSA</b>: <b>toca la pantalla</b> para volverte <b style=\"color:var(--b)\">ROSA</b><br>y atravesarlo.")); break;
+    case 't_bridge': end = holeRow(s, 20, [0,0,0]); shardLine(1, Math.ceil(s/TILE)*TILE+2, 5, 4); hint(s,'Sol <b style="color:var(--a)">BLEU</b> : redeviens <b style="color:var(--a)">BLEU</b> (SHIFT) pour marcher dessus.',T("Sol <b style=\"color:var(--a)\">BLEU</b> : <b>touche l'écran</b> pour redevenir <b style=\"color:var(--a)\">BLEU</b><br>et marcher dessus.", "<b style=\"color:var(--a)\">BLUE</b> floor: <b>tap the screen</b> to turn <b style=\"color:var(--a)\">BLUE</b> again<br>and walk on it.", "Suelo <b style=\"color:var(--a)\">AZUL</b>: <b>toca la pantalla</b> para volver a ser <b style=\"color:var(--a)\">AZUL</b><br>y caminar sobre él.")); break;
+    case 't_shards': for (let l=0;l<3;l++) if (l!==1) laneObs('block',l,s); shardLine(1,s,4,2.5); hint(s,T("Une esquive mal engagée ? Maintiens <b style=\"color:var(--gold)\">R</b> pour revenir en arrière — avant l'impact.", "Bad dodge? Hold <b style=\"color:var(--gold)\">R</b> to go back in time — before the impact.", "¿Esquiva mal hecha? Mantén <b style=\"color:var(--gold)\">R</b> para retroceder — antes del impacto."),T("Une esquive mal engagée ? Maintiens <b style=\"color:var(--gold)\">TEMPS</b><br>pour revenir en arrière — avant l'impact.", "Bad dodge? Hold <b style=\"color:var(--gold)\">TIME</b><br>to go back — before the impact.", "¿Esquiva mal hecha? Mantén <b style=\"color:var(--gold)\">TIEMPO</b><br>para retroceder — antes del impacto.")); end = s+9; break;
     case 'row': {
       const opts = ['none','low','high','block'], pick = [];
       do { pick.length=0; for (let l=0;l<3;l++) pick.push(opts[ri(0,3)]); }
@@ -1065,8 +1081,8 @@ function genChunk(){
         else addObs({type:'deadend', x:LANES[l], hw:1.25, s:he-.6, len:.6, y0:BASE_Y, y1:0});
         for (let i=0;i<4;i++) addShard(LANES[l], BASE_Y+1, hs+14+i*5);
       }
-      hint(s,'<b style="color:var(--gold)">CARREFOUR TEMPOREL</b> : les 3 voies plongent au sous-sol, un seul couloir a un tremplin.<br>Mauvais couloir ? Maintiens <b style="color:var(--gold)">R</b> et choisis une autre voie avant le trou.',
-             '<b style="color:var(--gold)">CARREFOUR TEMPOREL</b> : tout plonge au sous-sol,<br>un seul couloir a un tremplin. Mauvais couloir ?<br>Maintiens <b style="color:var(--gold)">TEMPS</b> et change de voie avant le trou.');
+      hint(s,T("<b style=\"color:var(--gold)\">CARREFOUR TEMPOREL</b> : les 3 voies plongent au sous-sol, un seul couloir a un tremplin.<br>Mauvais couloir ? Maintiens <b style=\"color:var(--gold)\">R</b> et choisis une autre voie avant le trou.", "<b style=\"color:var(--gold)\">TIME JUNCTION</b>: all 3 lanes drop to the basement, only one corridor has a ramp.<br>Wrong corridor? Hold <b style=\"color:var(--gold)\">R</b> and pick another lane before the hole.", "<b style=\"color:var(--gold)\">CRUCE TEMPORAL</b>: los 3 carriles bajan al sótano, solo un pasillo tiene trampolín.<br>¿Pasillo equivocado? Mantén <b style=\"color:var(--gold)\">R</b> y elige otro carril antes del hueco."),
+             T("<b style=\"color:var(--gold)\">CARREFOUR TEMPOREL</b> : tout plonge au sous-sol,<br>un seul couloir a un tremplin. Mauvais couloir ?<br>Maintiens <b style=\"color:var(--gold)\">TEMPS</b> et change de voie avant le trou.", "<b style=\"color:var(--gold)\">TIME JUNCTION</b>: everything drops to the basement,<br>only one corridor has a ramp. Wrong corridor?<br>Hold <b style=\"color:var(--gold)\">TIME</b> and change lanes before the hole.", "<b style=\"color:var(--gold)\">CRUCE TEMPORAL</b>: todo baja al sótano,<br>solo un pasillo tiene trampolín. ¿Pasillo equivocado?<br>Mantén <b style=\"color:var(--gold)\">TIEMPO</b> y cambia de carril antes del hueco."));
       end = he + Math.max(22, sp*1.15 + 2); break; // juste après l'atterrissage du tremplin
     }
     case 'shards': { const l = ri(0,2); shardLine(l,s,8,3); laneObs('low',l,s+12); end = s+14; break; }
@@ -1166,8 +1182,8 @@ const inCorridor = () => inBasement() || inWell();
 function physics(dt){
   gt += dt; speed = Math.min(52, speed + dt*.32); const pd = dist, wellNow = inWell(); dist += wellNow ? WELL_DRIFT*dt : speed*dt;
   for (const o of objs){
-    if (o.type==='gate' && pd < o.s && dist >= o.s){ energy = 100; sfx.shard(); flashT = .5; toast('TEMPS RECHARGÉ', '#E3C58D'); }
-    if (o.type==='tport' && pd < o.s && dist >= o.s && Math.abs(o.x - P.x) < 1.3){ energy = 100; dist = o.dest; P.y = -1.2; P.vy = -1; P.onG = false; wellK = 1; camY = P.y; timeScale = .45; warp(); sfx.resume(); buzz([15,30,15]); toast('TÉLÉPORTATION', '#F3E2BD'); burst(P.x, P.y+1, dist, 0xe3c58d, 24, 5, .7); break; }
+    if (o.type==='gate' && pd < o.s && dist >= o.s){ energy = 100; sfx.shard(); flashT = .5; toast(T("TEMPS RECHARGÉ", "TIME RECHARGED", "TIEMPO RECARGADO"), '#E3C58D'); }
+    if (o.type==='tport' && pd < o.s && dist >= o.s && Math.abs(o.x - P.x) < 1.3){ energy = 100; dist = o.dest; P.y = -1.2; P.vy = -1; P.onG = false; wellK = 1; camY = P.y; timeScale = .45; warp(); sfx.resume(); buzz([15,30,15]); toast(T("TÉLÉPORTATION", "TELEPORT", "TELETRANSPORTE"), '#F3E2BD'); burst(P.x, P.y+1, dist, 0xe3c58d, 24, 5, .7); break; }
   }
   maxDist = Math.max(maxDist, dist);
   energy = Math.min(100, energy + dt*1.2);
@@ -1178,7 +1194,7 @@ function physics(dt){
   // tremplin du bon couloir : propulse vers la route
   const bi = baseInfo(), lane = nearestLane(P.x);
   if (bi && P.onG && P.y < -1 && bi.good === lane && bi.he - dist <= speed*.45 + 1){
-    P.vy = 27; P.onG = false; flashT = .6; sfx.resume(); buzz([20,40,20]); toast('TREMPLIN', '#E3C58D'); burst(P.x, P.y+.5, dist, 0xe3c58d, 30, 6, .8);
+    P.vy = 27; P.onG = false; flashT = .6; sfx.resume(); buzz([20,40,20]); toast(T("TREMPLIN", "RAMP", "TRAMPOLÍN"), '#E3C58D'); burst(P.x, P.y+.5, dist, 0xe3c58d, 30, 6, .8);
   }
   if (wellNow){ P.vy = Math.max(-WELL_VT, P.vy - WELL_G*dt);
     for (let k=0;k<2;k++){ if (parts.length >= MAXP) parts.shift(); parts.push({ x: rnd(-3.7,3.7), y: P.y - rnd(3, 16), s: dist + rnd(-5, 5), vx:0, vy:7, vs:0, life:1.1, max:1.1, c: DUST_C }); } }
@@ -1195,7 +1211,7 @@ function physics(dt){
   if (wi){
     if (wi.good === lane && P.y < WELL_RET_Y){ // portail de retour : on réapparaît sur la route, plus loin
       dist = wi.we + 1.2; P.y = 1.2; P.vy = 3; P.onG = false; camY = 0; wellK = 0; timeScale = .3; flashT = .4; shake = .15; warp();
-      sfx.resume(); buzz([20,40,20]); toast('RETOUR SUR LA ROUTE', '#E3C58D'); burst(P.x, P.y+.5, dist, 0xe3c58d, 30, 6, .8); return;
+      sfx.resume(); buzz([20,40,20]); toast(T("RETOUR SUR LA ROUTE", "BACK ON THE ROAD", "DE VUELTA A LA CARRETERA"), '#E3C58D'); burst(P.x, P.y+.5, dist, 0xe3c58d, 30, 6, .8); return;
     }
     if (P.y < WELL_DIE_Y){ die(); return; }
   }
@@ -1243,16 +1259,16 @@ function gameOver(){
   try{ parent.postMessage({type:'chronophase:over',score:sc,duration:Math.round((performance.now()-(window.__lsStart||performance.now()))/1000)},'*'); }catch(_){}
   buzz([30,50,30]);
   showOverlay(`<div class="scrim"></div><div style="position:relative;display:flex;flex-direction:column;align-items:center">
-    <div class="broken">FIN DE LA BOUCLE</div>
+    <div class="broken">${T("FIN DE LA BOUCLE", "LOOP OVER", "FIN DEL BUCLE")}</div>
     <div class="big" style="margin-top:18px">${sc}<span>pts</span></div>
-    <div class="muted" style="margin-top:8px">${Math.floor(maxDist)} M PARCOURUS</div>
-    ${newBest ? '<div class="badge">NOUVEAU RECORD</div>' : ''}
+    <div class="muted" style="margin-top:8px">${Math.floor(maxDist)} ${T("M PARCOURUS", "M RUN", "M RECORRIDOS")}</div>
+    ${newBest ? '<div class="badge">' + T("NOUVEAU RECORD", "NEW RECORD", "NUEVO RÉCORD") + '</div>' : ''}
     <div class="stats glass">
-      <div>${best}<small>RECORD</small></div>
-      <div>${shardsTaken}<small>ÉCLATS</small></div>
-      <div>${(rewoundTotal/60).toFixed(1)}s<small>REMBOBINÉ</small></div>
+      <div>${best}<small>${T("RECORD", "BEST", "RÉCORD")}</small></div>
+      <div>${shardsTaken}<small>${T("ÉCLATS", "SHARDS", "FRAGMENTOS")}</small></div>
+      <div>${(rewoundTotal/60).toFixed(1)}s<small>${T("REMBOBINÉ", "REWOUND", "REBOBINADO")}</small></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:12px;width:min(300px,86vw)">${boostBtnHTML('over-boost')}<button class="cta" data-start>REJOUER</button><button class="ghost" data-home>ACCUEIL</button></div></div>`);
+    <div style="display:flex;flex-direction:column;gap:12px;width:min(300px,86vw)">${boostBtnHTML('over-boost')}<button class="cta" data-start>${T("REJOUER", "PLAY AGAIN", "REPETIR")}</button><button class="ghost" data-home>${T("ACCUEIL", "HOME", "INICIO")}</button></div></div>`);
 }
 
 // ============ INPUT ============
@@ -1338,65 +1354,65 @@ const OK = (x,y) => `<circle cx="${x}" cy="${y}" r="9" fill="#2c4a3c" stroke="#8
 const NO = (x,y) => `<circle cx="${x}" cy="${y}" r="9" fill="#4a2420" stroke="#E8705F" stroke-width="1.4"/><path d="M${x-3.5} ${y-3.5}l7 7M${x+3.5} ${y-3.5}l-7 7" stroke="#E8705F" stroke-width="1.8"/>`;
 const guy = (x,y,c='#7BC4E4') => `<rect x="${x-7}" y="${y-30}" width="14" height="12" rx="4" fill="#2b303d" stroke="${c}" stroke-width="1.3"/><rect x="${x-9}" y="${y-17}" width="18" height="14" rx="4" fill="#2b303d" stroke="${c}" stroke-width="1.3"/><path d="M${x-4} ${y-3}v6M${x+4} ${y-3}v6" stroke="${c}" stroke-width="3"/>`;
 const TUTO = [
-  { t:'SE DÉPLACER', ill: SV(`
+  { get t(){ return T("SE DÉPLACER", "MOVING", "MOVERSE"); }, ill: SV(`
       <path d="M95 140 L125 20 M155 20 L185 140" stroke="rgba(255,255,255,.12)" stroke-width="1.2"/><path d="M60 140 L112 20 M168 20 L220 140" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
       ${guy(140,112)}
       <path d="M100 92h-38m0 0l9-8m-9 8l9 8 M180 92h38m0 0l-9-8m9 8l-9 8" stroke="#E3C58D" stroke-width="2.4"/>
-      <path d="M140 72V38m0 0l-8 9m8-9l8 9" stroke="#7BC4E4" stroke-width="2.4"/>${lbl(140,28,'SAUTE','#7BC4E4')}
-      <path d="M140 124v14m0 0l-6-6m6 6l6-6" stroke="#E58FB8" stroke-width="2.4"/>${lbl(196,140,'GLISSE','#E58FB8')}
-      ${lbl(52,118,'VOIE','#E3C58D')}${lbl(228,118,'VOIE','#E3C58D')}`),
-    p:'<b>Glisse ton doigt</b> sur l’écran : <b>gauche / droite</b> pour changer de voie (une voie par geste), <b>haut</b> pour sauter, <b>bas</b> pour glisser.<br>1 point tous les 75 m.' },
-  { t:'LES OBSTACLES', ill: SV(`
+      <path d="M140 72V38m0 0l-8 9m8-9l8 9" stroke="#7BC4E4" stroke-width="2.4"/>${lbl(140,28,T("SAUTE", "JUMP", "SALTA"),'#7BC4E4')}
+      <path d="M140 124v14m0 0l-6-6m6 6l6-6" stroke="#E58FB8" stroke-width="2.4"/>${lbl(196,140,T("GLISSE", "SLIDE", "DESLIZA"),'#E58FB8')}
+      ${lbl(52,118,T("VOIE", "LANE", "CARRIL"),'#E3C58D')}${lbl(228,118,T("VOIE", "LANE", "CARRIL"),'#E3C58D')}`),
+    get p(){ return T("<b>Glisse ton doigt</b> sur l’écran : <b>gauche / droite</b> pour changer de voie (une voie par geste), <b>haut</b> pour sauter, <b>bas</b> pour glisser.<br>1 point tous les 75 m.", "<b>Swipe</b> on the screen: <b>left / right</b> to change lanes (one lane per swipe), <b>up</b> to jump, <b>down</b> to slide.<br>1 point every 75 m.", "<b>Desliza el dedo</b> por la pantalla: <b>izquierda / derecha</b> para cambiar de carril (un carril por gesto), <b>arriba</b> para saltar, <b>abajo</b> para deslizarte.<br>1 punto cada 75 m."); } },
+  { get t(){ return T("LES OBSTACLES", "OBSTACLES", "LOS OBSTÁCULOS"); }, ill: SV(`
       <rect x="18" y="98" width="64" height="20" rx="2" fill="#2a2f3e" stroke="#E8705F" stroke-width="1.4"/><path d="M34 112l6-7 6 7M46 112l6-7 6 7M58 112l6-7 6 7" stroke="#fff" stroke-width="2"/>
-      <path d="M50 92V64m0 0l-6 7m6-7l6 7" stroke="#7BC4E4" stroke-width="2"/>${lbl(50,140,'SAUTE','#7BC4E4')}
+      <path d="M50 92V64m0 0l-6 7m6-7l6 7" stroke="#7BC4E4" stroke-width="2"/>${lbl(50,140,T("SAUTE", "JUMP", "SALTA"),'#7BC4E4')}
       <path d="M104 118V30M176 118V30" stroke="#3a3f4f" stroke-width="3"/><rect x="104" y="30" width="72" height="44" rx="2" fill="#262b39" stroke="#E8705F" stroke-width="1.4"/>
       <path d="M124 38v18m-7-4l7 9 7-9M140 38v18m-7-4l7 9 7-9M156 38v18m-7-4l7 9 7-9" stroke="#fff" stroke-width="2.2"/>
-      <path d="M118 108h44" stroke="#E58FB8" stroke-width="2" stroke-dasharray="3 4"/>${lbl(140,140,'GLISSE','#E58FB8')}
+      <path d="M118 108h44" stroke="#E58FB8" stroke-width="2" stroke-dasharray="3 4"/>${lbl(140,140,T("GLISSE", "SLIDE", "DESLIZA"),'#E58FB8')}
       <rect x="203" y="52" width="60" height="62" rx="9" fill="#3d4660" stroke="#7d88a6" stroke-width="1"/><rect x="211" y="58" width="44" height="16" rx="3" fill="#0a0e17"/>
       <rect x="207" y="78" width="7" height="22" rx="2" fill="#E8705F"/><rect x="252" y="78" width="7" height="22" rx="2" fill="#E8705F"/><path d="M233 78v28" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>
       <rect x="224" y="86" width="18" height="8" rx="1.5" fill="#1a1610" stroke="#E3C58D" stroke-width="1"/><rect x="226" y="45" width="14" height="7" rx="1.5" fill="#E3C58D"/>
       <rect x="205" y="112" width="12" height="9" rx="2" fill="#0d0e12"/><rect x="249" y="112" width="12" height="9" rx="2" fill="#0d0e12"/>
-      <path d="M214 32h36m0 0l-6-5m6 5l-6 5" stroke="#E3C58D" stroke-width="2"/>${lbl(233,140,'ÉVITE','#E3C58D')}`),
-    p:'Barrière basse avec <b>▲</b> : <b>saute</b>.<br>Panneau avec flèches <b>▼</b> : <b>glisse dessous</b>.<br>Voiture arrêtée ou qui arrive en face : <b>change de voie</b>.' },
-  { t:'TA COULEUR', ill: SV(`
+      <path d="M214 32h36m0 0l-6-5m6 5l-6 5" stroke="#E3C58D" stroke-width="2"/>${lbl(233,140,T("ÉVITE", "AVOID", "EVITA"),'#E3C58D')}`),
+    get p(){ return T("Barrière basse avec <b>▲</b> : <b>saute</b>.<br>Panneau avec flèches <b>▼</b> : <b>glisse dessous</b>.<br>Voiture arrêtée ou qui arrive en face : <b>change de voie</b>.", "Low barrier with <b>▲</b>: <b>jump</b>.<br>Sign with <b>▼</b> arrows: <b>slide under it</b>.<br>Stopped or oncoming car: <b>change lanes</b>.", "Barrera baja con <b>▲</b>: <b>salta</b>.<br>Panel con flechas <b>▼</b>: <b>deslízate por debajo</b>.<br>Coche parado o que viene de frente: <b>cambia de carril</b>."); } },
+  { get t(){ return T("TA COULEUR", "YOUR COLOR", "TU COLOR"); }, ill: SV(`
       <circle cx="140" cy="26" r="5" fill="#fff"/><circle cx="140" cy="26" r="12" stroke="rgba(255,255,255,.5)" stroke-width="1.2"/><circle cx="140" cy="26" r="19" stroke="rgba(255,255,255,.2)" stroke-width="1.2"/>
       <circle cx="118" cy="56" r="6" fill="#7BC4E4"/><path d="M128 56h24m0 0l-5-4m5 4l-5 4" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/><circle cx="162" cy="56" r="6" fill="#E58FB8"/>
       ${guy(40,132)}
-      <rect x="62" y="80" width="52" height="52" rx="2" stroke="#7BC4E4" stroke-width="1.4" stroke-dasharray="4 4" fill="rgba(123,196,228,.06)"/>${OK(88,106)}${lbl(88,147,'PASSE','#8fd6a8')}
+      <rect x="62" y="80" width="52" height="52" rx="2" stroke="#7BC4E4" stroke-width="1.4" stroke-dasharray="4 4" fill="rgba(123,196,228,.06)"/>${OK(88,106)}${lbl(88,147,T("PASSE", "PASS", "PASA"),'#8fd6a8')}
       ${guy(180,132)}
-      <rect x="202" y="80" width="52" height="52" rx="2" fill="rgba(229,143,184,.55)" stroke="#E58FB8" stroke-width="3"/>${NO(228,106)}${lbl(228,147,'BLOQUE','#E8705F')}`),
-    p:'<b>Tape n’importe où</b> pour passer de <b style="color:var(--a)">BLEU</b> à <b style="color:var(--b)">ROSE</b>.<br>Portail de <b>ta couleur</b> : tu le traverses.<br>Portail de l’<b>autre couleur</b> : il te bloque.' },
-  { t:'LES SOLS', ill: SV(`
-      <path d="M20 112L60 52h56l-16 60z" fill="rgba(123,196,228,.55)" stroke="#7BC4E4" stroke-width="2.4"/>${guy(62,100)}${OK(66,128)}${lbl(66,147,'SOLIDE','#8fd6a8')}
-      <path d="M112 112l16-60h24l16 60z" stroke="#E58FB8" stroke-width="1.4" stroke-dasharray="4 4" fill="rgba(229,143,184,.06)"/>${NO(140,128)}${lbl(140,147,'VIDE','#E8705F')}
-      <path d="M180 112l-16-60h56l40 60z" fill="#1a0908" stroke="#E8705F" stroke-width="2"/><path d="M186 104l-8-40h40l24 40z" fill="#45160f"/>${NO(214,128)}${lbl(214,147,'TROU','#E8705F')}
-      ${lbl(140,30,'TOI : BLEU','#7BC4E4')}`),
-    p:'Un sol de <b>ta couleur</b> est solide : tu marches dessus.<br>Un sol de l’<b>autre couleur</b> est transparent : tu tombes.<br>Les <b>trous rouges</b> se sautent ou s’évitent.' },
-  { t:'REMONTER LE TEMPS', ill: SV(`
-      <circle cx="62" cy="76" r="32" fill="rgba(14,16,24,.8)" stroke="rgba(255,255,255,.15)"/><path d="M60 64v24L44 76zM78 64v24L62 76z" fill="#E3C58D"/>${lbl(62,128,'MAINTIENS','#E3C58D')}
-      <path d="M118 96h140" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle cx="240" cy="96" r="5" fill="#E8705F"/>${lbl(240,82,'ERREUR','#E8705F')}
+      <rect x="202" y="80" width="52" height="52" rx="2" fill="rgba(229,143,184,.55)" stroke="#E58FB8" stroke-width="3"/>${NO(228,106)}${lbl(228,147,T("BLOQUE", "BLOCKED", "BLOQUEA"),'#E8705F')}`),
+    p:T("<b>Tape n’importe où</b> pour passer de <b style=\"color:var(--a)\">BLEU</b> à <b style=\"color:var(--b)\">ROSE</b>.<br>Portail de <b>ta couleur</b> : tu le traverses.<br>Portail de l’<b>autre couleur</b> : il te bloque.", "<b>Tap anywhere</b> to switch from <b style=\"color:var(--a)\">BLUE</b> to <b style=\"color:var(--b)\">PINK</b>.<br>Gate of <b>your color</b>: you go through.<br>Gate of the <b>other color</b>: it blocks you.", "<b>Toca en cualquier sitio</b> para pasar de <b style=\"color:var(--a)\">AZUL</b> a <b style=\"color:var(--b)\">ROSA</b>.<br>Portal de <b>tu color</b>: lo atraviesas.<br>Portal del <b>otro color</b>: te bloquea.") },
+  { get t(){ return T("LES SOLS", "FLOORS", "LOS SUELOS"); }, ill: SV(`
+      <path d="M20 112L60 52h56l-16 60z" fill="rgba(123,196,228,.55)" stroke="#7BC4E4" stroke-width="2.4"/>${guy(62,100)}${OK(66,128)}${lbl(66,147,T("SOLIDE", "SOLID", "SÓLIDO"),'#8fd6a8')}
+      <path d="M112 112l16-60h24l16 60z" stroke="#E58FB8" stroke-width="1.4" stroke-dasharray="4 4" fill="rgba(229,143,184,.06)"/>${NO(140,128)}${lbl(140,147,T("VIDE", "EMPTY", "VACÍO"),'#E8705F')}
+      <path d="M180 112l-16-60h56l40 60z" fill="#1a0908" stroke="#E8705F" stroke-width="2"/><path d="M186 104l-8-40h40l24 40z" fill="#45160f"/>${NO(214,128)}${lbl(214,147,T("TROU", "HOLE", "HUECO"),'#E8705F')}
+      ${lbl(140,30,T("TOI : BLEU", "YOU: BLUE", "TÚ: AZUL"),'#7BC4E4')}`),
+    get p(){ return T("Un sol de <b>ta couleur</b> est solide : tu marches dessus.<br>Un sol de l’<b>autre couleur</b> est transparent : tu tombes.<br>Les <b>trous rouges</b> se sautent ou s’évitent.", "A floor of <b>your color</b> is solid: you walk on it.<br>A floor of the <b>other color</b> is see-through: you fall.<br>Jump over or avoid the <b>red holes</b>.", "Un suelo de <b>tu color</b> es sólido: caminas sobre él.<br>Un suelo del <b>otro color</b> es transparente: te caes.<br>Los <b>huecos rojos</b> se saltan o se esquivan."); } },
+  { get t(){ return T("REMONTER LE TEMPS", "REWINDING TIME", "RETROCEDER EN EL TIEMPO"); }, ill: SV(`
+      <circle cx="62" cy="76" r="32" fill="rgba(14,16,24,.8)" stroke="rgba(255,255,255,.15)"/><path d="M60 64v24L44 76zM78 64v24L62 76z" fill="#E3C58D"/>${lbl(62,128,T("MAINTIENS", "HOLD", "MANTÉN"),'#E3C58D')}
+      <path d="M118 96h140" stroke="rgba(255,255,255,.18)" stroke-width="2"/><circle cx="240" cy="96" r="5" fill="#E8705F"/>${lbl(240,82,T("ERREUR", "MISTAKE", "ERROR"),'#E8705F')}
       <path d="M232 112 C 210 132, 170 132, 150 112" stroke="#E3C58D" stroke-width="2" stroke-dasharray="4 4"/><path d="M150 112l2 9m-2-9l9 2" stroke="#E3C58D" stroke-width="2"/>
-      <circle cx="146" cy="96" r="5" fill="#7BC4E4"/>${lbl(150,145,'TU REVIENS ICI','#7BC4E4')}
-      <rect x="118" y="34" width="140" height="6" rx="3" fill="rgba(255,255,255,.1)"/><rect x="118" y="34" width="92" height="6" rx="3" fill="#E3C58D"/>${lbl(188,26,'JAUGE TEMPS','rgba(238,240,245,.6)')}`),
-    p:'<b>Maintiens le bouton TEMPS</b> pour rembobiner et corriger une erreur avant qu’elle arrive.<br>Ça vide la jauge, qui se recharge seule et avec les <b style="color:var(--gold)">cristaux dorés</b>.<br>Une fois touché, c’est trop tard : <b>anticipe</b>.' },
-  { t:'CARREFOUR TEMPOREL', ill: SV(`
-      <path d="M76 58 A64 40 0 0 1 204 58" stroke="#E3C58D" stroke-width="2"/><path d="M76 58v12M204 58v12" stroke="#E3C58D" stroke-width="2"/>${lbl(140,16,'PORTIQUE DORÉ','#E3C58D')}
+      <circle cx="146" cy="96" r="5" fill="#7BC4E4"/>${lbl(150,145,T("TU REVIENS ICI", "YOU COME BACK HERE", "VUELVES AQUÍ"),'#7BC4E4')}
+      <rect x="118" y="34" width="140" height="6" rx="3" fill="rgba(255,255,255,.1)"/><rect x="118" y="34" width="92" height="6" rx="3" fill="#E3C58D"/>${lbl(188,26,T("JAUGE TEMPS", "TIME GAUGE", "BARRA DE TIEMPO"),'rgba(238,240,245,.6)')}`),
+    p:T("<b>Maintiens le bouton TEMPS</b> pour rembobiner et corriger une erreur avant qu’elle arrive.<br>Ça vide la jauge, qui se recharge seule et avec les <b style=\"color:var(--gold)\">cristaux dorés</b>.<br>Une fois touché, c’est trop tard : <b>anticipe</b>.", "<b>Hold the TIME button</b> to rewind and fix a mistake before it happens.<br>It drains the gauge, which refills on its own and with <b style=\"color:var(--gold)\">golden crystals</b>.<br>Once you are hit, it is too late: <b>plan ahead</b>.", "<b>Mantén el botón TIEMPO</b> para rebobinar y corregir un error antes de que ocurra.<br>Vacía la barra, que se recarga sola y con los <b style=\"color:var(--gold)\">cristales dorados</b>.<br>Una vez golpeado, es demasiado tarde: <b>anticípate</b>.") },
+  { get t(){ return T("CARREFOUR TEMPOREL", "TIME JUNCTION", "CRUCE TEMPORAL"); }, ill: SV(`
+      <path d="M76 58 A64 40 0 0 1 204 58" stroke="#E3C58D" stroke-width="2"/><path d="M76 58v12M204 58v12" stroke="#E3C58D" stroke-width="2"/>${lbl(140,16,T("PORTIQUE DORÉ", "GOLDEN GATE", "PÓRTICO DORADO"),'#E3C58D')}
       <path d="M60 80h160" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/><path d="M60 80v18M220 80v18" stroke="rgba(255,255,255,.25)"/>
       <rect x="60" y="98" width="160" height="34" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.12)"/>
       <path d="M113 98v34M167 98v34" stroke="#f08a7a" stroke-width="2.4"/>
       <path d="M68 128 L104 106" stroke="#E3C58D" stroke-width="3"/>${OK(86,90)}
       ${NO(140,115)}${NO(194,115)}
-      ${lbl(140,147,'UN SEUL COULOIR A UN TREMPLIN','rgba(238,240,245,.75)')}`),
-    p:'Après le <b style="color:var(--gold)">portique doré</b>, les 3 voies tombent au sous-sol. <b>Un seul</b> couloir a un tremplin pour remonter.<br>Impasse ? <b>Maintiens TEMPS</b> pour revenir avant le trou, puis choisis une autre voie.' },
-  { t:'PUITS TEMPORELS', ill: SV(`
+      ${lbl(140,147,T("UN SEUL COULOIR A UN TREMPLIN", "ONLY ONE CORRIDOR HAS A RAMP", "SOLO UN PASILLO TIENE TRAMPOLÍN"),'rgba(238,240,245,.75)')}`),
+    p:T("Après le <b style=\"color:var(--gold)\">portique doré</b>, les 3 voies tombent au sous-sol. <b>Un seul</b> couloir a un tremplin pour remonter.<br>Impasse ? <b>Maintiens TEMPS</b> pour revenir avant le trou, puis choisis une autre voie.", "After the <b style=\"color:var(--gold)\">golden gate</b>, all 3 lanes drop to the basement. <b>Only one</b> corridor has a ramp back up.<br>Dead end? <b>Hold TIME</b> to go back before the hole, then pick another lane.", "Tras el <b style=\"color:var(--gold)\">pórtico dorado</b>, los 3 carriles caen al sótano. <b>Solo un</b> pasillo tiene trampolín para subir.<br>¿Callejón sin salida? <b>Mantén TIEMPO</b> para volver antes del hueco y elige otro carril.") },
+  { get t(){ return T("PUITS TEMPORELS", "TIME WELLS", "POZOS TEMPORALES"); }, ill: SV(`
       ${[70,140,210].map(x=>`<circle cx="${x}" cy="24" r="15" stroke="#E3C58D" stroke-width="2"/><circle cx="${x}" cy="24" r="10" fill="rgba(243,226,189,.25)"/>`).join('')}
-      ${lbl(140,52,'PORTAILS','#E3C58D')}
+      ${lbl(140,52,T("PORTAILS", "PORTALS", "PORTALES"),'#E3C58D')}
       ${[70,140,210].map(x=>`<rect x="${x-22}" y="60" width="44" height="72" fill="rgba(255,255,255,.03)" stroke="rgba(159,180,232,.35)"/><path d="M${x-22} 76h44M${x-22} 92h44M${x-22} 108h44" stroke="rgba(159,180,232,.25)"/>`).join('')}
       <ellipse cx="70" cy="104" rx="16" ry="4" stroke="#E3C58D" stroke-width="2.2"/><path d="M70 66v28m0 0l-5-6m5 6l5-6" stroke="#fff" stroke-width="1.6"/>${OK(70,122)}
       <rect x="120" y="126" width="40" height="6" fill="#E8705F"/>${NO(140,108)}
       <rect x="190" y="126" width="40" height="6" fill="#E8705F"/>${NO(210,108)}
-      ${lbl(140,147,'UN SEUL PUITS TE RAMÈNE','rgba(238,240,245,.75)')}`),
-    p:'Trois <b style="color:var(--gold)">portails</b> te téléportent dans des puits : tu tombes en chute libre. <b>Un seul</b> puits a un portail doré qui te ramène sur la route.<br>Fond rouge ? <b>Maintiens TEMPS</b> et prends un autre portail.' },
+      ${lbl(140,147,T("UN SEUL PUITS TE RAMÈNE", "ONLY ONE WELL BRINGS YOU BACK", "SOLO UN POZO TE DEVUELVE"),'rgba(238,240,245,.75)')}`),
+    p:T("Trois <b style=\"color:var(--gold)\">portails</b> te téléportent dans des puits : tu tombes en chute libre. <b>Un seul</b> puits a un portail doré qui te ramène sur la route.<br>Fond rouge ? <b>Maintiens TEMPS</b> et prends un autre portail.", "Three <b style=\"color:var(--gold)\">portals</b> teleport you into wells: you free-fall. <b>Only one</b> well has a golden portal that takes you back to the road.<br>Red bottom? <b>Hold TIME</b> and take another portal.", "Tres <b style=\"color:var(--gold)\">portales</b> te teletransportan a pozos: caes en caída libre. <b>Solo un</b> pozo tiene un portal dorado que te devuelve a la carretera.<br>¿Fondo rojo? <b>Mantén TIEMPO</b> y toma otro portal.") },
 ];
 let tutoOpen = false, tutoI = 0, tutoFromGame = false;
 function renderTuto(){
@@ -1405,7 +1421,7 @@ function renderTuto(){
   $('tSlide').style.animation = 'none'; void $('tSlide').offsetWidth; $('tSlide').style.animation = '';
   $('tDots').innerHTML = TUTO.map((_,i)=>`<i class="${i===tutoI?'on':''}"></i>`).join('');
   $('tPrev').style.visibility = tutoI ? 'visible' : 'hidden';
-  $('tNext').textContent = tutoI === TUTO.length-1 ? "C'EST PARTI" : 'SUIVANT';
+  $('tNext').textContent = tutoI === TUTO.length-1 ? T("C'EST PARTI", "LET'S GO", "¡VAMOS!") : T("SUIVANT", "NEXT", "SIGUIENTE");
 }
 function openTuto(){
   tutoFromGame = state==='play' || state==='rewind';
@@ -1450,7 +1466,7 @@ function skinSvg(k){
     <rect x="22" y="59" width="8" height="18" rx="3.5" fill="${body}" stroke="${edge}"/><rect x="32" y="59" width="8" height="18" rx="3.5" fill="${body}" stroke="${edge}"/></svg>`;
 }
 function renderSkins(){
-  $('skRow').innerHTML = SKINS.map((k,i)=>`<div class="sk ${i===skinI?'on':''}" data-sk="${i}">${skinSvg(k)}<b>${k.name}</b><small>${k.desc}</small><em>${i===skinI?'ÉQUIPÉ':'CHOISIR'}</em></div>`).join('');
+  $('skRow').innerHTML = SKINS.map((k,i)=>`<div class="sk ${i===skinI?'on':''}" data-sk="${i}">${skinSvg(k)}<b>${k.name}</b><small>${k.desc}</small><em>${i===skinI?T("ÉQUIPÉ", "EQUIPPED", "EQUIPADO"):T("CHOISIR", "CHOOSE", "ELEGIR")}</em></div>`).join('');
 }
 function openSkins(){ skinOpen = true; renderSkins(); $('skins').classList.add('on'); $('overlay').style.opacity = '0'; buzz(8); }
 function closeSkins(){ skinOpen = false; $('skins').classList.remove('on'); $('overlay').style.opacity = '';
@@ -1492,30 +1508,30 @@ function menu(){
     <div class="scrimTop"></div><div class="scrimBot"></div>
     <div class="dust"><i style="left:8%;animation-duration:11s;animation-delay:0s"></i><i style="left:19%;animation-duration:14s;animation-delay:3s"></i><i style="left:27%;animation-duration:9s;animation-delay:6s"></i><i style="left:38%;animation-duration:13s;animation-delay:1s"></i><i style="left:49%;animation-duration:12s;animation-delay:4s"></i><i style="left:57%;animation-duration:10s;animation-delay:7s"></i><i style="left:66%;animation-duration:15s;animation-delay:2s"></i><i style="left:74%;animation-duration:11s;animation-delay:5s"></i><i style="left:83%;animation-duration:13s;animation-delay:8s"></i><i style="left:92%;animation-duration:10s;animation-delay:3.5s"></i><i style="left:13%;animation-duration:16s;animation-delay:9s"></i><i style="left:61%;animation-duration:12s;animation-delay:10s"></i></div>
     <div class="top">
-      <div style="display:flex;align-items:center"><div class="menuBtn glass" data-exit aria-label="Accueil" style="width:52px;height:52px;padding:0;justify-content:center;margin-right:8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-      <div class="menuBtn glass" data-menu><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span>MENU</span></div></div>
+      <div style="display:flex;align-items:center"><div class="menuBtn glass" data-exit aria-label="${T("Accueil", "Home", "Inicio")}" style="width:52px;height:52px;padding:0;justify-content:center;margin-right:8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+      <div class="menuBtn glass" data-menu><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span>${T("MENU", "MENU", "MENÚ")}</span></div></div>
       ${best ? `<div class="recPill glass"><i>★</i>${best} PTS</div>` : ''}
     </div>
     <div class="hero">
       <div class="title">CHRONOPHASE</div>
       <div class="kick2">RUSH</div>
-      <div class="tag2">La course contre la montre, au sens propre.</div>
+      <div class="tag2">${T("La course contre la montre, au sens propre.", "A race against time, literally.", "Una carrera contra el reloj, literalmente.")}</div>
     </div>
-    <div class="tapLine"><span><i style="background:var(--a)"></i><u>TAPE POUR CHANGER DE <b>COULEUR</b></u><i style="background:var(--b)"></i></span></div>
-    <div class="callout"><b>MAINTIENS</b>pour remonter<br>le temps</div>
-    <div class="callout r"><b>TUTO</b>toutes les règles<br>en 1 minute</div>
-    <div class="b glass demoBtn" style="color:var(--gold)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 6v12L3 12zM21 6v12l-8.5-6z"/></svg><small class="rwl"><span>REMONTE LE</span>TEMPS</small></div>
+    <div class="tapLine"><span><i style="background:var(--a)"></i><u>${T("TAPE POUR CHANGER DE", "TAP TO CHANGE", "TOCA PARA CAMBIAR DE")} <b>${T("COULEUR", "COLOR", "COLOR")}</b></u><i style="background:var(--b)"></i></span></div>
+    <div class="callout"><b>${T("MAINTIENS", "HOLD", "MANTÉN")}</b>${T("pour remonter<br>le temps", "to rewind<br>time", "para retroceder<br>el tiempo")}</div>
+    <div class="callout r"><b>${T("TUTO", "HOW TO", "TUTORIAL")}</b>${T("toutes les règles<br>en 1 minute", "all the rules<br>in 1 minute", "todas las reglas<br>en 1 minuto")}</div>
+    <div class="b glass demoBtn" style="color:var(--gold)"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 6v12L3 12zM21 6v12l-8.5-6z"/></svg><small class="rwl"><span>${T("REMONTE LE", "REWIND", "RETROCEDE EL")}</span>${T("TEMPS", "TIME", "TIEMPO")}</small></div>
     <div class="bottom">
-      <div class="skinBtn glass" data-skin><i style="background:${SKINS[skinI].sw}"></i><span>SKIN</span><b>${SKINS[skinI].name}</b><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.5 2l3 3-3 3"/></svg></div>
+      <div class="skinBtn glass" data-skin><i style="background:${SKINS[skinI].sw}"></i><span>${T("SKIN", "SKIN", "ASPECTO")}</span><b>${SKINS[skinI].name}</b><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.5 2l3 3-3 3"/></svg></div>
       ${boostBtnHTML()}
-      <div class="playWrap"><button class="cta" data-start>JOUER</button></div>
-      <div class="sub3">GLISSE · TAPE · MAINTIENS</div>
+      <div class="playWrap"><button class="cta" data-start>${T("JOUER", "PLAY", "JUGAR")}</button></div>
+      <div class="sub3">${T("GLISSE · TAPE · MAINTIENS", "SWIPE · TAP · HOLD", "DESLIZA · TOCA · MANTÉN")}</div>
     </div>
   </div>`);
 }
 function hud(){
   { const sc = pts(dist) + runB.bonus, el = $('dist'); if (el._sc !== sc){ el.innerHTML = sc + '<span>pts</span>'; if (el._sc !== undefined && sc > el._sc){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); buzz(10); } el._sc = sc; } }
-  txt($('best'), Math.floor(dist) + ' M · RECORD ' + best);
+  txt($('best'), Math.floor(dist) + ' M · ' + T("RECORD", "BEST", "RÉCORD") + ' ' + best);
   st($('fill'),'width',energy.toFixed(1) + '%'); txt($('enTxt'), String(Math.floor(energy)));
   st($('fill'),'opacity',energy < 20 ? .5 + .5*Math.abs(Math.sin(performance.now()/300)) : 1);
   st($('phDot'),'background',UI[P.phase]); st($('phDot'),'boxShadow',`0 0 10px ${UI[P.phase]}`); txt($('phName'), NAMES[P.phase]);
@@ -1529,15 +1545,15 @@ function hud(){
   st($('vig'),'boxShadow',playing ? `inset 0 0 ${IS_TOUCH?60:110}px ${UI[P.phase]}2a` : 'none');
   const dg = state==='play' && !paused ? phaseDanger() : null, w = $('warn');
   if (dg){
-    const c2 = UI[dg.need], html = `<span class="glass" style="border-color:${c2}66"><i style="background:${c2};box-shadow:0 0 10px ${c2}"></i>${dg.what === 'mur' ? 'MUR' : 'SOL'} · DEVIENS <b style="color:${c2}">${NAMES[dg.need]}</b>${IS_TOUCH ? '' : ' · SHIFT'}</span>`;
+    const c2 = UI[dg.need], html = `<span class="glass" style="border-color:${c2}66"><i style="background:${c2};box-shadow:0 0 10px ${c2}"></i>${dg.what === 'mur' ? T("MUR", "WALL", "MURO") : T("SOL", "FLOOR", "SUELO")} · ${T("DEVIENS", "TURN", "CAMBIA A")} <b style="color:${c2}">${NAMES[dg.need]}</b>${IS_TOUCH ? '' : ' · SHIFT'}</span>`;
     if (w.innerHTML !== html) w.innerHTML = html; st(w,'display','block');
   } else st(w,'display','none');
   // grande indication au centre : au début de la partie, puis à l'approche des premiers murs/sols de couleur
   const wl = $('well'), bi = playing ? (baseInfo() || wellInfo()) : null;
   if (bi && P.y < -.3){
     const good = bi.good === nearestLane(P.x);
-    const html = good ? (bi.well ? `<span class="glass" style="border-color:#E3C58D88;color:#F3E2BD"><b style="color:#E3C58D">BON PUITS</b>le portail doré te ramène sur la route</span>` : `<span class="glass" style="border-color:#E3C58D88;color:#F3E2BD"><b style="color:#E3C58D">BON COULOIR</b>le tremplin te ramène en haut</span>`)
-                      : `<span class="glass" style="border-color:#E8705F88;color:#F5B3A8"><b style="color:#E8705F">IMPASSE</b>${IS_TOUCH ? 'MAINTIENS TEMPS' : 'MAINTIENS R'} et change de voie</span>`;
+    const html = good ? (bi.well ? `<span class="glass" style="border-color:#E3C58D88;color:#F3E2BD"><b style="color:#E3C58D">${T("BON PUITS", "RIGHT WELL", "POZO CORRECTO")}</b>${T("le portail doré te ramène sur la route", "the golden portal takes you back to the road", "el portal dorado te devuelve a la carretera")}</span>` : `<span class="glass" style="border-color:#E3C58D88;color:#F3E2BD"><b style="color:#E3C58D">${T("BON COULOIR", "RIGHT CORRIDOR", "PASILLO CORRECTO")}</b>${T("le tremplin te ramène en haut", "the ramp takes you back up", "el trampolín te sube de nuevo")}</span>`)
+                      : `<span class="glass" style="border-color:#E8705F88;color:#F5B3A8"><b style="color:#E8705F">${T("IMPASSE", "DEAD END", "SIN SALIDA")}</b>${IS_TOUCH ? T("MAINTIENS TEMPS", "HOLD TIME", "MANTÉN TIEMPO") : T("MAINTIENS R", "HOLD R", "MANTÉN R")} ${T("et change de voie", "and change lanes", "y cambia de carril")}</span>`;
     if (wl.innerHTML !== html) wl.innerHTML = html; st(wl,'display','block');
   } else st(wl,'display','none');
   flashT = Math.max(0, flashT - 1/60); st($('flash'),'opacity',Math.min(1, flashT));
@@ -1546,11 +1562,11 @@ function hud(){
   st(renderer.domElement,'filter',state==='rewind' ? 'sepia(.28) saturate(.85) contrast(1.04)' : state==='dead' ? 'grayscale(.75) brightness(.7)' : 'none');
   if (state === 'dead') showOverlay(`<div class="broken">LIGNE TEMPORELLE BRISÉE</div>`);
   else if (playing) showOverlay(paused ? `<div class="scrim"></div><div class="pmenu">
-      <div class="kicker" style="margin:0 0 6px .6em">MENU</div><div class="title" style="font-size:30px">PAUSE</div>
-      <div class="pstats glass"><div>${pts(dist) + runB.bonus}<small>POINTS</small></div><div>${best}<small>RECORD</small></div></div>
-      <button class="cta" data-resume>REPRENDRE</button>
-      <button class="ghost" data-restart>RECOMMENCER</button>
-      <button class="ghost" data-home>ACCUEIL</button></div>` : '');
+      <div class="kicker" style="margin:0 0 6px .6em">${T("MENU", "MENU", "MENÚ")}</div><div class="title" style="font-size:30px">${T("PAUSE", "PAUSED", "PAUSA")}</div>
+      <div class="pstats glass"><div>${pts(dist) + runB.bonus}<small>${T("POINTS", "POINTS", "PUNTOS")}</small></div><div>${best}<small>${T("RECORD", "BEST", "RÉCORD")}</small></div></div>
+      <button class="cta" data-resume>${T("REPRENDRE", "RESUME", "REANUDAR")}</button>
+      <button class="ghost" data-restart>${T("RECOMMENCER", "RESTART", "REINICIAR")}</button>
+      <button class="ghost" data-home>${T("ACCUEIL", "HOME", "INICIO")}</button></div>` : '');
 }
 
 // ============ BOUCLE DE RENDU ============

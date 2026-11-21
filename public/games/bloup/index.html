@@ -437,6 +437,29 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 </div>
 
 <script>
+// Langue transmise par Lucky Stop (?lang=fr|en|es)
+window.LS_LANG = (new URLSearchParams(location.search).get('lang') || 'fr').slice(0, 2);
+window.T = (fr, en, es) => window.LS_LANG === 'en' ? en : window.LS_LANG === 'es' ? es : fr;
+(function(){
+  const L = window.LS_LANG; if (L === 'fr') return;
+  const i = L === 'en' ? 0 : 1;
+  const D = { 'Menu':['Menu','Menú'], 'Score':['Score','Puntos'], 'Suivante':['Next','Siguiente'], 'Record':['Best','Récord'],
+    'Des boules de gelée qui fusionnent':['Jelly balls that merge','Bolas de gelatina que se fusionan'], 'Bloups spéciaux':['Special Bloups','Bloups especiales'],
+    'Joker':['Joker','Comodín'], "Fusionne avec n'importe quelle couleur":['Merges with any color','Se fusiona con cualquier color'],
+    'Bombe':['Bomb','Bomba'], 'Explose et fait éclater les petites boules':['Explodes and pops the small balls','Explota y revienta las bolas pequeñas'],
+    'Style des boules':['Ball style','Estilo de las bolas'], 'Jouer':['Play','Jugar'], 'Ça déborde !':['It overflowed!','¡Se desborda!'],
+    'points':['points','puntos'], 'Nouveau record':['New record','Nuevo récord'], 'Rejouer':['Play again','Repetir'], "Écran d'accueil":['Home screen','Pantalla de inicio'],
+    'Prochaine boule':['Next ball','Próxima bola'], 'Le pot : glisse pour viser, lâche pour déposer la boule':['The jar: slide to aim, release to drop the ball','El bote: desliza para apuntar, suelta para dejar caer la bola'],
+    'Ordre des fusions':['Merge order','Orden de fusiones'], 'Couper le son':['Mute','Silenciar'], 'Recommencer':['Restart','Reiniciar'] };
+  const tr = s => { const k = s.trim(); return D[k] ? s.replace(k, D[k][i]) : s; };
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  for (const n of nodes) n.nodeValue = tr(n.nodeValue);
+  document.querySelectorAll('[aria-label]').forEach(el => el.setAttribute('aria-label', tr(el.getAttribute('aria-label'))));
+  document.documentElement.lang = L;
+})();
+</script>
+<script>
 (() => {
 "use strict";
 
@@ -489,7 +512,7 @@ const PALETTES = {
   mat:   ["#e06a6a","#ee9455","#e9bd4f","#9fbf62","#55ae90","#4f9fc0","#5a78c8","#8569bf","#ad66a9","#cf4f63","#c2a263"],
   neon:  ["#ff3d7f","#ff7a1a","#ffd21a","#9dff3a","#1affb0","#19e3ff","#3d7bff","#8f5bff","#e44dff","#ff3355","#ffe680"]
 };
-const SKINS = [["sombre", "Sombre"], ["verre", "Verre"], ["mat", "Mat"], ["neon", "Néon"], ["mignon", "Mignon"]];
+const SKINS = [["sombre", T("Sombre", "Dark", "Oscuro")], ["verre", T("Verre", "Glass", "Cristal")], ["mat", T("Mat", "Matte", "Mate")], ["neon", T("Néon", "Neon", "Neón")], ["mignon", T("Mignon", "Cute", "Mono")]];
 function buildLevels(arr) {
   return arr.map((b, i) => {
     const c = hex(b), w = [255, 255, 255];
@@ -614,7 +637,7 @@ function drawMuteIcon() {
   $("mute").innerHTML = muted
     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
-  $("mute").setAttribute("aria-label", muted ? "Activer le son" : "Couper le son");
+  $("mute").setAttribute("aria-label", muted ? T("Activer le son", "Unmute", "Activar sonido") : T("Couper le son", "Mute", "Silenciar"));
 }
 
 // ---------- Physique ----------
@@ -908,18 +931,18 @@ function gameOver() {
 }
 
 function showOver() {
-  $("finalScore").textContent = score.toLocaleString("fr-FR");
-  $("finalSub").textContent = "points · " + dropped + " boules déposées";
+  $("finalScore").textContent = score.toLocaleString(window.LS_LANG === "en" ? "en-US" : window.LS_LANG === "es" ? "es-ES" : "fr-FR");
+  $("finalSub").textContent = T("points · ", "points · ", "puntos · ") + dropped + T(" boules déposées", " balls dropped", " bolas depositadas");
   $("newRec").hidden = !(score > 0 && score >= best);
   $("overlay").hidden = false;
   $("again").focus({ preventScroll: true });
 }
 
 function updateHud() {
-  const t = score.toLocaleString("fr-FR");
+  const t = score.toLocaleString(window.LS_LANG === "en" ? "en-US" : window.LS_LANG === "es" ? "es-ES" : "fr-FR");
   if (scoreEl.textContent !== t && score > 0) { scoreEl.classList.remove("bump"); void scoreEl.offsetWidth; scoreEl.classList.add("bump"); }
   scoreEl.textContent = t;
-  bestEl.textContent = best.toLocaleString("fr-FR");
+  bestEl.textContent = best.toLocaleString(window.LS_LANG === "en" ? "en-US" : window.LS_LANG === "es" ? "es-ES" : "fr-FR");
 }
 
 // ---------- Rendu ----------
@@ -1636,7 +1659,7 @@ function introRain(dt) {
 function showIntro() {
   if (bridgeReady) finishRun();
   state = "intro"; held = null;
-  $("introBest").textContent = best.toLocaleString("fr-FR");
+  $("introBest").textContent = best.toLocaleString(window.LS_LANG === "en" ? "en-US" : window.LS_LANG === "es" ? "es-ES" : "fr-FR");
   $("intro").hidden = false;
 }
 $("play").addEventListener("click", () => {

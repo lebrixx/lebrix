@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { currentLang } from '@/i18n/tr';
 import { createPortal } from 'react-dom';
 import { startGameSession } from '@/utils/scoresApi';
 import { consumeTicket } from '@/utils/ticketSystem';
@@ -54,7 +55,7 @@ export function BloupGame({ onBack, onGameOver }: { onBack: () => void; onGameOv
 
   return createPortal(
     <div className="pointer-events-auto fixed inset-0 z-[9999] overflow-hidden overscroll-none touch-none bg-background">
-      <iframe ref={frameRef} src={`${import.meta.env.BASE_URL}games/bloup/index.html`} title="Bloup" allow="autoplay; fullscreen" onLoad={forwardInsets} className="block h-full w-full border-0" />
+      <iframe ref={frameRef} src={`${import.meta.env.BASE_URL}games/bloup/index.html?lang=${currentLang()}`} title="Bloup" allow="autoplay; fullscreen" onLoad={forwardInsets} className="block h-full w-full border-0" />
     </div>, document.body,
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { currentLang } from '@/i18n/tr';
 import type { BoostType } from '@/types/boosts';
 import { consumeRunBoosts, emitBoostFx } from '@/utils/runBoosts';
 import { RunBoostFxLayer, RunBoostPicker, useRunBoostSelection } from '@/components/boosts/RunBoosts';
@@ -75,7 +76,7 @@ export function ChronophaseGame({ onBack, onGameOver, onRunBoosts }: { onBack: (
     <div className="pointer-events-auto" style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#07080d' }}>
       <iframe
         ref={frameRef}
-        src={`${import.meta.env.BASE_URL}games/chronophase/index.html`}
+        src={`${import.meta.env.BASE_URL}games/chronophase/index.html?lang=${currentLang()}`}
         title="Chronophase"
         onLoad={() => { forwardInsets(); postArmed(); }}
         allow="autoplay; fullscreen"

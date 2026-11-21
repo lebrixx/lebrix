@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { currentLang } from '@/i18n/tr';
 import { trs } from '@/i18n/tr';
 import { createPortal } from 'react-dom';
 import { fetchBrixLeaderboard, submitBrixScore, type BrixLeaderboardEntry } from '@/utils/brixFactoryApi';
@@ -52,7 +53,7 @@ function BrixFactoryFrame({ onExit }: { onExit: () => void }) {
     <div className="pointer-events-auto" style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#0b1220' }}>
       <iframe
         ref={frameRef}
-        src={`${import.meta.env.BASE_URL}games/brix-factory/index.html`}
+        src={`${import.meta.env.BASE_URL}games/brix-factory/index.html?lang=${currentLang()}`}
         title="Brix Factory"
         onLoad={() => forwardInsets(frameRef.current)}
         allow="autoplay; fullscreen"
