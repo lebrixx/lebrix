@@ -1,4 +1,5 @@
 import Matter from "matter-js";
+import { trs } from "@/i18n/tr";
 const { Engine, Bodies, Body, Composite, Query } = Matter;
 
 export const WIDTH = 1000, HEIGHT = 620;
@@ -76,7 +77,11 @@ export function enemyKindAt(seconds: number, roll: number): EnemyKind {
 
 export const ENEMY_RADIUS: Record<EnemyKind, number> = { 0: 14, 1: 20, 2: 14, 3: 13, 4: 18, 5: 14, 6: 38 };
 const GEM_VALUE: Record<EnemyKind, number> = { 0: 1, 1: 3, 2: 2, 3: 1, 4: 3, 5: 3, 6: 0 };
-export const BOSS_NAMES = ["LE COLOSSE", "LE BROYEUR", "LE TITAN"];
+const BOSS_NAMES_I18N: [string, string, string][] = [["LE COLOSSE", "THE COLOSSUS", "EL COLOSO"], ["LE BROYEUR", "THE CRUSHER", "EL TRITURADOR"], ["LE TITAN", "THE TITAN", "EL TITÁN"]];
+/** Noms des boss dans la langue courante (lus à l'affichage). */
+export const BOSS_NAMES: readonly string[] = new Proxy([] as string[], {
+  get: (_t, p) => p === "length" ? BOSS_NAMES_I18N.length : typeof p === "string" && /^\d+$/.test(p) ? (BOSS_NAMES_I18N[+p] ? trs(...BOSS_NAMES_I18N[+p]) : undefined) : undefined,
+});
 
 type BossState = "walk" | "telegraph" | "charge" | "fan" | "summon";
 export type Enemy = {
@@ -106,10 +111,10 @@ export type Fire = { x: number; y: number; life: number; max: number };
 export type WaveEvent = "swarm" | "kamikaze" | "squadron" | "armored";
 export const WAVE_EVENTS: WaveEvent[] = ["swarm", "kamikaze", "squadron", "armored"];
 const EVENT_TEXT: Record<WaveEvent, [string, string]> = {
-  swarm: ["ESSAIM", "Une nuée de robots déferle"],
-  kamikaze: ["KAMIKAZES", "Garde tes distances !"],
-  squadron: ["ESCADRILLE", "Des drones arrivent en formation"],
-  armored: ["COLONNE BLINDÉE", "Les blindés avancent"],
+  get swarm(): [string, string] { return [trs("ESSAIM", "SWARM", "ENJAMBRE"), trs("Une nuée de robots déferle", "A swarm of robots is rushing in", "Una nube de robots se abalanza")]; },
+  get kamikaze(): [string, string] { return [trs("KAMIKAZES", "KAMIKAZES", "KAMIKAZES"), trs("Garde tes distances !", "Keep your distance!", "¡Mantén las distancias!")]; },
+  get squadron(): [string, string] { return [trs("ESCADRILLE", "SQUADRON", "ESCUADRILLA"), trs("Des drones arrivent en formation", "Drones are coming in formation", "Llegan drones en formación")]; },
+  get armored(): [string, string] { return [trs("COLONNE BLINDÉE", "ARMORED COLUMN", "COLUMNA BLINDADA"), trs("Les blindés avancent", "The armor is advancing", "Los blindados avanzan")]; },
 };
 
 /** Visual events drained each frame by the renderer. Purely cosmetic. */
@@ -153,20 +158,20 @@ export type Banner = { id: number; title: string; sub: string; tone: "event" | "
 // ---------------------------------------------------------------------------
 export type UpgradeId = "power" | "rate" | "multi" | "pierce" | "ricochet" | "orbit" | "blast" | "magnet" | "leech" | "trail" | "shield" | "vitality" | "speed" | "heal";
 export const UPGRADES: Record<UpgradeId, { name: string; max: number; desc: (next: number) => string }> = {
-  power:    { name: "Puissance",     max: 8, desc: () => "+1 dégât par tir" },
-  rate:     { name: "Cadence",       max: 6, desc: () => "Tirs 15 % plus rapides" },
-  multi:    { name: "Tir multiple",  max: 4, desc: n => `${n + 1} projectiles en éventail` },
-  pierce:   { name: "Perforation",   max: 3, desc: n => `Les balles traversent ${n} ennemi${n > 1 ? "s" : ""}` },
-  ricochet: { name: "Ricochet",      max: 3, desc: n => `Rebondit vers ${n} cible${n > 1 ? "s" : ""} proche${n > 1 ? "s" : ""}` },
-  orbit:    { name: "Orbes",         max: 4, desc: n => `${n} orbe${n > 1 ? "s" : ""} tourne${n > 1 ? "nt" : ""} autour de toi` },
-  blast:    { name: "Détonation",    max: 3, desc: () => "Les ennemis explosent en mourant" },
-  magnet:   { name: "Aimant",        max: 3, desc: () => "Attire les cristaux de plus loin" },
-  leech:    { name: "Vampirisme",    max: 3, desc: n => `+1 vie toutes les ${LEECH_KILLS[n]} éliminations` },
-  trail:    { name: "Traînée de feu", max: 3, desc: () => "L'esquive enflamme le sol et recharge plus vite" },
-  shield:   { name: "Bouclier",      max: 3, desc: n => `Bloque un coup, recharge en ${SHIELD_RECHARGE[n]} s` },
-  vitality: { name: "Vitalité",      max: 5, desc: () => "+1 vie max et +2 soins" },
-  speed:    { name: "Agilité",       max: 3, desc: () => "Déplacement 12 % plus rapide" },
-  heal:     { name: "Soin complet",  max: Infinity, desc: () => "Restaure toute ta vie" },
+  power:    { get name() { return trs("Puissance", "Power", "Potencia"); },     max: 8, desc: () => trs("+1 dégât par tir", "+1 damage per shot", "+1 de daño por disparo") },
+  rate:     { get name() { return trs("Cadence", "Fire rate", "Cadencia"); },       max: 6, desc: () => trs("Tirs 15 % plus rapides", "15% faster shots", "Disparos un 15 % más rápidos") },
+  multi:    { get name() { return trs("Tir multiple", "Multishot", "Disparo múltiple"); },  max: 4, desc: n => trs(`${n + 1} projectiles en éventail`, `${n + 1} projectiles in a fan`, `${n + 1} proyectiles en abanico`) },
+  pierce:   { get name() { return trs("Perforation", "Piercing", "Perforación"); },   max: 3, desc: n => trs(`Les balles traversent ${n} ennemi${n > 1 ? "s" : ""}`, `Bullets go through ${n} enem${n > 1 ? "ies" : "y"}`, `Las balas atraviesan ${n} enemigo${n > 1 ? "s" : ""}`) },
+  ricochet: { get name() { return trs("Ricochet", "Ricochet", "Rebote"); },      max: 3, desc: n => trs(`Rebondit vers ${n} cible${n > 1 ? "s" : ""} proche${n > 1 ? "s" : ""}`, `Bounces to ${n} nearby target${n > 1 ? "s" : ""}`, `Rebota hacia ${n} objetivo${n > 1 ? "s" : ""} cercano${n > 1 ? "s" : ""}`) },
+  orbit:    { get name() { return trs("Orbes", "Orbs", "Orbes"); },         max: 4, desc: n => trs(`${n} orbe${n > 1 ? "s" : ""} tourne${n > 1 ? "nt" : ""} autour de toi`, `${n} orb${n > 1 ? "s" : ""} circling you`, `${n} orbe${n > 1 ? "s" : ""} gira${n > 1 ? "n" : ""} a tu alrededor`) },
+  blast:    { get name() { return trs("Détonation", "Detonation", "Detonación"); },    max: 3, desc: () => trs("Les ennemis explosent en mourant", "Enemies explode when they die", "Los enemigos explotan al morir") },
+  magnet:   { get name() { return trs("Aimant", "Magnet", "Imán"); },        max: 3, desc: () => trs("Attire les cristaux de plus loin", "Pulls crystals from farther away", "Atrae los cristales desde más lejos") },
+  leech:    { get name() { return trs("Vampirisme", "Lifesteal", "Vampirismo"); },    max: 3, desc: n => trs(`+1 vie toutes les ${LEECH_KILLS[n]} éliminations`, `+1 life every ${LEECH_KILLS[n]} kills`, `+1 vida cada ${LEECH_KILLS[n]} eliminaciones`) },
+  trail:    { get name() { return trs("Traînée de feu", "Fire trail", "Estela de fuego"); }, max: 3, desc: () => trs("L'esquive enflamme le sol et recharge plus vite", "Dodging sets the ground on fire and recharges faster", "La esquiva incendia el suelo y se recarga más rápido") },
+  shield:   { get name() { return trs("Bouclier", "Shield", "Escudo"); },      max: 3, desc: n => trs(`Bloque un coup, recharge en ${SHIELD_RECHARGE[n]} s`, `Blocks one hit, recharges in ${SHIELD_RECHARGE[n]} s`, `Bloquea un golpe, se recarga en ${SHIELD_RECHARGE[n]} s`) },
+  vitality: { get name() { return trs("Vitalité", "Vitality", "Vitalidad"); },      max: 5, desc: () => trs("+1 vie max et +2 soins", "+1 max life and +2 heal", "+1 vida máx. y +2 de curación") },
+  speed:    { get name() { return trs("Agilité", "Agility", "Agilidad"); },       max: 3, desc: () => trs("Déplacement 12 % plus rapide", "12% faster movement", "Movimiento un 12 % más rápido") },
+  heal:     { get name() { return trs("Soin complet", "Full heal", "Curación completa"); },  max: Infinity, desc: () => trs("Restaure toute ta vie", "Restores all your life", "Restaura toda tu vida") },
 };
 const LEECH_KILLS = [0, 25, 18, 12];
 const SHIELD_RECHARGE = [0, 20, 15, 10];
@@ -263,7 +268,7 @@ export class ArenaWorld {
     this.score = this.scoreBonus;
   }
 
-  start() { this.phase = "playing"; if (this.scoreBonus) this.announce("DÉPART +" + this.scoreBonus, "La foule t’offre une avance", "calm"); for (let i = 0; i < 5; i++) this.spawnEnemy(); this.spawn = spawnInterval(0); }
+  start() { this.phase = "playing"; if (this.scoreBonus) this.announce(trs("DÉPART +", "HEAD START +", "SALIDA +") + this.scoreBonus, trs("La foule t’offre une avance", "The crowd gives you a head start", "El público te da ventaja"), "calm"); for (let i = 0; i < 5; i++) this.spawnEnemy(); this.spawn = spawnInterval(0); }
 
   get dashCooldownMax() { return 2.5 - 0.3 * this.levels.trail; }
   get magnetRadius() { return 70 + 60 * this.levels.magnet; }
@@ -361,7 +366,7 @@ export class ArenaWorld {
   spawnBoss() {
     const boss = this.addEnemy(KIND.boss, WIDTH / 2, 50);
     this.boss = boss;
-    this.announce(`BOSS : ${BOSS_NAMES[this.bossIndex % BOSS_NAMES.length]}`, "Abats-le pour un gros butin", "boss");
+    this.announce(`BOSS : ${BOSS_NAMES[this.bossIndex % BOSS_NAMES.length]}`, trs("Abats-le pour un gros butin", "Take it down for big loot", "Derríbalo para un gran botín"), "boss");
     this.bossIndex++;
     return boss;
   }
@@ -411,7 +416,7 @@ export class ArenaWorld {
         if (this.event === "squadron" && this.eventSpawned < 3) { this.eventTick = 0.7; this.eventSpawned++; this.spawnEnemy(KIND.drone, this.eventEdge); }
         if (this.event === "armored" && this.eventSpawned < 3) { this.eventTick = 1.2; this.eventSpawned++; this.spawnEnemy(this.eventSpawned === 2 && t >= SPLITTER_FROM ? KIND.splitter : KIND.tank); }
       }
-      if (this.eventTime <= 0) { this.event = null; this.announce("ACCALMIE", "Ramasse tes cristaux", "calm"); }
+      if (this.eventTime <= 0) { this.event = null; this.announce(trs("ACCALMIE", "LULL", "CALMA"), trs("Ramasse tes cristaux", "Collect your crystals", "Recoge tus cristales"), "calm"); }
     }
     if (this.bossesKilled > 0 && !this.boss && !this.event && !this.calm) {
       this.extraMelee -= dt;
@@ -461,7 +466,7 @@ export class ArenaWorld {
         // Seconde chance : le héros se relève avec toute sa vie, brièvement invulnérable.
         this.reviveArmed = false; this.hp = this.maxHp; this.invincible = 2.5;
         this.emit({ type: "shield", x: this.hero.position.x, y: this.hero.position.y });
-        this.announce("SECONDE CHANCE", "Le héros se relève !", "win");
+        this.announce(trs("SECONDE CHANCE", "SECOND CHANCE", "SEGUNDA OPORTUNIDAD"), trs("Le héros se relève !", "The hero gets back up!", "¡El héroe se levanta!"), "win");
       } else this.phase = "over";
     }
   }
@@ -514,7 +519,7 @@ export class ArenaWorld {
       this.pickups.push({ x: x - 26, y, kind: "health" });
       if ((this.bossesKilled - 1) % BOSS_BOMB_EVERY === 0) this.pickups.push({ x: x + 26, y, kind: "bomb" });
       this.emit({ type: "bossDown", x, y });
-      this.announce("BOSS VAINCU", "Butin au sol !", "win");
+      this.announce(trs("BOSS VAINCU", "BOSS DEFEATED", "JEFE DERROTADO"), trs("Butin au sol !", "Loot on the ground!", "¡Botín en el suelo!"), "win");
     }
   }
 
@@ -607,9 +612,9 @@ export class ArenaWorld {
     this.invincible = Math.max(this.invincible, 1.2);
     this.gateLock = GATE_LOCK;
     if (!saved && !intercepted.length) for (let i = 0; i < 2; i++) this.spawnEnemy(undefined, east ? 1 : 0);
-    const sub = chasers.length ? `${chasers.length} ennemi${chasers.length > 1 ? "s" : ""} te poursui${chasers.length > 1 ? "vent" : "t"}` : target === 1 ? "Cristaux ×2 · gare aux geysers" : "La herse se referme derrière toi";
-    if (target === 1) this.announce("LA FOSSE ARDENTE", sub, "event");
-    else this.announce("RETOUR À L’ARÈNE", sub, "calm");
+    const sub = chasers.length ? trs(`${chasers.length} ennemi${chasers.length > 1 ? "s" : ""} te poursui${chasers.length > 1 ? "vent" : "t"}`, `${chasers.length} enem${chasers.length > 1 ? "ies are" : "y is"} chasing you`, `${chasers.length} enemigo${chasers.length > 1 ? "s te persiguen" : " te persigue"}`) : target === 1 ? trs("Cristaux ×2 · gare aux geysers", "Crystals ×2 · watch out for geysers", "Cristales ×2 · cuidado con los géiseres") : trs("La herse se referme derrière toi", "The portcullis closes behind you", "El rastrillo se cierra detrás de ti");
+    if (target === 1) this.announce(trs("LA FOSSE ARDENTE", "THE FIERY PIT", "LA FOSA ARDIENTE"), sub, "event");
+    else this.announce(trs("RETOUR À L’ARÈNE", "BACK TO THE ARENA", "VUELTA A LA ARENA"), sub, "calm");
     this.emit({ type: "room", room: target });
   }
 

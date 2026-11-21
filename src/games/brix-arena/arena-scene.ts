@@ -2,6 +2,7 @@
 // pre-rendered once, plus live layers (crowd, braziers, gate, dust).
 // Everything here is cosmetic and drawn in simulation coordinates.
 import stoneWallUrl from "./assets/arena/stone-wall.svg";
+import { trs } from "@/i18n/tr";
 import pillarUrl from "./assets/arena/pillar.svg";
 import brazierUrl from "./assets/arena/brazier.svg";
 import bannerUrl from "./assets/arena/banner.svg";
@@ -397,19 +398,19 @@ export class ArenaScene {
     const lx = east ? W - 100 : 100, ly = GATE_Y + 66;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.font = "700 17px Cinzel, Georgia, serif";
-    const label = east ? "FOSSE ARDENTE ›" : "‹ ARÈNE";
+    const label = east ? trs("FOSSE ARDENTE ›", "FIERY PIT ›", "FOSA ARDIENTE ›") : trs("‹ ARÈNE", "‹ ARENA", "‹ ARENA");
     ctx.lineWidth = 4; ctx.strokeStyle = "rgba(0,0,0,.65)"; ctx.strokeText(label, lx, ly);
     ctx.fillStyle = open ? `rgb(${hue})` : "rgba(220,200,170,.75)"; ctx.fillText(label, lx, ly);
     let line = ly + 18;
     if (incoming > 0) {
       // Pursuers on their way: red pulse at the gate and a counter under the label.
       if (soon) { ctx.save(); ctx.globalCompositeOperation = "lighter"; const gx = east ? W : 0, pr = ctx.createRadialGradient(gx, GATE_Y, 4, gx, GATE_Y, 110); pr.addColorStop(0, `rgba(255,40,40,${0.5 + Math.sin(t * 14) * 0.2})`); pr.addColorStop(1, "rgba(255,40,40,0)"); ctx.fillStyle = pr; ctx.fillRect(gx - 120, GATE_Y - 120, 240, 240); ctx.restore(); }
-      ctx.font = "700 14px Cinzel, Georgia, serif"; const txt = `⚔ ${incoming} EN APPROCHE`;
+      ctx.font = "700 14px Cinzel, Georgia, serif"; const txt = trs(`⚔ ${incoming} EN APPROCHE`, `⚔ ${incoming} INCOMING`, `⚔ ${incoming} SE ACERCAN`);
       ctx.lineWidth = 4; ctx.strokeStyle = "rgba(0,0,0,.7)"; ctx.strokeText(txt, lx, line); ctx.fillStyle = "#ff7a6a"; ctx.fillText(txt, lx, line); line += 18;
     }
     if (!open) {
       ctx.font = "700 13px Cinzel, Georgia, serif";
-      const sub = bossLock ? "BLOQUÉE PAR LE BOSS" : `OUVERTURE ${Math.ceil(lock)} S`;
+      const sub = bossLock ? trs("BLOQUÉE PAR LE BOSS", "LOCKED BY THE BOSS", "BLOQUEADA POR EL JEFE") : trs(`OUVERTURE ${Math.ceil(lock)} S`, `OPENS IN ${Math.ceil(lock)} S`, `SE ABRE EN ${Math.ceil(lock)} S`);
       ctx.strokeText(sub, lx, line); ctx.fillStyle = "rgba(240,220,190,.8)"; ctx.fillText(sub, lx, line);
     }
     ctx.restore();
