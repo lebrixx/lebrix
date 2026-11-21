@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { trs } from "@/i18n/tr";
 const ArenaLobby3D = lazy(() => import("./ArenaLobby3D"));
 import { type LucideIcon, ArrowLeft, Atom, Bomb, Crosshair, Droplet, Flame, Gem, Heart, HeartPulse, Magnet, Orbit, Play, Repeat, RotateCcw, Shield, Skull, Sparkles, Split, Swords, Trophy, Wind, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -349,81 +350,81 @@ export function ArenaGame({ onBack, onStart, onFinish, takeBoosts, onOpenBoosts,
   const inRun = hud.phase === "playing" || hud.phase === "paused" || hud.phase === "upgrade";
 
   return <main ref={stage} className="brix-arena-original game-screen arena-screen touch-none select-none">
-    <canvas ref={canvas} className="arena-canvas" aria-label="Arène de survie" />
-    <header className="arena-hud"><Button variant="secondary" onClick={pause} aria-label="Menu"><ArrowLeft />Menu</Button></header>
+    <canvas ref={canvas} className="arena-canvas" aria-label={trs("Arène de survie", "Survival arena", "Arena de supervivencia")} />
+    <header className="arena-hud"><Button variant="secondary" onClick={pause} aria-label={trs("Menu", "Menu", "Menú")}><ArrowLeft />{trs("Menu", "Menu", "Menú")}</Button></header>
     <div className="arena-stats">
-      <div className="arena-score"><Trophy size={16} /><span>{hud.score}<small>Record {best}</small></span></div>
-      <div className="arena-health" aria-label={`${hud.hp} vies sur ${hud.maxHp}`}>{hud.maxHp <= 8 ? Array.from({ length: hud.maxHp }, (_, i) => <Heart key={i} size={15} className={i < hud.hp ? "is-full" : "is-empty"} />) : <><Heart size={15} className="is-full" />{hud.hp}/{hud.maxHp}</>}{hud.shield && <Shield size={13} className="arena-shield-on" aria-label="Bouclier prêt" />}{hud.revive && <HeartPulse size={13} className="arena-revive-on" aria-label="Seconde chance prête" />}</div>
+      <div className="arena-score"><Trophy size={16} /><span>{hud.score}<small>{trs("Record", "Best", "Récord")} {best}</small></span></div>
+      <div className="arena-health" aria-label={trs(`${hud.hp} vies sur ${hud.maxHp}`, `${hud.hp} of ${hud.maxHp} lives`, `${hud.hp} vidas de ${hud.maxHp}`)}>{hud.maxHp <= 8 ? Array.from({ length: hud.maxHp }, (_, i) => <Heart key={i} size={15} className={i < hud.hp ? "is-full" : "is-empty"} />) : <><Heart size={15} className="is-full" />{hud.hp}/{hud.maxHp}</>}{hud.shield && <Shield size={13} className="arena-shield-on" aria-label={trs("Bouclier prêt", "Shield ready", "Escudo listo")} />}{hud.revive && <HeartPulse size={13} className="arena-revive-on" aria-label={trs("Seconde chance prête", "Second chance ready", "Segunda oportunidad lista")} />}</div>
     </div>
-    {inRun && <div className="arena-xp" aria-label={`Niveau ${hud.level}`}>
-      <b>NIV. {hud.level}</b>
+    {inRun && <div className="arena-xp" aria-label={trs(`Niveau ${hud.level}`, `Level ${hud.level}`, `Nivel ${hud.level}`)}>
+      <b>{trs("NIV.", "LVL", "NIV.")} {hud.level}</b>
       <div className="arena-xp-bar"><i style={{ width: `${Math.min(100, (hud.xp / hud.xpNext) * 100)}%` }} /></div>
       <span><Skull size={12} />{hud.kills}</span>
     </div>}
-    {inRun && hud.incoming > 0 && <div className="arena-incoming" role="status"><Swords size={13} />{hud.incoming} ennemi{hud.incoming > 1 ? "s" : ""} te {hud.incoming > 1 ? "suivent" : "suit"} depuis {hud.room === 1 ? "l’arène" : "la fosse"}</div>}
+    {inRun && hud.incoming > 0 && <div className="arena-incoming" role="status"><Swords size={13} />{trs(`${hud.incoming} ennemi${hud.incoming > 1 ? "s" : ""} te ${hud.incoming > 1 ? "suivent" : "suit"} depuis ${hud.room === 1 ? "l’arène" : "la fosse"}`, `${hud.incoming} enem${hud.incoming > 1 ? "ies" : "y"} following you from the ${hud.room === 1 ? "arena" : "pit"}`, `${hud.incoming} enemigo${hud.incoming > 1 ? "s" : ""} te sigue${hud.incoming > 1 ? "n" : ""} desde ${hud.room === 1 ? "la arena" : "la fosa"}`)}</div>}
     {hud.boss && inRun && <div className="arena-boss" role="status">
       <b>{hud.boss.name}</b>
       <div className="arena-boss-bar"><i style={{ width: `${(hud.boss.hp / hud.boss.max) * 100}%` }} /></div>
     </div>}
     {hud.banner && hud.phase === "playing" && <div key={hud.banner.id} className="arena-banner" data-tone={hud.banner.tone}><Laurels><b>{hud.banner.title}</b></Laurels><span>{hud.banner.sub}</span></div>}
-    {hud.phase === "playing" && <><div className="arena-stick-zone" role="application" aria-label="Déplacer le joueur" onPointerDown={stickDown} onPointerMove={stickMove} onPointerUp={stickUp} onPointerCancel={stickUp} /><div ref={stickPad} className="arena-stick-base"><div className="arena-stick-knob" style={{ transform: `translate(calc(-50% + ${stick.kx}px),calc(-50% + ${stick.ky}px))` }} /></div><Button className="arena-dash" aria-label="Esquiver" disabled={hud.dash > 0} onPointerDown={e => { e.preventDefault(); world.current?.dash(); publish(); }} onClick={e => { if (e.detail === 0) { world.current?.dash(); publish(); } }}><Zap />{hud.dash > 0 ? `${hud.dash.toFixed(1)}s` : "Esquive"}</Button></>}
-    {hud.phase === "playing" && !hud.menuOpen && <Button className="arena-bomb" aria-label={`Bombe, ${hud.bombs} restantes`} disabled={hud.bombs <= 0} onPointerDown={e => { e.preventDefault(); bomb(); }} onClick={e => { if (e.detail === 0) bomb(); }}>
-      <Bomb /><span>Bombe ×{hud.bombs}</span>
+    {hud.phase === "playing" && <><div className="arena-stick-zone" role="application" aria-label={trs("Déplacer le joueur", "Move the player", "Mover al jugador")} onPointerDown={stickDown} onPointerMove={stickMove} onPointerUp={stickUp} onPointerCancel={stickUp} /><div ref={stickPad} className="arena-stick-base"><div className="arena-stick-knob" style={{ transform: `translate(calc(-50% + ${stick.kx}px),calc(-50% + ${stick.ky}px))` }} /></div><Button className="arena-dash" aria-label={trs("Esquiver", "Dodge", "Esquivar")} disabled={hud.dash > 0} onPointerDown={e => { e.preventDefault(); world.current?.dash(); publish(); }} onClick={e => { if (e.detail === 0) { world.current?.dash(); publish(); } }}><Zap />{hud.dash > 0 ? `${hud.dash.toFixed(1)}s` : trs("Esquive", "Dodge", "Esquiva")}</Button></>}
+    {hud.phase === "playing" && !hud.menuOpen && <Button className="arena-bomb" aria-label={trs(`Bombe, ${hud.bombs} restantes`, `Bomb, ${hud.bombs} left`, `Bomba, quedan ${hud.bombs}`)} disabled={hud.bombs <= 0} onPointerDown={e => { e.preventDefault(); bomb(); }} onClick={e => { if (e.detail === 0) bomb(); }}>
+      <Bomb /><span>{trs("Bombe", "Bomb", "Bomba")} ×{hud.bombs}</span>
       {hud.bombs < MAX_BOMBS && <i className="arena-bomb-charge" style={{ width: `${(hud.bombProgress / BOMB_KILLS) * 100}%` }} />}
     </Button>}
-    {hud.menuOpen && <div className="arena-overlay arena-menu-overlay"><div className="arena-dialog" role="dialog" aria-label="Menu de la partie"><Laurels><h2>PAUSE</h2></Laurels>{hud.phase !== "ready" && hud.phase !== "over" && <Button className="arena-start" onClick={pause}><Play />Reprendre la partie</Button>}<Button variant="secondary" onClick={onBack}><ArrowLeft />Retour au menu</Button></div></div>}
+    {hud.menuOpen && <div className="arena-overlay arena-menu-overlay"><div className="arena-dialog" role="dialog" aria-label={trs("Menu de la partie", "Game menu", "Menú de la partida")}><Laurels><h2>{trs("PAUSE", "PAUSED", "PAUSA")}</h2></Laurels>{hud.phase !== "ready" && hud.phase !== "over" && <Button className="arena-start" onClick={pause}><Play />{trs("Reprendre la partie", "Resume the game", "Reanudar la partida")}</Button>}<Button variant="secondary" onClick={onBack}><ArrowLeft />{trs("Retour au menu", "Back to menu", "Volver al menú")}</Button></div></div>}
     {hud.phase === "ready" && !hud.menuOpen && <div className="arena-lobby">
       <div className="arena-lobby-bg" aria-hidden style={{ backgroundImage: `url(${lobbyBgUrl})` }} />
       <Suspense fallback={null}><ArenaLobby3D /></Suspense>
       <div className="arena-lobby-vignette" />
       <div className="arena-lobby-left">
-        <p className="arena-kicker">ARÈNE · SURVIE</p>
+        <p className="arena-kicker">{trs("ARÈNE · SURVIE", "ARENA · SURVIVAL", "ARENA · SUPERVIVENCIA")}</p>
         <Laurels className="arena-logo-wrap"><h2 className="arena-logo">BRIX <span>ARENA</span></h2></Laurels>
-        <div className="arena-lobby-best"><Trophy size={16} />Record <b>{best}</b></div>
+        <div className="arena-lobby-best"><Trophy size={16} />{trs("Record", "Best", "Récord")} <b>{best}</b></div>
         <ul className="arena-lobby-foes">
-          <li><i data-c="melee" />Robots rapides</li>
-          <li><i data-c="tank" />Monstres blindés</li>
-          <li><i data-c="drone" />Drones tireurs</li>
-          <li><i data-c="kamikaze" />Kamikazes</li>
-          <li><i data-c="splitter" />Scindeurs</li>
-          <li><i data-c="sniper" />Tireurs d'élite</li>
-          <li><i data-c="boss" />Un champion toutes les 2 min</li>
+          <li><i data-c="melee" />{trs("Robots rapides", "Fast robots", "Robots rápidos")}</li>
+          <li><i data-c="tank" />{trs("Monstres blindés", "Armored monsters", "Monstruos blindados")}</li>
+          <li><i data-c="drone" />{trs("Drones tireurs", "Shooting drones", "Drones tiradores")}</li>
+          <li><i data-c="kamikaze" />{trs("Kamikazes", "Kamikazes", "Kamikazes")}</li>
+          <li><i data-c="splitter" />{trs("Scindeurs", "Splitters", "Divisores")}</li>
+          <li><i data-c="sniper" />{trs("Tireurs d'élite", "Snipers", "Francotiradores")}</li>
+          <li><i data-c="boss" />{trs("Un champion toutes les 2 min", "A champion every 2 min", "Un campeón cada 2 min")}</li>
         </ul>
       </div>
       <div className="arena-lobby-right">
-        <div className="arena-lobby-kit"><img src={healthKitUrl} alt="Kit de soin" /><div><b>KIT DE SOIN</b><span>Ramasse-le : <em>+1 vie</em></span></div></div>
-        <div className="arena-lobby-kit arena-lobby-gem"><Gem size={30} /><div><b>CRISTAUX</b><span>Ramasse-les pour <em>choisir un pouvoir</em></span></div></div>
+        <div className="arena-lobby-kit"><img src={healthKitUrl} alt={trs("Kit de soin", "Health kit", "Botiquín")} /><div><b>{trs("KIT DE SOIN", "HEALTH KIT", "BOTIQUÍN")}</b><span>{trs("Ramasse-le : ", "Pick it up: ", "Recógelo: ")}<em>{trs("+1 vie", "+1 life", "+1 vida")}</em></span></div></div>
+        <div className="arena-lobby-kit arena-lobby-gem"><Gem size={30} /><div><b>{trs("CRISTAUX", "CRYSTALS", "CRISTALES")}</b><span>{trs("Ramasse-les pour ", "Collect them to ", "Recógelos para ")}<em>{trs("choisir un pouvoir", "choose a power", "elegir un poder")}</em></span></div></div>
         {onOpenBoosts && <Button variant="secondary" className="arena-boost-btn" onClick={onOpenBoosts}><Zap />Boosts{armedBoosts.length > 0 && <span className="arena-boost-count">{armedBoosts.length}</span>}</Button>}
-        <Button className="arena-lobby-play" onClick={start}><Swords />JOUER</Button>
-        <small className="arena-lobby-hint">Une porte à droite mène à la Fosse Ardente : cristaux ×2, geysers de lave</small>
+        <Button className="arena-lobby-play" onClick={start}><Swords />{trs("JOUER", "PLAY", "JUGAR")}</Button>
+        <small className="arena-lobby-hint">{trs("Une porte à droite mène à la Fosse Ardente : cristaux ×2, geysers de lave", "A door on the right leads to the Fiery Pit: crystals ×2, lava geysers", "Una puerta a la derecha lleva a la Fosa Ardiente: cristales ×2, géiseres de lava")}</small>
       </div>
     </div>}
     {hud.phase === "upgrade" && !hud.menuOpen && <div className="arena-overlay"><div className="arena-dialog arena-levelup">
-      <p className="arena-kicker">NIVEAU {hud.level}</p>
-      <Laurels><h2>LA FOULE T’OFFRE UN DON</h2></Laurels>
+      <p className="arena-kicker">{trs("NIVEAU", "LEVEL", "NIVEL")} {hud.level}</p>
+      <Laurels><h2>{trs("LA FOULE T’OFFRE UN DON", "THE CROWD OFFERS YOU A GIFT", "EL PÚBLICO TE OFRECE UN DON")}</h2></Laurels>
       <div className="arena-upgrades">{hud.choices.map((id, i) => {
         const Icon = UPGRADE_ICON[id], next = (hud.levels[id] ?? 0) + 1, def = UPGRADES[id];
         return <Button key={id} variant="secondary" onClick={() => choose(id)} data-new={next === 1 && id !== "heal" ? "" : undefined}>
           <kbd>{i + 1}</kbd><span className="arena-medal"><Icon size={26} /></span><b>{def.name}</b>
-          {id !== "heal" && <em>{next === 1 ? "NOUVEAU" : `NIV. ${next}/${def.max}`}</em>}
+          {id !== "heal" && <em>{next === 1 ? trs("NOUVEAU", "NEW", "NUEVO") : trs(`NIV. ${next}/${def.max}`, `LVL ${next}/${def.max}`, `NIV. ${next}/${def.max}`)}</em>}
           <small>{def.desc(next)}</small>
         </Button>;
       })}</div>
     </div></div>}
     {(hud.phase === "over" || hud.phase === "paused") && !hud.menuOpen && <div className="arena-overlay"><div className="arena-dialog">
-      <p className="arena-kicker">ARÈNE · SURVIE</p>
-      <Laurels><h2>{hud.phase === "over" ? "FIN DU COMBAT" : "EN PAUSE"}</h2></Laurels>
+      <p className="arena-kicker">{trs("ARÈNE · SURVIE", "ARENA · SURVIVAL", "ARENA · SUPERVIVENCIA")}</p>
+      <Laurels><h2>{hud.phase === "over" ? trs("FIN DU COMBAT", "FIGHT OVER", "FIN DEL COMBATE") : trs("EN PAUSE", "PAUSED", "EN PAUSA")}</h2></Laurels>
       {hud.phase === "over" && <>
-        <p className="arena-result">{hud.score} points · {Math.floor(hud.elapsed)}s de survie</p>
+        <p className="arena-result">{hud.score} points · {Math.floor(hud.elapsed)}s {trs("de survie", "survived", "de supervivencia")}</p>
         <ul className="arena-summary">
-          <li><Skull size={16} /><b>{hud.kills}</b>éliminations</li>
-          <li><Sparkles size={16} /><b>{hud.level}</b>niveau</li>
-          <li><Trophy size={16} /><b>{hud.bossesKilled}</b>boss vaincu{hud.bossesKilled > 1 ? "s" : ""}</li>
+          <li><Skull size={16} /><b>{hud.kills}</b>{trs("éliminations", "kills", "eliminaciones")}</li>
+          <li><Sparkles size={16} /><b>{hud.level}</b>{trs("niveau", "level", "nivel")}</li>
+          <li><Trophy size={16} /><b>{hud.bossesKilled}</b>{trs(`boss vaincu${hud.bossesKilled > 1 ? "s" : ""}`, `boss${hud.bossesKilled > 1 ? "es" : ""} defeated`, `jefe${hud.bossesKilled > 1 ? "s" : ""} derrotado${hud.bossesKilled > 1 ? "s" : ""}`)}</li>
         </ul>
         {taken.length > 0 && <div className="arena-build">{taken.map(([id, n]) => { const Icon = UPGRADE_ICON[id]; return <span key={id} title={UPGRADES[id].name}><Icon size={16} />{n}</span>; })}</div>}
       </>}
       {hud.phase === "over" && onOpenBoosts && <Button variant="secondary" className="arena-boost-btn" onClick={onOpenBoosts}><Zap />Boosts{armedBoosts.length > 0 && <span className="arena-boost-count">{armedBoosts.length}</span>}</Button>}
-      <Button className="arena-start" onClick={hud.phase === "paused" ? pause : start}>{hud.phase === "over" ? <RotateCcw /> : <Play />}{hud.phase === "over" ? "Rejouer" : "Reprendre"}</Button>
+      <Button className="arena-start" onClick={hud.phase === "paused" ? pause : start}>{hud.phase === "over" ? <RotateCcw /> : <Play />}{hud.phase === "over" ? trs("Rejouer", "Play again", "Repetir") : trs("Reprendre", "Resume", "Reanudar")}</Button>
     </div></div>}
     {overlay}
   </main>;
