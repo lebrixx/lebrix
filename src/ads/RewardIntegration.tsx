@@ -1,4 +1,5 @@
 import React from 'react';
+import { trs } from '@/i18n/tr';
 import { Button } from '@/components/ui/button';
 import { Play } from 'lucide-react';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
@@ -33,38 +34,38 @@ export const RewardButton: React.FC<RewardButtonProps> = ({
       switch (kind) {
         case 'revive':
           toast({
-            title: "Revive activé !",
-            description: "Tu as été ramené à la vie !",
+            title: trs("Revive activé !", "Revive activated!", "¡Revivir activado!"),
+            description: trs("Tu as été ramené à la vie !", "You are back in the game!", "¡Has vuelto a la vida!"),
           });
           break;
         case 'boost1':
           toast({
-            title: "Boost reçu !",
-            description: "Tu as reçu un Bouclier 🛡️",
+            title: trs("Boost reçu !", "Boost received!", "¡Boost recibido!"),
+            description: trs("Tu as reçu un Bouclier 🛡️", "You got a Shield 🛡️", "Has recibido un Escudo 🛡️"),
           });
           break;
         case 'boost2':
           toast({
-            title: "Boost reçu !",
-            description: "Tu as reçu une Zone plus grande 🎯",
+            title: trs("Boost reçu !", "Boost received!", "¡Boost recibido!"),
+            description: trs("Tu as reçu un Convertisseur de score 💰", "You got a Score converter 💰", "Has recibido un Convertidor de puntuación 💰"),
           });
           break;
         case 'boost3':
           toast({
-            title: "Boost reçu !",
-            description: "Tu as reçu un Démarrage à 20 🚀",
+            title: trs("Boost reçu !", "Boost received!", "¡Boost recibido!"),
+            description: trs("Tu as reçu un Démarrage à 20 🚀", "You got a Start at 20 🚀", "Has recibido un Empezar en 20 🚀"),
           });
           break;
         case 'coins80':
           toast({
-            title: "Coins reçus !",
-            description: "Tu as reçu 100 coins ! 🪙",
+            title: trs("Pièces reçues !", "Coins received!", "¡Monedas recibidas!"),
+            description: trs("Tu as reçu 100 pièces ! 🪙", "You got 100 coins! 🪙", "¡Has recibido 100 monedas! 🪙"),
           });
           break;
         case 'ticket':
           toast({
-            title: "Tickets reçus !",
-            description: "Tu as reçu 5 tickets pour le mode Expert ! 🎫",
+            title: trs("Tickets reçus !", "Tickets received!", "¡Tickets recibidos!"),
+            description: trs("Tu as reçu 5 tickets ! 🎫", "You got 5 tickets! 🎫", "¡Has recibido 5 tickets! 🎫"),
           });
           break;
       }
@@ -84,10 +85,10 @@ export const RewardButton: React.FC<RewardButtonProps> = ({
       {isShowing ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-          Pub en cours...
+          {trs("Pub en cours...", "Ad playing...", "Anuncio en curso...")}
         </>
       ) : cooldown > 0 ? (
-        <>Disponible dans {cooldown}s</>
+        <>{trs("Disponible dans", "Available in", "Disponible en")} {cooldown}s</>
       ) : (
         <>
           <Play className="w-4 h-4 mr-2" />

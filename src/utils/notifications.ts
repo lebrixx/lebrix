@@ -1,16 +1,17 @@
 import { whenAdsPromptsDone } from '@/ads/adsBootstrap';
+import { trs } from '@/i18n/tr';
 // Service de notifications push
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { canSpinFree, getWheelState } from '@/utils/luckyWheel';
 
-const NOTIFICATION_MESSAGES = [
-  "🎮 Prêt à battre ton score aujourd'hui ?",
-  "⚡ C'est l'heure de tester tes réflexes !",
-  "🔥 N'oublie pas ta partie quotidienne !",
-  "💎 Des coins gratuits t'attendent dans le jeu !",
-  "🌟 Tes adversaires progressent... et toi ?",
-  "🚀 Prêt pour un nouveau défi ?",
+const getNotificationMessages = () => [
+  trs("🎮 Prêt à battre ton score aujourd'hui ?", "🎮 Ready to beat your score today?", "🎮 ¿Listo para superar tu puntuación hoy?"),
+  trs("⚡ C'est l'heure de tester tes réflexes !", "⚡ Time to test your reflexes!", "⚡ ¡Es hora de poner a prueba tus reflejos!"),
+  trs("🔥 N'oublie pas ta partie quotidienne !", "🔥 Don't forget your daily game!", "🔥 ¡No olvides tu partida diaria!"),
+  trs("💎 Des pièces gratuites t'attendent dans le jeu !", "💎 Free coins are waiting for you in the game!", "💎 ¡Te esperan monedas gratis en el juego!"),
+  trs("🌟 Tes adversaires progressent... et toi ?", "🌟 Your rivals are improving... are you?", "🌟 Tus rivales progresan... ¿y tú?"),
+  trs("🚀 Prêt pour un nouveau défi ?", "🚀 Ready for a new challenge?", "🚀 ¿Listo para un nuevo reto?"),
 ];
 
 const WHEEL_NOTIFICATION_ID = 2000;
@@ -85,7 +86,7 @@ export async function scheduleDailyNotification() {
 
         notifications.push({
           title: 'Lucky Stop',
-          body: NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)],
+          body: getNotificationMessages()[Math.floor(Math.random() * getNotificationMessages().length)],
           id: 1001 + i, // Réservons une plage d'IDs
           schedule: { 
             at,
@@ -156,7 +157,7 @@ async function showNotification() {
   const hasPermission = await requestNotificationPermission();
   if (!hasPermission) return;
 
-  const message = NOTIFICATION_MESSAGES[Math.floor(Math.random() * NOTIFICATION_MESSAGES.length)];
+  const message = getNotificationMessages()[Math.floor(Math.random() * getNotificationMessages().length)];
 
   // Sur mobile natif, utiliser les notifications locales Capacitor
   if (Capacitor.isNativePlatform()) {
@@ -202,7 +203,7 @@ export async function sendTestNotification(): Promise<boolean> {
   const hasPermission = await requestNotificationPermission();
   if (!hasPermission) return false;
 
-  const testMessage = "🔔 Test réussi ! Les notifications fonctionnent.";
+  const testMessage = trs("🔔 Test réussi ! Les notifications fonctionnent.", "🔔 Test successful! Notifications are working.", "🔔 ¡Prueba superada! Las notificaciones funcionan.");
 
   if (Capacitor.isNativePlatform()) {
     try {
@@ -270,7 +271,7 @@ export async function scheduleWheelNotification() {
         notifications: [
           {
             title: 'Lucky Stop 🎡',
-            body: '🎡 Ta roue de la chance est prête ! Viens tourner pour gagner des récompenses !',
+            body: trs('🎡 Ta roue de la chance est prête ! Viens tourner pour gagner des récompenses !', '🎡 Your lucky wheel is ready! Come spin it to win rewards!', '🎡 ¡Tu ruleta de la suerte está lista! ¡Ven a girarla para ganar recompensas!'),
             id: WHEEL_NOTIFICATION_ID,
             schedule: { 
               at: tomorrow,
@@ -301,7 +302,7 @@ export async function scheduleWheelNotification() {
       if (canSpinFree()) {
         try {
           new Notification('Lucky Stop 🎡', {
-            body: '🎡 Ta roue de la chance est prête ! Viens tourner pour gagner des récompenses !',
+            body: trs('🎡 Ta roue de la chance est prête ! Viens tourner pour gagner des récompenses !', '🎡 Your lucky wheel is ready! Come spin it to win rewards!', '🎡 ¡Tu ruleta de la suerte está lista! ¡Ven a girarla para ganar recompensas!'),
             icon: '/icon-512.png',
             badge: '/icon-512.png',
             tag: 'wheel-ready',

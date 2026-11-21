@@ -1,3 +1,4 @@
+import { trs } from '@/i18n/tr';
 // Gestion de l'identité locale sans authentification
 const DEVICE_ID_KEY = 'circle_tap_device_id';
 const USERNAME_KEY = 'circle_tap_username';
@@ -61,7 +62,7 @@ export function canChangeUsername(): boolean {
 
 export function setUsername(username: string): void {
   if (!isValidUsername(username)) {
-    throw new Error('Pseudo invalide. Doit contenir entre 3 et 16 caractères alphanumériques, points, tirets ou underscores.');
+    throw new Error(trs('Pseudo invalide. Doit contenir entre 3 et 16 caractères alphanumériques, points, tirets ou underscores.', 'Invalid username. It must contain 3 to 16 letters, numbers, dots, dashes or underscores.', 'Nombre no válido. Debe tener entre 3 y 16 letras, números, puntos, guiones o guiones bajos.'));
   }
   
   const currentUsername = getUsername();

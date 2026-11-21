@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { trs } from '@/i18n/tr';
 import { SeasonPass } from '@/components/SeasonPass';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -225,8 +226,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
 
       if (unlockedTargets.length > 0) {
         const maxTarget = unlockedTargets[unlockedTargets.length - 1];
-        toast.success(`🎉 ${unlockedTargets.length} palier${unlockedTargets.length > 1 ? 's' : ''} débloqué${unlockedTargets.length > 1 ? 's' : ''} !`, {
-          description: `${MODE_INFO[mode].name} - Score de ${maxTarget} atteint !`,
+        toast.success(trs(`🎉 ${unlockedTargets.length} palier${unlockedTargets.length > 1 ? 's' : ''} débloqué${unlockedTargets.length > 1 ? 's' : ''} !`, `🎉 ${unlockedTargets.length} tier${unlockedTargets.length > 1 ? 's' : ''} unlocked!`, `🎉 ¡${unlockedTargets.length} nivel${unlockedTargets.length > 1 ? 'es' : ''} desbloqueado${unlockedTargets.length > 1 ? 's' : ''}!`), {
+          description: trs(`${MODE_INFO[mode].name} - Score de ${maxTarget} atteint !`, `${MODE_INFO[mode].name} - Score of ${maxTarget} reached!`, `${MODE_INFO[mode].name} - ¡Puntuación de ${maxTarget} alcanzada!`),
         });
       }
     });
@@ -263,7 +264,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
 
-      toast.success(`🎮 ${unlocked} palier${unlocked > 1 ? 's' : ''} Parties débloqué${unlocked > 1 ? 's' : ''} !`);
+      toast.success(trs(`🎮 ${unlocked} palier${unlocked > 1 ? 's' : ''} Parties débloqué${unlocked > 1 ? 's' : ''} !`, `🎮 ${unlocked} Games played tier${unlocked > 1 ? 's' : ''} unlocked!`, `🎮 ¡${unlocked} nivel${unlocked > 1 ? 'es' : ''} de Partidas desbloqueado${unlocked > 1 ? 's' : ''}!`));
     }
   };
 
@@ -297,7 +298,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
       notifyChallengeUpdate();
       forceUpdate(prev => prev + 1);
       
-      toast.success(`${boostNames} ajouté(s) !`);
+      toast.success(trs(`${boostNames} ajouté(s) !`, `${boostNames} added!`, `¡${boostNames} añadido(s)!`));
     }
   };
 
@@ -341,7 +342,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
             <Sparkles className="w-3 h-3 text-secondary absolute -top-1 -right-1 animate-pulse" />
           </div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-            Défis
+            {trs("Défis", "Challenges", "Retos")}
           </h1>
         </div>
       </div>
@@ -354,7 +355,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
             className="relative ls-tab"
           >
             <Calendar className="w-4 h-4" />
-            Quotidiens
+            {trs("Quotidiens", "Daily", "Diarios")}
             {hasDailyRewards && (
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full animate-pulse shadow-lg shadow-secondary/50" />
             )}
@@ -364,9 +365,9 @@ export const Challenges: React.FC<ChallengesProps> = ({
             className={`relative ls-tab ${hasGlobalRewards ? 'ls-tab-reward' : ''}`}
           >
             <Trophy className={`w-4 h-4 ${hasGlobalRewards ? 'text-secondary' : ''}`} />
-            <span className={hasGlobalRewards ? 'text-secondary font-bold' : ''}>Globaux</span>
+            <span className={hasGlobalRewards ? 'text-secondary font-bold' : ''}>{trs('Globaux', 'Global', 'Globales')}</span>
             {hasGlobalRewards && (
-              <span aria-label="Récompenses globales disponibles" className="ls-reward-dot" />
+              <span aria-label={trs("Récompenses globales disponibles", "Global rewards available", "Recompensas globales disponibles")} className="ls-reward-dot" />
             )}
           </TabsTrigger>
         </TabsList>
@@ -407,16 +408,16 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold text-lg text-text-primary">Défi Précision</h3>
+                        <h3 className="font-bold text-lg text-text-primary">{trs('Défi Précision', 'Precision Challenge', 'Reto de precisión')}</h3>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                           played ? 'bg-primary/20 text-primary' : 'bg-secondary/30 text-secondary'
                         }`}>
-                          {played ? '✓ JOUÉ' : '1 ESSAI'}
+                          {played ? trs('✓ JOUÉ', '✓ PLAYED', '✓ JUGADO') : trs('1 ESSAI', '1 TRY', '1 INTENTO')}
                         </span>
                       </div>
                       
                       <p className="text-xs text-text-muted mb-3">
-                        Stop le chrono au plus près de la cible. Un seul essai par jour, chaque milliseconde compte !
+                        {trs("Arrête le chrono au plus près de la cible. Un seul essai par jour, chaque milliseconde compte !", "Stop the timer as close to the target as you can. One try per day, every millisecond counts!", "Detén el cronómetro lo más cerca posible del objetivo. Un solo intento al día, ¡cada milisegundo cuenta!")}
                       </p>
                       
                       {/* Infos */}
@@ -429,12 +430,12 @@ export const Challenges: React.FC<ChallengesProps> = ({
                         {played && todayResult ? (
                           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-button-bg/80 border border-wheel-border/30">
                             <Clock className="w-3 h-3 text-secondary" />
-                            <span className="text-xs font-semibold text-text-primary">Écart : {todayResult.gap.toFixed(3)}</span>
+                            <span className="text-xs font-semibold text-text-primary">{trs('Écart', 'Gap', 'Diferencia')} : {todayResult.gap.toFixed(3)}</span>
                           </div>
                         ) : (
                           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/10 border border-secondary/20">
                             <Timer className="w-3 h-3 text-secondary" />
-                            <span className="text-xs font-semibold text-secondary">Prêt à jouer</span>
+                            <span className="text-xs font-semibold text-secondary">{trs('Prêt à jouer', 'Ready to play', 'Listo para jugar')}</span>
                           </div>
                         )}
                       </div>
@@ -452,7 +453,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     }`}
                     variant={played ? 'outline' : 'default'}
                   >
-                    {played ? '📊 Voir le classement' : '🎯 Lancer le défi'}
+                    {played ? trs('📊 Voir le classement', '📊 View leaderboard', '📊 Ver clasificación') : trs('🎯 Lancer le défi', '🎯 Start the challenge', '🎯 Empezar el reto')}
                   </Button>
                 </div>
               </div>
@@ -468,8 +469,8 @@ export const Challenges: React.FC<ChallengesProps> = ({
                   <Flame className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-text-primary">Défis du jour</h3>
-                  <p className="text-xs text-text-muted">2 nouveaux défis chaque jour</p>
+                  <h3 className="font-bold text-text-primary">{trs('Défis du jour', 'Daily challenges', 'Retos del día')}</h3>
+                  <p className="text-xs text-text-muted">{trs('2 nouveaux défis chaque jour', '2 new challenges every day', '2 retos nuevos cada día')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30">
@@ -569,7 +570,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                           className="bg-secondary hover:bg-secondary/80 text-xs px-4 shadow-lg shadow-secondary/20 animate-pulse"
                         >
                           <Gift className="w-3 h-3 mr-1" />
-                          Réclamer
+                          {trs("Réclamer", "Claim", "Reclamar")}
                         </Button>
                       )}
                     </div>
@@ -588,7 +589,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
               <div className="p-1.5 rounded-lg bg-primary/15">
                 <Crown className="w-4 h-4 text-primary" />
               </div>
-              <span className="text-sm font-medium text-text-primary">Défis du Passe de Combat</span>
+              <span className="text-sm font-medium text-text-primary">{trs('Défis du Pass de saison', 'Season Pass challenges', 'Retos del Pase de temporada')}</span>
             </div>
             <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-primary transition-colors" />
           </button>
@@ -604,14 +605,14 @@ export const Challenges: React.FC<ChallengesProps> = ({
             className="flex items-center gap-1.5 text-xs text-text-muted hover:text-primary transition-colors"
           >
             <HelpCircle className="w-3.5 h-3.5" />
-            Comment ça marche ?
+            {trs("Comment ça marche ?", "How does it work?", "¿Cómo funciona?")}
           </button>
           
           {showHowItWorks && (
             <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-text-muted space-y-1">
-              <p>• <strong>Parties jouées (∞) :</strong> toutes les 50 parties → 1 boost.</p>
-              <p>• <strong>Défis par mode :</strong> paliers de score 10 → 100. Chaque palier atteint débloque des coins à réclamer (5, 10, 15...).</p>
-              <p>• Les récompenses restent en attente jusqu'à réclamation.</p>
+              <p>• <strong>{trs("Parties jouées (∞) :", "Games played (∞):", "Partidas jugadas (∞):")}</strong> {trs("toutes les 50 parties → 1 boost.", "every 50 games → 1 boost.", "cada 50 partidas → 1 boost.")}</p>
+              <p>• <strong>{trs("Défis par mode :", "Mode challenges:", "Retos por modo:")}</strong> {trs("paliers de score 10 → 100. Chaque palier atteint débloque des pièces à réclamer (5, 10, 15...).", "score tiers 10 → 100. Each tier reached unlocks coins to claim (5, 10, 15...).", "niveles de puntuación 10 → 100. Cada nivel alcanzado desbloquea monedas para reclamar (5, 10, 15...).")}</p>
+              <p>• {trs("Les récompenses restent en attente jusqu'à réclamation.", "Rewards stay pending until you claim them.", "Las recompensas quedan pendientes hasta que las reclames.")}</p>
             </div>
           )}
           
@@ -645,11 +646,11 @@ export const Challenges: React.FC<ChallengesProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-1.5">
-                      <h3 className="font-semibold text-text-primary text-sm">Parties jouées</h3>
+                      <h3 className="font-semibold text-text-primary text-sm">{trs('Parties jouées', 'Games played', 'Partidas jugadas')}</h3>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-400 font-medium">∞</span>
                     </div>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-400 font-medium">
-                      Palier {gamesProgress.currentLevel + 1}
+                      {trs('Palier', 'Tier', 'Nivel')} {gamesProgress.currentLevel + 1}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -737,7 +738,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                       {isCompleted ? (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-emerald-400 font-medium">✓ Tous les paliers</span>
+                            <span className="text-[10px] text-emerald-400 font-medium">{trs('✓ Tous les paliers', '✓ All tiers', '✓ Todos los niveles')}</span>
                             <span className="text-[10px] font-bold text-emerald-400">{MAX_LEVEL}/{MAX_LEVEL}</span>
                           </div>
                           <div className="h-1.5 bg-button-bg rounded-full overflow-hidden">
@@ -751,7 +752,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                               {modeBestScore}/{currentTarget}
                             </span>
                             <span className="text-[10px] text-text-muted">
-                              Palier {modeProgress.currentLevel + 1}/{MAX_LEVEL}
+                              {trs('Palier', 'Tier', 'Nivel')} {modeProgress.currentLevel + 1}/{MAX_LEVEL}
                             </span>
                           </div>
                           <div className="h-1.5 bg-button-bg rounded-full overflow-hidden">
@@ -777,12 +778,12 @@ export const Challenges: React.FC<ChallengesProps> = ({
                     ) : isCompleted ? (
                       <div className="flex items-center justify-center gap-1.5 py-1 px-2 rounded-md bg-emerald-400/10 border border-emerald-400/20">
                         <Trophy className="w-3 h-3 text-emerald-400" />
-                        <span className="text-[10px] text-emerald-400 font-bold">Maîtrisé</span>
+                        <span className="text-[10px] text-emerald-400 font-bold">{trs('Maîtrisé', 'Mastered', 'Dominado')}</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-1 py-1 px-2 rounded-md bg-white/5">
                         <Coins className="w-3 h-3 text-secondary" />
-                        <span className="text-[10px] text-text-muted">+{Math.floor(currentTarget / 2)} coins</span>
+                        <span className="text-[10px] text-text-muted">+{Math.floor(currentTarget / 2)} {trs('pièces', 'coins', 'monedas')}</span>
                       </div>
                     )}
                   </div>
